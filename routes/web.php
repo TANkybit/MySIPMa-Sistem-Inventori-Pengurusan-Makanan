@@ -73,6 +73,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/suppliers', [\App\Http\Controllers\SupplierController::class, 'store'])->name('suppliers.store');
     Route::put('/suppliers/{supplier}', [\App\Http\Controllers\SupplierController::class, 'update'])->name('suppliers.update');
 
+    Route::get('/items/search', [\App\Http\Controllers\ItemController::class, 'search'])->name('items.search');
     Route::post('/items', [\App\Http\Controllers\ItemController::class, 'store'])->name('items.store');
 
     Route::get('/categories', [\App\Http\Controllers\CategoryController::class, 'index'])->name('categories.index');

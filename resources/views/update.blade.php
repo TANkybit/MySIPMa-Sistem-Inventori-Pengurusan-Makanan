@@ -33,6 +33,52 @@
       transform: scale(1.02);
     }
 
+    @media (min-width: 1200px) {
+      .header .container > .logo-glow,
+      .header .container > .d-xl-flex {
+        position: relative;
+        z-index: 2;
+      }
+
+      .header .navmenu {
+        left: 50%;
+        position: absolute;
+        transform: translateX(-50%);
+      }
+    }
+
+    .btn-custom {
+      background: #10b981;
+      color: #0f172a;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 24px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+
+    .btn-custom:hover {
+      background: #0ea5e9;
+      color: #fff;
+      transform: scale(1.05);
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    .btn-logout:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #fff;
+    }
+
+    .profile-nav-link.active {
+      color: #10b981 !important;
+    }
+
     /* Full height layout */
     html, body {
       height: 100%;
@@ -536,30 +582,46 @@
 
 <body class="index-page">
 
-  <header id="header" class="header d-flex align-items-center sticky-top">
+  <header id="header" class="header d-flex align-items-center sticky-top"
+    style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
     <div class="container position-relative d-flex align-items-center justify-content-between">
+      <a href="{{ route('index') }}" class="logo-glow d-flex align-items-center me-auto me-xl-0">
+        <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" style="height: 55px; width: auto;"
+          alt="MySIPMa logo">
+      </a>
 
-    <a href="{{ route('index') }}" class="logo-glow d-flex align-items-center me-auto me-xl-0">
-    <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" 
-         style="height: 55px; width: auto;" 
-         alt="MySIPMa logo">
-</a>
-
-      <nav id="navmenu" class="navmenu mx-auto">
-        <ul class="d-flex align-items-center list-unstyled">
-          <li><a href="{{ route('index') }}#hero">Laman Utama</a></li>
-          <li><a href="{{ route('index') }}#about">Tentang Kami</a></li>
-          <li><a href="{{ route('index') }}#contact">Hubungi Kami</a></li>
-          <li><a href="{{ route('profile') }}" class="active">Profil</a></li>
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="{{ route('user.dashboard') }}"
+              class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Dashboard</a></li>
+          <li><a href="{{ route('user.senarai.inden') }}"
+              class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
+          <li><a href="{{ route('user.pengesahan.inden') }}"
+              class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
+          <li><a href="{{ route('borang.inden') }}"
+              class="{{ request()->routeIs('borang.inden') ? 'active' : '' }}">Borang Inden</a></li>
         </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
-      <div class="header-social-links d-flex align-items-center ms-auto">
-        <a href="https://x.com/penjaramalaysia" target="_blank"><i class="bi bi-twitter-x"></i></a>
-        <a href="https://www.facebook.com/jabatanpenjaramalaysia/" target="_blank"><i class="bi bi-facebook"></i></a>
-        <a href="https://www.instagram.com/jabatanpenjaramalaysia" target="_blank"><i class="bi bi-instagram"></i></a>
-        <a href="https://www.youtube.com/@pridetv9182" target="_blank"><i class="bi bi-youtube"></i></a>
-        <i class="mobile-nav-toggle bi bi-list ms-3"></i>
+      <div class="d-none d-xl-flex align-items-center gap-3">
+        <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3"
+          style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'"
+          onmouseout="this.style.color='white'">
+          <i class="bi bi-bell-fill"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+            style="font-size: 0.65rem;">
+            {{ $pendingApprovals ?? 0 }}
+            <span class="visually-hidden">Inden belum disah</span>
+          </span>
+        </a>
+        <a href="{{ route('profile') }}" class="profile-nav-link active text-decoration-none" style="transition: color 0.3s;"><i
+            class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}</a>
+        <form action="{{ route('logout') }}" method="POST" class="d-inline">
+          @csrf
+          <button type="submit" class="btn btn-custom btn-logout btn-sm px-3 py-2"><i
+              class="bi bi-box-arrow-right me-2"></i>Log Keluar</button>
+        </form>
       </div>
     </div>
   </header>
@@ -731,19 +793,22 @@
 
     // Load existing profile data on page load
     function loadProfileData() {
-      const savedProfile = localStorage.getItem('userProfile');
-      if (savedProfile) {
-        const profile = JSON.parse(savedProfile);
-        document.getElementById('namaInput').value = profile.nama || '';
-        document.getElementById('emailInput').value = profile.email || '';
-        document.getElementById('institusiInput').value = profile.institusi || '';
-        document.getElementById('jawatanInput').value = profile.jawatan || '';
-        document.getElementById('perananInput').value = profile.peranan || '';
-        document.getElementById('telefonInput').value = profile.telefon || '';
-        if (profile.avatar && profile.avatar !== '(Tiada gambar)') {
-          document.getElementById('avatarPreviu').innerHTML = profile.avatar;
-        }
-      }
+      fetch('{{ route("profile.me") }}')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('namaInput').value = data.name || '';
+          document.getElementById('emailInput').value = data.email || '';
+          document.getElementById('institusiInput').value = data.institution || '';
+          document.getElementById('jawatanInput').value = data.grade || '';
+          document.getElementById('perananInput').value = data.username || '';
+          document.getElementById('telefonInput').value = data.phone_number || '';
+          
+          // Display avatar if exists
+          if (data.avatar_url) {
+            document.getElementById('avatarPreviu').innerHTML = '<img src="' + data.avatar_url + '" alt="Current Avatar">';
+          }
+        })
+        .catch(err => console.log('Error loading profile:', err));
     }
 
     document.addEventListener('DOMContentLoaded', loadProfileData);
@@ -875,6 +940,7 @@
       const jawatan = document.getElementById('jawatanInput').value.trim();
       const peranan = document.getElementById('perananInput').value.trim();
       const telefon = document.getElementById('telefonInput').value.trim();
+      const avatarFile = document.getElementById('avatarInput').files[0];
       
       if (!nama) {
         showStatus('Sila isi nama!', 'error');
@@ -893,34 +959,82 @@
         return;
       }
 
-      // Save profile data
-      const profileData = {
-        nama: nama,
-        email: document.getElementById('emailInput').value,
-        institusi: institusi,
-        jawatan: jawatan,
-        peranan: peranan,
-        telefon: telefon,
-        avatar: document.getElementById('avatarPreviu').innerHTML
-      };
-      
-      localStorage.setItem('userProfile', JSON.stringify(profileData));
-      
-      showStatus('Profil berjaya dikemaskini.', 'success');
-      
-      // Reset form
-      document.getElementById('namaInput').value = '';
-      document.getElementById('institusiInput').value = '';
-      document.getElementById('jawatanInput').value = '';
-      document.getElementById('perananInput').value = '';
-      document.getElementById('telefonInput').value = '';
-      document.getElementById('avatarInput').value = '';
-      document.getElementById('avatarPreviu').textContent = '(Tiada gambar dipilih)';
-      
-      // Redirect to profile view page
-      setTimeout(function() {
-        window.location.href = "{{ route('profile') }}";
-      }, 1000);
+      // If avatar file is selected, upload it first
+      if (avatarFile) {
+        const formData = new FormData();
+        formData.append('avatar', avatarFile);
+        formData.append('_token', '{{ csrf_token() }}');
+
+        fetch('{{ route("profile.avatar") }}', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: formData
+        })
+        .then(response => {
+          if (!response.ok) {
+            return response.text().then(text => {
+              throw new Error('HTTP ' + response.status + ': ' + text.substring(0, 100));
+            });
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (!data.success) {
+            showStatus(data.message || 'Gagal memuat naik gambar.', 'error');
+            return;
+          }
+          // After avatar upload succeeds, update profile info
+          updateProfileInfo(nama, institusi, jawatan, peranan, telefon);
+        })
+        .catch(err => {
+          console.error('Avatar upload error:', err);
+          showStatus('Ralat memuat naik gambar: ' + err.message, 'error');
+        });
+      } else {
+        // No avatar selected, just update profile info
+        updateProfileInfo(nama, institusi, jawatan, peranan, telefon);
+      }
+    }
+
+    function updateProfileInfo(nama, institusi, jawatan, peranan, telefon) {
+      const email = document.getElementById('emailInput').value.trim();
+      fetch('{{ route("profile.update") }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+          name: nama,
+          email: email,
+          phone_number: telefon
+        })
+      })
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(err => { throw new Error(err.message || 'Ralat pelayan'); });
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          showStatus('Profil berjaya dikemaskini.', 'success');
+          
+          // Redirect to profile view page after 1 second
+          setTimeout(function() {
+            window.location.href = "{{ route('profile') }}";
+          }, 1000);
+        } else {
+          showStatus(data.message || 'Gagal mengemas kini profil.', 'error');
+        }
+      })
+      .catch(err => {
+        showStatus('Ralat mengemas kini profil: ' + err.message, 'error');
+      });
     }
 
     function handleSetPassword() {
@@ -951,15 +1065,43 @@
         return;
       }
 
-      // Here you would typically make an API call or form submission
-      showStatus('Kata laluan berjaya ditukar.', 'success');
-      
-      // Reset form
-      document.getElementById('oldPass').value = '';
-      document.getElementById('newPass').value = '';
-      document.getElementById('confirmPass').value = '';
-      document.getElementById('strengthText').textContent = 'Kekuatan: -';
-      document.getElementById('strengthText').className = 'strength-indicator';
+      // Send password change request to server
+      fetch('{{ route("profile.password") }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+          current_password: oldPass,
+          password: newPass,
+          password_confirmation: confirmPass
+        })
+      })
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(err => { throw new Error(err.errors?.current_password?.[0] || err.message || 'Ralat pelayan'); });
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          showStatus('Kata laluan berjaya ditukar.', 'success');
+          
+          // Reset form
+          document.getElementById('oldPass').value = '';
+          document.getElementById('newPass').value = '';
+          document.getElementById('confirmPass').value = '';
+          document.getElementById('strengthText').textContent = 'Kekuatan: -';
+          document.getElementById('strengthText').className = 'strength-indicator';
+        } else {
+          showStatus(data.errors?.current_password?.[0] || data.message || 'Gagal menukar kata laluan.', 'error');
+        }
+      })
+      .catch(err => {
+        showStatus('Ralat menukar kata laluan: ' + err.message, 'error');
+      });
     }
   </script>
 

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Approval;
 
 class ProfileController extends Controller
 {
@@ -18,13 +19,27 @@ class ProfileController extends Controller
 
         $avatarUrl = $this->getAvatarUrl($user);
 
+        $institution = $user->institution_id
+            ? \Illuminate\Support\Facades\DB::table('institutions')->where('id', $user->institution_id)->value('name')
+            : null;
+
+        $position = $user->position_id
+            ? \Illuminate\Support\Facades\DB::table('positions')->where('id', $user->position_id)->value('name')
+            : null;
+
+        $role = $user->role_id
+            ? \Illuminate\Support\Facades\DB::table('roles')->where('id', $user->role_id)->value('role_name')
+            : null;
+
         return response()->json([
             'name' => $user->name,
             'email' => $user->email,
-            'username' => $user->username,
-            'grade' => $user->grade,
-            'institution' => $user->institution,
+            'username' => $role,
+            'grade' => $position,
+            'institution' => $institution,
             'institution_id' => $user->institution_id,
+            'position_id' => $user->position_id,
+            'role_id' => $user->role_id,
             'phone_number' => $user->phone_number,
             'avatar_url' => $avatarUrl,
         ]);
@@ -37,6 +52,7 @@ class ProfileController extends Controller
         return view('profile', [
             'user' => $user,
             'avatarUrl' => $this->getAvatarUrl($user),
+            'pendingApprovals' => Approval::where('status', 0)->count(),
         ]);
     }
 
@@ -47,20 +63,19 @@ class ProfileController extends Controller
         return view('update', [
             'user' => $user,
             'avatarUrl' => $this->getAvatarUrl($user),
+            'pendingApprovals' => Approval::where('status', 0)->count(),
         ]);
     }
 
     private function getAvatarUrl($user)
     {
-        $avatar = $user->avatar ?: $user->image;
-
-        return $avatar
-            ? asset('storage/' . $avatar)
+        return $user->image
+            ? asset('storage/' . $user->image)
             : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=1a5632&color=fff&size=150';
     }
 
     /**
-     * Update profile information (name, email, username, grade, institution).
+     * Update profile information (name, email, phone_number).
      */
     public function update(Request $request)
     {
@@ -68,15 +83,28 @@ class ProfileController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'username' => 'nullable|string|max:255|unique:users,username,' . $user->id,
-            'grade' => 'nullable|string|max:255',
-            'institution' => 'nullable|string|max:255',
+            'email' => 'nullable|string|email|max:255|unique:users,email,' . $user->id,
             'phone_number' => 'nullable|string|max:20',
             'institution_id' => 'nullable|integer',
+            'position_id' => 'nullable|integer',
         ]);
 
-        $user->update($request->only(['name', 'email', 'username', 'grade', 'institution', 'phone_number', 'institution_id']));
+        $data = ['name' => $request->name];
+
+        if ($request->filled('email')) {
+            $data['email'] = $request->email;
+        }
+        if ($request->filled('phone_number')) {
+            $data['phone_number'] = $request->phone_number;
+        }
+        if ($request->filled('institution_id')) {
+            $data['institution_id'] = $request->institution_id;
+        }
+        if ($request->filled('position_id')) {
+            $data['position_id'] = $request->position_id;
+        }
+
+        $user->update($data);
 
         if ($request->expectsJson()) {
             return response()->json(['success' => 'Profil berjaya dikemaskini']);
@@ -97,21 +125,21 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         // Delete old avatar file if it exists
-        $oldAvatar = $user->avatar ?: $user->image;
-        if ($oldAvatar && Storage::disk('public')->exists($oldAvatar)) {
-            Storage::disk('public')->delete($oldAvatar);
+        if ($user->image && Storage::disk('public')->exists($user->image)) {
+            Storage::disk('public')->delete($user->image);
         }
 
         // Store new avatar
         $path = $request->file('avatar')->store('avatars', 'public');
 
-        $user->update(['avatar' => $path, 'image' => $path]);
+        $user->update(['image' => $path]);
 
         $avatarUrl = asset('storage/' . $path);
 
         if ($request->expectsJson()) {
             return response()->json([
-                'success' => 'Gambar profil berjaya dikemaskini',
+                'success' => true,
+                'message' => 'Gambar profil berjaya dikemaskini',
                 'avatar_url' => $avatarUrl,
             ]);
         }

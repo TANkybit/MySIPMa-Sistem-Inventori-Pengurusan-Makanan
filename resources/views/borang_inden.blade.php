@@ -12,6 +12,8 @@
   <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
   <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
   <link href="{{ asset('frontend/Nexa/assets/css/main2.css') }}" rel="stylesheet">
+  <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
   <style>
     :root { --bg:#020204; --surface:#11151f; --surface-soft:#161a26; --surface-strong:#0c1119; --border:#2c333f; --text:#e2e8f0; --muted:#94a3b8; --accent:#10b981; --accent-soft:rgba(16,185,129,.16); }
     body { background: radial-gradient(circle at top, rgba(255,255,255,.05) 0%, transparent 40%), linear-gradient(180deg,#020204 0%,#07090f 40%,#0b1018 100%); color: var(--text); font-family: "Roboto", sans-serif; }
@@ -50,7 +52,39 @@
     .totals-row { align-items:center; display:flex; justify-content:space-between; margin-bottom:12px; }
     .totals-row:last-child { border-top:1px solid rgba(255,255,255,.12); margin-top:14px; padding-top:14px; }
     .action-row { align-items:center; display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; margin-top:24px; }
+    .borang-menu { display:grid; gap:12px; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom:24px; }
+    .borang-menu button { align-items:flex-start; background:var(--surface); border:1px solid var(--border); border-radius:18px; color:var(--text); display:flex; flex-direction:column; gap:6px; padding:16px; text-align:left; transition:all .2s ease; }
+    .borang-menu button.active, .borang-menu button:hover { border-color:rgba(16,185,129,.55); box-shadow:0 16px 36px rgba(16,185,129,.12); transform:translateY(-2px); }
+    .borang-menu .menu-step { color:var(--accent); font-size:.78rem; font-weight:800; text-transform:uppercase; }
+    .borang-menu .menu-title { color:#fff; font-family:"Montserrat", sans-serif; font-weight:800; }
+    .borang-page { display:none; }
+    .borang-page.active { display:block; }
+    .borang-step-actions { align-items:center; display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; margin-top:24px; }
+    .word-helper { color:var(--muted); display:flex; justify-content:flex-end; font-size:.82rem; margin-top:6px; }
+    .word-helper.text-danger { color:#f87171 !important; }
+    .date-format-hint { color:var(--muted); font-size:.8rem; margin-top:6px; }
+    .item-table-toolbar { align-items:center; display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; margin-bottom:16px; }
+    .item-table-toolbar .dataTables_length label, .item-table-toolbar .dataTables_filter label { color:var(--muted) !important; }
+    .item-table-toolbar .dataTables_filter { margin-left:auto; }
+    .dt-item-actions { display:flex; justify-content:flex-end; }
+    table.dataTable > thead > tr > th { border-bottom:1px solid rgba(255,255,255,.12) !important; }
+    table.dataTable > tbody > tr { background:transparent !important; }
+    .table-dark-custom { color:var(--text) !important; border-color:var(--border) !important; }
+    .table-dark-custom th { background:var(--surface-soft) !important; color:#fff !important; }
+    .table-dark-custom td { background:transparent !important; border-bottom:1px solid rgba(255,255,255,.08) !important; color:#fff !important; vertical-align:middle; }
+    .dataTables_wrapper .page-link { background:var(--surface-soft) !important; border-color:var(--border) !important; color:var(--text) !important; }
+    .dataTables_wrapper .page-item.active .page-link { background:var(--accent) !important; border-color:var(--accent) !important; color:#0f172a !important; }
+    .dataTables_wrapper .form-select-sm, .dataTables_wrapper .form-control-sm { background:#111827 !important; border:1px solid rgba(255,255,255,.08) !important; color:var(--text) !important; }
+    .select2-container { width:100% !important; }
+    .select2-container--default .select2-selection--single { background:#111827; border:1px solid rgba(255,255,255,.08); border-radius:14px; color:var(--text); min-height:48px; padding:9px 12px; }
+    .select2-container--default .select2-selection--single .select2-selection__rendered { color:var(--text); line-height:28px; padding-left:0; }
+    .select2-container--default .select2-selection--single .select2-selection__arrow { height:46px; }
+    .select2-dropdown { background:#111827; border:1px solid rgba(255,255,255,.12); color:var(--text); }
+    .select2-search__field { background:#0b1020; border:1px solid rgba(255,255,255,.12) !important; color:var(--text); }
+    .select2-results__option--highlighted { background:var(--accent) !important; color:#0f172a !important; }
     @media (max-width: 767.98px) { .hero,.section-card { padding:22px; } .section-head,.items-toolbar,.action-row { flex-direction:column; align-items:flex-start; } }
+    @media (max-width: 991.98px) { .borang-menu { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 575.98px) { .borang-menu { grid-template-columns: 1fr; } }
     
     /* Sleek Validation Styles */
     .invalid-feedback { color: #f87171; font-size: 0.85rem; margin-top: 6px; font-weight: 500; display: none; }
@@ -66,6 +100,15 @@
     $inden = $indenHeader ?? null;
     $isReadOnly = $readOnly ?? false;
     $fieldState = $isReadOnly ? 'readonly' : '';
+    $formatTarikh = function ($value) {
+      if (!$value) return '';
+      if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', (string) $value)) return $value;
+      try {
+        return \Carbon\Carbon::parse($value)->format('d/m/Y');
+      } catch (\Throwable $e) {
+        return $value;
+      }
+    };
   @endphp
 
   <header id="header" class="header d-flex align-items-center sticky-top" style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
@@ -141,8 +184,28 @@
       <ul id="clientErrorList" class="mb-0 ps-3"></ul>
     </div>
 
-    <form method="POST" action="{{ route('borang.inden.store') }}" novalidate>
+    <form method="POST" action="{{ route('borang.inden.store') }}">
       @csrf
+      <div class="borang-menu" role="tablist" aria-label="Navigasi Borang Inden">
+        <button class="active" type="button" data-borang-target="maklumat" role="tab" aria-selected="true">
+          <span class="menu-step">Bahagian 1</span>
+          <span class="menu-title">Maklumat Pesanan</span>
+        </button>
+        <button type="button" data-borang-target="muster" role="tab" aria-selected="false">
+          <span class="menu-step">Bahagian 2</span>
+          <span class="menu-title">Ringkasan Muster</span>
+        </button>
+        <button type="button" data-borang-target="barang" role="tab" aria-selected="false">
+          <span class="menu-step">Bahagian 3</span>
+          <span class="menu-title">Senarai Barang</span>
+        </button>
+        <button type="button" data-borang-target="perakuan" role="tab" aria-selected="false">
+          <span class="menu-step">Bahagian 4</span>
+          <span class="menu-title">Perakuan Pembekal</span>
+        </button>
+      </div>
+
+      <div class="borang-page active" data-borang-page="maklumat">
       <div class="card-box section-card mb-4">
         <div class="section-head">
           <div>
@@ -168,7 +231,8 @@
           </div>
           <div class="col-md-4">
             <label class="form-label">Tarikh Pesanan <span class="text-danger">*</span></label>
-            <input class="form-control @error('tarikh_pesanan') is-invalid @enderror" name="tarikh_pesanan" type="date" value="{{ old('tarikh_pesanan', $inden->tarikh_pesanan ?? '') }}" {{ $fieldState }} required>
+            <input class="form-control date-input @error('tarikh_pesanan') is-invalid @enderror" name="tarikh_pesanan" type="text" inputmode="numeric" pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$" value="{{ $formatTarikh(old('tarikh_pesanan', $inden->tarikh_pesanan ?? '')) }}" placeholder="dd/mm/yyyy" {{ $fieldState }} required>
+            <div class="date-format-hint">Format: dd/mm/yyyy</div>
             @error('tarikh_pesanan')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -210,7 +274,13 @@
           </div>
         </div>
       </div>
+      <div class="borang-step-actions">
+        <span></span>
+        <button class="btn btn-round btn-add" type="button" data-borang-next="muster">Seterusnya</button>
+      </div>
+      </div>
 
+      <div class="borang-page" data-borang-page="muster">
       <div class="card-box section-card mb-4">
         <div class="section-head">
           <div>
@@ -255,7 +325,13 @@
           <div class="col-md-4"><div class="card-box p-3"><small class="text-muted d-block">Anggaran Bilangan Akhir</small><strong id="finalMusterTotal">0</strong></div></div>
         </div>
       </div>
+      <div class="borang-step-actions">
+        <button class="btn btn-round btn-soft" type="button" data-borang-prev="maklumat">Kembali</button>
+        <button class="btn btn-round btn-add" type="button" data-borang-next="barang">Seterusnya</button>
+      </div>
+      </div>
 
+      <div class="borang-page" data-borang-page="barang">
       <div class="card-box section-card mb-4">
         <div class="section-head">
           <div>
@@ -270,16 +346,42 @@
               <h3 class="h5 mb-1">Item Pesanan</h3>
               <p class="muted mb-0">Contoh barang daripada PDF: ikan basah, daging lembu, kobis, bawang, halia, kacang merah dan ubi kentang.</p>
             </div>
-            @unless ($isReadOnly)
-              <button class="btn btn-round btn-add" id="addItemButton" type="button">Tambah Item</button>
-            @endunless
           </div>
-          <div id="itemList"></div>
+          <div class="p-3">
+            <table id="itemDataTable" class="table table-dark-custom w-100">
+              <thead>
+                <tr>
+                  <th>Bil</th>
+                  <th>Perihal Barang</th>
+                  <th>Unit</th>
+                  <th>Kuantiti Pesanan</th>
+                  <th>Harga Seunit</th>
+                  <th>Jumlah Harga</th>
+                  <th>Tindakan</th>
+                </tr>
+              </thead>
+              <tbody id="itemList"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="totals-box mt-4">
+          <h2 class="h4 mb-3">Ringkasan Automatik</h2>
+          <p class="mb-4" style="color: rgba(255,255,255,.78);">Jumlah item, kuantiti dan harga dikira automatik untuk kurangkan pengiraan manual.</p>
+          <div class="totals-row"><span>Jumlah Item</span><strong id="summaryItemCount">0</strong></div>
+          <div class="totals-row"><span>Jumlah Kuantiti Pesanan</span><strong id="summaryOrderQty">0</strong></div>
+          <div class="totals-row d-none"><span>Jumlah Kuantiti Terima</span><strong id="summaryReceivedQty">0</strong></div>
+          <div class="totals-row"><span>Jumlah Harga</span><strong id="summaryGrandTotal">RM 0.00</strong></div>
         </div>
       </div>
+      <div class="borang-step-actions">
+        <button class="btn btn-round btn-soft" type="button" data-borang-prev="muster">Kembali</button>
+        <button class="btn btn-round btn-add" type="button" data-borang-next="perakuan">Seterusnya</button>
+      </div>
+      </div>
 
+      <div class="borang-page" data-borang-page="perakuan">
       <div class="row g-4">
-        <div class="col-lg-7">
+        <div class="col-12">
           <div class="card-box section-card h-100">
             <div class="section-head">
               <div>
@@ -300,7 +402,8 @@
               </div>
               <div class="col-md-6">
                 <label class="form-label">Tarikh Pembekal <span class="text-danger">*</span></label>
-                <input class="form-control @error('tarikh_pembekal') is-invalid @enderror" name="tarikh_pembekal" type="date" value="{{ old('tarikh_pembekal', $inden->tarikh_pembekal ?? '') }}" {{ $fieldState }} required>
+                <input class="form-control date-input @error('tarikh_pembekal') is-invalid @enderror" name="tarikh_pembekal" type="text" inputmode="numeric" pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$" value="{{ $formatTarikh(old('tarikh_pembekal', $inden->tarikh_pembekal ?? '')) }}" placeholder="dd/mm/yyyy" {{ $fieldState }} required>
+                <div class="date-format-hint">Format: dd/mm/yyyy</div>
                 @error('tarikh_pembekal')
                   <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
@@ -309,26 +412,17 @@
               <div class="col-md-6 d-none"><label class="form-label">Nama Penerima</label><input class="form-control" type="text" placeholder="Nama penerima"></div>
               <div class="col-md-6 d-none"><label class="form-label">Jawatan / Cop Saksi</label><input class="form-control" type="text" placeholder="Jawatan atau cop saksi"></div>
               <div class="col-md-6 d-none"><label class="form-label">Jawatan / Cop Penerima</label><input class="form-control" type="text" placeholder="Jawatan atau cop penerima"></div>
-              <div class="col-md-6 d-none"><label class="form-label">Tarikh Saksi</label><input class="form-control" type="date"></div>
-              <div class="col-md-6 d-none"><label class="form-label">Tarikh Penerima</label><input class="form-control" type="date"></div>
+              <div class="col-md-6 d-none"><label class="form-label">Tarikh Saksi</label><input class="form-control" type="text" inputmode="numeric" placeholder="dd/mm/yyyy"></div>
+              <div class="col-md-6 d-none"><label class="form-label">Tarikh Penerima</label><input class="form-control" type="text" inputmode="numeric" placeholder="dd/mm/yyyy"></div>
               <div class="col-12">
                 <label class="form-label">Ulasan / Catatan Umum</label>
-                <textarea class="form-control @error('catatan_inden') is-invalid @enderror" name="catatan_inden" placeholder="Masukkan catatan tambahan jika perlu" {{ $fieldState }}>{{ old('catatan_inden', $inden->catatan_inden ?? '') }}</textarea>
+                <textarea class="form-control ulasan-field @error('catatan_inden') is-invalid @enderror" name="catatan_inden" placeholder="Masukkan catatan tambahan jika perlu" data-max-words="250" {{ $fieldState }}>{{ old('catatan_inden', $inden->catatan_inden ?? '') }}</textarea>
+                <div class="word-helper"><span class="word-count">0</span>/250 patah perkataan</div>
                 @error('catatan_inden')
                   <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
               </div>
             </div>
-          </div>
-        </div>
-        <div class="col-lg-5">
-          <div class="totals-box h-100">
-            <h2 class="h4 mb-3">Ringkasan Automatik</h2>
-            <p class="mb-4" style="color: rgba(255,255,255,.78);">Jumlah item, kuantiti dan harga dikira automatik untuk kurangkan pengiraan manual.</p>
-            <div class="totals-row"><span>Jumlah Item</span><strong id="summaryItemCount">0</strong></div>
-            <div class="totals-row"><span>Jumlah Kuantiti Pesanan</span><strong id="summaryOrderQty">0</strong></div>
-            <div class="totals-row d-none"><span>Jumlah Kuantiti Terima</span><strong id="summaryReceivedQty">0</strong></div>
-            <div class="totals-row"><span>Jumlah Harga</span><strong id="summaryGrandTotal">RM 0.00</strong></div>
           </div>
         </div>
       </div>
@@ -342,77 +436,165 @@
           @endunless
         </div>
       </div>
+      </div>
     </form>
   </div>
   </main>
 
   <template id="itemTemplate">
-    <div class="item-card">
-      <div class="item-actions">
-        <div class="d-flex align-items-center gap-3">
-          <span class="item-index"></span>
-          <div><h3 class="h6 mb-1">Item Barang</h3><p class="muted mb-0">Isi nama barang, unit, kuantiti dan harga seunit.</p></div>
+    <tr class="item-card">
+      <td><span class="item-index"></span></td>
+      <td>
+        <select class="form-select item-name" required data-placeholder="Cari nama barang"></select>
+      </td>
+      <td>
+        <input class="form-control item-unit" type="text" value="Unit" readonly required>
+      </td>
+      <td>
+        <input class="form-control item-order-qty item-calc" type="number" min="0" step="0.01" value="0" required>
+      </td>
+      <td>
+        <input class="form-control item-unit-price item-calc" type="number" min="0" step="0.01" value="0" required>
+      </td>
+      <td>
+        <input class="form-control item-total" type="text" value="RM 0.00" readonly>
+        <input class="form-control item-received-qty item-calc d-none" type="number" min="0" step="0.01" value="0">
+        <textarea class="form-control item-notes ulasan-field d-none" placeholder="Catatan penerimaan atau spesifikasi" data-max-words="250"></textarea>
+      </td>
+      <td>
+        <div class="d-flex flex-wrap gap-2">
+          <button class="btn btn-sm btn-soft edit-item" type="button">Kemaskini</button>
+          <button class="btn btn-sm btn-outline-danger remove-item" type="button">Padam</button>
         </div>
-        <button class="btn btn-round btn-soft remove-item" type="button">Buang</button>
-      </div>
-      <div class="row g-3">
-        <div class="col-md-4"><label class="form-label">Perihal Barang</label><input class="form-control item-name" type="text" placeholder="Contoh: Ikan Basah" required></div>
-        <div class="col-md-2"><label class="form-label">Unit</label><select class="form-select item-unit" required><option value="Kg.">Kg.</option><option value="Gm.">Gm.</option><option value="Unit">Unit</option><option value="Pek">Pek</option><option value="Lain-lain">Lain-lain</option></select></div>
-        <div class="col-md-2"><label class="form-label">Kuantiti Pesanan</label><input class="form-control item-order-qty item-calc" type="number" min="0" step="0.01" value="0" required></div>
-        <div class="col-md-2"><label class="form-label">Harga Seunit</label><input class="form-control item-unit-price item-calc" type="number" min="0" step="0.01" value="0" required></div>
-        <div class="col-md-2"><label class="form-label">Jumlah Harga</label><input class="form-control item-total" type="text" value="RM 0.00" readonly></div>
-        <!-- Hidden elements -->
-        <div class="col-md-2 d-none"><label class="form-label">Kuantiti Terima</label><input class="form-control item-received-qty item-calc" type="number" min="0" step="0.01" value="0"></div>
-        <div class="col-md-8 d-none"><label class="form-label">Ulasan / Catatan</label><input class="form-control item-notes" type="text" placeholder="Catatan penerimaan atau spesifikasi"></div>
-      </div>
-    </div>
+      </td>
+    </tr>
   </template>
 
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="{{ asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
   <script src="{{ asset('frontend/Nexa/assets/js/mobile-nav.js') }}"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
   <script>
     (function () {
       const itemList = document.getElementById('itemList');
       const itemTemplate = document.getElementById('itemTemplate');
-      const addItemButton = document.getElementById('addItemButton');
       const musterInputs = document.querySelectorAll('.muster-input');
+      const form = document.querySelector('form[action$="store"]');
       const databaseItems = @json($indenItems ?? []);
       const isReadOnly = @json($isReadOnly);
+      const itemSearchUrl = "{{ route('items.search') }}";
+      let itemDataTable = null;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
       if (isReadOnly) {
         document.querySelectorAll('input, textarea').forEach((input) => input.setAttribute('readonly', 'readonly'));
         document.querySelectorAll('select').forEach((select) => select.setAttribute('disabled', 'disabled'));
       } else {
-        const dateInputs = document.querySelectorAll('input[type="date"]');
+        const dateInputs = document.querySelectorAll('.date-input');
         const timeInputs = document.querySelectorAll('input[type="time"]');
         const now = new Date();
-        const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+        const localDate = formatDateForDisplay(now);
 
         dateInputs.forEach(input => {
-            input.setAttribute('min', localDate);
+          input.addEventListener('input', function () {
+            this.value = this.value.replace(/[^\d/]/g, '').slice(0, 10);
+            this.setCustomValidity('');
+            updateTimeMinimum(this.value, localDate, now, timeInputs);
+          });
 
-            input.addEventListener('change', function() {
-                if (this.value === localDate) {
-                    const localTime = now.toTimeString().substring(0, 5);
-                    timeInputs.forEach(t => t.setAttribute('min', localTime));
-                } else {
-                    timeInputs.forEach(t => t.removeAttribute('min'));
-                }
-            });
+          input.addEventListener('change', function() {
+            updateTimeMinimum(this.value, localDate, now, timeInputs);
+          });
         });
 
         dateInputs.forEach(input => {
-            if (!input.value) input.value = localDate;
-            input.dispatchEvent(new Event('change'));
+          if (!input.value) input.value = localDate;
+          input.dispatchEvent(new Event('change'));
+        });
+
+        const localTime = now.toTimeString().substring(0, 5);
+        timeInputs.forEach(input => {
+          if (!input.value) input.value = localTime;
         });
       }
 
       function numberValue(input) { return Number.parseFloat(input.value) || 0; }
       function formatNumber(value) { return new Intl.NumberFormat('en-MY', { minimumFractionDigits: value % 1 === 0 ? 0 : 2, maximumFractionDigits: 2 }).format(value || 0); }
       function formatCurrency(value) { return 'RM ' + new Intl.NumberFormat('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value || 0); }
+      function formatDateForDisplay(date) {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        return `${day}/${month}/${date.getFullYear()}`;
+      }
+      function parseDisplayDate(value) {
+        const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value || '');
+        if (!match) return null;
+        const parsed = new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1]));
+        if (parsed.getFullYear() !== Number(match[3]) || parsed.getMonth() !== Number(match[2]) - 1 || parsed.getDate() !== Number(match[1])) return null;
+        parsed.setHours(0, 0, 0, 0);
+        return parsed;
+      }
+      function updateTimeMinimum(dateValue, localDate, now, timeInputs) {
+        if (dateValue === localDate) {
+          const localTime = now.toTimeString().substring(0, 5);
+          timeInputs.forEach(t => t.setAttribute('min', localTime));
+        } else {
+          timeInputs.forEach(t => t.removeAttribute('min'));
+        }
+      }
+      function countWords(value) {
+        return (value.trim().match(/\S+/g) || []).length;
+      }
+      function updateWordCounter(textarea) {
+        const maxWords = Number(textarea.dataset.maxWords || 250);
+        const count = countWords(textarea.value);
+        const helper = textarea.parentElement.querySelector('.word-helper');
+        const counter = textarea.parentElement.querySelector('.word-count');
+        if (counter) counter.textContent = count;
+        if (helper) helper.classList.toggle('text-danger', count > maxWords);
+        textarea.setCustomValidity(count > maxWords ? `Ulasan tidak boleh melebihi ${maxWords} patah perkataan.` : '');
+      }
+      function wireUlasanCounter(scope = document) {
+        scope.querySelectorAll('.ulasan-field').forEach((textarea) => {
+          updateWordCounter(textarea);
+          textarea.addEventListener('input', () => updateWordCounter(textarea));
+        });
+      }
+      function showBorangPage(pageName) {
+        document.querySelectorAll('[data-borang-page]').forEach((page) => {
+          page.classList.toggle('active', page.dataset.borangPage === pageName);
+        });
+        document.querySelectorAll('[data-borang-target]').forEach((button) => {
+          const isActive = button.dataset.borangTarget === pageName;
+          button.classList.toggle('active', isActive);
+          button.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+      }
+      function validateVisiblePage(pageName) {
+        const page = document.querySelector(`[data-borang-page="${pageName}"]`);
+        if (!page) return true;
+        for (const field of page.querySelectorAll('input, textarea, select')) {
+          if (!field.checkValidity()) {
+            field.reportValidity();
+            return false;
+          }
+        }
+        return true;
+      }
+
+      function getItemRows() {
+        if (itemDataTable) {
+          return Array.from(itemDataTable.rows().nodes());
+        }
+
+        return Array.from(itemList.querySelectorAll('.item-card'));
+      }
 
       function updateItemIndices() {
-        itemList.querySelectorAll('.item-card').forEach((card, index) => {
+        getItemRows().forEach((card, index) => {
           card.querySelector('.item-index').textContent = index + 1;
           card.querySelector('.item-name').name = `items[${index}][name]`;
           card.querySelector('.item-unit').name = `items[${index}][unit]`;
@@ -431,7 +613,7 @@
       }
 
       function updateSummary() {
-        const cards = itemList.querySelectorAll('.item-card');
+        const cards = getItemRows();
         let orderQtyTotal = 0, receivedQtyTotal = 0, grandTotal = 0;
         cards.forEach((card) => {
           const orderQty = numberValue(card.querySelector('.item-order-qty'));
@@ -450,52 +632,157 @@
         document.getElementById('summaryGrandTotal').textContent = formatCurrency(grandTotal);
       }
 
+      function initItemDataTable() {
+        if (!window.jQuery || !$.fn.DataTable) return;
+        if ($.fn.DataTable.isDataTable('#itemDataTable')) {
+          itemDataTable = $('#itemDataTable').DataTable();
+          return;
+        }
+
+        itemDataTable = $('#itemDataTable').DataTable({
+          pagingType: 'full_numbers',
+          pageLength: 5,
+          lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'Semua']],
+          ordering: false,
+          language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/ms.json',
+            emptyTable: 'Tiada item pesanan.',
+            lengthMenu: 'Papar _MENU_ rekod',
+            search: 'Cari:',
+            paginate: {
+              first: "<i class='bi bi-chevron-double-left'></i>",
+              previous: "<i class='bi bi-chevron-left'></i>",
+              next: "<i class='bi bi-chevron-right'></i>",
+              last: "<i class='bi bi-chevron-double-right'></i>"
+            }
+          },
+          dom: '<"item-table-toolbar"<"dt-length-wrap"l><"dt-filter-wrap"f><"dt-item-actions">>' +
+            '<"row"<"col-12"tr>>' +
+            '<"row align-items-center mt-3"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+          initComplete: function () {
+            $('.dt-item-actions').html(@json($isReadOnly ? '' : '<button class="btn btn-round btn-add" id="addItemButton" type="button">Tambah Item</button>'));
+            $('#addItemButton').on('click', function () { addItem(); });
+          }
+        });
+      }
+
+      function initItemSelect(select, defaults = {}) {
+        if (!window.jQuery || !$.fn.select2) return;
+
+        const selectedName = defaults.name || '';
+        if (selectedName) {
+          const option = new Option(selectedName, selectedName, true, true);
+          option.dataset.uom = defaults.unit || 'Unit';
+          option.dataset.price = defaults.unitPrice ?? 0;
+          select.appendChild(option);
+        }
+
+        $(select).select2({
+          ajax: {
+            url: itemSearchUrl,
+            dataType: 'json',
+            delay: 250,
+            data: params => ({ q: params.term || '' }),
+            processResults: data => data
+          },
+          dropdownParent: $('#itemDataTable').parent(),
+          minimumInputLength: 0,
+          placeholder: select.dataset.placeholder || 'Cari nama barang',
+          width: 'resolve'
+        });
+
+        $(select).on('select2:select', function (event) {
+          const selected = event.params.data || {};
+          const card = select.closest('.item-card');
+          card.querySelector('.item-unit').value = selected.uom || 'Unit';
+          card.querySelector('.item-unit-price').value = selected.price_per_unit ?? 0;
+          updateSummary();
+        });
+      }
+
       function wireItemCard(card) {
         card.querySelectorAll('.item-calc').forEach((input) => input.addEventListener('input', updateSummary));
+        wireUlasanCounter(card);
+        initItemSelect(card.querySelector('.item-name'), {
+          name: card.dataset.itemName || '',
+          unit: card.dataset.itemUnit || 'Unit',
+          unitPrice: card.dataset.itemPrice || 0
+        });
         const removeButton = card.querySelector('.remove-item');
+        const editButton = card.querySelector('.edit-item');
 
         if (isReadOnly) {
           removeButton.classList.add('d-none');
+          editButton.classList.add('d-none');
           card.querySelectorAll('input').forEach((input) => input.setAttribute('readonly', 'readonly'));
           card.querySelectorAll('select').forEach((select) => select.setAttribute('disabled', 'disabled'));
           return;
         }
 
+        editButton.addEventListener('click', function () {
+          $(card.querySelector('.item-name')).select2('open');
+        });
+
         removeButton.addEventListener('click', function () {
-          card.remove();
+          if (itemDataTable) {
+            itemDataTable.row(card).remove().draw(false);
+          } else {
+            card.remove();
+          }
           updateItemIndices();
           updateSummary();
-          if (!itemList.children.length) addItem({ name: '', unit: 'Unit', orderQty: 0, unitPrice: 0, receivedQty: 0, notes: '' });
+          if (!getItemRows().length) addItem({ name: '', unit: 'Unit', orderQty: 0, unitPrice: 0, receivedQty: 0, notes: '' });
         });
       }
 
       function addItem(defaults = {}) {
         const card = itemTemplate.content.firstElementChild.cloneNode(true);
-        const unitSelect = card.querySelector('.item-unit');
+        const unitInput = card.querySelector('.item-unit');
 
-        if (defaults.unit && !Array.from(unitSelect.options).some((option) => option.value === defaults.unit)) {
-          unitSelect.add(new Option(defaults.unit, defaults.unit));
-        }
-
-        card.querySelector('.item-name').value = defaults.name || '';
-        unitSelect.value = defaults.unit || 'Unit';
+        card.dataset.itemName = defaults.name || '';
+        card.dataset.itemUnit = defaults.unit || 'Unit';
+        card.dataset.itemPrice = defaults.unitPrice ?? 0;
+        unitInput.value = defaults.unit || 'Unit';
         card.querySelector('.item-order-qty').value = defaults.orderQty ?? 0;
         card.querySelector('.item-unit-price').value = defaults.unitPrice ?? 0;
         card.querySelector('.item-received-qty').value = defaults.receivedQty ?? 0;
         card.querySelector('.item-notes').value = defaults.notes || '';
-        itemList.appendChild(card);
+        if (itemDataTable) {
+          itemDataTable.row.add(card).draw(false);
+        } else {
+          itemList.appendChild(card);
+        }
         wireItemCard(card);
         updateItemIndices();
         updateSummary();
       }
 
-      if (addItemButton) {
-        addItemButton.addEventListener('click', function () { addItem(); });
-      }
       musterInputs.forEach((input) => input.addEventListener('input', updateMusterSummary));
+      wireUlasanCounter();
+      initItemDataTable();
+
+      document.querySelectorAll('[data-borang-target]').forEach((button) => {
+        button.addEventListener('click', () => showBorangPage(button.dataset.borangTarget));
+      });
+
+      document.querySelectorAll('[data-borang-next], [data-borang-prev]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const currentPage = button.closest('[data-borang-page]')?.dataset.borangPage;
+          const targetPage = button.dataset.borangNext || button.dataset.borangPrev;
+          if (button.dataset.borangNext && !validateVisiblePage(currentPage)) return;
+          showBorangPage(targetPage);
+          window.scrollTo({ top: document.querySelector('.borang-menu').offsetTop - 90, behavior: 'smooth' });
+        });
+      });
+
+      if (form) {
+        form.addEventListener('invalid', function (event) {
+          const page = event.target.closest('[data-borang-page]');
+          if (page) showBorangPage(page.dataset.borangPage);
+        }, true);
+      }
 
       // Client-side Validation Handler
-      const form = document.querySelector('form[action$="store"]');
       if (form && !isReadOnly) {
         // Real-time input validation to remove is-invalid class as user types/interacts
         form.querySelectorAll('input, textarea, select').forEach(input => {
@@ -528,6 +815,11 @@
         }, true);
 
         form.addEventListener('submit', function (event) {
+          if (itemDataTable) {
+            itemDataTable.page.len(-1).draw();
+            updateItemIndices();
+          }
+
           const clientErrorAlert = document.getElementById('clientErrorAlert');
           const clientErrorList = document.getElementById('clientErrorList');
           clientErrorList.innerHTML = '';
@@ -537,7 +829,7 @@
           const errors = [];
           
           // 1. Check all standard required inputs in step 1 & step 4
-          const requiredInputs = form.querySelectorAll('input[required]:not(.item-calc):not(.item-name), textarea[required]');
+          const requiredInputs = form.querySelectorAll('input[required]:not(.item-calc):not(.item-name):not(.item-unit), textarea[required]');
           requiredInputs.forEach(input => {
             const labelText = input.previousElementSibling ? input.previousElementSibling.textContent.replace(' *', '').trim() : input.name;
             if (!input.value.trim()) {
@@ -546,6 +838,37 @@
               errors.push(`${labelText} wajib diisi.`);
             } else {
               input.classList.remove('is-invalid');
+            }
+          });
+
+          form.querySelectorAll('.date-input').forEach(input => {
+            const labelText = input.previousElementSibling ? input.previousElementSibling.textContent.replace(' *', '').trim() : input.name;
+            const parsedDate = parseDisplayDate(input.value.trim());
+            input.setCustomValidity('');
+            if (!parsedDate) {
+              input.classList.add('is-invalid');
+              input.setCustomValidity('Sila masukkan tarikh dalam format dd/mm/yyyy.');
+              isValid = false;
+              errors.push(`${labelText} mesti dalam format dd/mm/yyyy.`);
+            } else if (parsedDate < today) {
+              input.classList.add('is-invalid');
+              input.setCustomValidity('Tarikh tidak boleh sebelum hari ini.');
+              isValid = false;
+              errors.push(`${labelText} tidak boleh sebelum hari ini.`);
+            } else {
+              input.classList.remove('is-invalid');
+            }
+          });
+
+          form.querySelectorAll('.ulasan-field').forEach(textarea => {
+            updateWordCounter(textarea);
+            const maxWords = Number(textarea.dataset.maxWords || 250);
+            if (countWords(textarea.value) > maxWords) {
+              textarea.classList.add('is-invalid');
+              isValid = false;
+              errors.push('Ulasan / Catatan tidak boleh melebihi 250 patah perkataan.');
+            } else {
+              textarea.classList.remove('is-invalid');
             }
           });
 
@@ -563,7 +886,7 @@
           });
 
           // 3. Check dynamically added items
-          const itemCards = itemList.querySelectorAll('.item-card');
+          const itemCards = getItemRows();
           if (itemCards.length === 0) {
             isValid = false;
             errors.push('Sila tambah sekurang-kurangnya satu item pesanan.');
@@ -609,6 +932,9 @@
           if (!isValid) {
             event.preventDefault();
             event.stopPropagation();
+            const firstInvalid = form.querySelector('.is-invalid');
+            const invalidPage = firstInvalid?.closest('[data-borang-page]');
+            if (invalidPage) showBorangPage(invalidPage.dataset.borangPage);
             
             // Build error list
             errors.forEach(err => {

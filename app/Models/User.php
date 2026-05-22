@@ -41,7 +41,6 @@ class User extends Authenticatable
         'username',
         'grade',
         'institution',
-        'avatar',
     ];
 
     /**

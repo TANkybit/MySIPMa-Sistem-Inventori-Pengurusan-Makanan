@@ -1749,7 +1749,7 @@
                         <div class="card text-center h-100">
                             <div class="card-body">
                                 <div class="position-relative d-inline-block mb-3">
-                                    <img src="{{ auth()->user()?->avatar ? asset('storage/' . auth()->user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()?->name ?? 'Pengarah HQ') . '&background=1a5632&color=fff&size=150' }}"
+                                    <img src="{{ auth()->user()?->image ? asset('storage/' . auth()->user()->image) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()?->name ?? 'Pengarah HQ') . '&background=1a5632&color=fff&size=150' }}"
                                         alt="Profile Picture" class="rounded-circle img-thumbnail" id="profileAvatar"
                                         style="width: 150px; height: 150px; object-fit: cover;">
                                     <button

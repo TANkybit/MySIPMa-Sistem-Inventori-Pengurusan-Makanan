@@ -31,6 +31,52 @@
         transform: scale(1.02);
     }
 
+    @media (min-width: 1200px) {
+      .header .container > .logo-glow,
+      .header .container > .d-xl-flex {
+        position: relative;
+        z-index: 2;
+      }
+
+      .header .navmenu {
+        left: 50%;
+        position: absolute;
+        transform: translateX(-50%);
+      }
+    }
+
+    .btn-custom {
+      background: #10b981;
+      color: #0f172a;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 24px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+
+    .btn-custom:hover {
+      background: #0ea5e9;
+      color: #fff;
+      transform: scale(1.05);
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    .btn-logout:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #fff;
+    }
+
+    .profile-nav-link.active {
+      color: #10b981 !important;
+    }
+
     /* Full height layout */
     html, body {
       height: 100%;
@@ -317,30 +363,46 @@
 
 <body class="profile-page">
 
-  <header id="header" class="header d-flex align-items-center sticky-top">
+  <header id="header" class="header d-flex align-items-center sticky-top"
+    style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
     <div class="container position-relative d-flex align-items-center justify-content-between">
+      <a href="{{ route('index') }}" class="logo-glow d-flex align-items-center me-auto me-xl-0">
+        <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" style="height: 55px; width: auto;"
+          alt="MySIPMa logo">
+      </a>
 
-    <a href="{{ route('index') }}" class="logo-glow d-flex align-items-center me-auto me-xl-0">
-    <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" 
-         style="height: 55px; width: auto;"
-         alt="MySIPMa logo">
-</a>
-
-      <nav id="navmenu" class="navmenu mx-auto">
-        <ul class="d-flex align-items-center list-unstyled">
-          <li><a href="{{ route('index') }}#hero">Laman Utama</a></li>
-          <li><a href="{{ route('index') }}#about">Tentang Kami</a></li>
-          <li><a href="{{ route('index') }}#contact">Hubungi Kami</a></li>
-          <li><a href="{{ route('profile') }}" class="active">Profil</a></li>
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="{{ route('user.dashboard') }}"
+              class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Dashboard</a></li>
+          <li><a href="{{ route('user.senarai.inden') }}"
+              class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
+          <li><a href="{{ route('user.pengesahan.inden') }}"
+              class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
+          <li><a href="{{ route('borang.inden') }}"
+              class="{{ request()->routeIs('borang.inden') ? 'active' : '' }}">Borang Inden</a></li>
         </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
-      <div class="header-social-links d-flex align-items-center ms-auto">
-        <a href="https://x.com/penjaramalaysia" target="_blank"><i class="bi bi-twitter-x"></i></a>
-        <a href="https://www.facebook.com/jabatanpenjaramalaysia/" target="_blank"><i class="bi bi-facebook"></i></a>
-        <a href="https://www.instagram.com/jabatanpenjaramalaysia" target="_blank"><i class="bi bi-instagram"></i></a>
-        <a href="https://www.youtube.com/@pridetv9182" target="_blank"><i class="bi bi-youtube"></i></a>
-        <i class="mobile-nav-toggle bi bi-list ms-3"></i>
+      <div class="d-none d-xl-flex align-items-center gap-3">
+        <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3"
+          style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'"
+          onmouseout="this.style.color='white'">
+          <i class="bi bi-bell-fill"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+            style="font-size: 0.65rem;">
+            {{ $pendingApprovals ?? 0 }}
+            <span class="visually-hidden">Inden belum disah</span>
+          </span>
+        </a>
+        <a href="{{ route('profile') }}" class="profile-nav-link active text-decoration-none" style="transition: color 0.3s;"><i
+            class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}</a>
+        <form action="{{ route('logout') }}" method="POST" class="d-inline">
+          @csrf
+          <button type="submit" class="btn btn-custom btn-logout btn-sm px-3 py-2"><i
+              class="bi bi-box-arrow-right me-2"></i>Log Keluar</button>
+        </form>
       </div>
     </div>
   </header>

@@ -8,6 +8,31 @@ use Illuminate\Support\Facades\Log;
 
 class ItemController extends Controller
 {
+    public function search(Request $request)
+    {
+        $search = trim((string) $request->input('q', ''));
+
+        $items = Item::query()
+            ->select(['id', 'name', 'uom', 'price_per_unit'])
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->orderBy('name')
+            ->limit(20)
+            ->get()
+            ->map(fn ($item) => [
+                'id' => $item->id,
+                'text' => $item->name,
+                'name' => $item->name,
+                'uom' => $item->uom ?: 'Unit',
+                'price_per_unit' => (float) ($item->price_per_unit ?? 0),
+            ]);
+
+        return response()->json([
+            'results' => $items,
+        ]);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

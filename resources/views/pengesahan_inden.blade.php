@@ -361,9 +361,6 @@
         border-color: var(--border) !important;
         color: var(--muted) !important;
     }
-    .page-item.previous.disabled {
-        display: none !important;
-    }
     .page-item .page-link {
         background-color: var(--surface-soft) !important;
         border-color: var(--border) !important;
@@ -496,7 +493,12 @@
     $(document).ready(function() {
         $('#pengesahanIndenTable').DataTable({
             pageLength: 5,
-            lengthChange: false,
+            pagingType: 'full_numbers',
+            lengthChange: true,
+            lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
+            dom: '<"row align-items-center mb-3"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+                '<"row"<"col-sm-12"tr>>' +
+                '<"row align-items-center mt-3"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
             language: {
                 url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/ms.json',
                 emptyTable: "Tiada data tersedia",
@@ -505,8 +507,8 @@
                 lengthMenu: "Papar _MENU_ rekod",
                 search: "Cari:",
                 paginate: {
-                    first: "Pertama",
-                    last: "Terakhir",
+                    first: "<i class='bi bi-chevron-double-left'></i>",
+                    last: "<i class='bi bi-chevron-double-right'></i>",
                     next: "<i class='bi bi-chevron-right'></i>",
                     previous: "<i class='bi bi-chevron-left'></i>"
                 }

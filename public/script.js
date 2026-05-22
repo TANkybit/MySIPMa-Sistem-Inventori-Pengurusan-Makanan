@@ -4218,8 +4218,16 @@ class PrisonSystem {
         // Initialize DataTable
         $(table).DataTable({
             responsive: true,
+            pagingType: 'full_numbers',
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/ms.json'
+                url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/ms.json',
+                lengthMenu: 'Papar _MENU_ rekod',
+                paginate: {
+                    first: '<i class="fas fa-angle-double-left"></i>',
+                    previous: '<i class="fas fa-angle-left"></i>',
+                    next: '<i class="fas fa-angle-right"></i>',
+                    last: '<i class="fas fa-angle-double-right"></i>'
+                }
             },
             pageLength: 10,
             lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Semua"]],

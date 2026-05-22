@@ -7,6 +7,7 @@ use App\Models\Approval;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -60,6 +61,35 @@ class DashboardController extends Controller
 
     public function simpanBorangInden(Request $request)
     {
+        foreach (['tarikh_pesanan', 'tarikh_pembekal'] as $dateField) {
+            if ($request->filled($dateField)) {
+                try {
+                    $dateValue = trim($request->input($dateField));
+                    $parsedDate = Carbon::createFromFormat('d/m/Y', $dateValue);
+                    if ($parsedDate->format('d/m/Y') !== $dateValue) {
+                        continue;
+                    }
+
+                    $request->merge([
+                        $dateField => $parsedDate->format('Y-m-d'),
+                    ]);
+                } catch (\Throwable $e) {
+                    // Let Laravel's date validation return the field-level error.
+                }
+            }
+        }
+
+        $maxUlasanWords = function ($attribute, $value, $fail) {
+            if (!$value) {
+                return;
+            }
+
+            $wordCount = str_word_count(trim(strip_tags($value)));
+            if ($wordCount > 250) {
+                $fail('Ulasan / Catatan tidak boleh melebihi 250 patah perkataan.');
+            }
+        };
+
         $validated = $request->validate([
             'no_pesanan' => ['required', 'string', 'max:100'],
             'no_kontrak' => ['required', 'string', 'max:100'],
@@ -75,13 +105,13 @@ class DashboardController extends Controller
             'parol' => ['required', 'integer', 'min:0'],
             'muster_penuh' => ['required', 'integer', 'min:0'],
             'tarikh_pembekal' => ['required', 'date'],
-            'catatan_inden' => ['nullable', 'string'],
+            'catatan_inden' => ['nullable', 'string', $maxUlasanWords],
             'items' => ['required', 'array', 'min:1'],
             'items.*.name' => ['required', 'string', 'max:255'],
             'items.*.unit' => ['required', 'string', 'max:50'],
             'items.*.orderQty' => ['required', 'numeric', 'min:0'],
             'items.*.unitPrice' => ['required', 'numeric', 'min:0'],
-            'items.*.notes' => ['nullable', 'string'],
+            'items.*.notes' => ['nullable', 'string', $maxUlasanWords],
         ], [
             'no_pesanan.required' => 'No. Pesanan wajib diisi.',
             'no_kontrak.required' => 'No. Kontrak wajib diisi.',
