@@ -238,12 +238,13 @@ class DashboardController extends Controller
                 $unitPrice = (float) ($item['unitPrice'] ?? 0);
                 $lineTotal = $quantity * $unitPrice;
 
+                $uomId = DB::table('uom')->where('code', $item['unit'] ?? 'Unit')->value('id');
                 $itemId = DB::table('items')->where('name', $item['name'])->value('id')
                     ?: DB::table('items')->insertGetId([
                         'name' => $item['name'],
                         'price_per_unit' => $unitPrice,
                         'current_quantity' => $quantity,
-                        'uom' => $item['unit'] ?? 'Unit',
+                        'uom_id' => $uomId,
                         'status' => 1,
                         'created_at' => $today,
                         'created_by' => Auth::id(),
@@ -366,6 +367,8 @@ class DashboardController extends Controller
                 ->leftJoin('approvals as a', 'o.id', '=', 'a.order_id')
                 ->leftJoin('users as u', 'o.created_by', '=', 'u.id')
                 ->leftJoin('positions as p', 'u.position_id', '=', 'p.id')
+                ->leftJoin('uom as uom1', 'ci.uom_id', '=', 'uom1.id')
+                ->leftJoin('uom as uom2', 'it.uom_id', '=', 'uom2.id')
                 ->where('o.id', $order->id)
                 ->select([
                     'o.id as inden_id',
@@ -389,7 +392,7 @@ class DashboardController extends Controller
                     'o.remarks as catatan_inden',
                     'oi.id as item_inden_id',
                     'it.name as nama_barang',
-                    DB::raw('COALESCE(ci.uom, it.uom) as unit'),
+                    DB::raw("COALESCE(uom1.code, uom2.code, 'Unit') as unit"),
                     'oi.ordered_quantity as kuantiti_dipesan',
                     'oi.unit_price as harga_seunit',
                     'oi.ordered_total_price as jumlah_harga_item',
@@ -428,12 +431,13 @@ class DashboardController extends Controller
     {
         $items = DB::table('items')
             ->leftJoin('categories', 'items.category_id', '=', 'categories.id')
-            ->leftJoin('ceiling_limits', 'items.ceiling_limits', '=', 'ceiling_limits.id')
+            ->leftJoin('ceiling_limits', 'items.ceiling_limit_id', '=', 'ceiling_limits.id')
+            ->leftJoin('uom', 'items.uom_id', '=', 'uom.id')
             ->select([
                 'items.id',
                 'items.name',
                 'items.current_quantity',
-                'items.uom',
+                'uom.code as uom_code',
                 'items.price_per_unit',
                 'items.status',
                 'categories.name as category',
@@ -454,7 +458,7 @@ class DashboardController extends Controller
                     'category' => $item->category ?? 'Tanpa Kategori',
                     'stock' => $stock,
                     'minStock' => $minStock,
-                    'unit' => $item->uom,
+                    'unit' => $item->uom_code ?? 'Unit',
                     'price' => (float) ($item->price_per_unit ?? 0),
                     'status' => ((int) $item->status) === 1 ? 'active' : 'inactive',
                     'stockPercentage' => $percentage,
@@ -474,12 +478,13 @@ class DashboardController extends Controller
     {
         $items = DB::table('items')
             ->leftJoin('categories', 'items.category_id', '=', 'categories.id')
-            ->leftJoin('ceiling_limits', 'items.ceiling_limits', '=', 'ceiling_limits.id')
+            ->leftJoin('ceiling_limits', 'items.ceiling_limit_id', '=', 'ceiling_limits.id')
+            ->leftJoin('uom', 'items.uom_id', '=', 'uom.id')
             ->select([
                 'items.id',
                 'items.name',
                 'items.current_quantity',
-                'items.uom',
+                'uom.code as uom_code',
                 'items.price_per_unit',
                 'items.status',
                 'categories.name as category',
@@ -521,7 +526,7 @@ class DashboardController extends Controller
                         'text' => $riskText,
                         'class' => $riskClass
                     ],
-                    'unit' => $item->uom,
+                    'unit' => $item->uom_code ?? 'Unit',
                 ];
             })
             ->sortBy(function ($item) {

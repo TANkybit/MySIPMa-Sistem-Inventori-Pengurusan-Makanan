@@ -1584,7 +1584,7 @@
                                     <tr>
                                         <th>BIL</th>
                                         <th>Nama Syarikat</th>
-                                        <th>PIC</th>
+                                        <th>PIC <i class="fas fa-info-circle text-muted ms-1" style="cursor:help;" data-bs-toggle="tooltip" data-bs-placement="top" title="Orang untuk dihubungi"></i></th>
                                         <th>No. Telefon</th>
                                         <th>Emel</th>
                                         <th>Negeri</th>
@@ -1771,8 +1771,8 @@
                             <div class="card-footer bg-transparent border-0 pb-4">
                                 <div class="row text-center mb-3">
                                     <div class="col-6 border-end">
-                                        <h5 class="mb-0">{{ auth()->user()?->grade ?? 'N/A' }}</h5>
-                                        <small class="text-muted">Gred</small>
+                                        <h5 class="mb-0">Aktif</h5>
+                                        <small class="text-muted">Status</small>
                                     </div>
                                     <div class="col-6">
                                         <h5 class="mb-0">Aktif</h5>
@@ -1804,14 +1804,14 @@
                                     </li>
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
-                                        <span><i class="fas fa-user-circle me-2 text-primary"></i>Nama</span>
-                                        <span class="fw-medium">{{ auth()->user()?->username ?? 'pengarah_hq' }}</span>
+                                        <span><i class="fas fa-phone me-2 text-primary"></i>No. Telefon</span>
+                                        <span class="fw-medium">{{ auth()->user()?->phone_number ?? '-' }}</span>
                                     </li>
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
                                         <span><i class="fas fa-building me-2 text-primary"></i>Institusi</span>
                                         <span
-                                            class="fw-medium" id="displayProfileInstitution">{{ optional(($institutions ?? collect())->firstWhere('id', auth()->user()?->institution_id))->name ?? auth()->user()?->institution ?? 'Ibu Pejabat Penjara' }}</span>
+                                            class="fw-medium" id="displayProfileInstitution">{{ auth()->user()->institution->name ?? 'Ibu Pejabat Penjara' }}</span>
                                     </li>
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
@@ -1844,18 +1844,6 @@
                                             <label class="form-label">Email</label>
                                             <input type="email" class="form-control" name="email"
                                                 value="{{ auth()->user()?->email }}" id="inputProfileEmail" required>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Username</label>
-                                            <input type="text" class="form-control" name="username"
-                                                value="{{ auth()->user()?->username }}" id="inputProfileUsername">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Gred</label>
-                                            <input type="text" class="form-control" name="grade"
-                                                value="{{ auth()->user()?->grade }}" id="inputProfileGrade">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -2525,9 +2513,11 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Unit (UOM)</label>
-                                <select class="form-select" name="uom" id="item_uom_select" required>
+                                <select class="form-select" name="uom_id" id="item_uom_select" required>
                                     <option value="">Pilih Unit</option>
-                                    <!-- Populated dynamically from database -->
+                                    @foreach($uoms as $uom)
+                                        <option value="{{ $uom->id }}">{{ $uom->code }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="col-md-4">

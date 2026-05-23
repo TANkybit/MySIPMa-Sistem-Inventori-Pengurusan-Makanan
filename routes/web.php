@@ -56,8 +56,12 @@ Route::get('/welcome', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/admin', function () {
         $institutions = \App\Models\Institution::orderBy('name')->get();
+        $positions = \App\Models\Position::orderBy('name')->get();
+        $roles = \App\Models\Role::orderBy('role_name')->get();
+        $categories = \App\Models\Category::orderBy('name')->get();
+        $uoms = \App\Models\Uom::orderBy('code')->get();
 
-        return view('admin_dashboard', compact('institutions'));
+        return view('admin_dashboard', compact('institutions', 'positions', 'roles', 'categories', 'uoms'));
     })->name('admin.dashboard');
 
     Route::get('/dashboard/critical-stock', [DashboardController::class, 'criticalStock'])->name('dashboard.critical-stock');

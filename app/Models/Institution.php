@@ -9,20 +9,33 @@ class Institution extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
-        'name',
+        'district_id',
         'state_id',
+        'name',
+        'address',
+        'postcode',
         'type',
         'capacity',
         'status',
-        'address',
-        'phone',
-        'postcode',
-        'district_id',
+        'created_by',
+        'updated_by',
     ];
 
     public function users()
     {
         return $this->hasMany(User::class);
+    }
+
+    public function district()
+    {
+        return $this->belongsTo(District::class);
+    }
+
+    public function state()
+    {
+        return $this->belongsTo(State::class);
     }
 }

@@ -49,10 +49,25 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
+        $institutionName = $user->institution_id
+            ? \Illuminate\Support\Facades\DB::table('institutions')->where('id', $user->institution_id)->value('name')
+            : '-';
+
+        $positionName = $user->position_id
+            ? \Illuminate\Support\Facades\DB::table('positions')->where('id', $user->position_id)->value('name')
+            : '-';
+
+        $roleName = $user->role_id
+            ? \Illuminate\Support\Facades\DB::table('roles')->where('id', $user->role_id)->value('role_name')
+            : '-';
+
         return view('profile', [
             'user' => $user,
             'avatarUrl' => $this->getAvatarUrl($user),
             'pendingApprovals' => Approval::where('status', 0)->count(),
+            'institutionName' => $institutionName,
+            'positionName' => $positionName,
+            'roleName' => $roleName,
         ]);
     }
 
@@ -60,10 +75,17 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
+        $institutions = \App\Models\Institution::orderBy('name')->get();
+        $positions = \App\Models\Position::orderBy('name')->get();
+        $roles = \App\Models\Role::orderBy('role_name')->get();
+
         return view('update', [
             'user' => $user,
             'avatarUrl' => $this->getAvatarUrl($user),
             'pendingApprovals' => Approval::where('status', 0)->count(),
+            'institutions' => $institutions,
+            'positions' => $positions,
+            'roles' => $roles,
         ]);
     }
 

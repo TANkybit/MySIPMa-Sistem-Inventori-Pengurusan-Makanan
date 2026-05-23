@@ -24,7 +24,8 @@ class PrisonSystem {
                 { name: 'Event Listeners', fn: () => this.initEventListeners() },
                 { name: 'Dashboard Stats', fn: () => this.updateDashboardStats() },
                 { name: 'Messages', fn: () => this.loadMessages() },
-                { name: 'UOMs', fn: () => this.loadBackendUoms() }
+                { name: 'UOMs', fn: () => this.loadBackendUoms() },
+                { name: 'Tooltips', fn: () => this.initTooltips() }
             ];
 
             initSteps.forEach(step => {
@@ -2421,6 +2422,9 @@ class PrisonSystem {
 
         tableBody.innerHTML = '';
 
+        // Strip numeric prefix like "2.1 ", "7.23 " from item names
+        const cleanName = (name) => name.replace(/^\d+(\.\d+)*\s+/, '');
+
         // Combine items and rawMaterials for the master list
         const allItems = window.prisonData.items || [];
         const items = allItems.filter(item =>
@@ -2431,8 +2435,8 @@ class PrisonSystem {
         if (window.prisonData.rawMaterials) {
             window.prisonData.rawMaterials.forEach(material => {
                 items.push({
-                    name: material.name,
-                    category: material.category, // 'makanan'
+                    name: cleanName(material.name),
+                    category: material.category,
                     subcategory: material.subcategory || '-',
                     ceiling_limit: material.ceiling_limit || '-',
                     price: material.price ? 'RM ' + parseFloat(material.price).toFixed(2) : '-',
@@ -2447,7 +2451,7 @@ class PrisonSystem {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${index + 1}</td>
-                <td><div class="fw-medium">${item.name}</div></td>
+                <td><div class="fw-medium">${cleanName(item.name)}</div></td>
                 <td>${item.category}</td>
                 <td>${item.subcategory || '-'}</td>
                 <td>${item.ceiling_limit || '-'}</td>
@@ -2464,6 +2468,15 @@ class PrisonSystem {
         });
 
         this.initDataTable('#item-list-table');
+    }
+
+    initTooltips() {
+        // Initialize Bootstrap 5 tooltips for all elements with data-bs-toggle="tooltip"
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+            if (!bootstrap.Tooltip.getInstance(el)) {
+                new bootstrap.Tooltip(el, { trigger: 'hover' });
+            }
+        });
     }
 
     initCalendar() {
@@ -4218,16 +4231,8 @@ class PrisonSystem {
         // Initialize DataTable
         $(table).DataTable({
             responsive: true,
-            pagingType: 'full_numbers',
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/ms.json',
-                lengthMenu: 'Papar _MENU_ rekod',
-                paginate: {
-                    first: '<i class="fas fa-angle-double-left"></i>',
-                    previous: '<i class="fas fa-angle-left"></i>',
-                    next: '<i class="fas fa-angle-right"></i>',
-                    last: '<i class="fas fa-angle-double-right"></i>'
-                }
+                url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/ms.json'
             },
             pageLength: 10,
             lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Semua"]],

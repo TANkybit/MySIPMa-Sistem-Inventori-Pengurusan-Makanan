@@ -14,17 +14,23 @@ class Item extends Model
     protected $fillable = [
         'category_id',
         'subcategories_id',
+        'ceiling_limit_id',
+        'uom_id',
         'name',
         'price_per_unit',
         'current_quantity',
-        'uom',
         'status',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function uom()
+    {
+        return $this->belongsTo(Uom::class);
     }
 }

@@ -664,36 +664,9 @@
                     <label>Institusi:</label>
                     <select id="institusiInput" required>
                         <option value="">-- Pilih Institusi --</option>
-                        <option value="Pusat Koreaksional Paris">Pusat Koreaksional Paris</option>
-                        <option value="Penjara Sungai Petani, Kedah">Penjara Sungai Petani, Kedah</option>
-                        <option value="Penjara Alor Setar, Kedah">Penjara Alor Setar, Kedah</option>
-                        <option value="Penjara Pokok Sena, Kedah">Penjara Pokok Sena, Kedah</option>
-                        <option value="Penjara Reman Pulau Pinang">Penjara Reman Pulau Pinang</option>
-                        <option value="Penjara Sebarang Perai, Pulau Pinang">Penjara Sebarang Perai, Pulau Pinang</option>
-                        <option value="Penjara Taiping, Perak">Penjara Taiping, Perak</option>
-                        <option value="Pusat Koreaksional Kamunting, Perak">Pusat Koreaksional Kamunting, Perak</option>
-                        <option value="Pusat Koreaksional Batu Gajah, Perak">Pusat Koreaksional Batu Gajah, Perak</option>
-                        <option value="Penjara Tapah, Perak">Penjara Tapah, Perak</option>
-                        <option value="Penjara Kajang, Selangor">Penjara Kajang, Selangor</option>
-                        <option value="Penjara Wanita Kajang, Selangor">Penjara Wanita Kajang, Selangor</option>
-                        <option value="Penjara Sungai Buloh, Selangor">Penjara Sungai Buloh, Selangor</option>
-                        <option value="Penjara Pusat Alam, Selangor">Penjara Pusat Alam, Selangor</option>
-                        <option value="Penjara Seremban, Negeri Sembilan">Penjara Seremban, Negeri Sembilan</option>
-                        <option value="Institut Pemulihan Dadah Jelabu, Negeri Sembilan">Institut Pemulihan Dadah Jelabu, Negeri Sembilan</option>
-                        <option value="Sekolah Henry Gurney Telok Mas, Melaka">Sekolah Henry Gurney Telok Mas, Melaka</option>
-                        <option value="Penjara Dusin Dato' Murad, Melaka">Penjara Dusin Dato' Murad, Melaka</option>
-                        <option value="Penjara Sungai Udang, Melaka">Penjara Sungai Udang, Melaka</option>
-                        <option value="Pusat Koreaksional Jasin, Melaka">Pusat Koreaksional Jasin, Melaka</option>
-                        <option value="Pusat Koreaksional Muar, Johor">Pusat Koreaksional Muar, Johor</option>
-                        <option value="Penjara Simpang Renggam, Johor">Penjara Simpang Renggam, Johor</option>
-                        <option value="Penjara Kluang, Johor">Penjara Kluang, Johor</option>
-                        <option value="Pusat Koreaksional Johor Bahru, Johor">Pusat Koreaksional Johor Bahru, Johor</option>
-                        <option value="Penjara Penor, Pahang">Penjara Penor, Pahang</option>
-                        <option value="Penjara Bentong, Pahang">Penjara Bentong, Pahang</option>
-                        <option value="Penjara Marang, Terengganu">Penjara Marang, Terengganu</option>
-                        <option value="Pusat Koreaksional Dungun, Terengganu">Pusat Koreaksional Dungun, Terengganu</option>
-                        <option value="Penjara Kota Bharu, Kelantan">Penjara Kota Bharu, Kelantan</option>
-                        <option value="Pusat Pemulihan Akhlak Machang, Kelantan">Pusat Pemulihan Akhlak Machang, Kelantan</option>
+                        @foreach($institutions as $inst)
+                            <option value="{{ $inst->id }}">{{ $inst->name }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -701,9 +674,9 @@
                     <label>Jawatan:</label>
                     <select id="jawatanInput" required>
                         <option value="">-- Pilih Jawatan --</option>
-                        <option value="Pegawai Stor">Pegawai Stor</option>
-                        <option value="Pegawai Pengesah">Pegawai Pengesah</option>
-                        <option value="Pegawai Penerima">Pegawai Penerima</option>
+                        @foreach($positions as $pos)
+                            <option value="{{ $pos->id }}">{{ $pos->name }}</option>
+                        @endforeach
                     </select>
                 </div>
                 
@@ -798,9 +771,9 @@
         .then(data => {
           document.getElementById('namaInput').value = data.name || '';
           document.getElementById('emailInput').value = data.email || '';
-          document.getElementById('institusiInput').value = data.institution || '';
-          document.getElementById('jawatanInput').value = data.grade || '';
-          document.getElementById('perananInput').value = data.username || '';
+          document.getElementById('institusiInput').value = data.institution_id || '';
+          document.getElementById('jawatanInput').value = data.position_id || '';
+          document.getElementById('perananInput').value = data.role_id || '';
           document.getElementById('telefonInput').value = data.phone_number || '';
           
           // Display avatar if exists
@@ -936,9 +909,9 @@
 
     function handleUpdateProfile() {
       const nama = document.getElementById('namaInput').value.trim();
-      const institusi = document.getElementById('institusiInput').value.trim();
-      const jawatan = document.getElementById('jawatanInput').value.trim();
-      const peranan = document.getElementById('perananInput').value.trim();
+      const institusi_id = document.getElementById('institusiInput').value;
+      const jawatan_id = document.getElementById('jawatanInput').value;
+      const peranan_id = document.getElementById('perananInput').value;
       const telefon = document.getElementById('telefonInput').value.trim();
       const avatarFile = document.getElementById('avatarInput').files[0];
       
@@ -946,11 +919,11 @@
         showStatus('Sila isi nama!', 'error');
         return;
       }
-      if (!institusi) {
+      if (!institusi_id) {
         showStatus('Sila isi institusi!', 'error');
         return;
       }
-      if (!jawatan) {
+      if (!jawatan_id) {
         showStatus('Sila isi jawatan!', 'error');
         return;
       }
@@ -987,7 +960,7 @@
             return;
           }
           // After avatar upload succeeds, update profile info
-          updateProfileInfo(nama, institusi, jawatan, peranan, telefon);
+          updateProfileInfo(nama, institusi_id, jawatan_id, peranan_id, telefon);
         })
         .catch(err => {
           console.error('Avatar upload error:', err);
@@ -995,11 +968,11 @@
         });
       } else {
         // No avatar selected, just update profile info
-        updateProfileInfo(nama, institusi, jawatan, peranan, telefon);
+        updateProfileInfo(nama, institusi_id, jawatan_id, peranan_id, telefon);
       }
     }
 
-    function updateProfileInfo(nama, institusi, jawatan, peranan, telefon) {
+    function updateProfileInfo(nama, institusi_id, jawatan_id, peranan_id, telefon) {
       const email = document.getElementById('emailInput').value.trim();
       fetch('{{ route("profile.update") }}', {
         method: 'POST',
@@ -1011,7 +984,9 @@
         body: JSON.stringify({
           name: nama,
           email: email,
-          phone_number: telefon
+          phone_number: telefon,
+          institution_id: institusi_id ? parseInt(institusi_id) : null,
+          position_id: jawatan_id ? parseInt(jawatan_id) : null
         })
       })
       .then(response => {

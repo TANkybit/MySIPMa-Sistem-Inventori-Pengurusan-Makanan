@@ -433,15 +433,15 @@
                         </div>
                         <div class="info-item">
                             <label>Institusi:</label>
-                            <p id="displayInstitusi">{{ Auth::user()->institution ?? '-' }}</p>
+                            <p id="displayInstitusi">{{ $institutionName }}</p>
                         </div>
                         <div class="info-item">
                             <label>Jawatan:</label>
-                            <p id="displayJawatan">{{ Auth::user()->grade ?? '-' }}</p>
+                            <p id="displayJawatan">{{ $positionName }}</p>
                         </div>
                         <div class="info-item">
                             <label>Peranan:</label>
-                            <p id="displayPeranan">{{ Auth::user()->username ?? '-' }}</p>
+                            <p id="displayPeranan">{{ $roleName }}</p>
                         </div>
                         <div class="info-item">
                             <label>Telefon:</label>

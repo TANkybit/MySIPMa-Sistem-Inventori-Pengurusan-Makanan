@@ -8,9 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Supplier extends Model
 {
     use HasFactory;
+
     public $timestamps = false;
 
     protected $fillable = [
+        'district_id',
+        'state_id',
         'company_name',
         'contact_person',
         'email',
@@ -18,8 +21,6 @@ class Supplier extends Model
         'address',
         'postcode',
         'status',
-        'district_id',
-        'state_id',
         'created_by',
         'updated_by',
     ];

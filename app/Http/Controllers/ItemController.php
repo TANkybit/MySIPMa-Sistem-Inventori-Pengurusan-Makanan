@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ItemController extends Controller
@@ -13,18 +14,19 @@ class ItemController extends Controller
         $search = trim((string) $request->input('q', ''));
 
         $items = Item::query()
-            ->select(['id', 'name', 'uom', 'price_per_unit'])
+            ->leftJoin('uom', 'items.uom_id', '=', 'uom.id')
+            ->select(['items.id', 'items.name', 'uom.code as uom_code', 'items.price_per_unit'])
             ->when($search !== '', function ($query) use ($search) {
-                $query->where('name', 'like', "%{$search}%");
+                $query->where('items.name', 'like', "%{$search}%");
             })
-            ->orderBy('name')
+            ->orderBy('items.name')
             ->limit(20)
             ->get()
             ->map(fn ($item) => [
                 'id' => $item->id,
                 'text' => $item->name,
                 'name' => $item->name,
-                'uom' => $item->uom ?: 'Unit',
+                'uom' => $item->uom_code ?: 'Unit',
                 'price_per_unit' => (float) ($item->price_per_unit ?? 0),
             ]);
 
@@ -45,19 +47,16 @@ class ItemController extends Controller
         ]);
 
         try {
-            // Map string statuses to numbers if the DB expects it (e.g. 1 for active)
-            // But looking at schema, status is integer. Let's assume 1 for active, 0 for inactive.
             $statusVal = in_array(strtolower($validated['status']), ['active', 'aktif', '1']) ? 1 : 0;
+            $uomId = DB::table('uom')->where('code', $validated['uom'])->value('id');
 
             $item = Item::create([
                 'name' => $validated['name'],
                 'category_id' => $validated['category_id'],
                 'current_quantity' => $validated['current_quantity'],
-                'uom' => $validated['uom'],
+                'uom_id' => $uomId,
                 'price_per_unit' => $validated['price_per_unit'],
                 'status' => $statusVal,
-                'created_at' => now()->toDateString(),
-                'updated_at' => now()->toDateString(),
                 'created_by' => auth()->id() ?? 1,
             ]);
 

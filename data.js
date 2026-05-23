@@ -146,44 +146,1022 @@ const prisonData = {
         { id: 71, state_id: 9, name: 'Seberang Perai Tengah' },
         { id: 72, state_id: 9, name: 'Seberang Perai Selatan' },
 
-        // Selangor (id: 10)
-        { id: 73, state_id: 10, name: 'Gombak' },
-        { id: 74, state_id: 10, name: 'Hulu Langat' },
-        { id: 75, state_id: 10, name: 'Hulu Selangor' },
-        { id: 76, state_id: 10, name: 'Klang' },
-        { id: 77, state_id: 10, name: 'Kuala Langat' },
-        { id: 78, state_id: 10, name: 'Kuala Selangor' },
-        { id: 79, state_id: 10, name: 'Petaling' },
-        { id: 80, state_id: 10, name: 'Sabak Bernam' },
-        { id: 81, state_id: 10, name: 'Sepang' },
+        // Selangor (id: 12)
+        { id: 73, state_id: 12, name: 'Gombak' },
+        { id: 74, state_id: 12, name: 'Hulu Langat' },
+        { id: 75, state_id: 12, name: 'Hulu Selangor' },
+        { id: 76, state_id: 12, name: 'Klang' },
+        { id: 77, state_id: 12, name: 'Kuala Langat' },
+        { id: 78, state_id: 12, name: 'Kuala Selangor' },
+        { id: 79, state_id: 12, name: 'Petaling' },
+        { id: 80, state_id: 12, name: 'Sabak Bernam' },
+        { id: 81, state_id: 12, name: 'Sepang' },
 
-        // Terengganu (id: 11)
-        { id: 82, state_id: 11, name: 'Besut' },
-        { id: 83, state_id: 11, name: 'Dungun' },
-        { id: 84, state_id: 11, name: 'Hulu Terengganu' },
-        { id: 85, state_id: 11, name: 'Kemaman' },
-        { id: 86, state_id: 11, name: 'Kuala Terengganu' },
-        { id: 87, state_id: 11, name: 'Marang' },
-        { id: 88, state_id: 11, name: 'Setiu' }
+        // Terengganu (id: 13)
+        { id: 82, state_id: 13, name: 'Besut' },
+        { id: 83, state_id: 13, name: 'Dungun' },
+        { id: 84, state_id: 13, name: 'Hulu Terengganu' },
+        { id: 85, state_id: 13, name: 'Kemaman' },
+        { id: 86, state_id: 13, name: 'Kuala Terengganu' },
+        { id: 87, state_id: 13, name: 'Marang' },
+        { id: 88, state_id: 13, name: 'Setiu' },
+
+        // Wilayah Persekutuan (id: 14)
+        { id: 89, state_id: 14, name: 'Kuala Lumpur' },
+        { id: 90, state_id: 14, name: 'Labuan' },
+        { id: 91, state_id: 14, name: 'Putrajaya' }
     ],
 
     // Raw materials (Food)
     rawMaterials: [
-        { id: 1, name: 'Beras', category: 'makanan', foodType: 'bijirin', stock: 5000, unit: 'kg', minStock: 1000, price: 3.50, status: 'aktif', description: 'Beras tempatan gred A', lastUpdated: '2026-02-15' },
-        { id: 2, name: 'Minyak Masak', category: 'makanan', foodType: 'perasa', stock: 800, unit: 'liter', minStock: 200, price: 6.80, status: 'aktif', description: 'Minyak masak sawit', lastUpdated: '2026-02-14' },
-        { id: 3, name: 'Gula', category: 'makanan', foodType: 'perasa', stock: 1200, unit: 'kg', minStock: 300, price: 2.90, status: 'aktif', description: 'Gula putih halus', lastUpdated: '2026-02-13' },
-        { id: 4, name: 'Ayam', category: 'makanan', foodType: 'protein', stock: 400, unit: 'kg', minStock: 100, price: 9.50, status: 'aktif', description: 'Ayam sejuk beku', lastUpdated: '2026-02-15' },
-        { id: 5, name: 'Ikan Kembung', category: 'makanan', foodType: 'protein', stock: 300, unit: 'kg', minStock: 80, price: 12.00, status: 'aktif', description: 'Ikan kembung segar', lastUpdated: '2026-02-14' },
-        { id: 6, name: 'Sayur Campur', category: 'makanan', foodType: 'sayur', stock: 600, unit: 'kg', minStock: 150, price: 4.20, status: 'aktif', description: 'Campuran sayur-sayuran', lastUpdated: '2026-02-15' },
-        { id: 7, name: 'Telur', category: 'makanan', foodType: 'protein', stock: 5000, unit: 'unit', minStock: 1000, price: 0.45, status: 'aktif', description: 'Telur ayam gred A', lastUpdated: '2026-02-13' },
-        { id: 8, name: 'Susu', category: 'makanan', foodType: 'tenusu', stock: 400, unit: 'liter', minStock: 100, price: 5.20, status: 'aktif', description: 'Susu segar', lastUpdated: '2026-02-15' },
-        { id: 9, name: 'Mee', category: 'makanan', foodType: 'bijirin', stock: 800, unit: 'kg', minStock: 200, price: 3.80, status: 'aktif', description: 'Mee kuning', lastUpdated: '2026-02-14' },
-        { id: 10, name: 'Biskut', category: 'makanan', foodType: 'lain', stock: 200, unit: 'kotak', minStock: 50, price: 8.50, status: 'aktif', description: 'Biskut pelbagai rasa', lastUpdated: '2026-02-13' },
-        { id: 11, name: 'Daging Lembu', category: 'makanan', foodType: 'protein', stock: 250, unit: 'kg', minStock: 60, price: 35.00, status: 'aktif', description: 'Daging lembu sejuk beku', lastUpdated: '2026-02-14' },
-        { id: 12, name: 'Ikan Bilis', category: 'makanan', foodType: 'protein', stock: 150, unit: 'kg', minStock: 40, price: 18.00, status: 'aktif', description: 'Ikan bilis kering', lastUpdated: '2026-02-13' },
-        { id: 13, name: 'Kentang', category: 'makanan', foodType: 'sayur', stock: 400, unit: 'kg', minStock: 100, price: 3.20, status: 'aktif', description: 'Kentang segar', lastUpdated: '2026-02-15' },
-        { id: 14, name: 'Bawang', category: 'makanan', foodType: 'perasa', stock: 200, unit: 'kg', minStock: 50, price: 4.50, status: 'aktif', description: 'Bawang merah', lastUpdated: '2026-02-14' },
-        { id: 15, name: 'Garam', category: 'makanan', foodType: 'perasa', stock: 300, unit: 'kg', minStock: 75, price: 1.80, status: 'aktif', description: 'Garam masakan', lastUpdated: '2026-02-13' }
+        {
+            "id": 1,
+            "name": "DAGING LEMBU/KERBAU (BEKU)",
+            "category": "DAGING LEMBU/KERBAU (BEKU)",
+            "foodType": "pelbagai",
+            "stock": 2640,
+            "unit": "kg",
+            "minStock": 528,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 2,
+            "name": "2.1 Cencaru",
+            "category": "IKAN SEGAR (LAUT)",
+            "foodType": "pelbagai",
+            "stock": 5656,
+            "unit": "kg",
+            "minStock": 1131,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 3,
+            "name": "2.2 Kembung",
+            "category": "IKAN SEGAR (LAUT)",
+            "foodType": "pelbagai",
+            "stock": 3771,
+            "unit": "kg",
+            "minStock": 754,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 4,
+            "name": "2.3 Pelata",
+            "category": "IKAN SEGAR (LAUT)",
+            "foodType": "pelbagai",
+            "stock": 3771,
+            "unit": "kg",
+            "minStock": 754,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 5,
+            "name": "2.4 Sardin",
+            "category": "IKAN SEGAR (LAUT)",
+            "foodType": "pelbagai",
+            "stock": 3771,
+            "unit": "kg",
+            "minStock": 754,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 6,
+            "name": "2.5 Selar",
+            "category": "IKAN SEGAR (LAUT)",
+            "foodType": "pelbagai",
+            "stock": 3771,
+            "unit": "kg",
+            "minStock": 754,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 7,
+            "name": "TELUR AYAM (GRED B)",
+            "category": "TELUR AYAM (GRED B)",
+            "foodType": "pelbagai",
+            "stock": 75401,
+            "unit": "Biji",
+            "minStock": 15080,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 8,
+            "name": "a) Bayam Hijau",
+            "category": "SAYUR",
+            "foodType": "pelbagai",
+            "stock": 12065,
+            "unit": "kg",
+            "minStock": 2413,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 9,
+            "name": "b) Kobis Bulat",
+            "category": "SAYUR",
+            "foodType": "pelbagai",
+            "stock": 6033,
+            "unit": "kg",
+            "minStock": 1206,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 10,
+            "name": "c) Kobis Panjang",
+            "category": "SAYUR",
+            "foodType": "pelbagai",
+            "stock": 9049,
+            "unit": "kg",
+            "minStock": 1809,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 11,
+            "name": "d) Sawi Hijau",
+            "category": "SAYUR",
+            "foodType": "pelbagai",
+            "stock": 6033,
+            "unit": "kg",
+            "minStock": 1206,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 12,
+            "name": "e) Sawi Putih",
+            "category": "SAYUR",
+            "foodType": "pelbagai",
+            "stock": 6033,
+            "unit": "kg",
+            "minStock": 1206,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 13,
+            "name": "a) Bendi",
+            "category": "SAYUR",
+            "foodType": "pelbagai",
+            "stock": 7541,
+            "unit": "kg",
+            "minStock": 1508,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 14,
+            "name": "b) Kacang Buncis",
+            "category": "SAYUR",
+            "foodType": "pelbagai",
+            "stock": 3771,
+            "unit": "kg",
+            "minStock": 754,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 15,
+            "name": "c) Kacang Panjang",
+            "category": "SAYUR",
+            "foodType": "pelbagai",
+            "stock": 11311,
+            "unit": "kg",
+            "minStock": 2262,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 16,
+            "name": "d) Ketola",
+            "category": "SAYUR",
+            "foodType": "pelbagai",
+            "stock": 1886,
+            "unit": "kg",
+            "minStock": 377,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 17,
+            "name": "g) Kundur",
+            "category": "SAYUR",
+            "foodType": "pelbagai",
+            "stock": 1886,
+            "unit": "kg",
+            "minStock": 377,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 18,
+            "name": "e) Labu Kuning",
+            "category": "SAYUR",
+            "foodType": "pelbagai",
+            "stock": 3771,
+            "unit": "kg",
+            "minStock": 754,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 19,
+            "name": "f) Lobak Merah",
+            "category": "SAYUR",
+            "foodType": "pelbagai",
+            "stock": 3771,
+            "unit": "kg",
+            "minStock": 754,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 20,
+            "name": "h) Terung",
+            "category": "SAYUR",
+            "foodType": "pelbagai",
+            "stock": 11311,
+            "unit": "kg",
+            "minStock": 2262,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 21,
+            "name": "i) Timun",
+            "category": "SAYUR",
+            "foodType": "pelbagai",
+            "stock": 3771,
+            "unit": "kg",
+            "minStock": 754,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 22,
+            "name": "j) Tomato",
+            "category": "SAYUR",
+            "foodType": "pelbagai",
+            "stock": 6223,
+            "unit": "kg",
+            "minStock": 1244,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 23,
+            "name": "5.1 Betik",
+            "category": "BUAH",
+            "foodType": "pelbagai",
+            "stock": 22621,
+            "unit": "kg",
+            "minStock": 4524,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 24,
+            "name": "5.2 Nanas",
+            "category": "BUAH",
+            "foodType": "pelbagai",
+            "stock": 22621,
+            "unit": "kg",
+            "minStock": 4524,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 25,
+            "name": "5.3 Tembikai",
+            "category": "BUAH",
+            "foodType": "pelbagai",
+            "stock": 16966,
+            "unit": "kg",
+            "minStock": 3393,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 26,
+            "name": "5.4 Tembikai Susu",
+            "category": "BUAH",
+            "foodType": "pelbagai",
+            "stock": 16966,
+            "unit": "kg",
+            "minStock": 3393,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 27,
+            "name": "6.1 Fucuk",
+            "category": "PERLENGKAPAN",
+            "foodType": "pelbagai",
+            "stock": 283,
+            "unit": "kg",
+            "minStock": 56,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 28,
+            "name": "6.2 Gula",
+            "category": "PERLENGKAPAN",
+            "foodType": "pelbagai",
+            "stock": 4525,
+            "unit": "kg",
+            "minStock": 905,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 29,
+            "name": "6.3 Gula Merah",
+            "category": "PERLENGKAPAN",
+            "foodType": "pelbagai",
+            "stock": 189,
+            "unit": "kg",
+            "minStock": 37,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 30,
+            "name": "6.4 Ikan Bilis",
+            "category": "PERLENGKAPAN",
+            "foodType": "pelbagai",
+            "stock": 1774,
+            "unit": "kg",
+            "minStock": 354,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 31,
+            "name": "6.5 Jem",
+            "category": "PERLENGKAPAN",
+            "foodType": "pelbagai",
+            "stock": 848,
+            "unit": "kg",
+            "minStock": 169,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 32,
+            "name": "6.6 Kacang Hijau",
+            "category": "PERLENGKAPAN",
+            "foodType": "pelbagai",
+            "stock": 943,
+            "unit": "kg",
+            "minStock": 188,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 33,
+            "name": "6.7 Kacang Merah",
+            "category": "PERLENGKAPAN",
+            "foodType": "pelbagai",
+            "stock": 943,
+            "unit": "kg",
+            "minStock": 188,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 34,
+            "name": "6.8 Kaya",
+            "category": "PERLENGKAPAN",
+            "foodType": "pelbagai",
+            "stock": 566,
+            "unit": "kg",
+            "minStock": 113,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 35,
+            "name": "6.9 Kopi",
+            "category": "PERLENGKAPAN",
+            "foodType": "pelbagai",
+            "stock": 1056,
+            "unit": "kg",
+            "minStock": 211,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 36,
+            "name": "6.10 Marjerin",
+            "category": "PERLENGKAPAN",
+            "foodType": "pelbagai",
+            "stock": 566,
+            "unit": "kg",
+            "minStock": 113,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 37,
+            "name": "6.11 Tauhu",
+            "category": "PERLENGKAPAN",
+            "foodType": "pelbagai",
+            "stock": 8485,
+            "unit": "kg",
+            "minStock": 1697,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 38,
+            "name": "6.12 Teh",
+            "category": "PERLENGKAPAN",
+            "foodType": "pelbagai",
+            "stock": 825,
+            "unit": "kg",
+            "minStock": 165,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 39,
+            "name": "6.13 Ubi Kentang",
+            "category": "PERLENGKAPAN",
+            "foodType": "pelbagai",
+            "stock": 3771,
+            "unit": "kg",
+            "minStock": 754,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 40,
+            "name": "7.1 Asam Jawa",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 152,
+            "unit": "kg",
+            "minStock": 30,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 41,
+            "name": "7.2 Asam Keping",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 19,
+            "unit": "kg",
+            "minStock": 10,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 42,
+            "name": "7.3 Bawang Besar",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 585,
+            "unit": "kg",
+            "minStock": 117,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 43,
+            "name": "7.4 Bawang Merah",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 679,
+            "unit": "kg",
+            "minStock": 135,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 44,
+            "name": "7.5 Bawang Putih",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 1075,
+            "unit": "kg",
+            "minStock": 215,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 45,
+            "name": "7.6 Belacan",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 76,
+            "unit": "kg",
+            "minStock": 15,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 46,
+            "name": "7.7 Biji Lada Hitam",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 19,
+            "unit": "kg",
+            "minStock": 10,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 47,
+            "name": "7.8 Buah Pelaga",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 104,
+            "unit": "kg",
+            "minStock": 20,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 48,
+            "name": "7.9 Bunga Cengkih",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 104,
+            "unit": "kg",
+            "minStock": 20,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 49,
+            "name": "7.10 Bunga Lawang",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 104,
+            "unit": "kg",
+            "minStock": 20,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 50,
+            "name": "7.11 Cili",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 189,
+            "unit": "kg",
+            "minStock": 37,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 51,
+            "name": "7.12 Cili Kering",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 302,
+            "unit": "kg",
+            "minStock": 60,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 52,
+            "name": "7.13 Cili Padi",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 340,
+            "unit": "kg",
+            "minStock": 68,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 53,
+            "name": "7.14 Cuka",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 19,
+            "unit": "kg",
+            "minStock": 10,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 54,
+            "name": "7.15 Dal",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 189,
+            "unit": "kg",
+            "minStock": 37,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 55,
+            "name": "7.16 Daun Bawang",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 57,
+            "unit": "kg",
+            "minStock": 11,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 56,
+            "name": "7.17 Daun Kari",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 28,
+            "unit": "kg",
+            "minStock": 10,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 57,
+            "name": "7.18 Daun Kesum",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 39,
+            "unit": "kg",
+            "minStock": 10,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 58,
+            "name": "7.19 Daun Limau Purut",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 10,
+            "unit": "kg",
+            "minStock": 10,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 59,
+            "name": "7.20 Daun Sup",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 57,
+            "unit": "kg",
+            "minStock": 11,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 60,
+            "name": "7.21 Garam",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 3017,
+            "unit": "kg",
+            "minStock": 603,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 61,
+            "name": "7.22 Halba",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 19,
+            "unit": "kg",
+            "minStock": 10,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 62,
+            "name": "7.23 Halia",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 396,
+            "unit": "kg",
+            "minStock": 79,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 63,
+            "name": "7.24 Kiub Tomyam",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 19,
+            "unit": "kg",
+            "minStock": 10,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 64,
+            "name": "7.25 Kulit Kayu Manis",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 104,
+            "unit": "kg",
+            "minStock": 20,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 65,
+            "name": "7.26 Limau Kasturi",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 189,
+            "unit": "kg",
+            "minStock": 37,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 66,
+            "name": "7.27 Rempah Kari",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 114,
+            "unit": "kg",
+            "minStock": 22,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 67,
+            "name": "7.28 Rempah Kurma",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 189,
+            "unit": "kg",
+            "minStock": 37,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 68,
+            "name": "7.29 Rempah Sup",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 189,
+            "unit": "kg",
+            "minStock": 37,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 69,
+            "name": "7.30 Serai",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 152,
+            "unit": "kg",
+            "minStock": 30,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 70,
+            "name": "7.31 Serbuk Cili",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 19,
+            "unit": "kg",
+            "minStock": 10,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 71,
+            "name": "7.32 Serbuk Kunyit",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 321,
+            "unit": "kg",
+            "minStock": 64,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 72,
+            "name": "7.33 Serbuk Lada Sulah",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 19,
+            "unit": "kg",
+            "minStock": 10,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 73,
+            "name": "7.34 Serbuk Santan",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 679,
+            "unit": "kg",
+            "minStock": 135,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 74,
+            "name": "7.35 Suun",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 19,
+            "unit": "kg",
+            "minStock": 10,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 75,
+            "name": "7.36 Taucu",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 19,
+            "unit": "kg",
+            "minStock": 10,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        },
+        {
+            "id": 76,
+            "name": "7.37 Telur Asin",
+            "category": "PERENCAH MENGIKUT MENU",
+            "foodType": "pelbagai",
+            "stock": 4713,
+            "unit": "Biji",
+            "minStock": 942,
+            "price": 5.0,
+            "status": "aktif",
+            "description": "",
+            "lastUpdated": "2026-02-15"
+        }
     ],
 
     // Inmates data
@@ -351,47 +1329,81 @@ const prisonData = {
     users: [
         {
             id: 1,
-            name: 'Admin Prison',
-            email: 'admin@prison.gov.my',
-            role: 'Administrator',
+            name: 'Pengarah HQ',
+            email: 'pengarah.hq@prison.gov.my',
+            role: 'Admin',
             institution: 'Semua Institusi',
+            position: 'Pengarah HQ',
+            phone_number: '03-8888 1000',
             status: 'active',
             joinDate: '2026-01-01',
             lastLogin: '2026-02-15 10:30:00',
-            avatar: 'AP'
+            avatar: 'PH'
         },
         {
             id: 2,
-            name: 'Supervisor A',
-            email: 'supervisor@prison.gov.my',
-            role: 'Penyelia',
-            institution: 'Penjara Kajang',
+            name: 'Pengarah Negeri',
+            email: 'pengarah.negeri@prison.gov.my',
+            role: 'Admin',
+            institution: 'Negeri Selangor',
+            position: 'Pengarah Negeri',
+            phone_number: '03-8733 2001',
             status: 'active',
             joinDate: '2026-02-15',
             lastLogin: '2026-02-15 09:15:00',
-            avatar: 'SA'
+            avatar: 'PN'
         },
         {
             id: 3,
-            name: 'Operator B',
-            email: 'operator@prison.gov.my',
-            role: 'Operator',
-            institution: 'Penjara Sungai Buloh',
+            name: 'Pengarah Institusi',
+            email: 'pengarah.institusi@prison.gov.my',
+            role: 'Admin',
+            institution: 'Penjara Kajang',
+            position: 'Pengarah Institusi',
+            phone_number: '03-6142 3002',
             status: 'active',
             joinDate: '2026-03-10',
             lastLogin: '2026-02-15 08:45:00',
-            avatar: 'OB'
+            avatar: 'PI'
         },
         {
             id: 4,
-            name: 'Manager C',
-            email: 'manager@prison.gov.my',
-            role: 'Pengurus',
-            institution: 'Pusat Koreksional',
-            status: 'inactive',
+            name: 'Pegawai Penerima',
+            email: 'pegawai.penerima@prison.gov.my',
+            role: 'User',
+            institution: 'Penjara Kajang',
+            position: 'Pegawai Penerima',
+            phone_number: '03-5544 4003',
+            status: 'active',
             joinDate: '2026-04-05',
             lastLogin: '2026-02-14 16:20:00',
-            avatar: 'MC'
+            avatar: 'PP'
+        },
+        {
+            id: 5,
+            name: 'Pegawai Pengesah',
+            email: 'pegawai.pengesah@prison.gov.my',
+            role: 'User',
+            institution: 'Penjara Sungai Buloh',
+            position: 'Pegawai Pengesah',
+            phone_number: '03-6677 5004',
+            status: 'active',
+            joinDate: '2026-05-01',
+            lastLogin: '2026-02-14 14:10:00',
+            avatar: 'PP'
+        },
+        {
+            id: 6,
+            name: 'Pegawai Stor',
+            email: 'pegawai.stor@prison.gov.my',
+            role: 'User',
+            institution: 'Pusat Koreksional',
+            position: 'Pegawai Stor',
+            phone_number: '03-7788 6005',
+            status: 'active',
+            joinDate: '2026-06-01',
+            lastLogin: '2026-02-14 12:00:00',
+            avatar: 'PS'
         }
     ],
 
@@ -445,21 +1457,82 @@ const prisonData = {
 
     // Suppliers (Pembekal)
     suppliers: [
-        { id: 1, name: 'Syarikat Makanan Segar Sdn Bhd', category: 'Makanan Mentah', contact: '03-8888 1234', email: 'sales@makanansegar.com', status: 'active', rating: 4.8 },
-        { id: 2, name: 'Pembekal Tekstil Maju', category: 'Pakaian & Tekstil', contact: '03-8888 5678', email: 'info@tekstilmaju.com', status: 'active', rating: 4.5 },
-        { id: 3, name: 'Peralatan Keselamatan Jitu', category: 'Peralatan Keselamatan', contact: '03-8888 9012', email: 'support@jituhq.com', status: 'active', rating: 4.9 },
-        { id: 4, name: 'Hardware & Construction Supplies', category: 'Penyelenggaraan', contact: '03-8888 3456', email: 'sales@hcs.com.my', status: 'active', rating: 4.2 },
-        { id: 5, name: 'Pustaka Ilmu', category: 'Pendidikan', contact: '03-8888 7890', email: 'orders@pustakailmu.com', status: 'active', rating: 4.6 }
+        {
+            id: 1,
+            company_name: 'Syarikat Makanan Segar Sdn Bhd',
+            contact_person: 'Ahmad Faizal bin Ramli',
+            email: 'sales@makanansegar.com',
+            phone_number: '03-8888 1234',
+            address: 'No. 12, Jalan Industri 3, Taman Perindustrian Kajang',
+            postcode: '43000',
+            state: 'Selangor',
+            district: 'Hulu Langat',
+            status: 1,
+            created_at: '2025-01-10'
+        },
+        {
+            id: 2,
+            company_name: 'Pembekal Tekstil Maju Sdn Bhd',
+            contact_person: 'Lim Boon Keat',
+            email: 'info@tekstilmaju.com',
+            phone_number: '03-7777 5678',
+            address: 'Lot 45, Kawasan Perindustrian Puchong',
+            postcode: '47100',
+            state: 'Selangor',
+            district: 'Puchong',
+            status: 1,
+            created_at: '2025-02-14'
+        },
+        {
+            id: 3,
+            company_name: 'Peralatan Keselamatan Jitu Sdn Bhd',
+            contact_person: 'Suresh a/l Rajan',
+            email: 'support@jituhq.com',
+            phone_number: '03-9999 9012',
+            address: 'Unit B-3, Plaza Sentral, Kuala Lumpur',
+            postcode: '50470',
+            state: 'Wilayah Persekutuan',
+            district: 'Kuala Lumpur',
+            status: 1,
+            created_at: '2025-03-05'
+        },
+        {
+            id: 4,
+            company_name: 'Hardware & Construction Supplies Bhd',
+            contact_person: 'Tan Ah Seng',
+            email: 'sales@hcs.com.my',
+            phone_number: '04-8888 3456',
+            address: 'No. 88, Jalan Perindustrian, Sungai Petani',
+            postcode: '08000',
+            state: 'Kedah',
+            district: 'Sungai Petani',
+            status: 0,
+            created_at: '2025-04-20'
+        },
+        {
+            id: 5,
+            company_name: 'Pustaka Ilmu Enterprise',
+            contact_person: 'Siti Norzahara binti Yusof',
+            email: 'orders@pustakailmu.com',
+            phone_number: '03-6666 7890',
+            address: 'Wisma Ilmu, Jalan Tun Hussein Onn, Shah Alam',
+            postcode: '40150',
+            state: 'Selangor',
+            district: 'Shah Alam',
+            status: 1,
+            created_at: '2025-05-18'
+        }
     ],
 
     // Item Categories (Kategori Barang)
     categories: [
-        { id: 1, code: 'CAT-001', name: 'Bahan Mentah Kering', description: 'Beras, gula, tepung, dll.', totalItems: 12, status: 'active' },
-        { id: 2, code: 'CAT-002', name: 'Bahan Mentah Basah', description: 'Ikan, ayam, daging, sayur', totalItems: 8, status: 'active' },
-        { id: 3, code: 'CAT-003', name: 'Peralatan Dapur', description: 'Periuk, kuali, senduk', totalItems: 45, status: 'active' },
-        { id: 4, code: 'CAT-004', name: 'Pakaian Banduan', description: 'Baju, seluar, kain pelikat', totalItems: 1200, status: 'active' },
-        { id: 5, code: 'CAT-005', name: 'Peralatan Pejabat', description: 'Kertas, pen, fail', totalItems: 500, status: 'active' },
-        { id: 6, code: 'CAT-006', name: 'Ubat-ubatan', description: 'Panadol, ubat batuk, first aid', totalItems: 150, status: 'active' }
+        { id: 1, code: 'CAT-001', name: 'DAGING LEMBU/KERBAU (BEKU)', description: 'Kategori bahan mentah daging beku', totalItems: 1, status: 'active' },
+        { id: 2, code: 'CAT-002', name: 'IKAN SEGAR (LAUT)', description: 'Kategori ikan segar laut', totalItems: 5, status: 'active' },
+        { id: 3, code: 'CAT-003', name: 'TELUR AYAM (GRED B)', description: 'Kategori telur ayam gred B', totalItems: 1, status: 'active' },
+        { id: 4, code: 'CAT-004', name: 'SAYUR', description: 'Kategori sayur-sayuran', totalItems: 15, status: 'active' },
+        { id: 5, code: 'CAT-005', name: 'BUAH', description: 'Kategori buah-buahan', totalItems: 4, status: 'active' },
+        { id: 6, code: 'CAT-006', name: 'PERLENGKAPAN', description: 'Kategori bahan pelengkap makanan seperti gula, fucuk dan ikan bilis', totalItems: 13, status: 'active' },
+        { id: 7, code: 'CAT-007', name: 'PERENCAH MENGIKUT MENU', description: 'Kategori perencah dan rempah mengikut menu', totalItems: 37, status: 'active' }
     ],
 
     // Items (Item List - Extended Raw Materials)
@@ -521,6 +1594,26 @@ const DataHelpers = {
         }
     },
 
+    getForecastRisk(monthsRemaining) {
+        if (monthsRemaining === null || monthsRemaining === undefined || Number.isNaN(monthsRemaining)) {
+            return { text: 'Tidak Cukup Data', class: 'secondary' };
+        }
+
+        if (monthsRemaining <= 1) {
+            return { text: 'Habis Bulan Ini', class: 'danger' };
+        }
+
+        if (monthsRemaining <= 3) {
+            return { text: 'Habis 3 Bulan', class: 'warning' };
+        }
+
+        if (monthsRemaining <= 6) {
+            return { text: 'Akan Habis 6 Bulan', class: 'warning' };
+        }
+
+        return { text: 'Cukup >6 Bulan', class: 'success' };
+    },
+
     // Get food type label
     getFoodTypeLabel(foodType) {
         const labels = {
@@ -545,7 +1638,8 @@ const DataHelpers = {
             'approved': 'Disahkan',
             'rejected': 'Ditolak',
             'active': 'Aktif',
-            'inactive': 'Tidak Aktif'
+            'inactive': 'Tidak Aktif',
+            'maintenance': 'Penyelenggaraan'
         };
         return labels[status] || status;
     },
@@ -558,7 +1652,8 @@ const DataHelpers = {
             'pending': 'warning',
             'approved': 'success',
             'rejected': 'danger',
-            'inactive': 'secondary'
+            'inactive': 'secondary',
+            'maintenance': 'info'
         };
         return classes[status] || 'secondary';
     },
@@ -599,6 +1694,10 @@ const DataHelpers = {
 
     // Get institution status
     getInstitutionStatus(institution) {
+        // Respect explicit status field first
+        if (institution.status === 'inactive') return { text: 'Tidak Aktif', class: 'secondary' };
+        if (institution.status === 'maintenance') return { text: 'Penyelenggaraan', class: 'info' };
+        // Fall back to usage-based status
         const usage = this.getInstitutionUsage(institution);
         if (usage >= 95) return { text: 'Penuh', class: 'danger' };
         if (usage >= 85) return { text: 'Hampir Penuh', class: 'warning' };
@@ -647,10 +1746,16 @@ const DataHelpers = {
             id: newId,
             name: data.name,
             state: data.state,
-            capacity: parseInt(data.capacity),
-            current: Math.floor(parseInt(data.capacity) * 0.8), // Default 80% filled
-            type: data.type,
-            status: 'active'
+            state_id: data.state_id || null,
+            district_id: data.district_id || null,
+            type: data.type,                               // Jenis institusi
+            capacity: parseInt(data.capacity) || 0,        // Kapasiti
+            current: Math.floor((parseInt(data.capacity) || 0) * 0.8), // Default 80% filled
+            status: data.status || 'active',               // Status: active/inactive/maintenance
+            address: data.address || '',                   // Alamat
+            postcode: data.postcode || '',                 // Poskod
+            phone: data.phone || '',                       // No telefon
+            created_at: new Date().toISOString().split('T')[0]
         };
         prisonData.institutions.push(newInstitution);
         return newInstitution;

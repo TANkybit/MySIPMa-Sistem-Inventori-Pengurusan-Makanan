@@ -11,18 +11,13 @@ class Position extends Model
 
     protected $table = 'positions';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'code',
         'name',
         'grade',
         'created_by',
         'updated_by',
-    ];
-
-    // Optional: Cast dates if MySQL complains about datetime being written to DATE field.
-    // Generally Eloquent saves 'Y-m-d H:i:s' and MySQL cuts it to DATE.
-    protected $casts = [
-        'created_at' => 'date:Y-m-d',
-        'updated_at' => 'date:Y-m-d',
     ];
 }

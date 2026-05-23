@@ -12,12 +12,9 @@ class Category extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'code',
         'name',
-        'description',
-        'status',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function items()
