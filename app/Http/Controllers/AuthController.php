@@ -59,17 +59,13 @@ class AuthController extends Controller
             $positionName = $user->position?->name ?? '';
             $redirectUrl = route('admin.dashboard');
 
-<<<<<<< HEAD
             if (stripos($positionName, 'Pengarah Institusi') !== false) {
                 $redirectUrl = route('pengarah.institusi.dashboard');
             } elseif (stripos($positionName, 'Pengarah Negeri') !== false) {
                 $redirectUrl = route('pengarah.negeri.dashboard');
             } elseif (stripos($positionName, 'Pengarah HQ') !== false || stripos($positionName, 'Pengarah') !== false) {
                 $redirectUrl = route('pengarah.hq.dashboard');
-            } elseif ($user->status == 0 || $user->status === false) {
-=======
-            if ($user->status == 0 || $user->status === false) {
->>>>>>> 591f4ba5d0c55be1c5806b0d0cea3055c50204d9
+            } else {
                 $redirectUrl = route('user.dashboard');
             }
 
