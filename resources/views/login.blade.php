@@ -247,6 +247,13 @@
     <div id="passError" class="text-danger small mt-1" style="display:none;"></div>
   </div>
 
+  <div id="attemptsInfo" class="text-center mb-2" style="display:none;">
+    <small id="attemptsText" class="text-warning"></small>
+  </div>
+  <div id="cooldownInfo" class="text-center mb-2" style="display:none;">
+    <small id="cooldownText" class="text-danger"></small>
+  </div>
+
   <div class="text-end mb-4">
     <a href="{{ route('password.request') }}" class="small" style="color: #00d2ff;">Lupa Kata Laluan?</a>
   </div>
@@ -301,6 +308,35 @@
       this.querySelector('i').classList.toggle("bi-eye");
       this.querySelector('i').classList.toggle("bi-eye-slash");
     });
+
+    let cooldownTimer = null;
+
+    function startCooldown(seconds) {
+      const attemptsInfo = document.getElementById('attemptsInfo');
+      const cooldownInfo = document.getElementById('cooldownInfo');
+      const cooldownText = document.getElementById('cooldownText');
+      let remaining = seconds;
+
+      attemptsInfo.style.display = 'none';
+      cooldownInfo.style.display = 'block';
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = 'Tunggu...';
+
+      if (cooldownTimer) clearInterval(cooldownTimer);
+
+      cooldownTimer = setInterval(() => {
+        remaining--;
+        if (remaining <= 0) {
+          clearInterval(cooldownTimer);
+          cooldownTimer = null;
+          cooldownInfo.style.display = 'none';
+          loginBtn.disabled = false;
+          loginBtn.innerHTML = 'Log Masuk';
+          return;
+        }
+        cooldownText.textContent = 'Sila tunggu ' + remaining + ' saat sebelum mencuba lagi.';
+      }, 1000);
+    }
 
     function validateAndLogin() {
       let email = emailInput.value.trim();
@@ -360,13 +396,30 @@
                 window.location.href = data.redirect;
             });
           } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Ralat',
-              text: data.message
-            });
-            passError.innerText = data.message;
-            passError.style.display = "block";
+            const attemptsInfo = document.getElementById('attemptsInfo');
+            const attemptsText = document.getElementById('attemptsText');
+
+            if (data.cooldown_remaining > 0) {
+              startCooldown(data.cooldown_remaining);
+              Swal.fire({
+                icon: 'warning',
+                title: 'Terlalu Banyak Percubaan',
+                text: 'Sila tunggu ' + data.cooldown_remaining + ' saat.'
+              });
+            } else if (data.attempts_remaining !== undefined) {
+              attemptsInfo.style.display = 'block';
+              attemptsText.textContent = 'Baki percubaan: ' + data.attempts_remaining;
+              passError.innerText = data.message;
+              passError.style.display = "block";
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Ralat',
+                text: data.message
+              });
+              passError.innerText = data.message;
+              passError.style.display = "block";
+            }
           }
         })
         .catch(error => {

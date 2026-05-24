@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -12,6 +13,9 @@ use App\Mail\ResetPasswordMail;
 
 class AuthController extends Controller
 {
+    const MAX_ATTEMPTS = 4;
+    const COOLDOWN_SECONDS = 15;
+
     /**
      * Handle an authentication attempt.
      */
@@ -26,18 +30,36 @@ class AuthController extends Controller
             'password.required' => 'Sila masukkan kata laluan anda.',
         ]);
 
-        // Ubah: Keluarkan ['status' => 1] supaya pengguna dengan status == 0 boleh log masuk
+        $email = $request->email;
+        $cacheKey = 'login_attempts_' . md5($email);
+
+        // Check cooldown
+        $cooldownUntil = Cache::get($cacheKey . '_cooldown');
+        if ($cooldownUntil) {
+            $remaining = $cooldownUntil - now()->timestamp;
+            if ($remaining > 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terlalu banyak percubaan. Sila tunggu ' . $remaining . ' saat.',
+                    'cooldown_remaining' => $remaining,
+                    'attempts_remaining' => 0,
+                ], 429);
+            }
+            Cache::forget($cacheKey . '_cooldown');
+            Cache::forget($cacheKey);
+        }
+
         if (Auth::attempt($credentials)) {
+            Cache::forget($cacheKey);
+            Cache::forget($cacheKey . '_cooldown');
+
             $request->session()->regenerate();
 
             $user = Auth::user();
             $redirectUrl = route('admin.dashboard');
 
-            // "if status is == 0 its user"
             if ($user->status == 0 || $user->status === false) {
                 $redirectUrl = route('user.dashboard');
-                // Di sini kita juga boleh memuatkan role_id jika perlu pada masa hadapan
-                // contoh: Session::put('user_role', $user->role_id);
             }
 
             return response()->json([
@@ -47,9 +69,29 @@ class AuthController extends Controller
             ]);
         }
 
+        // Failed login
+        $attempts = (int) Cache::get($cacheKey, 0) + 1;
+        Cache::put($cacheKey, $attempts, now()->addMinutes(5));
+
+        $remaining = self::MAX_ATTEMPTS - $attempts;
+
+        if ($remaining <= 0) {
+            Cache::put($cacheKey . '_cooldown', now()->timestamp + self::COOLDOWN_SECONDS, now()->addMinutes(1));
+            Cache::forget($cacheKey);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terlalu banyak percubaan. Sila tunggu ' . self::COOLDOWN_SECONDS . ' saat.',
+                'cooldown_remaining' => self::COOLDOWN_SECONDS,
+                'attempts_remaining' => 0,
+            ], 429);
+        }
+
         return response()->json([
             'success' => false,
-            'message' => 'Emel atau kata laluan tidak sah.'
+            'message' => 'Emel atau kata laluan tidak sah. Baki percubaan: ' . $remaining,
+            'attempts_remaining' => $remaining,
+            'cooldown_remaining' => 0,
         ], 401);
     }
 
