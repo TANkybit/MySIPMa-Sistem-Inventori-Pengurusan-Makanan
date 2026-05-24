@@ -112,8 +112,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: calc(100vh - 200px);
-      padding: 40px 20px;
+      min-height: calc(100vh - 80px);
+      padding: 10px;
     }
 
     .profile-view-container > h1 {
@@ -129,37 +129,37 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 20px;
+      border-radius: 16px;
       box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-      padding: 40px;
+      padding: 16px 20px;
       color: #ffffff;
       width: 100%;
-      max-width: 800px;
+      max-width: 640px;
     }
 
     /* Tab Navigation */
     .tab-nav {
       display: flex;
-      gap: 20px;
-      margin-bottom: 30px;
+      gap: 12px;
+      margin-bottom: 12px;
       border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-      padding-bottom: 15px;
+      padding-bottom: 8px;
     }
 
     .tab-button {
       background: none;
       border: none;
       color: rgba(255, 255, 255, 0.6);
-      padding: 0 5px;
+      padding: 0 4px;
       cursor: pointer;
       font-weight: 600;
       font-size: 14px;
       text-transform: uppercase;
       letter-spacing: 1px;
       transition: 0.3s;
-      border-bottom: 3px solid transparent;
+      border-bottom: 2px solid transparent;
       position: relative;
-      bottom: -18px;
+      bottom: -10px;
     }
 
     .tab-button:hover {
@@ -181,7 +181,7 @@
 
     .tab-panel > h3 {
       color: #62e2ff !important;
-      margin-bottom: 25px;
+      margin-bottom: 10px;
       text-align: center;
       font-weight: 700;
     }
@@ -189,33 +189,34 @@
     /* Profile Layout for Forms */
     .profile-layout {
       display: flex;
-      gap: 30px;
-      margin-bottom: 25px;
+      gap: 12px;
+      margin-bottom: 10px;
       align-items: flex-start;
     }
 
     .profile-left {
-      flex: 0 0 150px;
+      flex: 0 0 70px;
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 6px;
       align-items: center;
     }
 
     #avatarPreviu {
-      width: 150px;
-      height: 150px;
-      border-radius: 15px;
+      width: 70px;
+      height: 70px;
+      border-radius: 10px;
       background: rgba(255, 255, 255, 0.1);
       border: 2px dashed rgba(98, 226, 255, 0.5);
       display: flex;
       align-items: center;
       justify-content: center;
       color: rgba(255, 255, 255, 0.6);
-      font-size: 12px;
+      font-size: 9px;
       overflow: hidden;
       text-align: center;
-      padding: 10px;
+      padding: 4px;
+      min-height: 70px;
     }
 
     #avatarPreviu img {
@@ -227,14 +228,15 @@
     .custom-file-label {
       background: linear-gradient(135deg, #00b894, #00d2a3);
       color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
+      padding: 5px 10px;
+      border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
       transition: 0.3s;
       display: block;
       text-align: center;
-      font-size: 13px;
+      font-size: 12px;
+      width: 100%;
     }
 
     .custom-file-label:hover {
@@ -250,13 +252,13 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 6px;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 2px;
     }
 
     .form-group label {
@@ -272,8 +274,8 @@
     .form-group select {
       background: rgba(255, 255, 255, 0.95) !important;
       border: none;
-      border-radius: 8px;
-      padding: 10px 15px;
+      border-radius: 6px;
+      padding: 5px 10px;
       color: #1a1a1a;
       font-size: 14px;
       transition: 0.3s;
@@ -303,18 +305,18 @@
 
     .password-input-wrapper input {
       width: 100%;
-      padding-right: 40px;
+      padding-right: 30px;
     }
 
     .password-toggle-btn {
       position: absolute;
-      right: 10px;
+      right: 8px;
       background: none;
       border: none;
       color: #999;
       cursor: pointer;
-      font-size: 1rem;
-      padding: 0.25rem 0.5rem;
+      font-size: 0.8rem;
+      padding: 0.15rem 0.3rem;
       transition: color 0.3s ease;
     }
 
@@ -323,8 +325,8 @@
     }
 
     .strength-indicator {
-      font-size: 12px;
-      padding: 6px 0;
+      font-size: 10px;
+      padding: 2px 0;
       font-weight: 600;
     }
 
@@ -344,84 +346,11 @@
       color: #00b894;
     }
 
-    .profile-display-section {
-      width: 100%;
-    }
-
-    .profile-display-section h3 {
-      color: #62e2ff !important;
-      margin-bottom: 30px;
-      text-align: center;
-    }
-
-    .profile-display-layout {
-      display: flex;
-      gap: 40px;
-      align-items: flex-start;
-    }
-
-    .profile-display-left {
-      flex: 0 0 150px;
-      display: flex;
-      justify-content: center;
-    }
-
-    .avatar-display {
-      width: 150px;
-      height: 150px;
-      border-radius: 15px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 2px solid rgba(98, 226, 255, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 14px;
-      overflow: hidden;
-    }
-
-    .avatar-display img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .profile-display-right {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .info-item {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .info-item label {
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .info-item p {
-      color: #ffffff;
-      font-size: 14px;
-      margin: 0;
-      padding: 8px 12px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 6px;
-      border-left: 3px solid #62e2ff;
-    }
-
     .button-container {
       display: flex;
       justify-content: center;
-      gap: 10px;
-      margin-top: 30px;
+      gap: 8px;
+      margin-top: 8px;
       width: 100%;
     }
 
@@ -429,10 +358,11 @@
     .tab-panel > button {
       background: linear-gradient(135deg, #00b894, #00d2a3) !important;
       color: white;
-      padding: 12px 40px !important;
+      padding: 8px 28px !important;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       font-weight: 600;
+      font-size: 14px;
       transition: 0.3s;
       cursor: pointer;
       box-shadow: 0 8px 20px rgba(0, 184, 148, 0.3);
@@ -472,49 +402,50 @@
       position: relative;
       z-index: 100;
       background: #222426 !important;
-      margin-top: 60px;
-      padding: 40px 0 20px 0;
+      margin-top: 20px;
+      padding: 20px 0 10px 0;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     #footer .address {
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
 
     #footer h4 {
       color: #ffffff;
       font-weight: 600;
-      margin-bottom: 15px;
-      font-size: 16px;
+      margin-bottom: 8px;
+      font-size: 13px;
     }
 
     #footer p {
       color: rgba(255, 255, 255, 0.7);
-      font-size: 14px;
-      line-height: 1.6;
+      font-size: 11px;
+      line-height: 1.4;
     }
 
     #footer .icon {
-      font-size: 24px;
-      margin-bottom: 15px;
+      font-size: 18px;
+      margin-bottom: 8px;
       color: #62e2ff;
-      margin-right: 15px;
+      margin-right: 10px;
     }
 
     #footer .social-links {
-      gap: 15px;
+      gap: 8px;
     }
 
     #footer .social-links a {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 40px;
-      height: 40px;
+      width: 30px;
+      height: 30px;
       background: rgba(98, 226, 255, 0.1);
       border: 1px solid rgba(98, 226, 255, 0.3);
       border-radius: 50%;
       color: #62e2ff;
+      font-size: 12px;
       transition: 0.3s;
     }
 
@@ -526,8 +457,8 @@
 
     #footer .copyright {
       color: rgba(255, 255, 255, 0.6);
-      font-size: 13px;
-      padding-top: 20px;
+      font-size: 11px;
+      padding-top: 10px;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
 
@@ -553,7 +484,7 @@
     @media (max-width: 768px) {
       .profile-layout {
         flex-direction: column;
-        gap: 20px;
+        gap: 8px;
         align-items: center;
       }
 
@@ -566,7 +497,7 @@
       }
 
       .profile-card {
-        padding: 30px 20px;
+        padding: 12px;
       }
 
       .tab-nav {
@@ -599,8 +530,9 @@
           <li><a href="{{ route('user.pengesahan.inden') }}"
               class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
           <li><a href="{{ route('borang.inden') }}"
-              class="{{ request()->routeIs('borang.inden') ? 'active' : '' }}">Borang Inden</a></li>
-        </ul>
+               class="{{ request()->routeIs('borang.inden') ? 'active' : '' }}">Borang Inden</a></li>
+          <li><a href="{{ route('borang.penerimaan') }}" class="{{ request()->routeIs('borang.penerimaan') ? 'active' : '' }}">Penerimaan</a></li>
+          </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
@@ -726,7 +658,7 @@
                 </div>
             </div>
 
-            <button onclick="handleSetPassword()" style="width: 100%; margin-top: 15px;">Tetapkan</button>
+            <button onclick="handleSetPassword()" style="width: 100%; margin-top: 8px; padding: 8px 28px; font-size: 14px; border-radius: 6px;">Tetapkan</button>
             </div>
 
             <!-- Notifikasi -->
