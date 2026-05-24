@@ -2398,13 +2398,16 @@
                     <h5 class="modal-title">Log Keluar</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
-                    <p>Adakah anda pasti ingin log keluar dari sistem?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-danger" id="confirmLogout">Log Keluar</button>
-                </div>
+                <form action="{{ route('logout') }}" method="POST" id="logoutForm">
+                    @csrf
+                    <div class="modal-body">
+                        <p>Adakah anda pasti ingin log keluar dari sistem?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-danger">Log Keluar</button>
+                    </div>
+                </form>
             </div>
             </div>
         </div>

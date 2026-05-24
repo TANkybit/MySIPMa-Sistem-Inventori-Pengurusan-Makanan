@@ -2647,7 +2647,6 @@ class PrisonSystem {
     initLogout() {
         const logoutBtns = [document.getElementById('logoutBtn'), document.getElementById('logoutBtn2')];
         const logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
-        const confirmLogout = document.getElementById('confirmLogout');
 
         logoutBtns.forEach(btn => {
             if (btn) {
@@ -2657,18 +2656,6 @@ class PrisonSystem {
                 });
             }
         });
-
-        if (confirmLogout) {
-            confirmLogout.addEventListener('click', () => {
-                this.showNotification('Anda telah berjaya log keluar', 'success');
-                logoutModal.hide();
-
-                // Simulate logout delay
-                setTimeout(() => {
-                    window.location.href = 'login.html'; // Redirect to login page
-                }, 1500);
-            });
-        }
     }
 
     initEventListeners() {

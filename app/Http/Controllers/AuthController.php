@@ -31,13 +31,17 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             $user = Auth::user();
+            $positionName = $user->position?->name ?? '';
             $redirectUrl = route('admin.dashboard');
 
-            // "if status is == 0 its user"
-            if ($user->status == 0 || $user->status === false) {
+            if (stripos($positionName, 'Pengarah Institusi') !== false) {
+                $redirectUrl = route('pengarah.institusi.dashboard');
+            } elseif (stripos($positionName, 'Pengarah Negeri') !== false) {
+                $redirectUrl = route('pengarah.negeri.dashboard');
+            } elseif (stripos($positionName, 'Pengarah HQ') !== false || stripos($positionName, 'Pengarah') !== false) {
+                $redirectUrl = route('pengarah.hq.dashboard');
+            } elseif ($user->status == 0 || $user->status === false) {
                 $redirectUrl = route('user.dashboard');
-                // Di sini kita juga boleh memuatkan role_id jika perlu pada masa hadapan
-                // contoh: Session::put('user_role', $user->role_id);
             }
 
             return response()->json([

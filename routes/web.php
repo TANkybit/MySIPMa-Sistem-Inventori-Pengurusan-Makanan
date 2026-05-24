@@ -64,6 +64,13 @@ Route::middleware('auth')->group(function () {
         return view('admin_dashboard', compact('institutions', 'positions', 'roles', 'categories', 'uoms'));
     })->name('admin.dashboard');
 
+    Route::get('/pengarah-hq', function () {
+        return redirect()->route('admin.dashboard');
+    })->name('pengarah.hq.dashboard');
+
+    Route::get('/pengarah-institusi', [DashboardController::class, 'pengarahInstitusiDashboard'])->name('pengarah.institusi.dashboard');
+    Route::get('/pengarah-negeri', [DashboardController::class, 'pengarahNegeriDashboard'])->name('pengarah.negeri.dashboard');
+
     Route::get('/dashboard/critical-stock', [DashboardController::class, 'criticalStock'])->name('dashboard.critical-stock');
     Route::get('/dashboard/stock-forecast', [DashboardController::class, 'stockForecast'])->name('dashboard.stock-forecast');
 

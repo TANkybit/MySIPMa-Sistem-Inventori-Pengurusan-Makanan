@@ -2566,13 +2566,22 @@ class PrisonSystem {
 
         if (confirmLogout) {
             confirmLogout.addEventListener('click', () => {
-                this.showNotification('Anda telah berjaya log keluar', 'success');
-                logoutModal.hide();
+                // Submit a POST form to the Laravel /logout route using CSRF token
+                const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/logout';
 
-                // Simulate logout delay
-                setTimeout(() => {
-                    window.location.href = 'login.html'; // Redirect to login page
-                }, 1500);
+                if (tokenMeta) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = '_token';
+                    input.value = tokenMeta.getAttribute('content');
+                    form.appendChild(input);
+                }
+
+                document.body.appendChild(form);
+                form.submit();
             });
         }
     }

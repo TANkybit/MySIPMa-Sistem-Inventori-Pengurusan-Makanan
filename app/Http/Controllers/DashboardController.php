@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Approval;
+use App\Models\Institution;
+use App\Models\State;
+use App\Models\Supplier;
+use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +30,85 @@ class DashboardController extends Controller
             'pendingApprovals' => $pendingApprovals,
             'inProgressOrders' => $inProgressOrders,
             'completedOrders' => $completedOrders,
+        ]);
+    }
+
+    public function pengarahInstitusiDashboard(Request $request)
+    {
+        $institutions = Institution::orderBy('name')->get();
+        $selectedInstitutionId = $request->query('institution_id') ?: Auth::user()->institution_id;
+        $selectedInstitution = Institution::find($selectedInstitutionId);
+
+        $orders = collect();
+        $inventoryItems = collect();
+        $suppliers = collect();
+
+        if ($selectedInstitution) {
+            $orders = Order::with(['supplier'])
+                ->where('institution_id', $selectedInstitution->id)
+                ->get();
+
+            $inventoryItems = OrderItem::select('item_id', DB::raw('SUM(ordered_quantity) as total_ordered_quantity'), DB::raw('SUM(ordered_total_price) as total_ordered_price'))
+                ->join('orders', 'order_items.order_id', '=', 'orders.id')
+                ->where('orders.institution_id', $selectedInstitution->id)
+                ->groupBy('item_id')
+                ->with('item')
+                ->get();
+
+            $suppliers = Supplier::when($selectedInstitution->state_id, function ($query, $stateId) {
+                    return $query->where('state_id', $stateId);
+                }, function ($query) {
+                    return $query;
+                })
+                ->orderBy('company_name')
+                ->get();
+        }
+
+        return view('pengarah_institusi_dashboard', [
+            'institutions' => $institutions,
+            'selectedInstitution' => $selectedInstitution,
+            'orders' => $orders,
+            'inventoryItems' => $inventoryItems,
+            'suppliers' => $suppliers,
+        ]);
+    }
+
+    public function pengarahNegeriDashboard(Request $request)
+    {
+        $states = State::orderBy('name')->get();
+        $selectedStateId = $request->query('state_id');
+        $selectedState = $selectedStateId ? State::find($selectedStateId) : null;
+
+        $institutionIds = collect();
+        $orders = collect();
+        $inventoryItems = collect();
+        $suppliers = collect();
+
+        if ($selectedState) {
+            $institutionIds = Institution::where('state_id', $selectedState->id)->pluck('id');
+
+            $orders = Order::with(['institution', 'supplier'])
+                ->whereIn('institution_id', $institutionIds)
+                ->get();
+
+            $inventoryItems = OrderItem::select('item_id', DB::raw('SUM(ordered_quantity) as total_ordered_quantity'), DB::raw('SUM(ordered_total_price) as total_ordered_price'))
+                ->join('orders', 'order_items.order_id', '=', 'orders.id')
+                ->whereIn('orders.institution_id', $institutionIds)
+                ->groupBy('item_id')
+                ->with('item')
+                ->get();
+
+            $suppliers = Supplier::where('state_id', $selectedState->id)
+                ->orderBy('company_name')
+                ->get();
+        }
+
+        return view('pengarah_negeri_dashboard', [
+            'states' => $states,
+            'selectedState' => $selectedState,
+            'orders' => $orders,
+            'inventoryItems' => $inventoryItems,
+            'suppliers' => $suppliers,
         ]);
     }
 
