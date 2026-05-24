@@ -92,6 +92,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/borang-inden', [DashboardController::class, 'simpanBorangInden'])->name('borang.inden.store');
     Route::get('/borang-inden/{order}', [DashboardController::class, 'lihatBorangInden'])->name('borang.inden.show');
 
+    Route::get('/borang-penerimaan', [DashboardController::class, 'borangPenerimaan'])->name('borang.penerimaan');
+    Route::get('/borang-penerimaan/{order}/items', [DashboardController::class, 'getPenerimaanItems'])->name('borang.penerimaan.items');
+    Route::post('/borang-penerimaan', [DashboardController::class, 'simpanPenerimaan'])->name('borang.penerimaan.store');
+
     Route::get('/user/senarai-inden', [DashboardController::class, 'senaraiInden'])->name('user.senarai.inden');
 
     Route::get('/user/pengesahan-inden', [DashboardController::class, 'pengesahanInden'])->name('user.pengesahan.inden');

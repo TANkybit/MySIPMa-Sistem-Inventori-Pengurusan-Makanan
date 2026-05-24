@@ -96,8 +96,8 @@ class DashboardController extends Controller
             'tarikh_pesanan' => ['required', 'date'],
             'masa' => ['required', 'date_format:H:i'],
             'sesi_kod' => ['required', 'string', 'max:50'],
-            'kepada_institusi' => ['required', 'string', 'max:255'],
-            'nama_pembekal' => ['required', 'string', 'max:255'],
+            'institution_id' => ['required', 'exists:institutions,id'],
+            'supplier_id' => ['required', 'exists:suppliers,id'],
             'wakil_pembekal' => ['required', 'string', 'max:255'],
             'alamat_pembekal' => ['required', 'string'],
             'muster_khas_daging' => ['required', 'integer', 'min:0'],
@@ -118,8 +118,10 @@ class DashboardController extends Controller
             'tarikh_pesanan.required' => 'Tarikh Pesanan wajib diisi.',
             'masa.required' => 'Masa wajib diisi.',
             'sesi_kod.required' => 'Sesi / Kod wajib diisi.',
-            'kepada_institusi.required' => 'Institusi (Kepada) wajib diisi.',
-            'nama_pembekal.required' => 'Nama Pembekal wajib diisi.',
+            'institution_id.required' => 'Institusi (Kepada) wajib dipilih.',
+            'institution_id.exists' => 'Institusi yang dipilih tidak sah.',
+            'supplier_id.required' => 'Pembekal wajib dipilih.',
+            'supplier_id.exists' => 'Pembekal yang dipilih tidak sah.',
             'wakil_pembekal.required' => 'Nama Wakil Pembekal wajib diisi.',
             'alamat_pembekal.required' => 'Alamat Pembekal wajib diisi.',
             'muster_khas_daging.required' => 'Muster Khas (Daging) wajib diisi.',
@@ -156,31 +158,8 @@ class DashboardController extends Controller
                 return ((float) ($item['orderQty'] ?? 0)) * ((float) ($item['unitPrice'] ?? 0));
             });
 
-            $institutionId = null;
-            if (!empty($validated['kepada_institusi'])) {
-                $institutionId = DB::table('institutions')->where('name', $validated['kepada_institusi'])->value('id')
-                    ?: DB::table('institutions')->insertGetId([
-                        'name' => $validated['kepada_institusi'],
-                        'created_at' => $today,
-                        'created_by' => Auth::id(),
-                        'updated_at' => $today,
-                        'updated_by' => Auth::id(),
-                    ]);
-            }
-
-            $supplierId = null;
-            if (!empty($validated['nama_pembekal'])) {
-                $supplierId = DB::table('suppliers')->where('company_name', $validated['nama_pembekal'])->value('id')
-                    ?: DB::table('suppliers')->insertGetId([
-                        'company_name' => $validated['nama_pembekal'],
-                        'address' => $validated['alamat_pembekal'] ?? null,
-                        'status' => 1,
-                        'created_at' => $today,
-                        'created_by' => Auth::id(),
-                        'updated_at' => $today,
-                        'updated_by' => Auth::id(),
-                    ]);
-            }
+            $institutionId = $validated['institution_id'];
+            $supplierId = $validated['supplier_id'];
 
             $contractId = null;
             if (!empty($validated['no_kontrak'])) {
@@ -224,7 +203,7 @@ class DashboardController extends Controller
                 'parol' => (int) ($validated['parol'] ?? 0),
                 'muster_penuh' => (int) ($validated['muster_penuh'] ?? 0),
                 'supplier_declaration_date' => $validated['tarikh_pembekal'] ?? null,
-                'supplier_rep_name' => $validated['wakil_pembekal'] ?? $validated['nama_pembekal'] ?? null,
+                'supplier_rep_name' => $validated['wakil_pembekal'] ?? optional(DB::table('suppliers')->find($supplierId))->company_name ?? null,
                 'status' => 'Pending',
                 'remarks' => $validated['catatan_inden'] ?? null,
                 'created_at' => $today,
@@ -377,7 +356,9 @@ class DashboardController extends Controller
                     'o.order_date as tarikh_pesanan',
                     DB::raw("DATE_FORMAT(o.created_at, '%H:%i') as masa"),
                     'd.delivery_session as sesi_kod',
+                    'i.id as institution_id',
                     'i.name as kepada_institusi',
+                    's.id as supplier_id',
                     's.company_name as nama_pembekal',
                     'd.supplier_rep_name as wakil_pembekal',
                     's.address as alamat_pembekal',
@@ -424,7 +405,111 @@ class DashboardController extends Controller
             'indenItems' => $indenItems,
             'readOnly' => $readOnly,
             'pendingApprovals' => Approval::where('status', 0)->count(),
+            'institutions' => \App\Models\Institution::orderBy('name')->get(['id', 'name']),
+            'suppliers' => \App\Models\Supplier::orderBy('company_name')->get(['id', 'company_name', 'address', 'postcode']),
         ]);
+    }
+
+    public function borangPenerimaan()
+    {
+        $orders = Order::leftJoin('suppliers', 'orders.supplier_id', '=', 'suppliers.id')
+            ->leftJoin('institutions', 'orders.institution_id', '=', 'institutions.id')
+            ->select([
+                'orders.id',
+                'orders.order_no',
+                'orders.order_date',
+                'suppliers.company_name as supplier_name',
+                'institutions.name as institution_name',
+            ])
+            ->orderByDesc('orders.id')
+            ->get();
+
+        return view('borang_penerimaan', [
+            'orders' => $orders,
+        ]);
+    }
+
+    public function getPenerimaanItems($order)
+    {
+        $order = Order::find($order);
+        if (!$order) {
+            return response()->json(['success' => false, 'message' => 'Pesanan tidak dijumpai.']);
+        }
+
+        $items = DB::table('order_items')
+            ->leftJoin('items', 'order_items.item_id', '=', 'items.id')
+            ->leftJoin('uom', 'items.uom_id', '=', 'uom.id')
+            ->where('order_items.order_id', $order->id)
+            ->select([
+                'order_items.id',
+                'order_items.item_id',
+                'order_items.ordered_quantity',
+                'order_items.received_quantity',
+                'items.name',
+                DB::raw("COALESCE(uom.code, 'Unit') as unit"),
+            ])
+            ->get()
+            ->map(fn($i) => [
+                'id' => $i->id,
+                'item_id' => $i->item_id,
+                'name' => $i->name,
+                'unit' => $i->unit,
+                'ordered_qty' => (float) $i->ordered_quantity,
+                'received_qty' => (float) $i->received_quantity,
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'order_no' => $order->order_no,
+                'order_date' => $order->order_date,
+                'supplier_name' => $order->supplier?->company_name ?? '-',
+                'institution_name' => $order->institution?->name ?? '-',
+                'items' => $items,
+            ],
+        ]);
+    }
+
+    public function simpanPenerimaan(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|exists:orders,id',
+            'received_date' => 'required|date',
+            'received_by' => 'required|string|max:255',
+            'items' => 'required|array',
+            'items.*.received_qty' => 'required|numeric|min:0',
+            'items.*.item_id' => 'required|integer',
+        ]);
+
+        $orderId = $request->order_id;
+        $today = now()->toDateString();
+
+        DB::transaction(function () use ($request, $orderId, $today) {
+            foreach ($request->items as $orderItemId => $item) {
+                DB::table('order_items')
+                    ->where('id', $orderItemId)
+                    ->where('order_id', $orderId)
+                    ->update([
+                        'received_quantity' => $item['received_qty'],
+                        'received_total_price' => DB::raw('received_quantity * unit_price'),
+                        'remarks' => $item['remarks'] ?? null,
+                        'updated_at' => $today,
+                        'updated_by' => Auth::id(),
+                    ]);
+            }
+
+            $order = Order::find($orderId);
+            $order->update([
+                'status' => 'Completed',
+                'remarks' => 'Diterima pada ' . $request->received_date . ' oleh ' . $request->received_by . ($request->reference_no ? ' | Ruj: ' . $request->reference_no : '') . ($request->remarks ? ' | Catatan: ' . $request->remarks : ''),
+                'updated_at' => $today,
+                'updated_by' => Auth::id(),
+            ]);
+        });
+
+        return redirect()
+            ->route('borang.penerimaan')
+            ->with('success', 'Penerimaan barang berjaya direkodkan.');
     }
 
     public function criticalStock()

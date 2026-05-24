@@ -128,6 +128,8 @@
               class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
           <li><a href="{{ route('borang.inden') }}"
               class="{{ request()->routeIs('borang.inden') ? 'active' : '' }}">Borang Inden</a></li>
+          <li><a href="{{ route('borang.penerimaan') }}"
+              class="{{ request()->routeIs('borang.penerimaan') ? 'active' : '' }}">Penerimaan</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
@@ -231,7 +233,7 @@
           </div>
           <div class="col-md-4">
             <label class="form-label">Tarikh Pesanan <span class="text-danger">*</span></label>
-            <input class="form-control date-input @error('tarikh_pesanan') is-invalid @enderror" name="tarikh_pesanan" type="text" inputmode="numeric" pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$" value="{{ $formatTarikh(old('tarikh_pesanan', $inden->tarikh_pesanan ?? '')) }}" placeholder="dd/mm/yyyy" {{ $fieldState }} required>
+            <input class="form-control date-input @error('tarikh_pesanan') is-invalid @enderror" name="tarikh_pesanan" type="text" inputmode="numeric" pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$" value="{{ $formatTarikh(old('tarikh_pesanan', $inden->tarikh_pesanan ?? now()->format('d/m/Y'))) }}" placeholder="dd/mm/yyyy" {{ $fieldState }} required>
             <div class="date-format-hint">Format: dd/mm/yyyy</div>
             @error('tarikh_pesanan')
               <div class="invalid-feedback">{{ $message }}</div>
@@ -253,15 +255,25 @@
           </div>
           <div class="col-md-6">
             <label class="form-label">Kepada (Institusi) <span class="text-danger">*</span></label>
-            <input class="form-control @error('kepada_institusi') is-invalid @enderror" name="kepada_institusi" type="text" value="{{ old('kepada_institusi', $inden->kepada_institusi ?? '') }}" placeholder="Contoh: Pengarah Penjara Sungai Udang" {{ $fieldState }} required>
-            @error('kepada_institusi')
+            <select class="form-select @error('institution_id') is-invalid @enderror" name="institution_id" {{ $isReadOnly ? 'disabled' : '' }} required>
+              <option value="">-- Pilih Institusi --</option>
+              @foreach($institutions as $inst)
+                <option value="{{ $inst->id }}" {{ old('institution_id', $inden->institution_id ?? '') == $inst->id ? 'selected' : '' }}>{{ $inst->name }}</option>
+              @endforeach
+            </select>
+            @error('institution_id')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
           <div class="col-md-6">
             <label class="form-label">Pembekal <span class="text-danger">*</span></label>
-            <input class="form-control @error('nama_pembekal') is-invalid @enderror" name="nama_pembekal" type="text" value="{{ old('nama_pembekal', $inden->nama_pembekal ?? '') }}" placeholder="Contoh: JIWA REMAJA SDN BHD" {{ $fieldState }} required>
-            @error('nama_pembekal')
+            <select class="form-select @error('supplier_id') is-invalid @enderror" name="supplier_id" id="supplierSelect" {{ $isReadOnly ? 'disabled' : '' }} required>
+              <option value="">-- Pilih Pembekal --</option>
+              @foreach($suppliers as $sup)
+                <option value="{{ $sup->id }}" data-address="{{ $sup->address }}" data-postcode="{{ $sup->postcode }}" {{ old('supplier_id', $inden->supplier_id ?? '') == $sup->id ? 'selected' : '' }}>{{ $sup->company_name }}</option>
+              @endforeach
+            </select>
+            @error('supplier_id')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
@@ -402,7 +414,7 @@
               </div>
               <div class="col-md-6">
                 <label class="form-label">Tarikh Pembekal <span class="text-danger">*</span></label>
-                <input class="form-control date-input @error('tarikh_pembekal') is-invalid @enderror" name="tarikh_pembekal" type="text" inputmode="numeric" pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$" value="{{ $formatTarikh(old('tarikh_pembekal', $inden->tarikh_pembekal ?? '')) }}" placeholder="dd/mm/yyyy" {{ $fieldState }} required>
+                <input class="form-control date-input @error('tarikh_pembekal') is-invalid @enderror" name="tarikh_pembekal" type="text" inputmode="numeric" pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$" value="{{ $formatTarikh(old('tarikh_pembekal', $inden->tarikh_pembekal ?? now()->format('d/m/Y'))) }}" placeholder="dd/mm/yyyy" {{ $fieldState }} required>
                 <div class="date-format-hint">Format: dd/mm/yyyy</div>
                 @error('tarikh_pembekal')
                   <div class="invalid-feedback">{{ $message }}</div>
@@ -493,6 +505,19 @@
         document.querySelectorAll('input, textarea').forEach((input) => input.setAttribute('readonly', 'readonly'));
         document.querySelectorAll('select').forEach((select) => select.setAttribute('disabled', 'disabled'));
       } else {
+        const supplierSelect = document.getElementById('supplierSelect');
+        const addressField = document.querySelector('textarea[name="alamat_pembekal"]');
+        if (supplierSelect && addressField) {
+          function fillSupplierAddress() {
+            const selected = supplierSelect.options[supplierSelect.selectedIndex];
+            if (selected && selected.value) {
+              const addr = (selected.dataset.address || '').trim();
+              const postcode = (selected.dataset.postcode || '').trim();
+              addressField.value = addr + (addr && postcode ? ' ' : '') + postcode;
+            }
+          }
+          supplierSelect.addEventListener('change', fillSupplierAddress);
+        }
         const dateInputs = document.querySelectorAll('.date-input');
         const timeInputs = document.querySelectorAll('input[type="time"]');
         const now = new Date();
