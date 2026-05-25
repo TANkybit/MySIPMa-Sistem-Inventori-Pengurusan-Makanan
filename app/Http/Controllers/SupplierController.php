@@ -56,7 +56,7 @@ class SupplierController extends Controller
             ], 422);
         }
 
-        $supplier = Supplier::create($request->only([
+        $supplier = Supplier::create(array_merge($request->only([
             'company_name',
             'contact_person',
             'email',
@@ -65,7 +65,12 @@ class SupplierController extends Controller
             'postcode',
             'state_id',
             'district_id',
-            'status',
+        ]), [
+            'status' => in_array($request->status, ['active', '1'], true) ? 1 : 0,
+            'created_at' => now(),
+            'created_by' => auth()->id(),
+            'updated_at' => now(),
+            'updated_by' => auth()->id(),
         ]));
 
         $supplier->load(['state', 'district']);
@@ -113,17 +118,22 @@ class SupplierController extends Controller
             ], 422);
         }
 
-        $supplier->update($request->only([
+        $data = $request->only([
             'company_name',
             'contact_person',
             'email',
             'phone_number',
             'address',
             'postcode',
-            'status',
             'state_id',
             'district_id',
-        ]));
+        ]);
+        if ($request->has('status')) {
+            $data['status'] = in_array($request->status, ['active', '1'], true) ? 1 : 0;
+        }
+        $data['updated_at'] = now();
+        $data['updated_by'] = auth()->id();
+        $supplier->update($data);
 
         $supplier->load(['state', 'district']);
 

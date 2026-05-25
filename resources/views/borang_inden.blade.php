@@ -97,7 +97,7 @@
 </head>
 <body>
   @php
-    $inden = $indenHeader ?? null;
+    $inden = optional($indenHeader ?? null);
     $isReadOnly = $readOnly ?? false;
     $fieldState = $isReadOnly ? 'readonly' : '';
     $formatTarikh = function ($value) {
@@ -297,22 +297,15 @@
         <div class="section-head">
           <div>
             <h2 class="h4 mb-1">Ringkasan Muster</h2>
-            <p class="muted mb-0">Muster khas, muster ditolak parol, parol dan muster penuh dihimpunkan dalam satu tempat.</p>
+            <p class="muted mb-0">Masukkan mana-mana nilai untuk mendapatkan pengiraan secara automatik berdasarkan formula Muster Penuh − Parol = Muster Ditolak Parol.</p>
           </div>
           <div class="chip">Langkah 2</div>
         </div>
         <div class="row g-4">
           <div class="col-md-3">
-            <label class="form-label">Muster Khas (Daging) <span class="text-danger">*</span></label>
-            <input class="form-control muster-input @error('muster_khas_daging') is-invalid @enderror" id="musterKhas" name="muster_khas_daging" type="number" min="0" step="1" value="{{ old('muster_khas_daging', $inden->muster_khas_daging ?? 0) }}" {{ $fieldState }} required>
-            @error('muster_khas_daging')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
-          <div class="col-md-3">
-            <label class="form-label">Muster Ditolak Parol <span class="text-danger">*</span></label>
-            <input class="form-control muster-input @error('muster_ditolak_parol') is-invalid @enderror" id="musterTolakParol" name="muster_ditolak_parol" type="number" min="0" step="1" value="{{ old('muster_ditolak_parol', $inden->muster_ditolak_parol ?? 0) }}" {{ $fieldState }} required>
-            @error('muster_ditolak_parol')
+            <label class="form-label">Muster Penuh <span class="text-danger">*</span></label>
+            <input class="form-control muster-input @error('muster_penuh') is-invalid @enderror" id="musterPenuh" name="muster_penuh" type="number" min="0" step="1" value="{{ old('muster_penuh', $inden->muster_penuh ?? 0) }}" {{ $fieldState }} required>
+            @error('muster_penuh')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
@@ -324,12 +317,20 @@
             @enderror
           </div>
           <div class="col-md-3">
-            <label class="form-label">Muster Penuh <span class="text-danger">*</span></label>
-            <input class="form-control muster-input @error('muster_penuh') is-invalid @enderror" id="musterPenuh" name="muster_penuh" type="number" min="0" step="1" value="{{ old('muster_penuh', $inden->muster_penuh ?? 0) }}" {{ $fieldState }} required>
-            @error('muster_penuh')
+            <label class="form-label">Muster Ditolak Parol <span class="text-danger">*</span></label>
+            <input class="form-control muster-input @error('muster_ditolak_parol') is-invalid @enderror" id="musterTolakParol" name="muster_ditolak_parol" type="number" min="0" step="1" value="{{ old('muster_ditolak_parol', $inden->muster_ditolak_parol ?? 0) }}" {{ $fieldState }} required>
+            @error('muster_ditolak_parol')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
+          <div class="col-md-3">
+            <label class="form-label">Muster Khas (Daging) <span class="text-danger">*</span></label>
+            <input class="form-control muster-input @error('muster_khas_daging') is-invalid @enderror" id="musterKhas" name="muster_khas_daging" type="number" min="0" step="1" value="{{ old('muster_khas_daging', $inden->muster_khas_daging ?? 0) }}" {{ $fieldState }} required>
+            @error('muster_khas_daging')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+          </div>
+          <input id="musterExclusion" type="hidden" value="0">
         </div>
         <div class="row g-3 mt-1 d-none">
           <div class="col-md-4"><div class="card-box p-3"><small class="text-muted d-block">Jumlah Asas</small><strong id="baseMusterTotal">0</strong></div></div>
@@ -629,12 +630,58 @@
         });
       }
 
-      function updateMusterSummary() {
-        const base = numberValue(document.getElementById('musterKhas')) + numberValue(document.getElementById('musterTolakParol')) + numberValue(document.getElementById('musterPenuh'));
-        const parol = numberValue(document.getElementById('parol'));
-        document.getElementById('baseMusterTotal').textContent = formatNumber(base);
-        document.getElementById('parolAdjustment').textContent = formatNumber(parol);
-        document.getElementById('finalMusterTotal').textContent = formatNumber(Math.max(base - parol, 0));
+      let isUpdatingMuster = false;
+
+      function updateMusterSummary(event) {
+        if (isUpdatingMuster) return;
+        isUpdatingMuster = true;
+
+        try {
+          const changed = event?.target?.id || '';
+          const penuhEl = document.getElementById('musterPenuh');
+          const parolEl = document.getElementById('parol');
+          const ditolakEl = document.getElementById('musterTolakParol');
+          const khasEl = document.getElementById('musterKhas');
+          const exclusionEl = document.getElementById('musterExclusion');
+
+          let penuh = numberValue(penuhEl);
+          let parol = numberValue(parolEl);
+          let ditolak = numberValue(ditolakEl);
+          let khas = numberValue(khasEl);
+          let exclusion = numberValue(exclusionEl);
+
+          if (changed === 'musterPenuh' || changed === 'parol') {
+            if (penuh > 0 && parol > 0) {
+              ditolak = Math.max(penuh - parol, 0);
+              ditolakEl.value = ditolak;
+            }
+          } else if (changed === 'musterTolakParol') {
+            if (penuh > 0 && ditolak > 0) {
+              parolEl.value = Math.max(penuh - ditolak, 0);
+            } else if (parol > 0 && ditolak > 0) {
+              penuhEl.value = parol + ditolak;
+            }
+          }
+
+          if (changed === 'musterKhas' && khas > 0) {
+            ditolak = numberValue(ditolakEl);
+            exclusion = ditolak > 0 ? Math.max(ditolak - khas, 0) : 0;
+            exclusionEl.value = exclusion;
+          }
+
+          penuh = numberValue(penuhEl);
+          parol = numberValue(parolEl);
+          ditolak = numberValue(ditolakEl);
+          khas = numberValue(khasEl);
+          exclusion = numberValue(exclusionEl);
+
+          if (ditolak > 0 && exclusion > 0 && changed !== 'musterKhas') {
+            khas = Math.max(ditolak - exclusion, 0);
+            khasEl.value = khas;
+          }
+        } finally {
+          isUpdatingMuster = false;
+        }
       }
 
       function updateSummary() {
@@ -782,7 +829,7 @@
         updateSummary();
       }
 
-      musterInputs.forEach((input) => input.addEventListener('input', updateMusterSummary));
+      musterInputs.forEach((input) => input.addEventListener('input', (e) => updateMusterSummary(e)));
       wireUlasanCounter();
       initItemDataTable();
 
@@ -984,6 +1031,13 @@
         addItem({ name: '', unit: 'Unit', orderQty: 0, unitPrice: 0, receivedQty: 0, notes: '' });
       }
 
+      (function initMuster() {
+        const ditolak = numberValue(document.getElementById('musterTolakParol'));
+        const khas = numberValue(document.getElementById('musterKhas'));
+        if (ditolak > 0 && khas > 0) {
+          document.getElementById('musterExclusion').value = Math.max(ditolak - khas, 0);
+        }
+      })();
       updateMusterSummary();
       updateSummary();
     })();

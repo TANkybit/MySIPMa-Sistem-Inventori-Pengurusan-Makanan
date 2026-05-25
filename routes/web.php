@@ -56,12 +56,9 @@ Route::get('/welcome', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/admin', function () {
         $institutions = \App\Models\Institution::orderBy('name')->get();
-        $positions = \App\Models\Position::orderBy('name')->get();
-        $roles = \App\Models\Role::orderBy('role_name')->get();
-        $categories = \App\Models\Category::orderBy('name')->get();
         $uoms = \App\Models\Uom::orderBy('code')->get();
 
-        return view('admin_dashboard', compact('institutions', 'positions', 'roles', 'categories', 'uoms'));
+        return view('admin_dashboard', compact('institutions', 'uoms'));
     })->name('admin.dashboard');
 
     Route::get('/pengarah-hq', function () {

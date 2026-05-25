@@ -135,6 +135,7 @@ class AuthController extends Controller
             
             // Update the user's password in the database
             $user->password = Hash::make($newPassword);
+            $user->updated_at = now();
             $user->save();
 
             // Send the email with the new password

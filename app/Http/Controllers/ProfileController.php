@@ -64,7 +64,7 @@ class ProfileController extends Controller
         return view('profile', [
             'user' => $user,
             'avatarUrl' => $this->getAvatarUrl($user),
-            'pendingApprovals' => Approval::where('status', 0)->count(),
+            'pendingApprovals' => \App\Http\Controllers\DashboardController::pendingApprovalCount(),
             'institutionName' => $institutionName,
             'positionName' => $positionName,
             'roleName' => $roleName,
@@ -82,7 +82,7 @@ class ProfileController extends Controller
         return view('update', [
             'user' => $user,
             'avatarUrl' => $this->getAvatarUrl($user),
-            'pendingApprovals' => Approval::where('status', 0)->count(),
+            'pendingApprovals' => \App\Http\Controllers\DashboardController::pendingApprovalCount(),
             'institutions' => $institutions,
             'positions' => $positions,
             'roles' => $roles,
@@ -111,7 +111,10 @@ class ProfileController extends Controller
             'position_id' => 'nullable|integer',
         ]);
 
-        $data = ['name' => $request->name];
+        $data = [
+            'name' => $request->name,
+            'updated_at' => now(),
+        ];
 
         if ($request->filled('email')) {
             $data['email'] = $request->email;
@@ -154,7 +157,7 @@ class ProfileController extends Controller
         // Store new avatar
         $path = $request->file('avatar')->store('avatars', 'public');
 
-        $user->update(['image' => $path]);
+        $user->update(['image' => $path, 'updated_at' => now()]);
 
         $avatarUrl = asset('storage/' . $path);
 
@@ -190,6 +193,7 @@ class ProfileController extends Controller
 
         $user->update([
             'password' => Hash::make($request->password),
+            'updated_at' => now(),
         ]);
 
         if ($request->expectsJson()) {

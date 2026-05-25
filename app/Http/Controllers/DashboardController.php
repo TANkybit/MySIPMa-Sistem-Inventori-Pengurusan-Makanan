@@ -21,7 +21,7 @@ class DashboardController extends Controller
     public function userDashboard()
     {
         $totalOrders = Order::count();
-        $pendingApprovals = Approval::where('status', 0)->count();
+        $pendingApprovals = $this->pendingApprovalCount();
         $inProgressOrders = Order::where('status', 'In Progress')->count();
         $completedOrders = Order::where('status', 'Completed')->count();
 
@@ -116,19 +116,19 @@ class DashboardController extends Controller
     {
         return view('senarai_inden', [
             'orders' => $this->ordersWithDetails()->get(),
-            'pendingApprovals' => Approval::where('status', 0)->count(),
+            'pendingApprovals' => $this->pendingApprovalCount(),
         ]);
     }
 
     public function pengesahanInden()
     {
         $pendingOrders = $this->ordersWithDetails()
-            ->where('approvals.status', 0)
+            ->where('orders.status', 'Pending')
             ->get();
 
         return view('pengesahan_inden', [
             'pendingOrders' => $pendingOrders,
-            'pendingApprovals' => Approval::where('status', 0)->count(),
+            'pendingApprovals' => $this->pendingApprovalCount(),
         ]);
     }
 
@@ -233,7 +233,7 @@ class DashboardController extends Controller
         ]);
 
         $orderId = DB::transaction(function () use ($validated) {
-            $today = now()->toDateString();
+            $today = now();
             $items = collect($validated['items'] ?? [])
                 ->filter(fn ($item) => !empty($item['name']));
 
@@ -389,6 +389,16 @@ class DashboardController extends Controller
             ->with('success', $message);
     }
 
+    public static function pendingApprovalCount(): int
+    {
+        return Order::where('orders.status', 'Pending')
+            ->where(function ($q) {
+                $q->whereDoesntHave('approvals')
+                  ->orWhereHas('approvals', fn ($q2) => $q2->where('status', 0));
+            })
+            ->count();
+    }
+
     private function ordersWithDetails()
     {
         return Order::query()
@@ -437,7 +447,7 @@ class DashboardController extends Controller
                     'o.order_no as no_pesanan',
                     'c.contract_no as no_kontrak',
                     'o.order_date as tarikh_pesanan',
-                    DB::raw("DATE_FORMAT(o.created_at, '%H:%i') as masa"),
+                    'd.delivery_time as masa',
                     'd.delivery_session as sesi_kod',
                     'i.id as institution_id',
                     'i.name as kepada_institusi',
@@ -450,6 +460,7 @@ class DashboardController extends Controller
                     'd.muster_ditolak_parol',
                     'd.parol',
                     'd.muster_penuh',
+                    'd.special_exclusion',
                     'u.name as disediakan_oleh',
                     'p.name as jawatan_cop',
                     'd.supplier_declaration_date as tarikh_pembekal',
@@ -461,6 +472,7 @@ class DashboardController extends Controller
                     'oi.unit_price as harga_seunit',
                     'oi.ordered_total_price as jumlah_harga_item',
                     'oi.status as status_item',
+                    'oi.remarks as catatan_item',
                     'a.status as status_kelulusan',
                     'a.approval_date as tarikh_kelulusan',
                     'a.remarks as ulasan_kelulusan',
@@ -479,7 +491,7 @@ class DashboardController extends Controller
                 'orderQty' => (float) $row->kuantiti_dipesan,
                 'unitPrice' => (float) $row->harga_seunit,
                 'receivedQty' => 0,
-                'notes' => $row->status_item,
+                'notes' => $row->catatan_item,
             ])
             ->values();
 
@@ -487,7 +499,7 @@ class DashboardController extends Controller
             'indenHeader' => $indenHeader,
             'indenItems' => $indenItems,
             'readOnly' => $readOnly,
-            'pendingApprovals' => Approval::where('status', 0)->count(),
+            'pendingApprovals' => $this->pendingApprovalCount(),
             'institutions' => \App\Models\Institution::orderBy('name')->get(['id', 'name']),
             'suppliers' => \App\Models\Supplier::orderBy('company_name')->get(['id', 'company_name', 'address', 'postcode']),
         ]);

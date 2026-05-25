@@ -20,11 +20,8 @@ class CategoryController extends Controller
             'data' => $categories->map(function($cat) {
                 return [
                     'id' => $cat->id,
-                    'code' => $cat->code,
                     'name' => $cat->name,
-                    'description' => $cat->description,
                     'totalItems' => $cat->items_count,
-                    'status' => $cat->status
                 ];
             })
         ]);

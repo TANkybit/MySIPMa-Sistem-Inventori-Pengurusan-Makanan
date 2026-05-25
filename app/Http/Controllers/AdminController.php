@@ -94,7 +94,9 @@ class AdminController extends Controller
                 'role_id' => $roleId,
                 'position_id' => $positionId,
                 'image' => $imagePath,
-                'created_by' => auth()->id() ?? 1, // fallback to 1 if not auth for some reason
+                'created_at' => now(),
+                'created_by' => auth()->id() ?? 1,
+                'updated_at' => now(),
             ]);
 
             Log::info("New user registered successfully: {$user->email}. Password generated: {$plainPassword}");
@@ -166,6 +168,7 @@ class AdminController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone_number' => $request->phone_number,
+                'updated_at' => now(),
                 'updated_by' => auth()->id() ?? 1,
             ];
 
@@ -271,7 +274,7 @@ class AdminController extends Controller
 
     private function statusToFrontendValue(mixed $status): string
     {
-        if ($status === null || $status === '') {
+        if ($status === null || $status === '' || $status === false) {
             return 'active';
         }
 

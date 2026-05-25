@@ -1811,7 +1811,7 @@
                                         class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
                                         <span><i class="fas fa-building me-2 text-primary"></i>Institusi</span>
                                         <span
-                                            class="fw-medium" id="displayProfileInstitution">{{ auth()->user()->institution->name ?? 'Ibu Pejabat Penjara' }}</span>
+                                            class="fw-medium" id="displayProfileInstitution">{{ auth()->user()?->institution?->name ?? 'Ibu Pejabat Penjara' }}</span>
                                     </li>
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
