@@ -127,19 +127,19 @@
                     </div>
                     <div class="row g-3 mb-4">
                         <div class="col-lg-4 col-md-6">
-                            <div class="card p-4">
+                            <div class="card p-4 h-100">
                                 <h6 class="text-uppercase text-muted mb-3">Institusi Terpilih</h6>
                                 <h3 class="mb-0">{{ optional($selectedInstitution)->name ?? 'Tiada institusi dipilih' }}</h3>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
-                            <div class="card p-4">
+                            <div class="card p-4 h-100">
                                 <h6 class="text-uppercase text-muted mb-3">Jumlah Pesanan</h6>
                                 <h3 class="mb-0">{{ $orders->count() }}</h3>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
-                            <div class="card p-4">
+                            <div class="card p-4 h-100">
                                 <h6 class="text-uppercase text-muted mb-3">Jumlah Pembekal</h6>
                                 <h3 class="mb-0">{{ $suppliers->count() }}</h3>
                             </div>
