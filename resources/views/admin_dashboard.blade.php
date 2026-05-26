@@ -364,7 +364,7 @@
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
                                             <h6 class="mb-2">Jumlah Pembekal</h6>
-                                            <h2 class="mb-0" id="total-inmates">1,245</h2>
+                                            <h2 class="mb-0" id="total-inmates">{{ $totalSuppliers ?? 0 }}</h2>
                                             <div class="stat-change up">
                                                 <i class="fas fa-arrow-up me-1"></i>
                                                 <span>5.2% dari bulan lepas</span>
@@ -387,7 +387,7 @@
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
                                             <h6 class="mb-2">Jumlah Institusi</h6>
-                                            <h2 class="mb-0" id="total-institutions">30</h2>
+                                            <h2 class="mb-0" id="total-institutions">{{ $totalInstitutions ?? 0 }}</h2>
                                             <div class="stat-change up">
                                                 <i class="fas fa-arrow-up me-1"></i>
                                                 <span>2 baru bulan ini</span>
@@ -410,7 +410,7 @@
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
                                             <h6 class="mb-2">Senarai Item</h6>
-                                            <h2 class="mb-0" id="total-materials">156</h2>
+                                            <h2 class="mb-0" id="total-materials">{{ $totalItems ?? 0 }}</h2>
                                             <div class="stat-change down">
                                                 <i class="fas fa-arrow-down me-1"></i>
                                                 <span>3.2% dari bulan lepas</span>
@@ -433,7 +433,7 @@
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
                                             <h6 class="mb-2">Menunggu Pengesahan</h6>
-                                            <h2 class="mb-0" id="pending-orders">24</h2>
+                                            <h2 class="mb-0" id="pending-orders">{{ $pendingApprovals ?? 0 }}</h2>
                                             <div class="stat-change up">
                                                 <i class="fas fa-arrow-up me-1"></i>
                                                 <span>8 permintaan baru</span>
@@ -2617,7 +2617,12 @@
     <script>
         // Override hardcoded institutions with database data
         if (window.prisonData) {
-            window.prisonData.institutions = @json($institutions);
+            window.prisonData.institutions = @json($institutions ?? []);
+            
+            @if(isset($rawMaterials))
+            // Override rawMaterials with database items for charts and materials table
+            window.prisonData.rawMaterials = @json($rawMaterials);
+            @endif
         }
     </script>
     <script src="{{ asset('script.js') }}"></script>

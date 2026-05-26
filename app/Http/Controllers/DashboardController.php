@@ -33,6 +33,40 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function pengarahHQDashboard()
+    {
+        $institutions = Institution::orderBy('name')->get();
+        $uoms = \App\Models\Uom::orderBy('code')->get();
+        
+        $totalSuppliers = \App\Models\Supplier::count();
+        $totalInstitutions = Institution::count();
+        $totalItems = \App\Models\Item::count();
+        $pendingApprovals = $this->pendingApprovalCount();
+
+        $rawMaterials = \App\Models\Item::leftJoin('categories', 'items.category_id', '=', 'categories.id')
+            ->leftJoin('uom', 'items.uom_id', '=', 'uom.id')
+            ->select('items.*', 'categories.name as categoryName', 'uom.code as uomCode')
+            ->get()->map(function($item) {
+                // Determine a safe minStock to avoid div by zero in JS
+                $min = $item->monthly_limit ?: ($item->yearly_limit ? $item->yearly_limit / 12 : ($item->contract_limit ? $item->contract_limit / 12 : max(1, $item->current_quantity * 0.2)));
+                
+                return [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'category' => $item->categoryName ?? 'Tiada',
+                    'stock' => (float)$item->current_quantity,
+                    'unit' => $item->uomCode ?? 'Unit',
+                    'minStock' => (float)$min,
+                    'price' => (float)$item->price_per_unit,
+                    'status' => $item->status ? 'aktif' : 'tidak aktif',
+                    'description' => '',
+                    'lastUpdated' => date('Y-m-d')
+                ];
+            });
+
+        return view('admin_dashboard', compact('institutions', 'uoms', 'totalSuppliers', 'totalInstitutions', 'totalItems', 'pendingApprovals', 'rawMaterials'));
+    }
+
     public function pengarahInstitusiDashboard(Request $request)
     {
         $institutions = Institution::orderBy('name')->get();
@@ -718,6 +752,45 @@ class DashboardController extends Controller
         return response()->json([
             'success' => true,
             'data' => $items,
+        ]);
+    }
+
+    public function stockByCategory()
+    {
+        $categories = DB::table('categories')
+            ->select('id', 'name')
+            ->get();
+
+        $data = [];
+        foreach ($categories as $category) {
+            $items = DB::table('items')
+                ->where('category_id', $category->id)
+                ->get();
+            
+            $activeCount = $items->where('status', 1)->count();
+            $criticalCount = 0;
+            
+            foreach ($items as $item) {
+                $stock = (float) ($item->current_quantity ?? 0);
+                $minStock = $this->resolveMinimumStock($item, $stock);
+                if ($stock < $minStock) {
+                    $criticalCount++;
+                }
+            }
+
+            if ($items->count() > 0) {
+                $data[] = [
+                    'name' => $category->name,
+                    'total' => $items->count(),
+                    'active' => $activeCount,
+                    'critical' => $criticalCount
+                ];
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
         ]);
     }
 

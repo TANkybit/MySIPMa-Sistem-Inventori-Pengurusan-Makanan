@@ -54,12 +54,7 @@ Route::get('/welcome', function () {
 })->name('welcome');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/admin', function () {
-        $institutions = \App\Models\Institution::orderBy('name')->get();
-        $uoms = \App\Models\Uom::orderBy('code')->get();
-
-        return view('admin_dashboard', compact('institutions', 'uoms'));
-    })->name('admin.dashboard');
+    Route::get('/admin', [DashboardController::class, 'pengarahHQDashboard'])->name('admin.dashboard');
 
     Route::get('/pengarah-hq', function () {
         return redirect()->route('admin.dashboard');
@@ -70,6 +65,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard/critical-stock', [DashboardController::class, 'criticalStock'])->name('dashboard.critical-stock');
     Route::get('/dashboard/stock-forecast', [DashboardController::class, 'stockForecast'])->name('dashboard.stock-forecast');
+    Route::get('/dashboard/stock-by-category', [DashboardController::class, 'stockByCategory'])->name('dashboard.stock-by-category');
 
     Route::get('/admin/users', [\App\Http\Controllers\AdminController::class, 'listAdmins'])->name('admin.users');
     Route::post('/admin/register', [\App\Http\Controllers\AdminController::class, 'registerAdmin'])->name('admin.register');
