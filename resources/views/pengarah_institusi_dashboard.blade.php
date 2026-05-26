@@ -120,27 +120,34 @@
                                         <div class="col-lg-2 col-md-4">
                                             <button type="submit" class="btn btn-primary w-100">Tapis</button>
                                         </div>
-                            <div class="row g-3 mb-4">
-                <div class="col-lg-4 col-md-6">
-                    <div class="card h-100 p-4 d-flex flex-column justify-content-center">
-                        <h6 class="text-uppercase text-muted mb-3">Institusi Terpilih</h6>
-                        <h3 class="mb-0 text-center">{{ optional($selectedInstitution)->name ?? 'Tiada institusi dipilih' }}</h3>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="card h-100 p-4 d-flex flex-column justify-content-center">
-                        <h6 class="text-uppercase text-muted mb-3">Jumlah Pesanan</h6>
-                        <h3 class="mb-0 text-center">{{ $orders->count() }}</h3>
+                    <div class="row g-3 mb-4">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card p-4">
+                                <h6 class="text-uppercase text-muted mb-3">Institusi Terpilih</h6>
+                                <h3 class="mb-0">{{ optional($selectedInstitution)->name ?? 'Tiada institusi dipilih' }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card p-4">
+                                <h6 class="text-uppercase text-muted mb-3">Jumlah Pesanan</h6>
+                                <h3 class="mb-0">{{ $orders->count() }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card p-4">
+                                <h6 class="text-uppercase text-muted mb-3">Jumlah Pembekal</h6>
+                                <h3 class="mb-0">{{ $suppliers->count() }}</h3>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="card h-100 p-4 d-flex flex-column justify-content-center">
-                        <h6 class="text-uppercase text-muted mb-3">Jumlah Pembekal</h6>
-                        <h3 class="mb-0 text-center">{{ $suppliers->count() }}</h3>
-                    </div>
-                </div>
-            </div>
-            <div class="d-flex flex-wrap gap-2 mb-3 tab-buttons">
+                    <div class="row mb-4">
+                        <div class="col-lg-12">
+                            <div class="d-flex flex-wrap gap-2 mb-3 tab-buttons">
                                 <button data-page="dashboard" class="btn btn-primary">Dashboard</button>
                                 <button data-page="institusi" class="btn btn-outline-primary">Institusi</button>
                                 <button data-page="pembekal" class="btn btn-outline-primary">Pembekal</button>
