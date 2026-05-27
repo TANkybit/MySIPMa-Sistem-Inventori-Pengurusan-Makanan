@@ -1445,14 +1445,12 @@ const prisonData = {
 
     // Positions (Jawatan)
     positions: [
-        { id: 1, title: 'Pengarah Penjara', grade: 'KA52', department: 'Pengurusan Tertinggi', status: 'active' },
-        { id: 2, title: 'Timbalan Pengarah', grade: 'KA48', department: 'Pengurusan', status: 'active' },
-        { id: 3, title: 'Ketua Inspektor Penjara', grade: 'KA44', department: 'Operasi', status: 'active' },
-        { id: 4, title: 'Inspektor Penjara', grade: 'KA41', department: 'Keselamatan', status: 'active' },
-        { id: 5, title: 'Sarjan Mejar Penjara', grade: 'KA32', department: 'Keselamatan', status: 'active' },
-        { id: 6, title: 'Sarjan Penjara', grade: 'KA29', department: 'Logistik', status: 'active' },
-        { id: 7, title: 'Koperal Penjara', grade: 'KA24', department: 'Vokasional', status: 'active' },
-        { id: 8, title: 'Warder Penjara', grade: 'KA19', department: 'Unit Kawalan', status: 'active' }
+        { id: 1, code: 'ADN', title: 'Admin Negeri', grade: null, department: 'Pentadbiran', status: 'active' },
+        { id: 2, code: 'ADI', title: 'Admin Institusi', grade: null, department: 'Pentadbiran', status: 'active' },
+        { id: 3, code: 'ADHQ', title: 'Admin HQ', grade: null, department: 'Pentadbiran', status: 'active' },
+        { id: 4, code: 'PP', title: 'Pegawai Pengesah', grade: null, department: 'Pengesahan', status: 'active' },
+        { id: 5, code: 'PR', title: 'Pegawai Penerima', grade: null, department: 'Penerimaan', status: 'active' },
+        { id: 6, code: 'PS', title: 'Pegawai Stor', grade: null, department: 'Stor', status: 'active' }
     ],
 
     // Suppliers (Pembekal)

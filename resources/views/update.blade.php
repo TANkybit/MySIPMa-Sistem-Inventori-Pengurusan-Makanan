@@ -523,20 +523,32 @@
 
       <nav id="navmenu" class="navmenu">
         <ul>
+          @if(Auth::user()->role?->role_name === 'Admin')
+          <li><a href="{{ route('admin.dashboard') }}"
+              class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a></li>
+          @else
           <li><a href="{{ route('user.dashboard') }}"
               class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Dashboard</a></li>
+          @endif
           <li><a href="{{ route('user.senarai.inden') }}"
               class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
+          @if(Auth::user()->hasPermission('pengesahan_inden'))
           <li><a href="{{ route('user.pengesahan.inden') }}"
               class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
+          @endif
+          @if(Auth::user()->hasPermission('borang_inden'))
           <li><a href="{{ route('borang.inden') }}"
-               class="{{ request()->routeIs('borang.inden') ? 'active' : '' }}">Borang Inden</a></li>
+               class="{{ request()->routeIs('borang.inden*') ? 'active' : '' }}">Borang Inden</a></li>
+          @endif
+          @if(Auth::user()->hasPermission('penerimaan_inden'))
           <li><a href="{{ route('borang.penerimaan') }}" class="{{ request()->routeIs('borang.penerimaan') ? 'active' : '' }}">Penerimaan</a></li>
+          @endif
           </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
       <div class="d-none d-xl-flex align-items-center gap-3">
+        @if(Auth::user()->hasPermission('pengesahan_inden'))
         <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3"
           style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'"
           onmouseout="this.style.color='white'">
@@ -547,6 +559,7 @@
             <span class="visually-hidden">Inden belum disah</span>
           </span>
         </a>
+        @endif
         <a href="{{ route('profile') }}" class="profile-nav-link active text-decoration-none" style="transition: color 0.3s;"><i
             class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}</a>
         <form action="{{ route('logout') }}" method="POST" class="d-inline">
@@ -705,7 +718,7 @@
           document.getElementById('emailInput').value = data.email || '';
           document.getElementById('institusiInput').value = data.institution_id || '';
           document.getElementById('jawatanInput').value = data.position_id || '';
-          document.getElementById('perananInput').value = data.role_id || '';
+          document.getElementById('perananInput').value = data.username || '';
           document.getElementById('telefonInput').value = data.phone_number || '';
           
           // Display avatar if exists

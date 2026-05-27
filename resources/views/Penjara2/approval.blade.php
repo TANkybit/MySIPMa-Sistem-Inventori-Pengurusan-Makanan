@@ -28,7 +28,11 @@
 
           <div class="input-section">
             <span class="label-text">Ulasan:</span>
-            <textarea name="ulasan" placeholder="Sila masukkan ulasan anda..."></textarea>
+            <textarea name="ulasan" id="ulasanTextarea" placeholder="Sila masukkan ulasan anda..." maxlength="1250"></textarea>
+            <div class="d-flex justify-content-between mt-1">
+              <small class="text-muted" id="ulasanWordCount">0 / 250 patah perkataan</small>
+              <small id="ulasanWordWarning" class="text-danger" style="display:none;">Had 250 patah perkataan telah dicapai!</small>
+            </div>
           </div>
 
           <div class="checkbox-section">

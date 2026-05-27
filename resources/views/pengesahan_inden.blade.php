@@ -391,15 +391,22 @@
         <ul>
           <li><a href="{{ route('user.dashboard') }}" class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Dashboard</a></li>
           <li><a href="{{ route('user.senarai.inden') }}" class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
+          @if(Auth::user()->hasPermission('pengesahan_inden'))
           <li><a href="{{ route('user.pengesahan.inden') }}" class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
-          <li><a href="{{ route('borang.inden') }}" class="{{ request()->routeIs('borang.inden') ? 'active' : '' }}">Borang Inden</a></li>
+          @endif
+          @if(Auth::user()->hasPermission('borang_inden'))
+          <li><a href="{{ route('borang.inden') }}" class="{{ request()->routeIs('borang.inden*') ? 'active' : '' }}">Borang Inden</a></li>
+          @endif
+          @if(Auth::user()->hasPermission('penerimaan_inden'))
           <li><a href="{{ route('borang.penerimaan') }}" class="{{ request()->routeIs('borang.penerimaan') ? 'active' : '' }}">Penerimaan</a></li>
+          @endif
           </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
       <div class="d-none d-xl-flex align-items-center gap-3">
         <!-- Notification Bell -->
+        @if(Auth::user()->hasPermission('pengesahan_inden'))
         <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color='white'">
           <i class="bi bi-bell-fill"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
@@ -407,6 +414,7 @@
             <span class="visually-hidden">Inden belum disah</span>
           </span>
         </a>
+        @endif
         <a href="{{ route('profile') }}" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">
           <i class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}
         </a>
@@ -533,6 +541,20 @@
                     approvalOrderNo.textContent = orderNo || 'Tidak diketahui';
                 }
             });
+        });
+
+        $('#ulasanTextarea').on('input', function() {
+            const text = $(this).val().trim();
+            const words = text ? text.split(/\s+/).filter(w => w.length > 0) : [];
+            const count = words.length;
+            $('#ulasanWordCount').text(count + ' / 250 patah perkataan');
+            if (count > 250) {
+                $('#ulasanWordWarning').show();
+                $('#ulasanWordCount').addClass('text-danger');
+            } else {
+                $('#ulasanWordWarning').hide();
+                $('#ulasanWordCount').removeClass('text-danger');
+            }
         });
     });
   </script>

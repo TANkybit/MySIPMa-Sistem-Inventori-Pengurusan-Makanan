@@ -71,9 +71,15 @@
         <ul>
           <li><a href="{{ route('user.dashboard') }}" class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Dashboard</a></li>
           <li><a href="{{ route('user.senarai.inden') }}" class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
+          @if(Auth::user()->hasPermission('pengesahan_inden'))
           <li><a href="{{ route('user.pengesahan.inden') }}" class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
-          <li><a href="{{ route('borang.inden') }}" class="{{ request()->routeIs('borang.inden') ? 'active' : '' }}">Borang Inden</a></li>
+          @endif
+          @if(Auth::user()->hasPermission('borang_inden'))
+          <li><a href="{{ route('borang.inden') }}" class="{{ request()->routeIs('borang.inden*') ? 'active' : '' }}">Borang Inden</a></li>
+          @endif
+          @if(Auth::user()->hasPermission('penerimaan_inden'))
           <li><a href="{{ route('borang.penerimaan') }}" class="{{ request()->routeIs('borang.penerimaan') ? 'active' : '' }}">Penerimaan</a></li>
+          @endif
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
@@ -120,7 +126,7 @@
           <select class="form-select" name="order_id" id="orderSelect" required>
             <option value="">-- Pilih No. Inden --</option>
             @foreach($orders as $order)
-              <option value="{{ $order->id }}" data-supplier="{{ $order->supplier_name ?? '-' }}" data-date="{{ $order->order_date ?? '-' }}" data-institution="{{ $order->institution_name ?? '-' }}" {{ (request('order_id') == $order->id) ? 'selected' : '' }}>{{ $order->order_no }} - {{ $order->supplier_name ?? '-' }} ({{ $order->order_date ?? '-' }})</option>
+              <option value="{{ $order->id }}" data-supplier="{{ $order->supplier_name ?? '-' }}" data-date="{{ $order->formatted_date ?? $order->order_date ?? '-' }}" data-institution="{{ $order->institution_name ?? '-' }}" {{ (request('order_id') == $order->id) ? 'selected' : '' }}>{{ $order->order_no }} - {{ $order->supplier_name ?? '-' }} ({{ $order->formatted_date ?? $order->order_date ?? '-' }})</option>
             @endforeach
           </select>
         </div>
@@ -165,7 +171,7 @@
             <input type="text" class="form-control" name="received_by" value="{{ Auth::user()->name }}">
           </div>
           <div class="col-md-4">
-            <label class="form-label">No. Rujukan / Resit</label>
+            <label class="form-label">No. Kontrak</label>
             <input type="text" class="form-control" name="reference_no" placeholder="No. resit / delivery order">
           </div>
         </div>
@@ -178,7 +184,8 @@
               <div class="col-2">Unit</div>
               <div class="col-2">Kuantiti Dipesan</div>
               <div class="col-2">Kuantiti Diterima</div>
-              <div class="col-2">Catatan</div>
+              <div class="col-1">Catatan</div>
+              <div class="col-1 text-center">Salah</div>
             </div>
           </div>
           <div id="itemsContainer">
@@ -189,7 +196,11 @@
         <div class="row mt-4">
           <div class="col-md-6">
             <label class="form-label">Catatan Penerimaan</label>
-            <textarea class="form-control" name="remarks" rows="3" placeholder="Sebarang catatan mengenai penerimaan..."></textarea>
+            <textarea class="form-control" name="remarks" id="remarksTextarea" rows="3" placeholder="Sebarang catatan mengenai penerimaan..." maxlength="1250"></textarea>
+            <div class="d-flex justify-content-between mt-1">
+              <small class="text-muted" id="wordCount">0 / 250 patah perkataan</small>
+              <small id="wordWarning" class="text-danger" style="display:none;">Had 250 patah perkataan telah dicapai!</small>
+            </div>
           </div>
           <div class="col-md-6">
             <label class="form-label">Status Penerimaan</label>
@@ -243,16 +254,17 @@
             if (!res.success) return;
             const data = res.data;
             $('#infoOrderNo').text(data.order_no);
-            $('#infoOrderDate').text(data.order_date);
+            $('#infoOrderDate').text(data.formatted_date || data.order_date);
             $('#infoSupplier').text(data.supplier_name);
             $('#infoInstitution').text(data.institution_name);
+            $('input[name="reference_no"]').val(data.contract_no || '');
             $('#orderInfoPanel').show();
 
             let html = '';
             if (data.items && data.items.length > 0) {
               data.items.forEach(function(item, idx) {
                 html += `
-                  <div class="item-card">
+                    <div class="item-card" data-item-id="${item.id}">
                     <div class="row align-items-center g-2">
                       <div class="col-1"><span class="item-index">${idx + 1}</span></div>
                       <div class="col-3"><strong>${item.name}</strong></div>
@@ -263,8 +275,27 @@
                         <input type="hidden" name="items[${item.id}][item_id]" value="${item.item_id}">
                         <input type="hidden" name="items[${item.id}][ordered_qty]" value="${item.ordered_qty}">
                       </div>
-                      <div class="col-2">
+                      <div class="col-1">
                         <input type="text" name="items[${item.id}][remarks]" class="form-control" placeholder="Catatan" style="min-height:38px;">
+                      </div>
+                      <div class="col-1 text-center">
+                        <div class="form-check d-flex justify-content-center">
+                          <input class="form-check-input wrong-toggle" type="checkbox" name="items[${item.id}][is_wrong]" value="1" style="width:22px;height:22px;border-radius:6px;border:2px solid rgba(255,255,255,.2);background:transparent;cursor:pointer;">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row g-2 mt-2 wrong-replacement" style="display:none;">
+                      <div class="col-md-4">
+                        <input type="text" name="items[${item.id}][replace_name]" class="form-control" placeholder="Nama barang sepatutnya" style="min-height:38px;">
+                      </div>
+                      <div class="col-md-3">
+                        <input type="text" name="items[${item.id}][replace_unit]" class="form-control" placeholder="Unit" style="min-height:38px;">
+                      </div>
+                      <div class="col-md-3">
+                        <input type="number" name="items[${item.id}][replace_qty]" class="form-control" placeholder="Kuantiti" min="0" step="0.01" style="min-height:38px;">
+                      </div>
+                      <div class="col-md-2 d-flex align-items-center">
+                        <small class="text-warning">Barang gantian</small>
                       </div>
                     </div>
                   </div>
@@ -281,6 +312,26 @@
           }
         });
       }
+
+      // Toggle wrong-item replacement fields
+      $(document).on('change', '.wrong-toggle', function() {
+        $(this).closest('.item-card').find('.wrong-replacement').toggle(this.checked);
+      });
+
+      // Word counter for remarks
+      $('#remarksTextarea').on('input', function() {
+        const text = $(this).val().trim();
+        const words = text ? text.split(/\s+/).filter(w => w.length > 0) : [];
+        const count = words.length;
+        $('#wordCount').text(count + ' / 250 patah perkataan');
+        if (count > 250) {
+          $('#wordWarning').show();
+          $('#wordCount').addClass('text-danger');
+        } else {
+          $('#wordWarning').hide();
+          $('#wordCount').removeClass('text-danger');
+        }
+      });
 
       // Auto-load if preselected
       const preselected = $('#orderSelect').val();

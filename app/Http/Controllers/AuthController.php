@@ -56,18 +56,15 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             $user = Auth::user();
-            $positionName = $user->position?->name ?? '';
-            $redirectUrl = route('admin.dashboard');
+            $positionCode = $user->getPositionCode();
 
-            if (stripos($positionName, 'Pengarah Institusi') !== false) {
-                $redirectUrl = route('pengarah.institusi.dashboard');
-            } elseif (stripos($positionName, 'Pengarah Negeri') !== false) {
-                $redirectUrl = route('pengarah.negeri.dashboard');
-            } elseif (stripos($positionName, 'Pengarah HQ') !== false || stripos($positionName, 'Pengarah') !== false) {
-                $redirectUrl = route('pengarah.hq.dashboard');
-            } else {
-                $redirectUrl = route('user.dashboard');
-            }
+            $redirectUrl = match (true) {
+                $user->role?->role_name === 'Admin'             => route('admin.dashboard'),
+                $positionCode === 'PP'                          => route('user.dashboard'),
+                $positionCode === 'PR'                          => route('user.dashboard'),
+                $positionCode === 'PS'                          => route('user.dashboard'),
+                default                                         => route('user.dashboard'),
+            };
 
             return response()->json([
                 'success' => true,

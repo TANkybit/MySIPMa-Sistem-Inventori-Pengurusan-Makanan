@@ -334,19 +334,16 @@ class DashboardController extends Controller
                 $unitPrice = (float) ($item['unitPrice'] ?? 0);
                 $lineTotal = $quantity * $unitPrice;
 
-                $uomId = DB::table('uom')->where('code', $item['unit'] ?? 'Unit')->value('id');
-                $itemId = DB::table('items')->where('name', $item['name'])->value('id')
-                    ?: DB::table('items')->insertGetId([
-                        'name' => $item['name'],
-                        'price_per_unit' => $unitPrice,
-                        'current_quantity' => $quantity,
-                        'uom_id' => $uomId,
-                        'status' => 1,
-                        'created_at' => $today,
-                        'created_by' => Auth::id(),
-                        'updated_at' => $today,
-                        'updated_by' => Auth::id(),
+                $itemName = $item['name'] ?? '';
+                $itemId = is_numeric($itemName)
+                    ? DB::table('items')->where('id', $itemName)->value('id')
+                    : DB::table('items')->where('name', $itemName)->value('id');
+
+                if (!$itemId) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'items.*.name' => 'Item "' . e($itemName) . '" tidak wujud dalam pangkalan data.',
                     ]);
+                }
 
                 DB::table('order_items')->insert([
                     'order_id' => $orderId,
@@ -381,12 +378,25 @@ class DashboardController extends Controller
         });
 
         return redirect()
-            ->route('borang.inden.show', $orderId)
+            ->route('borang.inden')
             ->with('success', 'Borang inden berjaya dihantar dan disimpan.');
     }
 
     public function sahkanInden(Request $request, Order $order)
     {
+        $maxUlasanWords = function ($attribute, $value, $fail) {
+            if (!$value) return;
+            $wordCount = str_word_count(trim(strip_tags($value)));
+            if ($wordCount > 250) {
+                $fail('Ulasan tidak boleh melebihi 250 patah perkataan.');
+            }
+        };
+
+        $request->validate([
+            'approval' => 'required|in:sahkan,tidak_disahkan',
+            'ulasan' => ['nullable', 'string', $maxUlasanWords],
+        ]);
+
         $statusVal = $request->input('approval') === 'sahkan' ? 1 : 2; // 1 = Disahkan, 2 = Tidak Disahkan
         $remarksVal = $request->input('ulasan');
 
@@ -535,7 +545,7 @@ class DashboardController extends Controller
             'readOnly' => $readOnly,
             'pendingApprovals' => $this->pendingApprovalCount(),
             'institutions' => \App\Models\Institution::orderBy('name')->get(['id', 'name']),
-            'suppliers' => \App\Models\Supplier::orderBy('company_name')->get(['id', 'company_name', 'address', 'postcode']),
+            'suppliers' => \App\Models\Supplier::orderBy('company_name')->get(['id', 'company_name', 'contact_person', 'address', 'postcode']),
         ]);
     }
 
@@ -551,7 +561,17 @@ class DashboardController extends Controller
                 'institutions.name as institution_name',
             ])
             ->orderByDesc('orders.id')
-            ->get();
+            ->get()
+            ->map(function ($order) {
+                try {
+                    $order->formatted_date = $order->order_date && $order->order_date !== '0000-00-00'
+                        ? \Carbon\Carbon::parse($order->order_date)->format('d/m/Y')
+                        : '-';
+                } catch (\Throwable $e) {
+                    $order->formatted_date = '-';
+                }
+                return $order;
+            });
 
         return view('borang_penerimaan', [
             'orders' => $orders,
@@ -587,13 +607,23 @@ class DashboardController extends Controller
                 'received_qty' => (float) $i->received_quantity,
             ]);
 
+        try {
+            $formattedDate = $order->order_date && $order->order_date !== '0000-00-00'
+                ? \Carbon\Carbon::parse($order->order_date)->format('d/m/Y')
+                : '-';
+        } catch (\Throwable $e) {
+            $formattedDate = '-';
+        }
+
         return response()->json([
             'success' => true,
             'data' => [
                 'order_no' => $order->order_no,
                 'order_date' => $order->order_date,
+                'formatted_date' => $formattedDate,
                 'supplier_name' => $order->supplier?->company_name ?? '-',
                 'institution_name' => $order->institution?->name ?? '-',
+                'contract_no' => $order->contract?->contract_no ?? '-',
                 'items' => $items,
             ],
         ]);
@@ -615,13 +645,26 @@ class DashboardController extends Controller
 
         DB::transaction(function () use ($request, $orderId, $today) {
             foreach ($request->items as $orderItemId => $item) {
+                $remarks = $item['remarks'] ?? null;
+                if (!empty($item['is_wrong'])) {
+                    $replaceName = $item['replace_name'] ?? null;
+                    $replaceUnit = $item['replace_unit'] ?? null;
+                    $replaceQty = $item['replace_qty'] ?? null;
+                    $replacement = '';
+                    if ($replaceName) {
+                        $replacement = " Gantian: {$replaceName}";
+                        $replacement .= $replaceUnit ? " ({$replaceUnit})" : '';
+                        $replacement .= $replaceQty !== null && $replaceQty !== '' ? " x{$replaceQty}" : '';
+                    }
+                    $remarks = ($remarks ? $remarks . ' | ' : '') . '[SALAH]' . $replacement;
+                }
                 DB::table('order_items')
                     ->where('id', $orderItemId)
                     ->where('order_id', $orderId)
                     ->update([
                         'received_quantity' => $item['received_qty'],
                         'received_total_price' => DB::raw('received_quantity * unit_price'),
-                        'remarks' => $item['remarks'] ?? null,
+                        'remarks' => $remarks,
                         'updated_at' => $today,
                         'updated_by' => Auth::id(),
                     ]);

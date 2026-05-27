@@ -54,6 +54,7 @@ Route::get('/welcome', function () {
 })->name('welcome');
 
 Route::middleware('auth')->group(function () {
+    // --- Admin routes (full access) ---
     Route::get('/admin', [DashboardController::class, 'pengarahHQDashboard'])->name('admin.dashboard');
 
     Route::get('/pengarah-hq', function () {
@@ -86,20 +87,27 @@ Route::middleware('auth')->group(function () {
     Route::post('/uoms', [\App\Http\Controllers\UomController::class, 'store'])->name('uoms.store');
     Route::put('/uoms/{uom}', [\App\Http\Controllers\UomController::class, 'update'])->name('uoms.update');
 
+    // --- User routes (per-position access) ---
     Route::get('/user/dashboard', [DashboardController::class, 'userDashboard'])->name('user.dashboard');
 
-    Route::get('/borang-inden', [DashboardController::class, 'borangInden'])->name('borang.inden');
-    Route::post('/borang-inden', [DashboardController::class, 'simpanBorangInden'])->name('borang.inden.store');
-    Route::get('/borang-inden/{order}', [DashboardController::class, 'lihatBorangInden'])->name('borang.inden.show');
+    Route::middleware('permission:borang_inden')->group(function () {
+        Route::get('/borang-inden', [DashboardController::class, 'borangInden'])->name('borang.inden');
+        Route::post('/borang-inden', [DashboardController::class, 'simpanBorangInden'])->name('borang.inden.store');
+        Route::get('/borang-inden/{order}', [DashboardController::class, 'lihatBorangInden'])->name('borang.inden.show');
+    });
 
-    Route::get('/borang-penerimaan', [DashboardController::class, 'borangPenerimaan'])->name('borang.penerimaan');
-    Route::get('/borang-penerimaan/{order}/items', [DashboardController::class, 'getPenerimaanItems'])->name('borang.penerimaan.items');
-    Route::post('/borang-penerimaan', [DashboardController::class, 'simpanPenerimaan'])->name('borang.penerimaan.store');
+    Route::middleware('permission:penerimaan_inden')->group(function () {
+        Route::get('/borang-penerimaan', [DashboardController::class, 'borangPenerimaan'])->name('borang.penerimaan');
+        Route::get('/borang-penerimaan/{order}/items', [DashboardController::class, 'getPenerimaanItems'])->name('borang.penerimaan.items');
+        Route::post('/borang-penerimaan', [DashboardController::class, 'simpanPenerimaan'])->name('borang.penerimaan.store');
+    });
 
     Route::get('/user/senarai-inden', [DashboardController::class, 'senaraiInden'])->name('user.senarai.inden');
 
-    Route::get('/user/pengesahan-inden', [DashboardController::class, 'pengesahanInden'])->name('user.pengesahan.inden');
-    Route::post('/user/pengesahan-inden/{order}/sahkan', [DashboardController::class, 'sahkanInden'])->name('user.pengesahan.inden.sahkan');
+    Route::middleware('permission:pengesahan_inden')->group(function () {
+        Route::get('/user/pengesahan-inden', [DashboardController::class, 'pengesahanInden'])->name('user.pengesahan.inden');
+        Route::post('/user/pengesahan-inden/{order}/sahkan', [DashboardController::class, 'sahkanInden'])->name('user.pengesahan.inden.sahkan');
+    });
 
     Route::get('/profile', [ProfileController::class, 'showProfile'])->name('profile');
     Route::get('/profile/edit', [ProfileController::class, 'editProfile'])->name('profile.edit');

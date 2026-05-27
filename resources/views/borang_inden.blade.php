@@ -124,17 +124,24 @@
               class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Dashboard</a></li>
           <li><a href="{{ route('user.senarai.inden') }}"
               class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
+          @if(Auth::user()->hasPermission('pengesahan_inden'))
           <li><a href="{{ route('user.pengesahan.inden') }}"
               class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
+          @endif
+          @if(Auth::user()->hasPermission('borang_inden'))
           <li><a href="{{ route('borang.inden') }}"
-              class="{{ request()->routeIs('borang.inden') ? 'active' : '' }}">Borang Inden</a></li>
+              class="{{ request()->routeIs('borang.inden*') ? 'active' : '' }}">Borang Inden</a></li>
+          @endif
+          @if(Auth::user()->hasPermission('penerimaan_inden'))
           <li><a href="{{ route('borang.penerimaan') }}"
               class="{{ request()->routeIs('borang.penerimaan') ? 'active' : '' }}">Penerimaan</a></li>
+          @endif
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
       <div class="d-none d-xl-flex align-items-center gap-3">
+        @if(Auth::user()->hasPermission('pengesahan_inden'))
         <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3"
           style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'"
           onmouseout="this.style.color='white'">
@@ -145,6 +152,7 @@
             <span class="visually-hidden">Inden belum disah</span>
           </span>
         </a>
+        @endif
         <a href="{{ route('profile') }}" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'"
           onmouseout="this.style.color='rgba(255,255,255,0.5)'"><i
             class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}</a>
@@ -270,7 +278,7 @@
             <select class="form-select @error('supplier_id') is-invalid @enderror" name="supplier_id" id="supplierSelect" {{ $isReadOnly ? 'disabled' : '' }} required>
               <option value="">-- Pilih Pembekal --</option>
               @foreach($suppliers as $sup)
-                <option value="{{ $sup->id }}" data-address="{{ $sup->address }}" data-postcode="{{ $sup->postcode }}" {{ old('supplier_id', $inden->supplier_id ?? '') == $sup->id ? 'selected' : '' }}>{{ $sup->company_name }}</option>
+                <option value="{{ $sup->id }}" data-address="{{ $sup->address }}" data-postcode="{{ $sup->postcode }}" data-contact="{{ $sup->contact_person ?? $sup->company_name }}" {{ old('supplier_id', $inden->supplier_id ?? '') == $sup->id ? 'selected' : '' }}>{{ $sup->company_name }}</option>
               @endforeach
             </select>
             @error('supplier_id')
@@ -508,6 +516,7 @@
       } else {
         const supplierSelect = document.getElementById('supplierSelect');
         const addressField = document.querySelector('textarea[name="alamat_pembekal"]');
+        const wakilField = document.querySelector('input[name="wakil_pembekal"]');
         if (supplierSelect && addressField) {
           function fillSupplierAddress() {
             const selected = supplierSelect.options[supplierSelect.selectedIndex];
@@ -515,6 +524,7 @@
               const addr = (selected.dataset.address || '').trim();
               const postcode = (selected.dataset.postcode || '').trim();
               addressField.value = addr + (addr && postcode ? ' ' : '') + postcode;
+              if (wakilField) wakilField.value = selected.dataset.contact || '';
             }
           }
           supplierSelect.addEventListener('change', fillSupplierAddress);
@@ -622,7 +632,8 @@
       function updateItemIndices() {
         getItemRows().forEach((card, index) => {
           card.querySelector('.item-index').textContent = index + 1;
-          card.querySelector('.item-name').name = `items[${index}][name]`;
+          const nameSelect = card.querySelector('.item-name');
+          nameSelect.name = `items[${index}][name]`;
           card.querySelector('.item-unit').name = `items[${index}][unit]`;
           card.querySelector('.item-order-qty').name = `items[${index}][orderQty]`;
           card.querySelector('.item-unit-price').name = `items[${index}][unitPrice]`;
@@ -889,8 +900,8 @@
         form.addEventListener('submit', function (event) {
           if (itemDataTable) {
             itemDataTable.page.len(-1).draw();
-            updateItemIndices();
           }
+          updateItemIndices();
 
           const clientErrorAlert = document.getElementById('clientErrorAlert');
           const clientErrorList = document.getElementById('clientErrorList');

@@ -199,16 +199,23 @@
               class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Dashboard</a></li>
           <li><a href="{{ route('user.senarai.inden') }}"
               class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
+          @if(Auth::user()->hasPermission('pengesahan_inden'))
           <li><a href="{{ route('user.pengesahan.inden') }}"
               class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
+          @endif
+          @if(Auth::user()->hasPermission('borang_inden'))
           <li><a href="{{ route('borang.inden') }}"
-               class="{{ request()->routeIs('borang.inden') ? 'active' : '' }}">Borang Inden</a></li>
+               class="{{ request()->routeIs('borang.inden*') ? 'active' : '' }}">Borang Inden</a></li>
+          @endif
+          @if(Auth::user()->hasPermission('penerimaan_inden'))
           <li><a href="{{ route('borang.penerimaan') }}" class="{{ request()->routeIs('borang.penerimaan') ? 'active' : '' }}">Penerimaan</a></li>
+          @endif
           </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
       <div class="d-none d-xl-flex align-items-center gap-3">
+        @if(Auth::user()->hasPermission('pengesahan_inden'))
         <!-- Notification Bell -->
         <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3"
           style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'"
@@ -220,6 +227,7 @@
             <span class="visually-hidden">Inden belum disah</span>
           </span>
         </a>
+        @endif
         <a href="{{ route('profile') }}" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color='rgba(255,255,255,0.5)'"><i
             class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}</a>
         <form action="{{ route('logout') }}" method="POST" class="d-inline">
@@ -290,6 +298,7 @@
 
       <div class="row justify-content-center">
         <div class="col-md-10 col-lg-8">
+          @if(Auth::user()->hasPermission('borang_inden'))
           <div class="action-card">
             <div>
               <h4 class="mb-1">Cipta Inden Baru</h4>
@@ -298,6 +307,27 @@
             <a href="{{ route('borang.inden') }}" class="btn btn-custom">Borang Inden <i
                 class="bi bi-arrow-right-short fs-5 align-middle"></i></a>
           </div>
+          @endif
+          @if(Auth::user()->hasPermission('penerimaan_inden'))
+          <div class="action-card">
+            <div>
+              <h4 class="mb-1">Penerimaan Barang</h4>
+              <p class="muted mb-0">Rekod penerimaan barang daripada pembekal berdasarkan pesanan inden.</p>
+            </div>
+            <a href="{{ route('borang.penerimaan') }}" class="btn btn-custom">Penerimaan <i
+                class="bi bi-arrow-right-short fs-5 align-middle"></i></a>
+          </div>
+          @endif
+          @if(Auth::user()->hasPermission('pengesahan_inden'))
+          <div class="action-card">
+            <div>
+              <h4 class="mb-1">Pengesahan Inden</h4>
+              <p class="muted mb-0">Sahkan dan luluskan permohonan inden yang menunggu kelulusan.</p>
+            </div>
+            <a href="{{ route('user.pengesahan.inden') }}" class="btn btn-custom">Pengesahan <i
+                class="bi bi-arrow-right-short fs-5 align-middle"></i></a>
+          </div>
+          @endif
         </div>
       </div>
 

@@ -55,4 +55,26 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+
+    public function hasPermission(string $feature): bool
+    {
+        if ($this->role?->role_name === 'Admin') return true;
+
+        return match ($this->position?->code) {
+            'PP' => in_array($feature, ['dashboard', 'senarai_inden', 'pengesahan_inden']),
+            'PR' => in_array($feature, ['dashboard', 'senarai_inden', 'penerimaan_inden']),
+            'PS' => in_array($feature, ['dashboard', 'senarai_inden', 'borang_inden']),
+            default => false,
+        };
+    }
+
+    public function getPositionCode(): string
+    {
+        return $this->position?->code ?? '';
+    }
+
+    public function getPositionName(): string
+    {
+        return $this->position?->name ?? '';
+    }
 }
