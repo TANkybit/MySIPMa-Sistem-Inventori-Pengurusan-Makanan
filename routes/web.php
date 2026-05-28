@@ -5,7 +5,11 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
+
+// Global Search API (Accessible to logged-in users)
+Route::middleware('auth')->get('/api/global-search', [SearchController::class, 'globalSearch'])->name('global.search');
 
 // Route for Laman Utama (index.blade.php)
 Route::get('/', function () {
@@ -66,6 +70,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/pengarah-institusi/pembekal', [DashboardController::class, 'pengarahInstitusiPembekal'])->name('pengarah.institusi.pembekal');
     Route::get('/pengarah-institusi/profil', [DashboardController::class, 'pengarahInstitusiProfil'])->name('pengarah.institusi.profil');
     Route::get('/pengarah-negeri', [DashboardController::class, 'pengarahNegeriDashboard'])->name('pengarah.negeri.dashboard');
+    Route::get('/pengarah-negeri/inventori', [DashboardController::class, 'pengarahNegeriInventori'])->name('pengarah.negeri.inventori');
+    Route::get('/pengarah-negeri/profil', [DashboardController::class, 'pengarahNegeriProfil'])->name('pengarah.negeri.profil');
 
     Route::get('/dashboard/critical-stock', [DashboardController::class, 'criticalStock'])->name('dashboard.critical-stock');
     Route::get('/dashboard/stock-forecast', [DashboardController::class, 'stockForecast'])->name('dashboard.stock-forecast');

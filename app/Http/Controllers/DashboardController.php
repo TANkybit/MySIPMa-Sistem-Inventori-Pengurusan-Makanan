@@ -147,6 +147,21 @@ class DashboardController extends Controller
 
     public function pengarahNegeriDashboard(Request $request)
     {
+        return $this->pengarahNegeriView($request, 'dashboard');
+    }
+
+    public function pengarahNegeriInventori(Request $request)
+    {
+        return $this->pengarahNegeriView($request, 'inventori');
+    }
+
+    public function pengarahNegeriProfil(Request $request)
+    {
+        return $this->pengarahNegeriView($request, 'profil');
+    }
+
+    private function pengarahNegeriView(Request $request, string $activePage)
+    {
         $states = State::orderBy('name')->get();
         $selectedStateId = $request->query('state_id');
         $selectedState = $selectedStateId ? State::find($selectedStateId) : null;
@@ -170,12 +185,27 @@ class DashboardController extends Controller
                 ->with('item')
                 ->get();
 
-            $suppliers = Supplier::where('state_id', $selectedState->id)
+            $suppliers = Supplier::with('state')
+                ->where(function($q) use ($institutionIds) {
+                    $q->whereExists(function ($query) use ($institutionIds) {
+                        $query->select(DB::raw(1))
+                              ->from('orders')
+                              ->whereColumn('orders.supplier_id', 'suppliers.id')
+                              ->whereIn('orders.institution_id', $institutionIds);
+                    })
+                    ->orWhereExists(function ($query) use ($institutionIds) {
+                        $query->select(DB::raw(1))
+                              ->from('contracts')
+                              ->whereColumn('contracts.supplier_id', 'suppliers.id')
+                              ->whereIn('contracts.institution_id', $institutionIds);
+                    });
+                })
                 ->orderBy('company_name')
                 ->get();
         }
 
         return view('pengarah_negeri_dashboard', [
+            'activePage' => $activePage,
             'states' => $states,
             'selectedState' => $selectedState,
             'orders' => $orders,

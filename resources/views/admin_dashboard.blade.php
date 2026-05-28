@@ -165,10 +165,10 @@
                 </div>
 
                 <div class="header-right">
-                    <!-- Search -->
-                    <div class="search-box">
-                        <input type="text" class="form-control" placeholder="Cari...">
+                    <div class="search-box position-relative">
+                        <input type="text" id="globalSearchInput" data-context="hq" data-filter-id="" class="form-control" placeholder="Cari Maklumat...">
                         <i class="fas fa-search"></i>
+                        <div id="globalSearchResults" class="global-search-dropdown d-none"></div>
                     </div>
 
                     <!-- Theme Toggle -->
@@ -2623,7 +2623,87 @@
             // Override rawMaterials with database items for charts and materials table
             window.prisonData.rawMaterials = @json($rawMaterials);
             @endif
-        }
+            // Global Search Logic
+            const searchInput = document.getElementById('globalSearchInput');
+            const searchResults = document.getElementById('globalSearchResults');
+            let searchTimeout;
+
+            if (searchInput && searchResults) {
+                searchInput.addEventListener('input', function(e) {
+                    clearTimeout(searchTimeout);
+                    const query = e.target.value.trim();
+                    
+                    if (query.length < 2) {
+                        searchResults.classList.add('d-none');
+                        return;
+                    }
+                    
+                    searchResults.classList.remove('d-none');
+                    searchResults.innerHTML = '<div class="search-loading"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
+                    
+                    searchTimeout = setTimeout(function() {
+                        const context = searchInput.dataset.context || '';
+                        const filterId = searchInput.dataset.filterId || '';
+                        fetch(`/api/global-search?q=${encodeURIComponent(query)}&context=${context}&filter_id=${filterId}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                renderSearchResults(data.results);
+                            })
+                            .catch(error => {
+                                searchResults.innerHTML = '<div class="search-empty text-danger">Ralat carian</div>';
+                            });
+                    }, 300);
+                });
+
+                document.addEventListener('click', function(e) {
+                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                        searchResults.classList.add('d-none');
+                    }
+                });
+                
+                searchInput.addEventListener('focus', function() {
+                    if (this.value.trim().length >= 2) {
+                        searchResults.classList.remove('d-none');
+                    }
+                });
+
+                function renderSearchResults(data) {
+                    let html = '';
+                    let hasResults = false;
+                    
+                    const configs = [
+                        { key: 'items', title: 'Item & Inventori', icon: 'fa-box' },
+                        { key: 'suppliers', title: 'Pembekal', icon: 'fa-truck' },
+                        { key: 'orders', title: 'Pesanan (Inden)', icon: 'fa-file-invoice' },
+                        { key: 'institutions', title: 'Institusi', icon: 'fa-building' }
+                    ];
+
+                    configs.forEach(config => {
+                        if (data[config.key] && data[config.key].length > 0) {
+                            hasResults = true;
+                            html += `<h6 class="search-category-title">${config.title}</h6>`;
+                            data[config.key].forEach(item => {
+                                html += `
+                                    <div class="search-result-item">
+                                        <div class="search-result-icon"><i class="fas ${config.icon}"></i></div>
+                                        <div class="search-result-content">
+                                            <h6>${item.title}</h6>
+                                            <small>${item.subtitle}</small>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                        }
+                    });
+
+                    if (!hasResults) {
+                        html = '<div class="search-empty">Tiada padanan dijumpai.</div>';
+                    }
+
+                    searchResults.innerHTML = html;
+                }
+            }
+        });
     </script>
     <script src="{{ asset('script.js') }}"></script>
 </body>
