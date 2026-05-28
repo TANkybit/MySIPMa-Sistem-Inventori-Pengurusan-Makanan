@@ -56,15 +56,7 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             $user = Auth::user();
-            $positionCode = $user->getPositionCode();
-
-            $redirectUrl = match (true) {
-                $user->role?->role_name === 'Admin'             => route('admin.dashboard'),
-                $positionCode === 'PP'                          => route('user.dashboard'),
-                $positionCode === 'PR'                          => route('user.dashboard'),
-                $positionCode === 'PS'                          => route('user.dashboard'),
-                default                                         => route('user.dashboard'),
-            };
+            $redirectUrl = route($user->landingRouteName());
 
             return response()->json([
                 'success' => true,

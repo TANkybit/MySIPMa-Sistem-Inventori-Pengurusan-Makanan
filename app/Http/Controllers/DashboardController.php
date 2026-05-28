@@ -35,6 +35,12 @@ class DashboardController extends Controller
 
     public function pengarahHQDashboard()
     {
+        $landingRouteName = Auth::user()?->landingRouteName();
+
+        if (in_array($landingRouteName, ['pengarah.institusi.dashboard', 'pengarah.negeri.dashboard'], true)) {
+            return redirect()->route($landingRouteName);
+        }
+
         $institutions = Institution::orderBy('name')->get();
         $uoms = \App\Models\Uom::orderBy('code')->get();
         
@@ -69,6 +75,26 @@ class DashboardController extends Controller
 
     public function pengarahInstitusiDashboard(Request $request)
     {
+        return $this->pengarahInstitusiView($request, 'dashboard');
+    }
+
+    public function pengarahInstitusiInstitusi(Request $request)
+    {
+        return $this->pengarahInstitusiView($request, 'institusi');
+    }
+
+    public function pengarahInstitusiPembekal(Request $request)
+    {
+        return $this->pengarahInstitusiView($request, 'pembekal');
+    }
+
+    public function pengarahInstitusiProfil(Request $request)
+    {
+        return $this->pengarahInstitusiView($request, 'profil');
+    }
+
+    private function pengarahInstitusiView(Request $request, string $activePage)
+    {
         $institutions = Institution::orderBy('name')->get();
         $selectedInstitutionId = $request->query('institution_id') ?: Auth::user()->institution_id;
         $selectedInstitution = Institution::find($selectedInstitutionId);
@@ -89,7 +115,8 @@ class DashboardController extends Controller
                 ->with('item')
                 ->get();
 
-            $suppliers = Supplier::when($selectedInstitution->state_id, function ($query, $stateId) {
+            $suppliers = Supplier::with('state')
+                ->when($selectedInstitution->state_id, function ($query, $stateId) {
                     return $query->where('state_id', $stateId);
                 }, function ($query) {
                     return $query;
@@ -99,6 +126,7 @@ class DashboardController extends Controller
         }
 
         return view('pengarah_institusi_dashboard', [
+            'activePage' => $activePage,
             'institutions' => $institutions,
             'selectedInstitution' => $selectedInstitution,
             'orders' => $orders,

@@ -27,14 +27,10 @@ class ProfileController extends Controller
             ? \Illuminate\Support\Facades\DB::table('positions')->where('id', $user->position_id)->value('name')
             : null;
 
-        $role = $user->role_id
-            ? \Illuminate\Support\Facades\DB::table('roles')->where('id', $user->role_id)->value('role_name')
-            : null;
-
         return response()->json([
             'name' => $user->name,
             'email' => $user->email,
-            'username' => $role,
+            'username' => $user->effectiveRoleName(),
             'grade' => $position,
             'institution' => $institution,
             'institution_id' => $user->institution_id,
@@ -49,6 +45,10 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
+        if ($user->landingRouteName() === 'pengarah.institusi.dashboard') {
+            return redirect()->route('pengarah.institusi.profil');
+        }
+
         $institutionName = $user->institution_id
             ? \Illuminate\Support\Facades\DB::table('institutions')->where('id', $user->institution_id)->value('name')
             : '-';
@@ -57,9 +57,7 @@ class ProfileController extends Controller
             ? \Illuminate\Support\Facades\DB::table('positions')->where('id', $user->position_id)->value('name')
             : '-';
 
-        $roleName = $user->role_id
-            ? \Illuminate\Support\Facades\DB::table('roles')->where('id', $user->role_id)->value('role_name')
-            : '-';
+        $roleName = $user->effectiveRoleName();
 
         return view('profile', [
             'user' => $user,

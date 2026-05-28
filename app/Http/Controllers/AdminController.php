@@ -288,9 +288,6 @@ class AdminController extends Controller
         $institution = $user->institution_id
             ? DB::table('institutions')->where('id', $user->institution_id)->value('name')
             : null;
-        $role = $user->role_id
-            ? DB::table('roles')->where('id', $user->role_id)->value('role_name')
-            : null;
         $position = $user->position_id
             ? DB::table('positions')->where('id', $user->position_id)->value('name')
             : null;
@@ -305,7 +302,7 @@ class AdminController extends Controller
             'role_id' => $user->role_id,
             'position_id' => $user->position_id,
             'institution' => $institution ?: 'N/A',
-            'role' => $role ?: $this->defaultRoleName($user->role_id) ?: 'User',
+            'role' => $user->effectiveRoleName(),
             'position' => $position ?: 'N/A',
             'joinDate' => $user->created_at
                 ? \Illuminate\Support\Carbon::parse($user->created_at)->format('Y-m-d')

@@ -58,7 +58,7 @@ class User extends Authenticatable
 
     public function hasPermission(string $feature): bool
     {
-        if ($this->role?->role_name === 'Admin') return true;
+        if ($this->effectiveRoleName() === 'Admin') return true;
 
         return match ($this->position?->code) {
             'PP' => in_array($feature, ['dashboard', 'senarai_inden', 'pengesahan_inden']),
@@ -66,6 +66,44 @@ class User extends Authenticatable
             'PS' => in_array($feature, ['dashboard', 'senarai_inden', 'borang_inden']),
             default => false,
         };
+    }
+
+    public function landingRouteName(): string
+    {
+        $this->loadMissing(['role', 'position']);
+
+        $positionCode = strtoupper($this->getPositionCode());
+        $positionName = strtolower($this->getPositionName());
+
+        return match (true) {
+            $this->isPengarahNegeriAdmin($positionCode, $positionName)
+                => 'pengarah.negeri.dashboard',
+            $this->isPengarahInstitusiAdmin($positionCode, $positionName)
+                => 'pengarah.institusi.dashboard',
+            $this->role?->role_name === 'Admin' || $positionCode === 'ADHQ'
+                => 'admin.dashboard',
+            default
+                => 'user.dashboard',
+        };
+    }
+
+    public function effectiveRoleName(): string
+    {
+        $this->loadMissing(['role', 'position']);
+
+        $positionCode = strtoupper($this->getPositionCode());
+        $positionName = strtolower($this->getPositionName());
+
+        if (
+            $this->role?->role_name === 'Admin' ||
+            $positionCode === 'ADHQ' ||
+            $this->isPengarahInstitusiAdmin($positionCode, $positionName) ||
+            $this->isPengarahNegeriAdmin($positionCode, $positionName)
+        ) {
+            return 'Admin';
+        }
+
+        return $this->role?->role_name ?? 'User';
     }
 
     public function getPositionCode(): string
@@ -76,5 +114,19 @@ class User extends Authenticatable
     public function getPositionName(): string
     {
         return $this->position?->name ?? '';
+    }
+
+    private function isPengarahInstitusiAdmin(string $positionCode, string $positionName): bool
+    {
+        return in_array($positionCode, ['ADI', 'P006'], true)
+            || str_contains($positionName, 'pengarah institusi')
+            || str_contains($positionName, 'admin institusi');
+    }
+
+    private function isPengarahNegeriAdmin(string $positionCode, string $positionName): bool
+    {
+        return in_array($positionCode, ['ADN', 'P007'], true)
+            || str_contains($positionName, 'pengarah negeri')
+            || str_contains($positionName, 'admin negeri');
     }
 }
