@@ -116,10 +116,20 @@ class DashboardController extends Controller
                 ->get();
 
             $suppliers = Supplier::with('state')
-                ->when($selectedInstitution->state_id, function ($query, $stateId) {
-                    return $query->where('state_id', $stateId);
-                }, function ($query) {
-                    return $query;
+
+                ->where(function($q) use ($selectedInstitution) {
+                    $q->whereExists(function ($query) use ($selectedInstitution) {
+                        $query->select(DB::raw(1))
+                              ->from('orders')
+                              ->whereColumn('orders.supplier_id', 'suppliers.id')
+                              ->where('orders.institution_id', $selectedInstitution->id);
+                    })
+                    ->orWhereExists(function ($query) use ($selectedInstitution) {
+                        $query->select(DB::raw(1))
+                              ->from('contracts')
+                              ->whereColumn('contracts.supplier_id', 'suppliers.id')
+                              ->where('contracts.institution_id', $selectedInstitution->id);
+                    });
                 })
                 ->orderBy('company_name')
                 ->get();
