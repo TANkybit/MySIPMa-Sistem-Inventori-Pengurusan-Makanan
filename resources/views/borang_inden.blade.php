@@ -32,7 +32,7 @@
     .form-label { color:#cbd5e1; font-size:.92rem; font-weight:700; margin-bottom:8px; }
     .form-control,.form-select { background: #111827; border:1px solid rgba(255,255,255,.08); border-radius:14px; color: var(--text); min-height:48px; padding:12px 14px; }
     textarea.form-control { min-height:110px; }
-    .form-control::placeholder, .form-select option { color: rgba(226,232,240,.7); }
+    .form-control::placeholder, .form-select option { color: rgba(255,255,255,.35); opacity: 1; }
     .form-control:focus,.form-select:focus { border-color: rgba(16,185,129,.45); box-shadow:0 0 0 .2rem rgba(16,185,129,.16); background: #111827; color: var(--text); }
     .items-wrap { border:1px solid rgba(255,255,255,.08); border-radius:20px; overflow:hidden; }
     .items-toolbar { align-items:center; background: #111827; border-bottom:1px solid rgba(255,255,255,.08); display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; padding:18px 20px; }
@@ -60,7 +60,7 @@
     .borang-page { display:none; }
     .borang-page.active { display:block; }
     .borang-step-actions { align-items:center; display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; margin-top:24px; }
-    .word-helper { color:var(--muted); display:flex; justify-content:flex-end; font-size:.82rem; margin-top:6px; }
+    .word-helper { color: rgba(255,255,255,.55); display:flex; justify-content:flex-end; font-size:.82rem; margin-top:6px; }
     .word-helper.text-danger { color:#f87171 !important; }
     .date-format-hint { color:var(--muted); font-size:.8rem; margin-top:6px; }
     .item-table-toolbar { align-items:center; display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; margin-bottom:16px; }
@@ -225,19 +225,13 @@
           <div class="chip">Langkah 1</div>
         </div>
         <div class="row g-4">
-          <div class="col-md-6">
+          <div class="col-md-4">
             <label class="form-label">No. Pesanan <span class="text-danger">*</span></label>
-            <input class="form-control @error('no_pesanan') is-invalid @enderror" name="no_pesanan" type="text" value="{{ old('no_pesanan', $inden->no_pesanan ?? '') }}" placeholder="Contoh: PSU/SU/BK/26/2/5" {{ $fieldState }} required>
-            @error('no_pesanan')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            <input class="form-control" id="noPesanan" type="text" value="{{ old('no_pesanan', $inden->no_pesanan ?? '') }}" placeholder="Akan dijana automatik" readonly>
           </div>
-          <div class="col-md-6">
-            <label class="form-label">No. Kontrak <span class="text-danger">*</span></label>
-            <input class="form-control @error('no_kontrak') is-invalid @enderror" name="no_kontrak" type="text" value="{{ old('no_kontrak', $inden->no_kontrak ?? '') }}" placeholder="Contoh: TJP 15/2023" {{ $fieldState }} required>
-            @error('no_kontrak')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+          <div class="col-md-4">
+            <label class="form-label">No. Kontrak</label>
+            <input class="form-control" id="noKontrak" type="text" value="{{ old('no_kontrak', $inden->no_kontrak ?? '') }}" placeholder="Akan dijana automatik" readonly>
           </div>
           <div class="col-md-4">
             <label class="form-label">Tarikh Pesanan <span class="text-danger">*</span></label>
@@ -256,19 +250,32 @@
           </div>
           <div class="col-md-4">
             <label class="form-label">Sesi / Kod <span class="text-danger">*</span></label>
-            <input class="form-control @error('sesi_kod') is-invalid @enderror" name="sesi_kod" type="text" value="{{ old('sesi_kod', $inden->sesi_kod ?? '') }}" placeholder="Contoh: KHAMIS - M2/M4" {{ $fieldState }} required>
+            <div class="d-flex gap-3 flex-wrap mt-1">
+              @php
+                $selectedSessions = old('sesi_kod', $inden->sesi_kod ?? '');
+                $selectedArr = is_array($selectedSessions) ? $selectedSessions : explode('/', $selectedSessions);
+              @endphp
+              @foreach($mealSessions as $code => $desc)
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="sesi_kod[]" value="{{ $code }}" id="sesi_{{ $code }}"
+                    {{ in_array($code, $selectedArr) ? 'checked' : '' }}
+                    {{ $isReadOnly ? 'disabled' : '' }}>
+                  <label class="form-check-label" for="sesi_{{ $code }}">{{ $code }} - {{ $desc }}</label>
+                </div>
+              @endforeach
+            </div>
             @error('sesi_kod')
-              <div class="invalid-feedback">{{ $message }}</div>
+              <div class="invalid-feedback d-block">{{ $message }}</div>
             @enderror
           </div>
           <div class="col-md-6">
             <label class="form-label">Kepada (Institusi) <span class="text-danger">*</span></label>
-            <select class="form-select @error('institution_id') is-invalid @enderror" name="institution_id" {{ $isReadOnly ? 'disabled' : '' }} required>
-              <option value="">-- Pilih Institusi --</option>
-              @foreach($institutions as $inst)
-                <option value="{{ $inst->id }}" {{ old('institution_id', $inden->institution_id ?? '') == $inst->id ? 'selected' : '' }}>{{ $inst->name }}</option>
-              @endforeach
-            </select>
+              <select class="form-select @error('institution_id') is-invalid @enderror" name="institution_id" id="institutionSelect" {{ $isReadOnly ? 'disabled' : '' }} required>
+                <option value="">-- Pilih Institusi --</option>
+                @foreach($institutions as $inst)
+                  <option value="{{ $inst->id }}" data-code="{{ $inst->code }}" data-location="{{ $inst->location_code }}" {{ old('institution_id', $inden->institution_id ?? '') == $inst->id ? 'selected' : '' }}>{{ $inst->name }}</option>
+                @endforeach
+              </select>
             @error('institution_id')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -413,7 +420,7 @@
             </div>
             <div class="row g-4">
               <div class="col-md-6"><label class="form-label">Disediakan Oleh</label><input class="form-control" type="text" value="{{ old('disediakan_oleh', $inden->disediakan_oleh ?? Auth::user()->name ?? '') }}" placeholder="Nama pegawai yang diberi kuasa memesan" readonly></div>
-              <div class="col-md-6"><label class="form-label">Jawatan / Cop</label><input class="form-control" type="text" value="{{ $inden->jawatan_cop ?? '' }}" placeholder="Contoh: Peg. Penjara KA19" {{ $fieldState }}></div>
+              <div class="col-md-6"><label class="form-label">Jawatan / Cop</label><input class="form-control" type="text" value="{{ old('jawatan_cop', $inden->jawatan_cop ?? ($userPositionName ? $userPositionName . ' Gred ' . $userGrade : '')) }}" readonly></div>
               <div class="col-md-6">
                 <label class="form-label">Nama Wakil Pembekal <span class="text-danger">*</span></label>
                 <input class="form-control @error('wakil_pembekal') is-invalid @enderror" name="wakil_pembekal" type="text" value="{{ old('wakil_pembekal', $inden->wakil_pembekal ?? $inden->nama_pembekal ?? '') }}" placeholder="Nama wakil pembekal" {{ $fieldState }} required>
@@ -529,6 +536,39 @@
           }
           supplierSelect.addEventListener('change', fillSupplierAddress);
         }
+
+        // Auto-generate No. Pesanan
+        const institutionSelect = document.getElementById('institutionSelect');
+        const noPesananInput = document.getElementById('noPesanan');
+        const noKontrakInput = document.getElementById('noKontrak');
+        let generateTimeout = null;
+
+        function generateOrderNo() {
+          const instId = institutionSelect?.value;
+          if (!instId) {
+            noPesananInput.value = '';
+            return;
+          }
+          if (generateTimeout) clearTimeout(generateTimeout);
+          generateTimeout = setTimeout(() => {
+            fetch('{{ route("borang.inden.generate") }}?institution_id=' + instId)
+              .then(r => r.json())
+              .then(d => { if (d.success) noPesananInput.value = d.order_no; })
+              .catch(() => {});
+          }, 300);
+        }
+
+        function generateContractNo() {
+          fetch('{{ route("borang.inden.contract") }}')
+            .then(r => r.json())
+            .then(d => { if (d.success) noKontrakInput.value = d.contract_no; })
+            .catch(() => {});
+        }
+
+        if (institutionSelect) institutionSelect.addEventListener('change', generateOrderNo);
+        if (!noPesananInput.value) generateOrderNo();
+        if (!noKontrakInput.value) generateContractNo();
+
         const dateInputs = document.querySelectorAll('.date-input');
         const timeInputs = document.querySelectorAll('input[type="time"]');
         const now = new Date();

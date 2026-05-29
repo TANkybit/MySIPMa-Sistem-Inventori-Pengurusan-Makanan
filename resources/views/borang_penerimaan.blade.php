@@ -28,6 +28,7 @@
     .muted { color: var(--muted); line-height:1.7; }
     .form-label { color:#cbd5e1; font-size:.92rem; font-weight:700; margin-bottom:8px; }
     .form-control,.form-select { background: #111827; border:1px solid rgba(255,255,255,.08); border-radius:14px; color: var(--text); min-height:48px; padding:12px 14px; }
+    .form-control::placeholder { color: rgba(255,255,255,.35); opacity: 1; }
     .form-control:focus,.form-select:focus { border-color: rgba(16,185,129,.45); box-shadow:0 0 0 .2rem rgba(16,185,129,.16); background: #111827; color: var(--text); }
     .btn-custom { background: var(--accent); color:#0f172a; border:0; border-radius:999px; padding:12px 24px; font-weight:700; text-decoration:none; transition:all .3s; }
     .btn-custom:hover { background:#0ea5e9; color:#fff; transform:scale(1.05); }
@@ -58,6 +59,7 @@
     .is-invalid + .invalid-feedback, .is-invalid ~ .invalid-feedback { display: block; }
     .form-control.is-invalid, .form-select.is-invalid { border-color: #f87171 !important; }
     .action-row { display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; align-items:center; margin-top:24px; }
+    .word-counter { color: rgba(255,255,255,.55); font-size: .85rem; }
     @media (max-width: 767.98px) { .hero,.section-card { padding:22px; } }
   </style>
 </head>
@@ -152,6 +154,10 @@
             <label>Institusi</label>
             <p id="infoInstitution">-</p>
           </div>
+          <div class="order-info-item">
+            <label>No. Kontrak</label>
+            <p id="infoContractNo">-</p>
+          </div>
         </div>
       </div>
 
@@ -169,10 +175,6 @@
           <div class="col-md-4">
             <label class="form-label">Diterima Oleh</label>
             <input type="text" class="form-control" name="received_by" value="{{ Auth::user()->name }}">
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">No. Kontrak</label>
-            <input type="text" class="form-control" name="reference_no" placeholder="No. resit / delivery order">
           </div>
         </div>
 
@@ -198,7 +200,7 @@
             <label class="form-label">Catatan Penerimaan</label>
             <textarea class="form-control" name="remarks" id="remarksTextarea" rows="3" placeholder="Sebarang catatan mengenai penerimaan..." maxlength="1250"></textarea>
             <div class="d-flex justify-content-between mt-1">
-              <small class="text-muted" id="wordCount">0 / 250 patah perkataan</small>
+              <small class="word-counter" id="wordCount">0 / 250 patah perkataan</small>
               <small id="wordWarning" class="text-danger" style="display:none;">Had 250 patah perkataan telah dicapai!</small>
             </div>
           </div>
@@ -229,6 +231,9 @@
   <script src="{{ asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
   <script>
+    const uomList = @json($uoms);
+    const itemSearchUrl = "{{ route('items.search') }}";
+
     $(document).ready(function() {
       $('#orderSelect').select2({
         placeholder: '-- Pilih No. Inden --',
@@ -257,7 +262,7 @@
             $('#infoOrderDate').text(data.formatted_date || data.order_date);
             $('#infoSupplier').text(data.supplier_name);
             $('#infoInstitution').text(data.institution_name);
-            $('input[name="reference_no"]').val(data.contract_no || '');
+            $('#infoContractNo').text(data.contract_no || '-');
             $('#orderInfoPanel').show();
 
             let html = '';
@@ -286,10 +291,15 @@
                     </div>
                     <div class="row g-2 mt-2 wrong-replacement" style="display:none;">
                       <div class="col-md-4">
-                        <input type="text" name="items[${item.id}][replace_name]" class="form-control" placeholder="Nama barang sepatutnya" style="min-height:38px;">
+                        <select name="items[${item.id}][replace_name]" class="form-select replace-item-select" data-placeholder="Cari nama barang gantian" style="min-height:38px;">
+                          <option value=""></option>
+                        </select>
                       </div>
                       <div class="col-md-3">
-                        <input type="text" name="items[${item.id}][replace_unit]" class="form-control" placeholder="Unit" style="min-height:38px;">
+                        <select name="items[${item.id}][replace_unit]" class="form-select replace-unit-select" style="min-height:38px;">
+                          <option value="">-- Pilih Unit --</option>
+                          ${uomList.map(u => `<option value="${u.code}">${u.code}</option>`).join('')}
+                        </select>
                       </div>
                       <div class="col-md-3">
                         <input type="number" name="items[${item.id}][replace_qty]" class="form-control" placeholder="Kuantiti" min="0" step="0.01" style="min-height:38px;">
@@ -315,7 +325,35 @@
 
       // Toggle wrong-item replacement fields
       $(document).on('change', '.wrong-toggle', function() {
-        $(this).closest('.item-card').find('.wrong-replacement').toggle(this.checked);
+        const $card = $(this).closest('.item-card');
+        const $panel = $card.find('.wrong-replacement');
+        $panel.toggle(this.checked);
+        if (this.checked) {
+          $card.find('.replace-item-select').each(function() {
+            if (!$(this).data('select2')) {
+              $(this).select2({
+                ajax: {
+                  url: itemSearchUrl,
+                  dataType: 'json',
+                  delay: 250,
+                  data: params => ({ q: params.term || '' }),
+                  processResults: data => data
+                },
+                dropdownParent: $card,
+                minimumInputLength: 0,
+                placeholder: 'Cari nama barang gantian',
+                width: '100%'
+              });
+              $(this).on('select2:select', function(e) {
+                const selected = e.params.data;
+                const unitSelect = $card.find('.replace-unit-select');
+                if (selected.uom && unitSelect.find(`option[value="${selected.uom}"]`).length) {
+                  unitSelect.val(selected.uom);
+                }
+              });
+            }
+          });
+        }
       });
 
       // Word counter for remarks

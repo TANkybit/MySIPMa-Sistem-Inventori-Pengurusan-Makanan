@@ -102,6 +102,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:borang_inden')->group(function () {
         Route::get('/borang-inden', [DashboardController::class, 'borangInden'])->name('borang.inden');
         Route::post('/borang-inden', [DashboardController::class, 'simpanBorangInden'])->name('borang.inden.store');
+        Route::get('/borang-inden/generate-number', [DashboardController::class, 'generateOrderNo'])->name('borang.inden.generate');
+        Route::get('/borang-inden/generate-contract', [DashboardController::class, 'generateContractNo'])->name('borang.inden.contract');
         Route::get('/borang-inden/{order}', [DashboardController::class, 'lihatBorangInden'])->name('borang.inden.show');
     });
 

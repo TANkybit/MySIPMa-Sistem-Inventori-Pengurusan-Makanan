@@ -239,6 +239,60 @@ class DashboardController extends Controller
         return $this->borangIndenView(null, false);
     }
 
+    public function generateOrderNo(Request $request)
+    {
+        $institutionId = $request->input('institution_id');
+        $categoryCode = 'BK';
+
+        $institution = DB::table('institutions')->where('id', $institutionId)->first(['code', 'location_code']);
+        if (!$institution || !$institution->code) {
+            return response()->json(['success' => false, 'message' => 'Institution code not found.']);
+        }
+
+        $instCode = $institution->code;
+        $locCode = $institution->location_code ?: $instCode;
+        $year = now()->format('y');
+        $month = now()->format('m');
+
+        $seq = DB::table('order_sequences')
+            ->where('institution_code', $instCode)
+            ->where('category_code', $categoryCode)
+            ->where('year', (int) now()->format('Y'))
+            ->where('month', (int) now()->format('m'))
+            ->lockForUpdate()
+            ->first();
+
+        $nextSeq = $seq ? $seq->sequence_no + 1 : 1;
+        $orderNo = sprintf('%s/%s/%s/%s/%s/%03d', $instCode, $locCode, $categoryCode, $year, $month, $nextSeq);
+
+        return response()->json([
+            'success' => true,
+            'order_no' => $orderNo,
+        ]);
+    }
+
+    public function generateContractNo()
+    {
+        $year = now()->format('Y');
+        $lastContract = DB::table('contracts')
+            ->where('contract_no', 'like', 'TJP%')
+            ->where('contract_no', 'like', '%/' . $year)
+            ->lockForUpdate()
+            ->orderBy('id', 'desc')
+            ->first();
+        if ($lastContract && preg_match('/^TJP (\d+)\/' . $year . '$/', $lastContract->contract_no, $m)) {
+            $nextSeq = (int) $m[1] + 1;
+        } else {
+            $nextSeq = 1;
+        }
+        $contractNo = 'TJP ' . $nextSeq . '/' . $year;
+
+        return response()->json([
+            'success' => true,
+            'contract_no' => $contractNo,
+        ]);
+    }
+
     public function lihatBorangInden(Order $order)
     {
         return $this->borangIndenView($order, true);
@@ -276,11 +330,12 @@ class DashboardController extends Controller
         };
 
         $validated = $request->validate([
-            'no_pesanan' => ['required', 'string', 'max:100'],
-            'no_kontrak' => ['required', 'string', 'max:100'],
+            'no_pesanan' => ['nullable', 'string', 'max:100'],
+            'no_kontrak' => ['nullable', 'string', 'max:100'],
             'tarikh_pesanan' => ['required', 'date'],
             'masa' => ['required', 'date_format:H:i'],
-            'sesi_kod' => ['required', 'string', 'max:50'],
+            'sesi_kod' => ['required', 'array', 'min:1'],
+            'sesi_kod.*' => ['string', 'max:10'],
             'institution_id' => ['required', 'exists:institutions,id'],
             'supplier_id' => ['required', 'exists:suppliers,id'],
             'wakil_pembekal' => ['required', 'string', 'max:255'],
@@ -298,11 +353,10 @@ class DashboardController extends Controller
             'items.*.unitPrice' => ['required', 'numeric', 'min:0'],
             'items.*.notes' => ['nullable', 'string', $maxUlasanWords],
         ], [
-            'no_pesanan.required' => 'No. Pesanan wajib diisi.',
-            'no_kontrak.required' => 'No. Kontrak wajib diisi.',
             'tarikh_pesanan.required' => 'Tarikh Pesanan wajib diisi.',
             'masa.required' => 'Masa wajib diisi.',
-            'sesi_kod.required' => 'Sesi / Kod wajib diisi.',
+            'sesi_kod.required' => 'Sekurang-kurangnya satu sesi makanan wajib dipilih.',
+            'sesi_kod.min' => 'Sekurang-kurangnya satu sesi makanan wajib dipilih.',
             'institution_id.required' => 'Institusi (Kepada) wajib dipilih.',
             'institution_id.exists' => 'Institusi yang dipilih tidak sah.',
             'supplier_id.required' => 'Pembekal wajib dipilih.',
@@ -346,25 +400,74 @@ class DashboardController extends Controller
             $institutionId = $validated['institution_id'];
             $supplierId = $validated['supplier_id'];
 
-            $contractId = null;
-            if (!empty($validated['no_kontrak'])) {
-                $contractId = DB::table('contracts')->where('contract_no', $validated['no_kontrak'])->value('id')
-                    ?: DB::table('contracts')->insertGetId([
-                        'contract_no' => $validated['no_kontrak'],
-                        'institution_id' => $institutionId,
-                        'supplier_id' => $supplierId,
-                        'start_date' => $validated['tarikh_pesanan'] ?? $today,
-                        'total_value' => $totalAmount,
-                        'status' => 'Active',
-                        'created_at' => $today,
-                        'created_by' => Auth::id(),
-                        'updated_at' => $today,
-                        'updated_by' => Auth::id(),
-                    ]);
+            // Auto-generate No. Kontrak
+            $year = now()->format('Y');
+            $lastContract = DB::table('contracts')
+                ->where('contract_no', 'like', 'TJP%')
+                ->where('contract_no', 'like', '%/' . $year)
+                ->lockForUpdate()
+                ->orderBy('id', 'desc')
+                ->first();
+            if ($lastContract && preg_match('/^TJP (\d+)\/' . $year . '$/', $lastContract->contract_no, $m)) {
+                $nextContractSeq = (int) $m[1] + 1;
+            } else {
+                $nextContractSeq = 1;
+            }
+            $contractNo = 'TJP ' . $nextContractSeq . '/' . $year;
+
+            $contractId = DB::table('contracts')->insertGetId([
+                'contract_no' => $contractNo,
+                'institution_id' => $institutionId,
+                'supplier_id' => $supplierId,
+                'start_date' => $validated['tarikh_pesanan'] ?? $today,
+                'total_value' => $totalAmount,
+                'status' => 'Active',
+                'created_at' => $today,
+                'created_by' => Auth::id(),
+                'updated_at' => $today,
+                'updated_by' => Auth::id(),
+            ]);
+
+            // Auto-generate order_no
+            $categoryCode = 'BK';
+
+            $institutionData = DB::table('institutions')->where('id', $institutionId)->first(['code', 'location_code']);
+            $instCode = $institutionData->code ?? 'XXX';
+            $locCode = $institutionData->location_code ?: $instCode;
+            $year = (int) now()->format('Y');
+            $yearShort = now()->format('y');
+            $month = (int) now()->format('m');
+
+            $seqRow = DB::table('order_sequences')
+                ->where('institution_code', $instCode)
+                ->where('category_code', $categoryCode)
+                ->where('year', $year)
+                ->where('month', $month)
+                ->lockForUpdate()
+                ->first();
+
+            if ($seqRow) {
+                $nextSeq = $seqRow->sequence_no + 1;
+                DB::table('order_sequences')
+                    ->where('id', $seqRow->id)
+                    ->update(['sequence_no' => $nextSeq, 'updated_at' => now()]);
+            } else {
+                $nextSeq = 1;
+                DB::table('order_sequences')->insert([
+                    'institution_code' => $instCode,
+                    'category_code' => $categoryCode,
+                    'year' => $year,
+                    'month' => $month,
+                    'sequence_no' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
             }
 
+            $autoOrderNo = sprintf('%s/%s/%s/%s/%s/%03d', $instCode, $locCode, $categoryCode, $yearShort, str_pad((string) $month, 2, '0', STR_PAD_LEFT), $nextSeq);
+
             $orderId = DB::table('orders')->insertGetId([
-                'order_no' => $validated['no_pesanan'] ?: 'PESAN/' . now()->format('Y') . '/' . str_pad((string) ((Order::max('id') ?? 0) + 1), 3, '0', STR_PAD_LEFT),
+                'order_no' => $autoOrderNo,
                 'institution_id' => $institutionId,
                 'supplier_id' => $supplierId,
                 'contract_id' => $contractId,
@@ -382,7 +485,7 @@ class DashboardController extends Controller
                 'order_id' => $orderId,
                 'delivery_date' => $validated['tarikh_pesanan'] ?? null,
                 'delivery_time' => $validated['masa'] ?? null,
-                'delivery_session' => $validated['sesi_kod'] ?? null,
+                'delivery_session' => isset($validated['sesi_kod']) ? implode('/', $validated['sesi_kod']) : null,
                 'muster_khas_daging' => (int) ($validated['muster_khas_daging'] ?? 0),
                 'muster_ditolak_parol' => (int) ($validated['muster_ditolak_parol'] ?? 0),
                 'parol' => (int) ($validated['parol'] ?? 0),
@@ -607,13 +710,24 @@ class DashboardController extends Controller
             ])
             ->values();
 
+        $userGrade = optional(Auth::user()->position)->grade;
+        $userPositionName = optional(Auth::user()->position)->name;
+
         return view('borang_inden', [
             'indenHeader' => $indenHeader,
             'indenItems' => $indenItems,
             'readOnly' => $readOnly,
             'pendingApprovals' => $this->pendingApprovalCount(),
-            'institutions' => \App\Models\Institution::orderBy('name')->get(['id', 'name']),
+            'institutions' => \App\Models\Institution::orderBy('name')->get(['id', 'name', 'code', 'location_code']),
             'suppliers' => \App\Models\Supplier::orderBy('company_name')->get(['id', 'company_name', 'contact_person', 'address', 'postcode']),
+            'userGrade' => $userGrade,
+            'userPositionName' => $userPositionName,
+            'mealSessions' => [
+                'M1' => 'Breakfast',
+                'M2' => 'Lunch',
+                'M3' => 'Tea / Evening Snack',
+                'M4' => 'Dinner / Supper',
+            ],
         ]);
     }
 
@@ -627,7 +741,9 @@ class DashboardController extends Controller
                 'orders.order_date',
                 'suppliers.company_name as supplier_name',
                 'institutions.name as institution_name',
+                'orders.status',
             ])
+            ->where('orders.status', '!=', 'Completed')
             ->orderByDesc('orders.id')
             ->get()
             ->map(function ($order) {
@@ -641,8 +757,11 @@ class DashboardController extends Controller
                 return $order;
             });
 
+        $uoms = \App\Models\Uom::orderBy('code')->get(['id', 'code']);
+
         return view('borang_penerimaan', [
             'orders' => $orders,
+            'uoms' => $uoms,
         ]);
     }
 
@@ -726,25 +845,50 @@ class DashboardController extends Controller
                     }
                     $remarks = ($remarks ? $remarks . ' | ' : '') . '[SALAH]' . $replacement;
                 }
+
+                $receivedQty = (float) ($item['received_qty'] ?? 0);
+
                 DB::table('order_items')
                     ->where('id', $orderItemId)
                     ->where('order_id', $orderId)
                     ->update([
-                        'received_quantity' => $item['received_qty'],
+                        'received_quantity' => $receivedQty,
                         'received_total_price' => DB::raw('received_quantity * unit_price'),
                         'remarks' => $remarks,
                         'updated_at' => $today,
                         'updated_by' => Auth::id(),
                     ]);
+
+                // Update inventory: increase current_quantity by received amount
+                $itemId = (int) ($item['item_id'] ?? 0);
+                if ($itemId > 0 && $receivedQty > 0) {
+                    DB::table('items')
+                        ->where('id', $itemId)
+                        ->increment('current_quantity', $receivedQty);
+                }
             }
 
             $order = Order::find($orderId);
+            $deliveryRemarks = $request->remarks ?: null;
             $order->update([
                 'status' => 'Completed',
-                'remarks' => 'Diterima pada ' . $request->received_date . ' oleh ' . $request->received_by . ($request->reference_no ? ' | Ruj: ' . $request->reference_no : '') . ($request->remarks ? ' | Catatan: ' . $request->remarks : ''),
+                'remarks' => 'Diterima pada ' . $request->received_date . ' oleh ' . $request->received_by . ($deliveryRemarks ? ' | Catatan: ' . $deliveryRemarks : ''),
                 'updated_at' => $today,
                 'updated_by' => Auth::id(),
             ]);
+
+            // Update deliveries table with receiving info
+            $receivedByUser = Auth::user();
+            DB::table('deliveries')
+                ->where('order_id', $orderId)
+                ->update([
+                    'received_by' => $receivedByUser ? $receivedByUser->id : null,
+                    'receiver_date' => $request->received_date ?? $today,
+                    'status' => 'Completed',
+                    'remarks' => $deliveryRemarks,
+                    'updated_at' => $today,
+                    'updated_by' => Auth::id(),
+                ]);
         });
 
         return redirect()
