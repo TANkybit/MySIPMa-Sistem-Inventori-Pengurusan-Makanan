@@ -99,12 +99,15 @@ Route::middleware('auth')->group(function () {
     // --- User routes (per-position access) ---
     Route::get('/user/dashboard', [DashboardController::class, 'userDashboard'])->name('user.dashboard');
 
+    Route::get('/borang-inden/{order}/cetak-pdf', [DashboardController::class, 'cetakIndenPdf'])->name('borang.inden.cetak')->where('order', '[0-9]+');
+    Route::get('/borang-inden/{order}', [DashboardController::class, 'lihatBorangInden'])->name('borang.inden.show')->where('order', '[0-9]+');
+
     Route::middleware('permission:borang_inden')->group(function () {
         Route::get('/borang-inden', [DashboardController::class, 'borangInden'])->name('borang.inden');
         Route::post('/borang-inden', [DashboardController::class, 'simpanBorangInden'])->name('borang.inden.store');
         Route::get('/borang-inden/generate-number', [DashboardController::class, 'generateOrderNo'])->name('borang.inden.generate');
-        Route::get('/borang-inden/generate-contract', [DashboardController::class, 'generateContractNo'])->name('borang.inden.contract');
-        Route::get('/borang-inden/{order}', [DashboardController::class, 'lihatBorangInden'])->name('borang.inden.show');
+        Route::get('/borang-inden/contracts', [DashboardController::class, 'getContractsByInstitution'])->name('borang.inden.contracts');
+        Route::get('/borang-inden/contract-items/{contract}', [DashboardController::class, 'getContractItems'])->name('borang.inden.contract-items');
     });
 
     Route::middleware('permission:penerimaan_inden')->group(function () {

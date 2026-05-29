@@ -11,6 +11,8 @@ use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -271,31 +273,117 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function generateContractNo()
+    public function getContractsByInstitution(Request $request)
     {
-        $year = now()->format('Y');
-        $lastContract = DB::table('contracts')
-            ->where('contract_no', 'like', 'TJP%')
-            ->where('contract_no', 'like', '%/' . $year)
-            ->lockForUpdate()
-            ->orderBy('id', 'desc')
-            ->first();
-        if ($lastContract && preg_match('/^TJP (\d+)\/' . $year . '$/', $lastContract->contract_no, $m)) {
-            $nextSeq = (int) $m[1] + 1;
-        } else {
-            $nextSeq = 1;
-        }
-        $contractNo = 'TJP ' . $nextSeq . '/' . $year;
+        $institutionId = $request->input('institution_id');
+        $contracts = DB::table('contracts')
+            ->where('institution_id', $institutionId)
+            ->where('status', 'Active')
+            ->select('id', 'contract_no', 'supplier_id')
+            ->get();
+        return response()->json($contracts);
+    }
 
-        return response()->json([
-            'success' => true,
-            'contract_no' => $contractNo,
-        ]);
+    public function getContractItems($contractId)
+    {
+        $items = DB::table('contract_items as ci')
+            ->join('items as i', 'ci.item_id', '=', 'i.id')
+            ->leftJoin('uom as u', 'ci.uom_id', '=', 'u.id')
+            ->where('ci.contract_id', $contractId)
+            ->select(
+                'ci.id',
+                'ci.item_id',
+                'i.name as item_name',
+                'u.code as uom_code',
+                'ci.unit_price',
+                'ci.estimated_quantity'
+            )
+            ->get();
+        return response()->json($items);
     }
 
     public function lihatBorangInden(Order $order)
     {
         return $this->borangIndenView($order, true);
+    }
+
+    public function cetakIndenPdf(Order $order)
+    {
+        $rows = DB::table('orders as o')
+            ->leftJoin('contracts as c', 'o.contract_id', '=', 'c.id')
+            ->leftJoin('institutions as i', 'o.institution_id', '=', 'i.id')
+            ->leftJoin('suppliers as s', 'o.supplier_id', '=', 's.id')
+            ->leftJoin('deliveries as d', 'o.id', '=', 'd.order_id')
+            ->leftJoin('order_items as oi', 'o.id', '=', 'oi.order_id')
+            ->leftJoin('items as it', 'oi.item_id', '=', 'it.id')
+            ->leftJoin('contract_items as ci', 'oi.contract_item_id', '=', 'ci.id')
+            ->leftJoin('users as u', 'o.created_by', '=', 'u.id')
+            ->leftJoin('positions as p', 'u.position_id', '=', 'p.id')
+            ->leftJoin('uom as uom1', 'ci.uom_id', '=', 'uom1.id')
+            ->leftJoin('uom as uom2', 'it.uom_id', '=', 'uom2.id')
+            ->where('o.id', $order->id)
+            ->select([
+                'o.id as inden_id',
+                'o.order_no as no_pesanan',
+                'o.contract_id',
+                'c.contract_no as no_kontrak',
+                'o.order_date as tarikh_pesanan',
+                'd.delivery_time as masa',
+                'd.delivery_session as sesi_kod',
+                'i.id as institution_id',
+                'i.name as kepada_institusi',
+                's.id as supplier_id',
+                's.company_name as nama_pembekal',
+                's.address as alamat_pembekal',
+                's.postcode as poskod_pembekal',
+                'd.supplier_rep_name as wakil_pembekal',
+                'u.name as disediakan_oleh',
+                'p.name as jawatan_cop',
+                'p.grade as jawatan_gred',
+                'd.supplier_declaration_date as tarikh_pembekal',
+                'o.remarks as catatan_inden',
+                'oi.id as item_inden_id',
+                'it.name as nama_barang',
+                DB::raw("COALESCE(uom1.code, uom2.code, 'Unit') as unit"),
+                'oi.ordered_quantity as kuantiti_dipesan',
+                'oi.unit_price as harga_seunit',
+                DB::raw('oi.ordered_quantity * oi.unit_price as jumlah_harga'),
+                'oi.remarks as catatan_item',
+            ])
+            ->orderBy('o.id')
+            ->orderBy('oi.id')
+            ->get();
+
+        $header = $rows->first();
+        $items = $rows->filter(fn($r) => $r->item_inden_id !== null)->values();
+
+        if (!$header) {
+            abort(404, 'Order not found');
+        }
+
+        $mealLabels = ['M1' => 'Breakfast', 'M2' => 'Lunch', 'M3' => 'Tea / Evening Snack', 'M4' => 'Dinner / Supper'];
+
+        $html = view('pdf.borang_inden', [
+            'header' => $header,
+            'items' => $items,
+            'mealLabels' => $mealLabels,
+        ])->render();
+
+        $options = new Options();
+        $options->set('defaultFont', 'sans-serif');
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', false);
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $filename = 'Pesanan_Penerimaan_Catuan_Harian_' . $header->no_pesanan . '.pdf';
+        return response($dompdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
     }
 
     public function simpanBorangInden(Request $request)
@@ -331,7 +419,7 @@ class DashboardController extends Controller
 
         $validated = $request->validate([
             'no_pesanan' => ['nullable', 'string', 'max:100'],
-            'no_kontrak' => ['nullable', 'string', 'max:100'],
+            'contract_id' => ['required', 'exists:contracts,id'],
             'tarikh_pesanan' => ['required', 'date'],
             'masa' => ['required', 'date_format:H:i'],
             'sesi_kod' => ['required', 'array', 'min:1'],
@@ -347,12 +435,14 @@ class DashboardController extends Controller
             'tarikh_pembekal' => ['required', 'date'],
             'catatan_inden' => ['nullable', 'string', $maxUlasanWords],
             'items' => ['required', 'array', 'min:1'],
+            'items.*.contract_item_id' => ['required', 'integer', 'exists:contract_items,id'],
             'items.*.name' => ['required', 'string', 'max:255'],
             'items.*.unit' => ['required', 'string', 'max:50'],
             'items.*.orderQty' => ['required', 'numeric', 'min:0'],
             'items.*.unitPrice' => ['required', 'numeric', 'min:0'],
             'items.*.notes' => ['nullable', 'string', $maxUlasanWords],
         ], [
+            'contract_id.required' => 'No. Kontrak wajib dipilih.',
             'tarikh_pesanan.required' => 'Tarikh Pesanan wajib diisi.',
             'masa.required' => 'Masa wajib diisi.',
             'sesi_kod.required' => 'Sekurang-kurangnya satu sesi makanan wajib dipilih.',
@@ -378,14 +468,9 @@ class DashboardController extends Controller
             'tarikh_pembekal.required' => 'Tarikh Pembekal wajib diisi.',
             'items.required' => 'Sila tambah sekurang-kurangnya satu item pesanan.',
             'items.min' => 'Sila tambah sekurang-kurangnya satu item pesanan.',
-            'items.*.name.required' => 'Perihal barang wajib diisi.',
-            'items.*.unit.required' => 'Unit barang wajib dipilih.',
             'items.*.orderQty.required' => 'Kuantiti pesanan wajib diisi.',
             'items.*.orderQty.numeric' => 'Kuantiti pesanan mestilah dalam bentuk nombor.',
             'items.*.orderQty.min' => 'Kuantiti pesanan tidak boleh negatif.',
-            'items.*.unitPrice.required' => 'Harga seunit wajib diisi.',
-            'items.*.unitPrice.numeric' => 'Harga seunit mestilah dalam bentuk nombor.',
-            'items.*.unitPrice.min' => 'Harga seunit tidak boleh negatif.',
         ]);
 
         $orderId = DB::transaction(function () use ($validated) {
@@ -400,33 +485,7 @@ class DashboardController extends Controller
             $institutionId = $validated['institution_id'];
             $supplierId = $validated['supplier_id'];
 
-            // Auto-generate No. Kontrak
-            $year = now()->format('Y');
-            $lastContract = DB::table('contracts')
-                ->where('contract_no', 'like', 'TJP%')
-                ->where('contract_no', 'like', '%/' . $year)
-                ->lockForUpdate()
-                ->orderBy('id', 'desc')
-                ->first();
-            if ($lastContract && preg_match('/^TJP (\d+)\/' . $year . '$/', $lastContract->contract_no, $m)) {
-                $nextContractSeq = (int) $m[1] + 1;
-            } else {
-                $nextContractSeq = 1;
-            }
-            $contractNo = 'TJP ' . $nextContractSeq . '/' . $year;
-
-            $contractId = DB::table('contracts')->insertGetId([
-                'contract_no' => $contractNo,
-                'institution_id' => $institutionId,
-                'supplier_id' => $supplierId,
-                'start_date' => $validated['tarikh_pesanan'] ?? $today,
-                'total_value' => $totalAmount,
-                'status' => 'Active',
-                'created_at' => $today,
-                'created_by' => Auth::id(),
-                'updated_at' => $today,
-                'updated_by' => Auth::id(),
-            ]);
+            $contractId = $validated['contract_id'];
 
             // Auto-generate order_no
             $categoryCode = 'BK';
@@ -504,20 +563,22 @@ class DashboardController extends Controller
                 $quantity = (float) ($item['orderQty'] ?? 0);
                 $unitPrice = (float) ($item['unitPrice'] ?? 0);
                 $lineTotal = $quantity * $unitPrice;
+                $contractItemId = $item['contract_item_id'] ?? null;
 
-                $itemName = $item['name'] ?? '';
-                $itemId = is_numeric($itemName)
-                    ? DB::table('items')->where('id', $itemName)->value('id')
-                    : DB::table('items')->where('name', $itemName)->value('id');
+                $contractItem = $contractItemId
+                    ? DB::table('contract_items')->where('id', $contractItemId)->first(['item_id'])
+                    : null;
+                $itemId = $contractItem ? $contractItem->item_id : null;
 
                 if (!$itemId) {
                     throw \Illuminate\Validation\ValidationException::withMessages([
-                        'items.*.name' => 'Item "' . e($itemName) . '" tidak wujud dalam pangkalan data.',
+                        'items.*.name' => 'Item tidak sah.',
                     ]);
                 }
 
                 DB::table('order_items')->insert([
                     'order_id' => $orderId,
+                    'contract_item_id' => $contractItemId,
                     'item_id' => $itemId,
                     'status' => 'Pending',
                     'ordered_quantity' => $quantity,
@@ -525,7 +586,6 @@ class DashboardController extends Controller
                     'ordered_total_price' => $lineTotal,
                     'received_quantity' => 0,
                     'received_total_price' => 0,
-                    'remarks' => $item['notes'] ?? null,
                     'created_at' => $today,
                     'created_by' => Auth::id(),
                     'updated_at' => $today,
@@ -660,6 +720,7 @@ class DashboardController extends Controller
                 ->select([
                     'o.id as inden_id',
                     'o.order_no as no_pesanan',
+                    'o.contract_id',
                     'c.contract_no as no_kontrak',
                     'o.order_date as tarikh_pesanan',
                     'd.delivery_time as masa',
@@ -681,6 +742,7 @@ class DashboardController extends Controller
                     'd.supplier_declaration_date as tarikh_pembekal',
                     'o.remarks as catatan_inden',
                     'oi.id as item_inden_id',
+                    'oi.contract_item_id',
                     'it.name as nama_barang',
                     DB::raw("COALESCE(uom1.code, uom2.code, 'Unit') as unit"),
                     'oi.ordered_quantity as kuantiti_dipesan',
@@ -701,6 +763,7 @@ class DashboardController extends Controller
         $indenItems = $rows
             ->filter(fn ($row) => $row->item_inden_id !== null)
             ->map(fn ($row) => [
+                'contract_item_id' => $row->contract_item_id,
                 'name' => $row->nama_barang,
                 'unit' => $row->unit ?: 'Unit',
                 'orderQty' => (float) $row->kuantiti_dipesan,
@@ -712,6 +775,7 @@ class DashboardController extends Controller
 
         $userGrade = optional(Auth::user()->position)->grade;
         $userPositionName = optional(Auth::user()->position)->name;
+        $userInstitutionId = Auth::user()->institution_id;
 
         return view('borang_inden', [
             'indenHeader' => $indenHeader,
@@ -722,6 +786,7 @@ class DashboardController extends Controller
             'suppliers' => \App\Models\Supplier::orderBy('company_name')->get(['id', 'company_name', 'contact_person', 'address', 'postcode']),
             'userGrade' => $userGrade,
             'userPositionName' => $userPositionName,
+            'userInstitutionId' => $userInstitutionId,
             'mealSessions' => [
                 'M1' => 'Breakfast',
                 'M2' => 'Lunch',

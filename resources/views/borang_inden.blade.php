@@ -230,8 +230,13 @@
             <input class="form-control" id="noPesanan" type="text" value="{{ old('no_pesanan', $inden->no_pesanan ?? '') }}" placeholder="Akan dijana automatik" readonly>
           </div>
           <div class="col-md-4">
-            <label class="form-label">No. Kontrak</label>
-            <input class="form-control" id="noKontrak" type="text" value="{{ old('no_kontrak', $inden->no_kontrak ?? '') }}" placeholder="Akan dijana automatik" readonly>
+            <label class="form-label">No. Kontrak <span class="text-danger">*</span></label>
+            <select class="form-select @error('contract_id') is-invalid @enderror" name="contract_id" id="contractSelect" {{ $isReadOnly ? 'disabled' : '' }} required>
+              <option value="">-- Pilih Kontrak --</option>
+            </select>
+            @error('contract_id')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
           <div class="col-md-4">
             <label class="form-label">Tarikh Pesanan <span class="text-danger">*</span></label>
@@ -270,15 +275,13 @@
           </div>
           <div class="col-md-6">
             <label class="form-label">Kepada (Institusi) <span class="text-danger">*</span></label>
-              <select class="form-select @error('institution_id') is-invalid @enderror" name="institution_id" id="institutionSelect" {{ $isReadOnly ? 'disabled' : '' }} required>
-                <option value="">-- Pilih Institusi --</option>
-                @foreach($institutions as $inst)
-                  <option value="{{ $inst->id }}" data-code="{{ $inst->code }}" data-location="{{ $inst->location_code }}" {{ old('institution_id', $inden->institution_id ?? '') == $inst->id ? 'selected' : '' }}>{{ $inst->name }}</option>
-                @endforeach
-              </select>
-            @error('institution_id')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            @php
+              $selectedInst = $institutions->firstWhere('id', old('institution_id', $inden->institution_id ?? $userInstitutionId));
+            @endphp
+            <input class="form-control" type="text" value="{{ $selectedInst->name ?? 'N/A' }}" readonly>
+            <input type="hidden" name="institution_id" value="{{ old('institution_id', $inden->institution_id ?? $userInstitutionId) }}" id="institutionIdHidden">
+            <input type="hidden" id="institutionCode" value="{{ $selectedInst->code ?? '' }}">
+            <input type="hidden" id="institutionLocation" value="{{ $selectedInst->location_code ?? '' }}">
           </div>
           <div class="col-md-6">
             <label class="form-label">Pembekal <span class="text-danger">*</span></label>
@@ -423,10 +426,7 @@
               <div class="col-md-6"><label class="form-label">Jawatan / Cop</label><input class="form-control" type="text" value="{{ old('jawatan_cop', $inden->jawatan_cop ?? ($userPositionName ? $userPositionName . ' Gred ' . $userGrade : '')) }}" readonly></div>
               <div class="col-md-6">
                 <label class="form-label">Nama Wakil Pembekal <span class="text-danger">*</span></label>
-                <input class="form-control @error('wakil_pembekal') is-invalid @enderror" name="wakil_pembekal" type="text" value="{{ old('wakil_pembekal', $inden->wakil_pembekal ?? $inden->nama_pembekal ?? '') }}" placeholder="Nama wakil pembekal" {{ $fieldState }} required>
-                @error('wakil_pembekal')
-                  <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
+                <input class="form-control" name="wakil_pembekal" type="text" value="{{ old('wakil_pembekal', $inden->wakil_pembekal ?? $inden->nama_pembekal ?? '') }}" placeholder="Akan diisi automatik" readonly>
               </div>
               <div class="col-md-6">
                 <label class="form-label">Tarikh Pembekal <span class="text-danger">*</span></label>
@@ -458,7 +458,9 @@
       <div class="action-row">
         <a href="{{ route('user.dashboard') }}" class="btn btn-round btn-soft">Kembali ke Dashboard</a>
         <div class="d-flex flex-wrap gap-2">
-          <button class="btn btn-round btn-soft" type="button" onclick="window.print()">Cetak Ringkasan</button>
+          @if($inden->inden_id)
+          <button class="btn btn-round btn-soft" type="button" onclick="window.open('{{ route('borang.inden.cetak', ['order' => $inden->inden_id]) }}', '_blank')">Cetak Ringkasan</button>
+          @endif
           @unless ($isReadOnly)
             <button class="btn btn-round btn-add" type="submit">Hantar</button>
           @endunless
@@ -469,34 +471,35 @@
   </div>
   </main>
 
-  <template id="itemTemplate">
-    <tr class="item-card">
-      <td><span class="item-index"></span></td>
-      <td>
-        <select class="form-select item-name" required data-placeholder="Cari nama barang"></select>
-      </td>
-      <td>
-        <input class="form-control item-unit" type="text" value="Unit" readonly required>
-      </td>
-      <td>
-        <input class="form-control item-order-qty item-calc" type="number" min="0" step="0.01" value="0" required>
-      </td>
-      <td>
-        <input class="form-control item-unit-price item-calc" type="number" min="0" step="0.01" value="0" required>
-      </td>
-      <td>
-        <input class="form-control item-total" type="text" value="RM 0.00" readonly>
-        <input class="form-control item-received-qty item-calc d-none" type="number" min="0" step="0.01" value="0">
-        <textarea class="form-control item-notes ulasan-field d-none" placeholder="Catatan penerimaan atau spesifikasi" data-max-words="250"></textarea>
-      </td>
-      <td>
-        <div class="d-flex flex-wrap gap-2">
-          <button class="btn btn-sm btn-soft edit-item" type="button">Kemaskini</button>
-          <button class="btn btn-sm btn-outline-danger remove-item" type="button">Padam</button>
-        </div>
-      </td>
-    </tr>
-  </template>
+<template id="itemTemplate">
+  <tr class="item-card">
+    <td><span class="item-index"></span></td>
+    <td>
+      <input class="form-control item-name" type="text" readonly>
+      <input class="item-contract-id" type="hidden" name="items[0][contract_item_id]">
+      <input type="hidden" class="item-name-hidden" name="items[0][name]">
+    </td>
+    <td>
+      <input class="form-control item-unit" type="text" readonly>
+      <input type="hidden" class="item-unit-hidden" name="items[0][unit]">
+    </td>
+    <td>
+      <input class="form-control item-order-qty item-calc" type="number" min="0" step="0.01" value="0" required>
+    </td>
+    <td>
+      <input class="form-control item-unit-price" type="text" readonly>
+      <input type="hidden" class="item-unit-price-hidden" name="items[0][unitPrice]">
+    </td>
+    <td>
+      <input class="form-control item-total" type="text" value="RM 0.00" readonly>
+    </td>
+    <td>
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-sm btn-outline-danger remove-item" type="button">Padam</button>
+      </div>
+    </td>
+  </tr>
+</template>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="{{ asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
@@ -512,7 +515,6 @@
       const form = document.querySelector('form[action$="store"]');
       const databaseItems = @json($indenItems ?? []);
       const isReadOnly = @json($isReadOnly);
-      const itemSearchUrl = "{{ route('items.search') }}";
       let itemDataTable = null;
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -537,37 +539,88 @@
           supplierSelect.addEventListener('change', fillSupplierAddress);
         }
 
-        // Auto-generate No. Pesanan
-        const institutionSelect = document.getElementById('institutionSelect');
+        // Auto-generate No. Pesanan & load contracts
+        const instIdInput = document.getElementById('institutionIdHidden');
+        const contractSelect = document.getElementById('contractSelect');
         const noPesananInput = document.getElementById('noPesanan');
-        const noKontrakInput = document.getElementById('noKontrak');
-        let generateTimeout = null;
+
+        function getInstId() { return instIdInput?.value || ''; }
 
         function generateOrderNo() {
-          const instId = institutionSelect?.value;
+          const instId = getInstId();
           if (!instId) {
             noPesananInput.value = '';
             return;
           }
-          if (generateTimeout) clearTimeout(generateTimeout);
-          generateTimeout = setTimeout(() => {
-            fetch('{{ route("borang.inden.generate") }}?institution_id=' + instId)
-              .then(r => r.json())
-              .then(d => { if (d.success) noPesananInput.value = d.order_no; })
-              .catch(() => {});
-          }, 300);
-        }
-
-        function generateContractNo() {
-          fetch('{{ route("borang.inden.contract") }}')
+          fetch('{{ route("borang.inden.generate") }}?institution_id=' + instId)
             .then(r => r.json())
-            .then(d => { if (d.success) noKontrakInput.value = d.contract_no; })
+            .then(d => { if (d.success) noPesananInput.value = d.order_no; })
             .catch(() => {});
         }
 
-        if (institutionSelect) institutionSelect.addEventListener('change', generateOrderNo);
+        function loadContracts() {
+          const instId = getInstId();
+          contractSelect.innerHTML = '<option value="">-- Pilih Kontrak --</option>';
+          if (!instId) return;
+          fetch('{{ route("borang.inden.contracts") }}?institution_id=' + instId)
+            .then(r => r.json())
+            .then(contracts => {
+              contracts.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = c.contract_no;
+                opt.dataset.supplierId = c.supplier_id;
+                contractSelect.appendChild(opt);
+              });
+              @if(!empty($inden) && $inden->contract_id)
+                contractSelect.value = '{{ $inden->contract_id }}';
+                const selOpt = contractSelect.options[contractSelect.selectedIndex];
+                const supSel = document.getElementById('supplierSelect');
+                if (supSel && selOpt?.dataset.supplierId) {
+                  supSel.value = selOpt.dataset.supplierId;
+                  supSel.dispatchEvent(new Event('change'));
+                }
+              @endif
+            })
+            .catch(() => {});
+        }
+
+        function loadContractItems(contractId) {
+          if (!contractId) return;
+          fetch('{{ url("borang-inden/contract-items") }}/' + contractId)
+            .then(r => r.json())
+            .then(items => {
+              if (itemDataTable) {
+                itemDataTable.clear().draw();
+              } else {
+                itemList.innerHTML = '';
+              }
+              const selectedOpt = contractSelect.options[contractSelect.selectedIndex];
+              const supplierSelect = document.getElementById('supplierSelect');
+              if (supplierSelect && selectedOpt?.dataset.supplierId) {
+                supplierSelect.value = selectedOpt.dataset.supplierId;
+                supplierSelect.dispatchEvent(new Event('change'));
+              }
+              items.forEach(ci => {
+                addItem({
+                  contract_item_id: ci.id,
+                  name: ci.item_name,
+                  unit: ci.uom_code || 'Unit',
+                  orderQty: 0,
+                  unitPrice: ci.unit_price,
+                });
+              });
+            })
+            .catch(() => {});
+        }
+
+        if (contractSelect) {
+          contractSelect.addEventListener('change', function() {
+            loadContractItems(this.value);
+          });
+        }
         if (!noPesananInput.value) generateOrderNo();
-        if (!noKontrakInput.value) generateContractNo();
+        loadContracts();
 
         const dateInputs = document.querySelectorAll('.date-input');
         const timeInputs = document.querySelectorAll('input[type="time"]');
@@ -672,12 +725,11 @@
       function updateItemIndices() {
         getItemRows().forEach((card, index) => {
           card.querySelector('.item-index').textContent = index + 1;
-          const nameSelect = card.querySelector('.item-name');
-          nameSelect.name = `items[${index}][name]`;
-          card.querySelector('.item-unit').name = `items[${index}][unit]`;
+          card.querySelector('.item-contract-id').name = `items[${index}][contract_item_id]`;
+          card.querySelector('.item-name-hidden').name = `items[${index}][name]`;
+          card.querySelector('.item-unit-hidden').name = `items[${index}][unit]`;
           card.querySelector('.item-order-qty').name = `items[${index}][orderQty]`;
-          card.querySelector('.item-unit-price').name = `items[${index}][unitPrice]`;
-          card.querySelector('.item-notes').name = `items[${index}][notes]`;
+          card.querySelector('.item-unit-price-hidden').name = `items[${index}][unitPrice]`;
         });
       }
 
@@ -737,21 +789,17 @@
 
       function updateSummary() {
         const cards = getItemRows();
-        let orderQtyTotal = 0, receivedQtyTotal = 0, grandTotal = 0;
+        let orderQtyTotal = 0, grandTotal = 0;
         cards.forEach((card) => {
           const orderQty = numberValue(card.querySelector('.item-order-qty'));
-          const unitPrice = numberValue(card.querySelector('.item-unit-price'));
-          const receivedQty = numberValue(card.querySelector('.item-received-qty'));
-          const qtyForTotal = receivedQty > 0 ? receivedQty : orderQty;
-          const lineTotal = qtyForTotal * unitPrice;
+          const unitPrice = numberValue(card.querySelector('.item-unit-price-hidden'));
+          const lineTotal = orderQty * unitPrice;
           orderQtyTotal += orderQty;
-          receivedQtyTotal += receivedQty;
           grandTotal += lineTotal;
           card.querySelector('.item-total').value = formatCurrency(lineTotal);
         });
         document.getElementById('summaryItemCount').textContent = cards.length;
         document.getElementById('summaryOrderQty').textContent = formatNumber(orderQtyTotal);
-        document.getElementById('summaryReceivedQty').textContent = formatNumber(receivedQtyTotal);
         document.getElementById('summaryGrandTotal').textContent = formatCurrency(grandTotal);
       }
 
@@ -783,68 +831,20 @@
             '<"row"<"col-12"tr>>' +
             '<"row align-items-center mt-3"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
           initComplete: function () {
-            $('.dt-item-actions').html(@json($isReadOnly ? '' : '<button class="btn btn-round btn-add" id="addItemButton" type="button">Tambah Item</button>'));
-            $('#addItemButton').on('click', function () { addItem(); });
+              $('.dt-item-actions').html('');
           }
-        });
-      }
-
-      function initItemSelect(select, defaults = {}) {
-        if (!window.jQuery || !$.fn.select2) return;
-
-        const selectedName = defaults.name || '';
-        if (selectedName) {
-          const option = new Option(selectedName, selectedName, true, true);
-          option.dataset.uom = defaults.unit || 'Unit';
-          option.dataset.price = defaults.unitPrice ?? 0;
-          select.appendChild(option);
-        }
-
-        $(select).select2({
-          ajax: {
-            url: itemSearchUrl,
-            dataType: 'json',
-            delay: 250,
-            data: params => ({ q: params.term || '' }),
-            processResults: data => data
-          },
-          dropdownParent: $('#itemDataTable').parent(),
-          minimumInputLength: 0,
-          placeholder: select.dataset.placeholder || 'Cari nama barang',
-          width: 'resolve'
-        });
-
-        $(select).on('select2:select', function (event) {
-          const selected = event.params.data || {};
-          const card = select.closest('.item-card');
-          card.querySelector('.item-unit').value = selected.uom || 'Unit';
-          card.querySelector('.item-unit-price').value = selected.price_per_unit ?? 0;
-          updateSummary();
         });
       }
 
       function wireItemCard(card) {
         card.querySelectorAll('.item-calc').forEach((input) => input.addEventListener('input', updateSummary));
-        wireUlasanCounter(card);
-        initItemSelect(card.querySelector('.item-name'), {
-          name: card.dataset.itemName || '',
-          unit: card.dataset.itemUnit || 'Unit',
-          unitPrice: card.dataset.itemPrice || 0
-        });
         const removeButton = card.querySelector('.remove-item');
-        const editButton = card.querySelector('.edit-item');
 
         if (isReadOnly) {
           removeButton.classList.add('d-none');
-          editButton.classList.add('d-none');
           card.querySelectorAll('input').forEach((input) => input.setAttribute('readonly', 'readonly'));
-          card.querySelectorAll('select').forEach((select) => select.setAttribute('disabled', 'disabled'));
           return;
         }
-
-        editButton.addEventListener('click', function () {
-          $(card.querySelector('.item-name')).select2('open');
-        });
 
         removeButton.addEventListener('click', function () {
           if (itemDataTable) {
@@ -854,22 +854,19 @@
           }
           updateItemIndices();
           updateSummary();
-          if (!getItemRows().length) addItem({ name: '', unit: 'Unit', orderQty: 0, unitPrice: 0, receivedQty: 0, notes: '' });
         });
       }
 
       function addItem(defaults = {}) {
         const card = itemTemplate.content.firstElementChild.cloneNode(true);
-        const unitInput = card.querySelector('.item-unit');
-
-        card.dataset.itemName = defaults.name || '';
-        card.dataset.itemUnit = defaults.unit || 'Unit';
-        card.dataset.itemPrice = defaults.unitPrice ?? 0;
-        unitInput.value = defaults.unit || 'Unit';
+        card.querySelector('.item-contract-id').value = defaults.contract_item_id || '';
+        card.querySelector('.item-name').value = defaults.name || '';
+        card.querySelector('.item-name-hidden').value = defaults.name || '';
+        card.querySelector('.item-unit').value = defaults.unit || 'Unit';
+        card.querySelector('.item-unit-hidden').value = defaults.unit || 'Unit';
         card.querySelector('.item-order-qty').value = defaults.orderQty ?? 0;
-        card.querySelector('.item-unit-price').value = defaults.unitPrice ?? 0;
-        card.querySelector('.item-received-qty').value = defaults.receivedQty ?? 0;
-        card.querySelector('.item-notes').value = defaults.notes || '';
+        card.querySelector('.item-unit-price').value = formatCurrency(defaults.unitPrice ?? 0);
+        card.querySelector('.item-unit-price-hidden').value = defaults.unitPrice ?? 0;
         if (itemDataTable) {
           itemDataTable.row.add(card).draw(false);
         } else {
@@ -1016,17 +1013,7 @@
           } else {
             let hasItemError = false;
             itemCards.forEach((card) => {
-              const nameInput = card.querySelector('.item-name');
               const qtyInput = card.querySelector('.item-order-qty');
-              const priceInput = card.querySelector('.item-unit-price');
-              
-              if (!nameInput.value.trim()) {
-                nameInput.classList.add('is-invalid');
-                isValid = false;
-                hasItemError = true;
-              } else {
-                nameInput.classList.remove('is-invalid');
-              }
               
               const qtyVal = Number(qtyInput.value);
               if (qtyInput.value.trim() === '' || isNaN(qtyVal) || qtyVal < 0) {
@@ -1036,19 +1023,10 @@
               } else {
                 qtyInput.classList.remove('is-invalid');
               }
-              
-              const priceVal = Number(priceInput.value);
-              if (priceInput.value.trim() === '' || isNaN(priceVal) || priceVal < 0) {
-                priceInput.classList.add('is-invalid');
-                isValid = false;
-                hasItemError = true;
-              } else {
-                priceInput.classList.remove('is-invalid');
-              }
             });
             
             if (hasItemError) {
-              errors.push('Sila pastikan perihal barang, kuantiti, dan harga seunit untuk semua item diisi dengan betul.');
+              errors.push('Sila pastikan kuantiti pesanan untuk semua item diisi dengan betul.');
             }
           }
           
@@ -1079,7 +1057,7 @@
       if (databaseItems.length) {
         databaseItems.forEach((item) => addItem(item));
       } else if (!isReadOnly) {
-        addItem({ name: '', unit: 'Unit', orderQty: 0, unitPrice: 0, receivedQty: 0, notes: '' });
+        // For new orders, contract selection will load items
       }
 
       (function initMuster() {

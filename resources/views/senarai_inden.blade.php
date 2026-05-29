@@ -238,6 +238,7 @@
                     <th>Jumlah</th>
                     <th>Status Pesanan</th>
                     <th>Status Kelulusan</th>
+                    <th>Tindakan</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -263,10 +264,13 @@
                       <td>RM {{ number_format((float) $order->total_amount, 2) }}</td>
                       <td><span class="badge {{ $orderBadge }}">{{ $order->order_status ?? '-' }}</span></td>
                       <td><span class="badge {{ $approvalBadge }}">{{ $approvalText }}</span></td>
+                      <td>
+                        <a href="{{ route('borang.inden.show', $order->id) }}" class="btn btn-sm btn-outline-info">Lihat</a>
+                      </td>
                     </tr>
                   @empty
                     <tr>
-                      <td colspan="9" class="text-center text-white-50 py-4">Tiada rekod inden ditemui.</td>
+                      <td colspan="10" class="text-center text-white-50 py-4">Tiada rekod inden ditemui.</td>
                     </tr>
                   @endforelse
                 </tbody>
