@@ -111,6 +111,14 @@
                             <span>UOM</span>
                         </a>
                     </li>
+                    <li class="nav-title mt-4">PENGURUSAN INDEN</li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-page="inden">
+                            <i class="fas fa-file-invoice"></i>
+                            <span>Inden</span>
+                        </a>
+                    </li>
+
                     <li class="nav-title mt-4">LAPORAN</li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" data-page="laporan-prestasi">
@@ -809,6 +817,148 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- ===== Inden Page ===== -->
+                <div class="page-content" id="inden-content">
+
+                    <!-- Filter Bar -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form class="row g-3 align-items-end" id="indenFilterForm">
+                                <div class="col-lg-4 col-md-6">
+                                    <label for="indenInstitusiFilter" class="form-label fw-semibold">
+                                        <i class="fas fa-building me-1 text-primary"></i>Pilih Institusi
+                                    </label>
+                                    <select id="indenInstitusiFilter" class="form-select">
+                                        <option value="">-- Semua Institusi --</option>
+                                        @foreach($institutions as $inst)
+                                            <option value="{{ $inst->id }}">{{ $inst->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <label for="indenStatusFilter" class="form-label fw-semibold">
+                                        <i class="fas fa-filter me-1 text-primary"></i>Status Inden
+                                    </label>
+                                    <select id="indenStatusFilter" class="form-select">
+                                        <option value="">-- Semua Status --</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="In Progress">In Progress</option>
+                                        <option value="Completed">Completed</option>
+                                        <option value="Rejected">Rejected</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-2 col-md-4">
+                                    <label for="indenDateFrom" class="form-label fw-semibold">Dari Tarikh</label>
+                                    <input type="date" id="indenDateFrom" class="form-control">
+                                </div>
+                                <div class="col-lg-2 col-md-4">
+                                    <label for="indenDateTo" class="form-label fw-semibold">Hingga Tarikh</label>
+                                    <input type="date" id="indenDateTo" class="form-control">
+                                </div>
+                                <div class="col-lg-1 col-md-4 d-flex gap-2">
+                                    <button type="button" class="btn btn-primary w-100" id="indenTapisBtn">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary w-100" id="indenResetBtn" title="Set Semula">
+                                        <i class="fas fa-redo"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Summary Cards -->
+                    <div class="row g-3 mb-4" id="indenSummaryCards">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card p-3 h-100 border-0 shadow-sm">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary bg-opacity-10" style="width:50px;height:50px;">
+                                        <i class="fas fa-file-invoice text-primary fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small text-uppercase fw-semibold">Jumlah Inden</div>
+                                        <div class="fw-bold fs-4" id="indenStatTotal">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card p-3 h-100 border-0 shadow-sm">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-warning bg-opacity-10" style="width:50px;height:50px;">
+                                        <i class="fas fa-clock text-warning fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small text-uppercase fw-semibold">Pending</div>
+                                        <div class="fw-bold fs-4" id="indenStatPending">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card p-3 h-100 border-0 shadow-sm">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-success bg-opacity-10" style="width:50px;height:50px;">
+                                        <i class="fas fa-check-circle text-success fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small text-uppercase fw-semibold">Selesai</div>
+                                        <div class="fw-bold fs-4" id="indenStatCompleted">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card p-3 h-100 border-0 shadow-sm">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-info bg-opacity-10" style="width:50px;height:50px;">
+                                        <i class="fas fa-dollar-sign text-info fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small text-uppercase fw-semibold">Jumlah Nilai (RM)</div>
+                                        <div class="fw-bold fs-4" id="indenStatAmount">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inden Table -->
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title mb-0"><i class="fas fa-list me-2"></i>Senarai Inden</h5>
+                                <p class="text-muted mb-0 small">Rekod pesanan/inden mengikut institusi terpilih</p>
+                            </div>
+                            <div id="indenLoadingBadge" class="d-none">
+                                <span class="badge bg-secondary"><i class="fas fa-spinner fa-spin me-1"></i>Memuatkan...</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle" id="inden-table">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>No. Pesanan</th>
+                                            <th>Institusi</th>
+                                            <th>Pembekal</th>
+                                            <th>Tarikh Pesanan</th>
+                                            <th>Jumlah (RM)</th>
+                                            <th>Status</th>
+                                            <th>Pengesahan</th>
+                                            <th>Tindakan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="inden-table-body">
+                                        <tr><td colspan="8" class="text-center text-muted py-4"><i class="fas fa-info-circle me-2"></i>Sila pilih institusi atau tekan Tapis untuk melihat data.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ===== End Inden Page ===== -->
 
                 <!-- Performance Reports Page (Laporan Prestasi) -->
                 <div class="page-content" id="laporan-prestasi-content">
@@ -2704,6 +2854,134 @@
                 }
             }
         });
+
+        // ===== INDEN PAGE LOGIC =====
+        (function() {
+            let indenTable = null;
+
+            function initIndenTable() {
+                if ($.fn.DataTable.isDataTable('#inden-table')) {
+                    $('#inden-table').DataTable().destroy();
+                }
+                indenTable = $('#inden-table').DataTable({
+                    responsive: true,
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/ms.json',
+                        emptyTable: 'Tiada rekod inden dijumpai.',
+                        loadingRecords: 'Memuatkan...',
+                        zeroRecords: 'Tiada rekod yang sepadan dijumpai.'
+                    },
+                    order: [[3, 'desc']],
+                    columnDefs: [
+                        { orderable: false, targets: [7] }
+                    ]
+                });
+            }
+
+            function getStatusBadge(status) {
+                const map = {
+                    'Pending':     '<span class="badge bg-warning text-dark">Pending</span>',
+                    'In Progress': '<span class="badge bg-info">In Progress</span>',
+                    'Completed':   '<span class="badge bg-success">Completed</span>',
+                    'Rejected':    '<span class="badge bg-danger">Rejected</span>',
+                };
+                return map[status] || `<span class="badge bg-secondary">${status}</span>`;
+            }
+
+            function getApprovalBadge(val) {
+                if (val === 1) return '<span class="badge bg-success">Disahkan</span>';
+                if (val === 2) return '<span class="badge bg-danger">Ditolak</span>';
+                return '<span class="badge bg-secondary">Belum Disahkan</span>';
+            }
+
+            function loadInden() {
+                const institutionId = document.getElementById('indenInstitusiFilter').value;
+                const status        = document.getElementById('indenStatusFilter').value;
+                const dateFrom      = document.getElementById('indenDateFrom').value;
+                const dateTo        = document.getElementById('indenDateTo').value;
+
+                document.getElementById('indenLoadingBadge').classList.remove('d-none');
+
+                const params = new URLSearchParams();
+                if (institutionId) params.append('institution_id', institutionId);
+                if (status)        params.append('status', status);
+                if (dateFrom)      params.append('date_from', dateFrom);
+                if (dateTo)        params.append('date_to', dateTo);
+
+                fetch('/api/hq/inden?' + params.toString(), {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('indenLoadingBadge').classList.add('d-none');
+
+                    // Update stat cards
+                    document.getElementById('indenStatTotal').textContent     = data.stats.total;
+                    document.getElementById('indenStatPending').textContent   = data.stats.pending;
+                    document.getElementById('indenStatCompleted').textContent = data.stats.completed;
+                    document.getElementById('indenStatAmount').textContent    = parseFloat(data.stats.total_amount).toLocaleString('ms-MY', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+                    // Rebuild table
+                    if ($.fn.DataTable.isDataTable('#inden-table')) {
+                        $('#inden-table').DataTable().destroy();
+                    }
+
+                    let rows = '';
+                    if (data.orders.length === 0) {
+                        rows = '<tr><td colspan="8" class="text-center text-muted py-4"><i class="fas fa-inbox me-2"></i>Tiada rekod inden dijumpai.</td></tr>';
+                        document.getElementById('inden-table-body').innerHTML = rows;
+                        initIndenTable();
+                        return;
+                    }
+
+                    data.orders.forEach(o => {
+                        rows += `<tr>
+                            <td><span class="fw-medium">${o.order_no}</span></td>
+                            <td>${o.institution_name ?? '-'}</td>
+                            <td>${o.supplier_name ?? '-'}</td>
+                            <td>${o.order_date ?? '-'}</td>
+                            <td class="text-end">RM ${parseFloat(o.total_amount).toLocaleString('ms-MY', {minimumFractionDigits:2})}</td>
+                            <td>${getStatusBadge(o.order_status)}</td>
+                            <td>${getApprovalBadge(o.approval_status)}</td>
+                            <td>
+                                <a href="/borang-inden/${o.id}" class="btn btn-sm btn-outline-primary" title="Lihat Borang" target="_blank">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>`;
+                    });
+
+                    document.getElementById('inden-table-body').innerHTML = rows;
+                    initIndenTable();
+                })
+                .catch(err => {
+                    document.getElementById('indenLoadingBadge').classList.add('d-none');
+                    document.getElementById('inden-table-body').innerHTML = '<tr><td colspan="8" class="text-center text-danger py-4"><i class="fas fa-exclamation-triangle me-2"></i>Ralat semasa memuatkan data.</td></tr>';
+                    console.error('Inden fetch error:', err);
+                });
+            }
+
+            // Tapis button
+            document.getElementById('indenTapisBtn').addEventListener('click', loadInden);
+
+            // Reset button
+            document.getElementById('indenResetBtn').addEventListener('click', function() {
+                document.getElementById('indenInstitusiFilter').value = '';
+                document.getElementById('indenStatusFilter').value    = '';
+                document.getElementById('indenDateFrom').value        = '';
+                document.getElementById('indenDateTo').value          = '';
+                loadInden();
+            });
+
+            // Auto-load when switching to inden page (tap into SPA nav)
+            document.addEventListener('click', function(e) {
+                const link = e.target.closest('[data-page]');
+                if (link && link.getAttribute('data-page') === 'inden') {
+                    setTimeout(loadInden, 100);
+                }
+            });
+        })();
+        // ===== END INDEN PAGE LOGIC =====
     </script>
     <script src="{{ asset('script.js') }}"></script>
 </body>

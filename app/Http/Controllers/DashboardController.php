@@ -75,6 +75,64 @@ class DashboardController extends Controller
         return view('admin_dashboard', compact('institutions', 'uoms', 'totalSuppliers', 'totalInstitutions', 'totalItems', 'pendingApprovals', 'rawMaterials'));
     }
 
+    /**
+     * API: Return filtered inden (orders) list for Pengarah HQ dashboard Inden page.
+     */
+    public function apiHqInden(Request $request)
+    {
+        $query = Order::query()
+            ->leftJoin('institutions', 'orders.institution_id', '=', 'institutions.id')
+            ->leftJoin('suppliers', 'orders.supplier_id', '=', 'suppliers.id')
+            ->leftJoin('approvals', 'orders.id', '=', 'approvals.order_id')
+            ->select([
+                'orders.id',
+                'orders.order_no',
+                'orders.order_date',
+                'orders.total_amount',
+                'orders.status as order_status',
+                'institutions.name as institution_name',
+                'suppliers.company_name as supplier_name',
+                DB::raw('COALESCE(approvals.status, 0) as approval_status'),
+            ])
+            ->orderByDesc('orders.order_date')
+            ->orderByDesc('orders.id');
+
+        // Filter: institusi
+        if ($request->filled('institution_id')) {
+            $query->where('orders.institution_id', $request->input('institution_id'));
+        }
+
+        // Filter: status
+        if ($request->filled('status')) {
+            $query->where('orders.status', $request->input('status'));
+        }
+
+        // Filter: tarikh dari
+        if ($request->filled('date_from')) {
+            $query->whereDate('orders.order_date', '>=', $request->input('date_from'));
+        }
+
+        // Filter: tarikh hingga
+        if ($request->filled('date_to')) {
+            $query->whereDate('orders.order_date', '<=', $request->input('date_to'));
+        }
+
+        $orders = $query->get();
+
+        // Calculate stats
+        $stats = [
+            'total'        => $orders->count(),
+            'pending'      => $orders->where('order_status', 'Pending')->count(),
+            'completed'    => $orders->where('order_status', 'Completed')->count(),
+            'total_amount' => $orders->sum('total_amount'),
+        ];
+
+        return response()->json([
+            'orders' => $orders->values(),
+            'stats'  => $stats,
+        ]);
+    }
+
     public function pengarahInstitusiDashboard(Request $request)
     {
         return $this->pengarahInstitusiView($request, 'dashboard');

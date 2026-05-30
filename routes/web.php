@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Route;
 // Global Search API (Accessible to logged-in users)
 Route::middleware('auth')->get('/api/global-search', [SearchController::class, 'globalSearch'])->name('global.search');
 
+// Pengarah HQ - Inden API (AJAX)
+Route::middleware('auth')->get('/api/hq/inden', [DashboardController::class, 'apiHqInden'])->name('api.hq.inden');
+
 // Route for Laman Utama (index.blade.php)
 Route::get('/', function () {
     return view('index');
