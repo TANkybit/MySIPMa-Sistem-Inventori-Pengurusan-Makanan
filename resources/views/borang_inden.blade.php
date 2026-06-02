@@ -230,17 +230,23 @@
             <input class="form-control" id="noPesanan" type="text" value="{{ old('no_pesanan', $inden->no_pesanan ?? '') }}" placeholder="Akan dijana automatik" readonly>
           </div>
           <div class="col-md-4">
-            <label class="form-label">No. Kontrak <span class="text-danger">*</span></label>
-            <select class="form-select @error('contract_id') is-invalid @enderror" name="contract_id" id="contractSelect" {{ $isReadOnly ? 'disabled' : '' }} required>
-              <option value="">-- Pilih Kontrak --</option>
+            <label class="form-label">Pembekal <span class="text-danger">*</span></label>
+            <select class="form-select @error('supplier_id') is-invalid @enderror" name="supplier_id" id="supplierSelect" {{ $isReadOnly ? 'disabled' : '' }} required>
+              <option value="">-- Pilih Pembekal --</option>
+              @foreach($suppliers as $sup)
+                <option value="{{ $sup->id }}" data-address="{{ $sup->address }}" data-postcode="{{ $sup->postcode }}" data-contact="{{ $sup->contact_person ?? $sup->company_name }}" {{ old('supplier_id', $inden->supplier_id ?? '') == $sup->id ? 'selected' : '' }}>{{ $sup->company_name }}</option>
+              @endforeach
             </select>
-            @error('contract_id')
+            @error('supplier_id')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
           <div class="col-md-4">
             <label class="form-label">Tarikh Pesanan <span class="text-danger">*</span></label>
-            <input class="form-control date-input @error('tarikh_pesanan') is-invalid @enderror" name="tarikh_pesanan" type="text" inputmode="numeric" pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$" value="{{ $formatTarikh(old('tarikh_pesanan', $inden->tarikh_pesanan ?? now()->format('d/m/Y'))) }}" placeholder="dd/mm/yyyy" {{ $fieldState }} required>
+            <div class="d-flex align-items-center gap-2">
+              <input class="form-control date-input flex-grow-1 @error('tarikh_pesanan') is-invalid @enderror" name="tarikh_pesanan" type="text" inputmode="numeric" pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$" value="{{ $formatTarikh(old('tarikh_pesanan', $inden->tarikh_pesanan ?? now()->format('d/m/Y'))) }}" placeholder="dd/mm/yyyy" {{ $fieldState }} required>
+              <span id="tarikhDayName" class="badge bg-accent text-dark fs-6 px-3 py-2" style="background:#10b981; white-space:nowrap;">--</span>
+            </div>
             <div class="date-format-hint">Format: dd/mm/yyyy</div>
             @error('tarikh_pesanan')
               <div class="invalid-feedback">{{ $message }}</div>
@@ -255,6 +261,7 @@
           </div>
           <div class="col-md-4">
             <label class="form-label">Sesi / Kod <span class="text-danger">*</span></label>
+            {{-- TODO: Checkbox selection may be needed in future. Keep commented for reference.
             <div class="d-flex gap-3 flex-wrap mt-1">
               @php
                 $selectedSessions = old('sesi_kod', $inden->sesi_kod ?? '');
@@ -269,6 +276,8 @@
                 </div>
               @endforeach
             </div>
+            --}}
+            <input class="form-control @error('sesi_kod') is-invalid @enderror" name="sesi_kod" type="text" value="{{ old('sesi_kod', $inden->sesi_kod ?? '') }}" placeholder="e.g. M1/M2/M3/M4" {{ $fieldState }} required>
             @error('sesi_kod')
               <div class="invalid-feedback d-block">{{ $message }}</div>
             @enderror
@@ -284,14 +293,11 @@
             <input type="hidden" id="institutionLocation" value="{{ $selectedInst->location_code ?? '' }}">
           </div>
           <div class="col-md-6">
-            <label class="form-label">Pembekal <span class="text-danger">*</span></label>
-            <select class="form-select @error('supplier_id') is-invalid @enderror" name="supplier_id" id="supplierSelect" {{ $isReadOnly ? 'disabled' : '' }} required>
-              <option value="">-- Pilih Pembekal --</option>
-              @foreach($suppliers as $sup)
-                <option value="{{ $sup->id }}" data-address="{{ $sup->address }}" data-postcode="{{ $sup->postcode }}" data-contact="{{ $sup->contact_person ?? $sup->company_name }}" {{ old('supplier_id', $inden->supplier_id ?? '') == $sup->id ? 'selected' : '' }}>{{ $sup->company_name }}</option>
-              @endforeach
+            <label class="form-label">No. Kontrak <span class="text-danger">*</span></label>
+            <select class="form-select @error('contract_id') is-invalid @enderror" name="contract_id" id="contractSelect" {{ $isReadOnly ? 'disabled' : '' }} required>
+              <option value="">-- Pilih Kontrak --</option>
             </select>
-            @error('supplier_id')
+            @error('contract_id')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
@@ -377,6 +383,9 @@
               <h3 class="h5 mb-1">Item Pesanan</h3>
               <p class="muted mb-0">Contoh barang daripada PDF: ikan basah, daging lembu, kobis, bawang, halia, kacang merah dan ubi kentang.</p>
             </div>
+            @unless ($isReadOnly)
+            <button class="btn btn-round btn-add" type="button" id="tambahItemBtn"><i class="bi bi-plus-lg me-1"></i>Tambah Item</button>
+            @endunless
           </div>
           <div class="p-3">
             <table id="itemDataTable" class="table table-dark-custom w-100">
@@ -384,8 +393,8 @@
                 <tr>
                   <th>Bil</th>
                   <th>Perihal Barang</th>
-                  <th>Unit</th>
                   <th>Kuantiti Pesanan</th>
+                  <th>Unit</th>
                   <th>Harga Seunit</th>
                   <th>Jumlah Harga</th>
                   <th>Tindakan</th>
@@ -469,6 +478,61 @@
       </div>
     </form>
   </div>
+
+  {{-- Item Modal (Add / Edit) --}}
+  <div class="modal fade" id="itemModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background:#11151f; border:1px solid rgba(255,255,255,.08); color:#e2e8f0;">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold" id="itemModalTitle">Tambah Item</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editItemIndex" value="-1">
+          <div class="mb-3">
+            <label class="form-label">Nama Barang <span class="text-danger">*</span></label>
+            <input class="form-control" id="itemModalName" type="text" placeholder="Nama barang">
+          </div>
+          <div class="row g-3">
+            <div class="col-6">
+              <label class="form-label">Kuantiti <span class="text-danger">*</span></label>
+              <input class="form-control" id="itemModalQty" type="number" min="0" step="0.01" value="0">
+            </div>
+            <div class="col-6">
+              <label class="form-label">Unit <span class="text-danger">*</span></label>
+              <input class="form-control" id="itemModalUnit" type="text" placeholder="e.g. KG">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Harga Seunit (RM)</label>
+            <input class="form-control" id="itemModalPrice" type="number" min="0" step="0.01" value="0">
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button class="btn btn-round btn-soft" type="button" data-bs-dismiss="modal">Batal</button>
+          <button class="btn btn-round btn-add" type="button" id="itemModalSave">Simpan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{-- Delete Confirmation Modal --}}
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content" style="background:#11151f; border:1px solid rgba(255,255,255,.08); color:#e2e8f0;">
+        <div class="modal-body text-center py-4">
+          <i class="bi bi-exclamation-triangle-fill text-danger fs-1 mb-3 d-block"></i>
+          <h5 class="fw-bold mb-2">Pengesahan Padam</h5>
+          <p class="mb-0" style="color:var(--muted);">Anda pasti mahu memadam item ini?</p>
+        </div>
+        <div class="modal-footer border-0 justify-content-center">
+          <button class="btn btn-round btn-soft" type="button" data-bs-dismiss="modal">Batal</button>
+          <button class="btn btn-round" type="button" id="deleteConfirmBtn" style="background:#dc3545; color:#fff;">Padam</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   </main>
 
 <template id="itemTemplate">
@@ -480,11 +544,11 @@
       <input type="hidden" class="item-name-hidden" name="items[0][name]">
     </td>
     <td>
-      <input class="form-control item-unit" type="text" readonly>
-      <input type="hidden" class="item-unit-hidden" name="items[0][unit]">
+      <input class="form-control item-order-qty item-calc" type="number" min="0" step="0.01" value="0" required>
     </td>
     <td>
-      <input class="form-control item-order-qty item-calc" type="number" min="0" step="0.01" value="0" required>
+      <input class="form-control item-unit" type="text" readonly>
+      <input type="hidden" class="item-unit-hidden" name="items[0][unit]">
     </td>
     <td>
       <input class="form-control item-unit-price" type="text" readonly>
@@ -494,8 +558,9 @@
       <input class="form-control item-total" type="text" value="RM 0.00" readonly>
     </td>
     <td>
-      <div class="d-flex flex-wrap gap-2">
-        <button class="btn btn-sm btn-outline-danger remove-item" type="button">Padam</button>
+      <div class="d-flex flex-wrap gap-1">
+        <button class="btn btn-sm btn-outline-info edit-item" type="button" title="Edit"><i class="bi bi-pencil"></i></button>
+        <button class="btn btn-sm btn-outline-danger remove-item" type="button" title="Padam"><i class="bi bi-trash"></i></button>
       </div>
     </td>
   </tr>
@@ -560,9 +625,10 @@
 
         function loadContracts() {
           const instId = getInstId();
+          const supId = document.getElementById('supplierSelect')?.value || '';
           contractSelect.innerHTML = '<option value="">-- Pilih Kontrak --</option>';
-          if (!instId) return;
-          fetch('{{ route("borang.inden.contracts") }}?institution_id=' + instId)
+          if (!instId || !supId) return;
+          fetch('{{ route("borang.inden.contracts") }}?institution_id=' + instId + '&supplier_id=' + supId)
             .then(r => r.json())
             .then(contracts => {
               contracts.forEach(c => {
@@ -574,11 +640,12 @@
               });
               @if(!empty($inden) && $inden->contract_id)
                 contractSelect.value = '{{ $inden->contract_id }}';
-                const selOpt = contractSelect.options[contractSelect.selectedIndex];
-                const supSel = document.getElementById('supplierSelect');
-                if (supSel && selOpt?.dataset.supplierId) {
-                  supSel.value = selOpt.dataset.supplierId;
-                  supSel.dispatchEvent(new Event('change'));
+                contractSelect.dispatchEvent(new Event('change'));
+              @else
+                // Auto-select first (only) contract for the chosen supplier
+                if (contracts.length > 0) {
+                  contractSelect.value = contracts[0].id;
+                  contractSelect.dispatchEvent(new Event('change'));
                 }
               @endif
             })
@@ -595,12 +662,6 @@
               } else {
                 itemList.innerHTML = '';
               }
-              const selectedOpt = contractSelect.options[contractSelect.selectedIndex];
-              const supplierSelect = document.getElementById('supplierSelect');
-              if (supplierSelect && selectedOpt?.dataset.supplierId) {
-                supplierSelect.value = selectedOpt.dataset.supplierId;
-                supplierSelect.dispatchEvent(new Event('change'));
-              }
               items.forEach(ci => {
                 addItem({
                   contract_item_id: ci.id,
@@ -614,6 +675,33 @@
             .catch(() => {});
         }
 
+        // Day name helpers
+        const dayNames = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
+        function updateDayName(dateInput) {
+          const parsed = parseDisplayDate(dateInput.value);
+          const daySpan = document.getElementById('tarikhDayName');
+          if (daySpan && parsed) {
+            daySpan.textContent = dayNames[parsed.getDay()] || '--';
+          }
+        }
+
+        // Supplier change → reload contracts
+        if (supplierSelect) {
+          supplierSelect.addEventListener('change', function() {
+            // Reload contracts filtered by supplier
+            loadContracts();
+            // Also fill address
+            if (typeof fillSupplierAddress === 'function') fillSupplierAddress();
+            // Clear items when supplier changes
+            if (itemDataTable) {
+              itemDataTable.clear().draw();
+            } else {
+              itemList.innerHTML = '';
+            }
+            updateSummary();
+          });
+        }
+
         if (contractSelect) {
           contractSelect.addEventListener('change', function() {
             loadContractItems(this.value);
@@ -621,6 +709,8 @@
         }
         if (!noPesananInput.value) generateOrderNo();
         loadContracts();
+        // Fill supplier address on load if pre-selected (edit mode)
+        if (typeof fillSupplierAddress === 'function') fillSupplierAddress();
 
         const dateInputs = document.querySelectorAll('.date-input');
         const timeInputs = document.querySelectorAll('input[type="time"]');
@@ -632,16 +722,20 @@
             this.value = this.value.replace(/[^\d/]/g, '').slice(0, 10);
             this.setCustomValidity('');
             updateTimeMinimum(this.value, localDate, now, timeInputs);
+            updateDayName(this);
           });
 
           input.addEventListener('change', function() {
             updateTimeMinimum(this.value, localDate, now, timeInputs);
+            updateDayName(this);
           });
         });
 
         dateInputs.forEach(input => {
           if (!input.value) input.value = localDate;
           input.dispatchEvent(new Event('change'));
+          // Init day name on load
+          updateDayName(input);
         });
 
         const localTime = now.toTimeString().substring(0, 5);
@@ -836,24 +930,40 @@
         });
       }
 
+      let deleteTargetRow = null;
+      let editTargetRow = null;
+
       function wireItemCard(card) {
         card.querySelectorAll('.item-calc').forEach((input) => input.addEventListener('input', updateSummary));
-        const removeButton = card.querySelector('.remove-item');
 
         if (isReadOnly) {
-          removeButton.classList.add('d-none');
+          card.querySelectorAll('.edit-item, .remove-item').forEach((btn) => btn.classList.add('d-none'));
           card.querySelectorAll('input').forEach((input) => input.setAttribute('readonly', 'readonly'));
           return;
         }
 
-        removeButton.addEventListener('click', function () {
-          if (itemDataTable) {
-            itemDataTable.row(card).remove().draw(false);
-          } else {
-            card.remove();
-          }
-          updateItemIndices();
-          updateSummary();
+        card.querySelector('.edit-item').addEventListener('click', function () {
+          editTargetRow = card;
+          const name = card.querySelector('.item-name').value;
+          const qty = card.querySelector('.item-order-qty').value;
+          const unit = card.querySelector('.item-unit').value;
+          const price = card.querySelector('.item-unit-price-hidden').value;
+          document.getElementById('itemModalTitle').textContent = 'Edit Item';
+          document.getElementById('editItemIndex').value = Array.from(getItemRows()).indexOf(card);
+          document.getElementById('itemModalName').value = name;
+          document.getElementById('itemModalQty').value = qty;
+          document.getElementById('itemModalUnit').value = unit;
+          document.getElementById('itemModalPrice').value = price;
+          // Lock name/unit for contract items
+          const isContractItem = !!card.querySelector('.item-contract-id').value;
+          document.getElementById('itemModalName').readOnly = isContractItem;
+          document.getElementById('itemModalUnit').readOnly = isContractItem;
+          new bootstrap.Modal(document.getElementById('itemModal')).show();
+        });
+
+        card.querySelector('.remove-item').addEventListener('click', function () {
+          deleteTargetRow = card;
+          new bootstrap.Modal(document.getElementById('deleteModal')).show();
         });
       }
 
@@ -880,6 +990,67 @@
       musterInputs.forEach((input) => input.addEventListener('input', (e) => updateMusterSummary(e)));
       wireUlasanCounter();
       initItemDataTable();
+
+      // Tambah Item button
+      const tambahBtn = document.getElementById('tambahItemBtn');
+      if (tambahBtn) {
+        tambahBtn.addEventListener('click', function () {
+          editTargetRow = null;
+          document.getElementById('itemModalTitle').textContent = 'Tambah Item';
+          document.getElementById('editItemIndex').value = -1;
+          document.getElementById('itemModalName').value = '';
+          document.getElementById('itemModalName').readOnly = false;
+          document.getElementById('itemModalQty').value = 0;
+          document.getElementById('itemModalUnit').value = '';
+          document.getElementById('itemModalUnit').readOnly = false;
+          document.getElementById('itemModalPrice').value = 0;
+          new bootstrap.Modal(document.getElementById('itemModal')).show();
+        });
+      }
+
+      // Item Modal Save
+      document.getElementById('itemModalSave').addEventListener('click', function () {
+        const name = document.getElementById('itemModalName').value.trim();
+        const qty = parseFloat(document.getElementById('itemModalQty').value) || 0;
+        const unit = document.getElementById('itemModalUnit').value.trim();
+        const price = parseFloat(document.getElementById('itemModalPrice').value) || 0;
+        if (!name) { alert('Sila isi nama barang.'); return; }
+        if (!unit) { alert('Sila isi unit.'); return; }
+        const editIdx = parseInt(document.getElementById('editItemIndex').value);
+
+        if (editIdx >= 0) {
+          // Edit existing row
+          const rows = getItemRows();
+          const card = rows[editIdx];
+          card.querySelector('.item-name').value = name;
+          card.querySelector('.item-name-hidden').value = name;
+          card.querySelector('.item-order-qty').value = qty;
+          card.querySelector('.item-unit').value = unit;
+          card.querySelector('.item-unit-hidden').value = unit;
+          card.querySelector('.item-unit-price').value = formatCurrency(price);
+          card.querySelector('.item-unit-price-hidden').value = price;
+          updateSummary();
+        } else {
+          // Add new custom item (contract_item_id = 0 means custom)
+          addItem({ contract_item_id: 0, name: name, unit: unit, orderQty: qty, unitPrice: price });
+        }
+        bootstrap.Modal.getInstance(document.getElementById('itemModal')).hide();
+      });
+
+      // Delete confirmation
+      document.getElementById('deleteConfirmBtn').addEventListener('click', function () {
+        if (deleteTargetRow) {
+          if (itemDataTable) {
+            itemDataTable.row(deleteTargetRow).remove().draw(false);
+          } else {
+            deleteTargetRow.remove();
+          }
+          deleteTargetRow = null;
+          updateItemIndices();
+          updateSummary();
+        }
+        bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+      });
 
       document.querySelectorAll('[data-borang-target]').forEach((button) => {
         button.addEventListener('click', () => showBorangPage(button.dataset.borangTarget));

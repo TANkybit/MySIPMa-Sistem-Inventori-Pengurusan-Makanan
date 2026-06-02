@@ -80,7 +80,7 @@ class User extends Authenticatable
                 => 'pengarah.negeri.dashboard',
             $this->isPengarahInstitusiAdmin($positionCode, $positionName)
                 => 'pengarah.institusi.dashboard',
-            $this->role?->role_name === 'Admin' || $positionCode === 'ADHQ'
+            $this->role?->role_name === 'admin hq' || $positionCode === 'ADHQ'
                 => 'admin.dashboard',
             default
                 => 'user.dashboard',
@@ -95,7 +95,7 @@ class User extends Authenticatable
         $positionName = strtolower($this->getPositionName());
 
         if (
-            $this->role?->role_name === 'Admin' ||
+            $this->role?->role_name === 'admin hq' ||
             $positionCode === 'ADHQ' ||
             $this->isPengarahInstitusiAdmin($positionCode, $positionName) ||
             $this->isPengarahNegeriAdmin($positionCode, $positionName)

@@ -395,11 +395,14 @@ class DashboardController extends Controller
     public function getContractsByInstitution(Request $request)
     {
         $institutionId = $request->input('institution_id');
-        $contracts = DB::table('contracts')
+        $supplierId = $request->input('supplier_id');
+        $query = DB::table('contracts')
             ->where('institution_id', $institutionId)
-            ->where('status', 'Active')
-            ->select('id', 'contract_no', 'supplier_id')
-            ->get();
+            ->where('status', 'Active');
+        if ($supplierId) {
+            $query->where('supplier_id', $supplierId);
+        }
+        $contracts = $query->select('id', 'contract_no', 'supplier_id')->get();
         return response()->json($contracts);
     }
 
@@ -541,8 +544,7 @@ class DashboardController extends Controller
             'contract_id' => ['required', 'exists:contracts,id'],
             'tarikh_pesanan' => ['required', 'date'],
             'masa' => ['required', 'date_format:H:i'],
-            'sesi_kod' => ['required', 'array', 'min:1'],
-            'sesi_kod.*' => ['string', 'max:10'],
+            'sesi_kod' => ['required', 'string', 'max:50'],
             'institution_id' => ['required', 'exists:institutions,id'],
             'supplier_id' => ['required', 'exists:suppliers,id'],
             'wakil_pembekal' => ['required', 'string', 'max:255'],
@@ -554,7 +556,7 @@ class DashboardController extends Controller
             'tarikh_pembekal' => ['required', 'date'],
             'catatan_inden' => ['nullable', 'string', $maxUlasanWords],
             'items' => ['required', 'array', 'min:1'],
-            'items.*.contract_item_id' => ['required', 'integer', 'exists:contract_items,id'],
+            'items.*.contract_item_id' => ['required', 'integer'],
             'items.*.name' => ['required', 'string', 'max:255'],
             'items.*.unit' => ['required', 'string', 'max:50'],
             'items.*.orderQty' => ['required', 'numeric', 'min:0'],
@@ -564,8 +566,7 @@ class DashboardController extends Controller
             'contract_id.required' => 'No. Kontrak wajib dipilih.',
             'tarikh_pesanan.required' => 'Tarikh Pesanan wajib diisi.',
             'masa.required' => 'Masa wajib diisi.',
-            'sesi_kod.required' => 'Sekurang-kurangnya satu sesi makanan wajib dipilih.',
-            'sesi_kod.min' => 'Sekurang-kurangnya satu sesi makanan wajib dipilih.',
+            'sesi_kod.required' => 'Sesi / Kod wajib diisi.',
             'institution_id.required' => 'Institusi (Kepada) wajib dipilih.',
             'institution_id.exists' => 'Institusi yang dipilih tidak sah.',
             'supplier_id.required' => 'Pembekal wajib dipilih.',
@@ -663,7 +664,7 @@ class DashboardController extends Controller
                 'order_id' => $orderId,
                 'delivery_date' => $validated['tarikh_pesanan'] ?? null,
                 'delivery_time' => $validated['masa'] ?? null,
-                'delivery_session' => isset($validated['sesi_kod']) ? implode('/', $validated['sesi_kod']) : null,
+                'delivery_session' => $validated['sesi_kod'] ?? null,
                 'muster_khas_daging' => (int) ($validated['muster_khas_daging'] ?? 0),
                 'muster_ditolak_parol' => (int) ($validated['muster_ditolak_parol'] ?? 0),
                 'parol' => (int) ($validated['parol'] ?? 0),
@@ -683,16 +684,30 @@ class DashboardController extends Controller
                 $unitPrice = (float) ($item['unitPrice'] ?? 0);
                 $lineTotal = $quantity * $unitPrice;
                 $contractItemId = $item['contract_item_id'] ?? null;
+                $itemId = null;
 
-                $contractItem = $contractItemId
-                    ? DB::table('contract_items')->where('id', $contractItemId)->first(['item_id'])
-                    : null;
-                $itemId = $contractItem ? $contractItem->item_id : null;
+                if ($contractItemId && $contractItemId > 0) {
+                    $contractItem = DB::table('contract_items')->where('id', $contractItemId)->first(['item_id']);
+                    $itemId = $contractItem ? $contractItem->item_id : null;
+                }
 
                 if (!$itemId) {
-                    throw \Illuminate\Validation\ValidationException::withMessages([
-                        'items.*.name' => 'Item tidak sah.',
-                    ]);
+                    // Custom item — find or create in items table
+                    $itemName = $item['name'] ?? '';
+                    $existing = DB::table('items')->where('name', $itemName)->first(['id']);
+                    if ($existing) {
+                        $itemId = $existing->id;
+                    } else {
+                        $itemId = DB::table('items')->insertGetId([
+                            'name' => $itemName,
+                            'uom_id' => null,
+                            'status' => 1,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
+                    // For custom items, contract_item_id stored as null
+                    $contractItemId = null;
                 }
 
                 DB::table('order_items')->insert([

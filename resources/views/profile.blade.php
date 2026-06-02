@@ -375,7 +375,7 @@
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          @if(Auth::user()->role?->role_name === 'Admin')
+          @if(Auth::user()->role?->role_name === 'admin hq')
           <li><a href="{{ route('admin.dashboard') }}"
               class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a></li>
           @else
@@ -463,6 +463,10 @@
                         <div class="info-item">
                             <label>Telefon:</label>
                             <p id="displayTelefon">{{ Auth::user()->phone_number ?? '-' }}</p>
+                        </div>
+                        <div class="info-item">
+                            <label>Alamat:</label>
+                            <p id="displayAlamat">{{ $fullAddress ?: '-' }}</p>
                         </div>
                     </div>
                 </div>

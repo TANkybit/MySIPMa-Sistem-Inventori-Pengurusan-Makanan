@@ -523,7 +523,7 @@
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          @if(Auth::user()->role?->role_name === 'Admin')
+          @if(Auth::user()->role?->role_name === 'admin hq')
           <li><a href="{{ route('admin.dashboard') }}"
               class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a></li>
           @else
@@ -617,12 +617,7 @@
 
                 <div class="form-group">
                     <label>Jawatan:</label>
-                    <select id="jawatanInput" required>
-                        <option value="">-- Pilih Jawatan --</option>
-                        @foreach($positions as $pos)
-                            <option value="{{ $pos->id }}">{{ $pos->name }}</option>
-                        @endforeach
-                    </select>
+                    <input type="text" id="jawatanInput" readonly>
                 </div>
                 
                 <div class="form-group">
@@ -633,6 +628,11 @@
                 <div class="form-group">
                     <label>Telefon:</label>
                     <input type="tel" id="telefonInput" placeholder="Masukkan no. telefon anda">
+                </div>
+
+                <div class="form-group">
+                    <label>Alamat:</label>
+                    <input type="text" id="alamatInput" readonly>
                 </div>
                 </div>
             </div>
@@ -717,9 +717,10 @@
           document.getElementById('namaInput').value = data.name || '';
           document.getElementById('emailInput').value = data.email || '';
           document.getElementById('institusiInput').value = data.institution_id || '';
-          document.getElementById('jawatanInput').value = data.position_id || '';
-          document.getElementById('perananInput').value = data.username || '';
+          document.getElementById('jawatanInput').value = data.position_name || '';
+          document.getElementById('perananInput').value = (data.username || '').replace(/\b\w/g, c => c.toUpperCase());
           document.getElementById('telefonInput').value = data.phone_number || '';
+          document.getElementById('alamatInput').value = data.full_address || '';
           
           // Display avatar if exists
           if (data.avatar_url) {
@@ -855,8 +856,6 @@
     function handleUpdateProfile() {
       const nama = document.getElementById('namaInput').value.trim();
       const institusi_id = document.getElementById('institusiInput').value;
-      const jawatan_id = document.getElementById('jawatanInput').value;
-      const peranan_id = document.getElementById('perananInput').value;
       const telefon = document.getElementById('telefonInput').value.trim();
       const avatarFile = document.getElementById('avatarInput').files[0];
       
@@ -866,10 +865,6 @@
       }
       if (!institusi_id) {
         showStatus('Sila isi institusi!', 'error');
-        return;
-      }
-      if (!jawatan_id) {
-        showStatus('Sila isi jawatan!', 'error');
         return;
       }
       if (!telefon) {
@@ -905,7 +900,7 @@
             return;
           }
           // After avatar upload succeeds, update profile info
-          updateProfileInfo(nama, institusi_id, jawatan_id, peranan_id, telefon);
+          updateProfileInfo(nama, institusi_id, telefon);
         })
         .catch(err => {
           console.error('Avatar upload error:', err);
@@ -913,11 +908,11 @@
         });
       } else {
         // No avatar selected, just update profile info
-        updateProfileInfo(nama, institusi_id, jawatan_id, peranan_id, telefon);
+        updateProfileInfo(nama, institusi_id, telefon);
       }
     }
 
-    function updateProfileInfo(nama, institusi_id, jawatan_id, peranan_id, telefon) {
+    function updateProfileInfo(nama, institusi_id, telefon) {
       const email = document.getElementById('emailInput').value.trim();
       fetch('{{ route("profile.update") }}', {
         method: 'POST',
@@ -930,8 +925,7 @@
           name: nama,
           email: email,
           phone_number: telefon,
-          institution_id: institusi_id ? parseInt(institusi_id) : null,
-          position_id: jawatan_id ? parseInt(jawatan_id) : null
+          institution_id: institusi_id ? parseInt(institusi_id) : null
         })
       })
       .then(response => {

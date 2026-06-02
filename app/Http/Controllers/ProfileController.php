@@ -16,28 +16,36 @@ class ProfileController extends Controller
     public function getProfile()
     {
         $user = Auth::user();
+        $user->load('institution.district', 'institution.state');
 
         $avatarUrl = $this->getAvatarUrl($user);
 
-        $institution = $user->institution_id
-            ? \Illuminate\Support\Facades\DB::table('institutions')->where('id', $user->institution_id)->value('name')
-            : null;
+        $institution = $user->institution?->name;
 
-        $position = $user->position_id
-            ? \Illuminate\Support\Facades\DB::table('positions')->where('id', $user->position_id)->value('name')
-            : null;
+        $positionName = $user->position?->name;
+
+        $fullAddress = '';
+        if ($user->institution) {
+            $parts = [];
+            if ($user->institution->address) $parts[] = $user->institution->address;
+            if ($user->institution->district) $parts[] = $user->institution->district->name;
+            if ($user->institution->state) $parts[] = $user->institution->state->name;
+            if ($user->institution->postcode) $parts[] = $user->institution->postcode;
+            $fullAddress = implode(', ', $parts);
+        }
 
         return response()->json([
             'name' => $user->name,
             'email' => $user->email,
             'username' => $user->effectiveRoleName(),
-            'grade' => $position,
+            'position_name' => $positionName,
             'institution' => $institution,
             'institution_id' => $user->institution_id,
             'position_id' => $user->position_id,
             'role_id' => $user->role_id,
             'phone_number' => $user->phone_number,
             'avatar_url' => $avatarUrl,
+            'full_address' => $fullAddress,
         ]);
     }
 
@@ -49,15 +57,21 @@ class ProfileController extends Controller
             return redirect()->route('pengarah.institusi.profil');
         }
 
-        $institutionName = $user->institution_id
-            ? \Illuminate\Support\Facades\DB::table('institutions')->where('id', $user->institution_id)->value('name')
-            : '-';
+        $user->load('institution.district', 'institution.state');
 
-        $positionName = $user->position_id
-            ? \Illuminate\Support\Facades\DB::table('positions')->where('id', $user->position_id)->value('name')
-            : '-';
-
+        $institutionName = $user->institution?->name ?? '-';
+        $positionName = $user->position?->name ?? '-';
         $roleName = $user->effectiveRoleName();
+
+        $fullAddress = '';
+        if ($user->institution) {
+            $parts = [];
+            if ($user->institution->address) $parts[] = $user->institution->address;
+            if ($user->institution->district) $parts[] = $user->institution->district->name;
+            if ($user->institution->state) $parts[] = $user->institution->state->name;
+            if ($user->institution->postcode) $parts[] = $user->institution->postcode;
+            $fullAddress = implode(', ', $parts);
+        }
 
         return view('profile', [
             'user' => $user,
@@ -66,6 +80,7 @@ class ProfileController extends Controller
             'institutionName' => $institutionName,
             'positionName' => $positionName,
             'roleName' => $roleName,
+            'fullAddress' => $fullAddress,
         ]);
     }
 
