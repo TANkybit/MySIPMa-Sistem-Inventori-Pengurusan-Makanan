@@ -69,8 +69,10 @@ Route::middleware('auth')->group(function () {
     })->name('pengarah.hq.dashboard');
 
     Route::get('/pengarah-institusi', [DashboardController::class, 'pengarahInstitusiDashboard'])->name('pengarah.institusi.dashboard');
+    Route::get('/pengarah-institusi/ringkasan', [DashboardController::class, 'pengarahInstitusiRingkasanPesanan'])->name('pengarah.institusi.ringkasan');
     Route::get('/pengarah-institusi/institusi', [DashboardController::class, 'pengarahInstitusiInstitusi'])->name('pengarah.institusi.institusi');
     Route::get('/pengarah-institusi/pembekal', [DashboardController::class, 'pengarahInstitusiPembekal'])->name('pengarah.institusi.pembekal');
+    Route::get('/pengarah-institusi/senarai-user', [DashboardController::class, 'pengarahInstitusiSenaraiUser'])->name('pengarah.institusi.senarai_pengguna');
     Route::get('/pengarah-institusi/profil', [DashboardController::class, 'pengarahInstitusiProfil'])->name('pengarah.institusi.profil');
     Route::get('/pengarah-negeri', [DashboardController::class, 'pengarahNegeriDashboard'])->name('pengarah.negeri.dashboard');
     Route::get('/pengarah-negeri/inventori', [DashboardController::class, 'pengarahNegeriInventori'])->name('pengarah.negeri.inventori');

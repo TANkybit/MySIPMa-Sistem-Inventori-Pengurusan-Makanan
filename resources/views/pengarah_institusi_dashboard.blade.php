@@ -1,18 +1,22 @@
 @php
     $activePage = $activePage ?? 'dashboard';
     $pageTitles = [
-        'dashboard' => 'Dashboard',
-        'institusi' => 'Institusi',
+        'dashboard' => 'Papan Pemuka',
+        'ringkasan' => 'Ringkasan Pesanan',
+        'institusi' => 'Inventori',
         'pembekal' => 'Pembekal',
+        'senarai_user' => 'Senarai User',
         'profil' => 'Profil Saya',
     ];
     $pageRoutes = [
         'dashboard' => 'pengarah.institusi.dashboard',
+        'ringkasan' => 'pengarah.institusi.ringkasan',
         'institusi' => 'pengarah.institusi.institusi',
         'pembekal' => 'pengarah.institusi.pembekal',
+        'senarai_user' => 'pengarah.institusi.senarai_pengguna',
         'profil' => 'pengarah.institusi.profil',
     ];
-    $pageTitle = $pageTitles[$activePage] ?? 'Dashboard';
+    $pageTitle = $pageTitles[$activePage] ?? 'Papan Pemuka';
     $currentRoute = $pageRoutes[$activePage] ?? 'pengarah.institusi.dashboard';
     $institutionQuery = request()->only('institution_id');
 @endphp
@@ -51,25 +55,37 @@
 
             <nav class="sidebar-menu">
                 <ul class="nav flex-column">
-                    <li class="nav-title">MAIN</li>
+                    <li class="nav-title">UTAMA</li>
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('pengarah.institusi.dashboard') ? 'active' : '' }}" href="{{ route('pengarah.institusi.dashboard', $institutionQuery) }}">
                             <i class="fas fa-home"></i>
-                            <span>Dashboard</span>
+                            <span>Papan Pemuka</span>
                         </a>
                     </li>
 
                     <li class="nav-title mt-4">PENGURUSAN DATA</li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.institusi') ? 'active' : '' }}" href="{{ route('pengarah.institusi.institusi', $institutionQuery) }}">
-                            <i class="fas fa-building"></i>
-                            <span>Institusi</span>
+                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.ringkasan') ? 'active' : '' }}" href="{{ route('pengarah.institusi.ringkasan') }}">
+                            <i class="fas fa-file-invoice"></i>
+                            <span>Ringkasan Pesanan</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.pembekal') ? 'active' : '' }}" href="{{ route('pengarah.institusi.pembekal', $institutionQuery) }}">
+                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.institusi') ? 'active' : '' }}" href="{{ route('pengarah.institusi.institusi') }}">
+                            <i class="fas fa-boxes"></i>
+                            <span>Inventori</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.pembekal') ? 'active' : '' }}" href="{{ route('pengarah.institusi.pembekal') }}">
                             <i class="fas fa-truck"></i>
                             <span>Pembekal</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.senarai_pengguna') ? 'active' : '' }}" href="{{ route('pengarah.institusi.senarai_pengguna') }}">
+                            <i class="fas fa-users"></i>
+                            <span>Senarai User</span>
                         </a>
                     </li>
 
@@ -131,7 +147,9 @@
 
             <div class="content-body">
                 <div class="container-fluid py-4">
-                    @if($activePage !== 'profil')
+                    @if($activePage === 'dashboard')
+                    {{-- Form Tapis disembunyikan dalam komen mengikut kehendak pengguna --}}
+                    {{--
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="card">
@@ -156,6 +174,7 @@
                             </div>
                         </div>
                     </div>
+                    --}}
 
                     <div class="row g-3 mb-4">
                         <div class="col-lg-4 col-md-6">
@@ -180,6 +199,36 @@
                     @endif
 
                     @if($activePage === 'dashboard')
+                        <div class="row mb-4">
+                            <!-- Order Status Chart -->
+                            <div class="col-lg-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-white border-0 pt-4 pb-0">
+                                        <h5 class="card-title fw-bold mb-0">Status Pesanan Keseluruhan</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="orderStatusChart" style="max-height: 300px;"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Top Items Chart -->
+                            <div class="col-lg-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-white border-0 pt-4 pb-0">
+                                        <h5 class="card-title fw-bold mb-0">5 Item Paling Banyak Dipesan</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="topItemsChart" style="max-height: 300px;"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Data element to pass PHP array to JS safely -->
+                        <div id="dashboardDataStore" data-charts="{{ $dashboardData ?? '{}' }}" style="display: none;"></div>
+
+                    @elseif($activePage === 'ringkasan')
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Ringkasan Pesanan</h5>
@@ -203,7 +252,20 @@
                                                     <td>{{ $order->order_no }}</td>
                                                     <td>{{ $order->order_date }}</td>
                                                     <td>{{ number_format($order->total_amount, 2) }}</td>
-                                                    <td>{{ $order->status }}</td>
+                                                    <td>
+                                                        @php
+                                                            $statusMalay = match($order->status) {
+                                                                'Pending' => 'Menunggu',
+                                                                'In Progress' => 'Dalam Proses',
+                                                                'Completed' => 'Selesai',
+                                                                'Rejected' => 'Ditolak',
+                                                                default => $order->status
+                                                            };
+                                                        @endphp
+                                                        <span class="badge {{ $order->status == 'Pending' ? 'bg-warning' : ($order->status == 'In Progress' ? 'bg-primary' : ($order->status == 'Completed' ? 'bg-success' : 'bg-danger')) }}">
+                                                            {{ $statusMalay }}
+                                                        </span>
+                                                    </td>
                                                     <td>{{ optional($order->supplier)->company_name }}</td>
                                                 </tr>
                                             @endforeach
@@ -221,6 +283,7 @@
                                     <table id="inventory-table" class="table table-bordered table-striped w-100">
                                         <thead>
                                             <tr>
+                                                <th style="width: 50px;">Bil</th>
                                                 <th>Nama Item</th>
                                                 <th>Jumlah Dipesan</th>
                                                 <th>Jumlah Harga</th>
@@ -229,6 +292,7 @@
                                         <tbody>
                                             @foreach($inventoryItems as $item)
                                                 <tr>
+                                                    <td>{{ $loop->iteration }}</td>
                                                     <td>{{ optional($item->item)->name ?? 'Item tidak dijumpai' }}</td>
                                                     <td>{{ number_format($item->total_ordered_quantity, 2) }}</td>
                                                     <td>{{ number_format($item->total_ordered_price, 2) }}</td>
@@ -250,8 +314,8 @@
                                             <tr>
                                                 <th>ID</th>
                                                 <th>Nama Syarikat</th>
-                                                <th>Contact Person</th>
-                                                <th>Email</th>
+                                                <th>Pegawai Dihubungi</th>
+                                                <th>E-mel</th>
                                                 <th>Negeri</th>
                                             </tr>
                                         </thead>
@@ -259,10 +323,56 @@
                                             @foreach($suppliers as $supplier)
                                                 <tr>
                                                     <td>{{ $supplier->id }}</td>
-                                                    <td>{{ $supplier->company_name }}</td>
+                                                    <td>
+                                                        <a href="javascript:void(0);" class="supplier-detail-btn fw-bold text-primary text-decoration-none" 
+                                                           data-company="{{ $supplier->company_name }}"
+                                                           data-contact="{{ $supplier->contact_person }}"
+                                                           data-email="{{ $supplier->email }}"
+                                                           data-phone="{{ $supplier->phone_number }}"
+                                                           data-address="{{ $supplier->address }}"
+                                                           data-postcode="{{ $supplier->postcode }}"
+                                                           data-state="{{ optional($supplier->state)->name }}">
+                                                            <i class="fas fa-building me-1"></i> {{ $supplier->company_name }}
+                                                        </a>
+                                                    </td>
                                                     <td>{{ $supplier->contact_person }}</td>
                                                     <td>{{ $supplier->email }}</td>
                                                     <td>{{ optional($supplier->state)->name }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    @elseif($activePage === 'senarai_user')
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Senarai Pengguna</h5>
+                                <p class="text-muted">Lihat semua pengguna untuk institusi terpilih (Paparan sahaja).</p>
+                                <div class="table-responsive">
+                                    <table id="users-table" class="table table-bordered table-striped w-100">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 50px;">Bil</th>
+                                                <th>Nama</th>
+                                                <th>E-mel</th>
+                                                <th>No. Telefon</th>
+                                                <th>Jawatan / Peranan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($users as $user)
+                                                <tr>
+                                                    <td>{{ $loop->iteration }}</td>
+                                                    <td>{{ $user->name }}</td>
+                                                    <td>{{ $user->email }}</td>
+                                                    <td>{{ $user->phone_number }}</td>
+                                                    <td>
+                                                        {{ optional($user->position)->name ?? '-' }} 
+                                                        <br>
+                                                        <small class="text-muted">Peranan: {{ $user->effectiveRoleName() }}</small>
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -315,7 +425,7 @@
                                     <div class="card-body p-0">
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
-                                                <span><i class="fas fa-envelope me-2 text-primary"></i>Email</span>
+                                                <span><i class="fas fa-envelope me-2 text-primary"></i>E-mel</span>
                                                 <span class="fw-medium">{{ auth()->user()?->email ?? '-' }}</span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
@@ -368,7 +478,7 @@
                                                     <input type="text" class="form-control" name="name" value="{{ auth()->user()?->name }}" required>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <label class="form-label">Email</label>
+                                                    <label class="form-label">E-mel</label>
                                                     <input type="email" class="form-control" name="email" value="{{ auth()->user()?->email }}" required>
                                                 </div>
                                             </div>
@@ -431,6 +541,55 @@
                     @endif
                 </div>
             </div>
+
+            <!-- Supplier Detail Modal -->
+            <div class="modal fade" id="supplierDetailModal" tabindex="-1" aria-labelledby="supplierDetailModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold" id="supplierDetailModalLabel"><i class="fas fa-truck me-2"></i>Maklumat Pembekal</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <table class="table table-borderless table-sm mb-0">
+                                <tbody>
+                                    <tr>
+                                        <th style="width:40%;">Nama Syarikat</th>
+                                        <td>: <span id="modal_supplier_name" class="fw-medium"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Pegawai Dihubungi</th>
+                                        <td>: <span id="modal_supplier_contact"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <th>E-mel</th>
+                                        <td>: <span id="modal_supplier_email"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <th>No. Telefon</th>
+                                        <td>: <span id="modal_supplier_phone"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Alamat</th>
+                                        <td>: <span id="modal_supplier_address"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Poskod</th>
+                                        <td>: <span id="modal_supplier_postcode"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Negeri</th>
+                                        <td>: <span id="modal_supplier_state"></span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -440,6 +599,7 @@
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         function handleSidebarToggle() {
             const sidebarToggle = document.getElementById('sidebarToggle');
@@ -492,13 +652,80 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             if (typeof $ === 'function' && $.fn.DataTable) {
-                $('#orders-table, #inventory-table, #suppliers-table').DataTable({
+                $('#orders-table, #inventory-table, #suppliers-table, #users-table').DataTable({
                     responsive: true,
                 });
             }
 
             handleSidebarToggle();
             handleThemeToggle();
+            
+            // Dashboard Charts Logic
+            const dashDataStore = document.getElementById('dashboardDataStore');
+            if (dashDataStore && typeof Chart !== 'undefined') {
+                try {
+                    const dashboardData = JSON.parse(dashDataStore.getAttribute('data-charts') || '{}');
+                    
+                    if (dashboardData.order_status) {
+                        const ctxStatus = document.getElementById('orderStatusChart').getContext('2d');
+                        new Chart(ctxStatus, {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['Menunggu', 'Dalam Proses', 'Selesai', 'Ditolak'],
+                                datasets: [{
+                                    data: [
+                                        dashboardData.order_status['Pending'] || 0,
+                                        dashboardData.order_status['In Progress'] || 0,
+                                        dashboardData.order_status['Completed'] || 0,
+                                        dashboardData.order_status['Rejected'] || 0
+                                    ],
+                                    backgroundColor: ['#ffc107', '#0d6efd', '#198754', '#dc3545']
+                                }]
+                            },
+                            options: { responsive: true, maintainAspectRatio: false }
+                        });
+                    }
+                    
+                    if (dashboardData.top_items && dashboardData.top_items.labels.length > 0) {
+                        const ctxItems = document.getElementById('topItemsChart').getContext('2d');
+                        new Chart(ctxItems, {
+                            type: 'bar',
+                            data: {
+                                labels: dashboardData.top_items.labels,
+                                datasets: [{
+                                    label: 'Jumlah Dipesan',
+                                    data: dashboardData.top_items.data,
+                                    backgroundColor: '#1a5632'
+                                }]
+                            },
+                            options: { 
+                                responsive: true, 
+                                maintainAspectRatio: false,
+                                scales: { y: { beginAtZero: true } }
+                            }
+                        });
+                    }
+                } catch(e) {
+                    console.error("Error loading charts:", e);
+                }
+            }
+            
+            // Supplier Modal Logic
+            const supplierBtns = document.querySelectorAll('.supplier-detail-btn');
+            supplierBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.getElementById('modal_supplier_name').textContent = this.dataset.company || '-';
+                    document.getElementById('modal_supplier_contact').textContent = this.dataset.contact || '-';
+                    document.getElementById('modal_supplier_email').textContent = this.dataset.email || '-';
+                    document.getElementById('modal_supplier_phone').textContent = this.dataset.phone || '-';
+                    document.getElementById('modal_supplier_address').textContent = this.dataset.address || '-';
+                    document.getElementById('modal_supplier_postcode').textContent = this.dataset.postcode || '-';
+                    document.getElementById('modal_supplier_state').textContent = this.dataset.state || '-';
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('supplierDetailModal'));
+                    modal.show();
+                });
+            });
 
             const btnEditProfile = document.getElementById('btnEditProfile');
             const btnCancelEdit = document.getElementById('btnCancelEdit');

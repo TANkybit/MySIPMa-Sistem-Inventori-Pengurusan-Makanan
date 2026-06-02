@@ -842,10 +842,10 @@
                                     </label>
                                     <select id="indenStatusFilter" class="form-select">
                                         <option value="">-- Semua Status --</option>
-                                        <option value="Pending">Pending</option>
-                                        <option value="In Progress">In Progress</option>
-                                        <option value="Completed">Completed</option>
-                                        <option value="Rejected">Rejected</option>
+                                        <option value="Pending">Menunggu</option>
+                                        <option value="In Progress">Dalam Proses</option>
+                                        <option value="Completed">Selesai</option>
+                                        <option value="Rejected">Ditolak</option>
                                     </select>
                                 </div>
                                 <div class="col-lg-2 col-md-4">
@@ -890,7 +890,7 @@
                                         <i class="fas fa-clock text-warning fs-5"></i>
                                     </div>
                                     <div>
-                                        <div class="text-muted small text-uppercase fw-semibold">Pending</div>
+                                        <div class="text-muted small text-uppercase fw-semibold">Menunggu</div>
                                         <div class="fw-bold fs-4" id="indenStatPending">-</div>
                                     </div>
                                 </div>
@@ -2856,7 +2856,7 @@
         });
 
         // ===== INDEN PAGE LOGIC =====
-        (function() {
+        document.addEventListener('DOMContentLoaded', function() {
             let indenTable = null;
 
             function initIndenTable() {
@@ -2880,10 +2880,10 @@
 
             function getStatusBadge(status) {
                 const map = {
-                    'Pending':     '<span class="badge bg-warning text-dark">Pending</span>',
-                    'In Progress': '<span class="badge bg-info">In Progress</span>',
-                    'Completed':   '<span class="badge bg-success">Completed</span>',
-                    'Rejected':    '<span class="badge bg-danger">Rejected</span>',
+                    'Pending':     '<span class="badge bg-warning text-dark">Menunggu</span>',
+                    'In Progress': '<span class="badge bg-info">Dalam Proses</span>',
+                    'Completed':   '<span class="badge bg-success">Selesai</span>',
+                    'Rejected':    '<span class="badge bg-danger">Ditolak</span>',
                 };
                 return map[status] || `<span class="badge bg-secondary">${status}</span>`;
             }
@@ -2961,17 +2961,33 @@
                 });
             }
 
+            // Prevent form submit
+            const filterForm = document.getElementById('indenFilterForm');
+            if(filterForm) {
+                filterForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    loadInden();
+                });
+            }
+
             // Tapis button
-            document.getElementById('indenTapisBtn').addEventListener('click', loadInden);
+            const btnTapis = document.getElementById('indenTapisBtn');
+            if(btnTapis) {
+                btnTapis.addEventListener('click', loadInden);
+            }
 
             // Reset button
-            document.getElementById('indenResetBtn').addEventListener('click', function() {
-                document.getElementById('indenInstitusiFilter').value = '';
-                document.getElementById('indenStatusFilter').value    = '';
-                document.getElementById('indenDateFrom').value        = '';
-                document.getElementById('indenDateTo').value          = '';
-                loadInden();
-            });
+            const btnReset = document.getElementById('indenResetBtn');
+            if(btnReset) {
+                btnReset.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.getElementById('indenInstitusiFilter').value = '';
+                    document.getElementById('indenStatusFilter').value    = '';
+                    document.getElementById('indenDateFrom').value        = '';
+                    document.getElementById('indenDateTo').value          = '';
+                    loadInden();
+                });
+            }
 
             // Auto-load when switching to inden page (tap into SPA nav)
             document.addEventListener('click', function(e) {
@@ -2980,7 +2996,7 @@
                     setTimeout(loadInden, 100);
                 }
             });
-        })();
+        });
         // ===== END INDEN PAGE LOGIC =====
     </script>
     <script src="{{ asset('script.js') }}"></script>
