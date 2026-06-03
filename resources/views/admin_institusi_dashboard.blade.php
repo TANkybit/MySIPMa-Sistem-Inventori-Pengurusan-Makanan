@@ -9,15 +9,15 @@
         'profil' => 'Profil Saya',
     ];
     $pageRoutes = [
-        'dashboard' => 'pengarah.institusi.dashboard',
-        'ringkasan' => 'pengarah.institusi.ringkasan',
-        'institusi' => 'pengarah.institusi.institusi',
-        'pembekal' => 'pengarah.institusi.pembekal',
-        'senarai_user' => 'pengarah.institusi.senarai_pengguna',
-        'profil' => 'pengarah.institusi.profil',
+        'dashboard' => 'admin.institusi.dashboard',
+        'ringkasan' => 'admin.institusi.ringkasan',
+        'institusi' => 'admin.institusi.institusi',
+        'pembekal' => 'admin.institusi.pembekal',
+        'senarai_user' => 'admin.institusi.senarai_pengguna',
+        'profil' => 'admin.institusi.profil',
     ];
     $pageTitle = $pageTitles[$activePage] ?? 'Papan Pemuka';
-    $currentRoute = $pageRoutes[$activePage] ?? 'pengarah.institusi.dashboard';
+    $currentRoute = $pageRoutes[$activePage] ?? 'admin.institusi.dashboard';
     $institutionQuery = request()->only('institution_id');
 @endphp
 
@@ -26,7 +26,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $pageTitle }} Pengarah Institusi</title>
+    <title>{{ $pageTitle }} Admin Institusi</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
@@ -39,13 +39,13 @@
     <div class="wrapper">
         <aside id="sidebar" class="sidebar">
             <div class="sidebar-header">
-                <a href="{{ route('pengarah.institusi.dashboard') }}" class="logo">
+                <a href="{{ route('admin.institusi.dashboard') }}" class="logo">
                     <div class="logo-icon">
                         <img src="{{ asset('MySIPMa_logo_wWalls.png') }}" alt="MySIPMa Logo" height="50" class="me-2">
                     </div>
                     <div class="logo-text">
                         <span class="fw-bold">MySIPMA</span>
-                        <small>Pengarah Institusi</small>
+                        <small>Admin Institusi</small>
                     </div>
                 </a>
                 <button class="sidebar-toggle d-lg-none">
@@ -57,7 +57,7 @@
                 <ul class="nav flex-column">
                     <li class="nav-title">UTAMA</li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.dashboard') ? 'active' : '' }}" href="{{ route('pengarah.institusi.dashboard', $institutionQuery) }}">
+                        <a class="nav-link {{ request()->routeIs('admin.institusi.dashboard') ? 'active' : '' }}" href="{{ route('admin.institusi.dashboard', $institutionQuery) }}">
                             <i class="fas fa-home"></i>
                             <span>Papan Pemuka</span>
                         </a>
@@ -65,25 +65,25 @@
 
                     <li class="nav-title mt-4">PENGURUSAN DATA</li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.ringkasan') ? 'active' : '' }}" href="{{ route('pengarah.institusi.ringkasan') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.institusi.ringkasan') ? 'active' : '' }}" href="{{ route('admin.institusi.ringkasan') }}">
                             <i class="fas fa-file-invoice"></i>
                             <span>Ringkasan Pesanan</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.institusi') ? 'active' : '' }}" href="{{ route('pengarah.institusi.institusi') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.institusi.institusi') ? 'active' : '' }}" href="{{ route('admin.institusi.institusi') }}">
                             <i class="fas fa-boxes"></i>
                             <span>Inventori</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.pembekal') ? 'active' : '' }}" href="{{ route('pengarah.institusi.pembekal') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.institusi.pembekal') ? 'active' : '' }}" href="{{ route('admin.institusi.pembekal') }}">
                             <i class="fas fa-truck"></i>
                             <span>Pembekal</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.senarai_pengguna') ? 'active' : '' }}" href="{{ route('pengarah.institusi.senarai_pengguna') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.institusi.senarai_pengguna') ? 'active' : '' }}" href="{{ route('admin.institusi.senarai_pengguna') }}">
                             <i class="fas fa-users"></i>
                             <span>Senarai Pengguna</span>
                         </a>
@@ -91,7 +91,7 @@
 
                     <li class="nav-title mt-4">LAPORAN</li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.profil') ? 'active' : '' }}" href="{{ route('pengarah.institusi.profil') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.institusi.profil') ? 'active' : '' }}" href="{{ route('admin.institusi.profil') }}">
                             <i class="fas fa-user"></i>
                             <span>Profil Saya</span>
                         </a>
@@ -101,10 +101,10 @@
 
             <div class="sidebar-footer">
                 <div class="user-profile">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()?->name ?? 'Pengarah Institusi') }}&background=1a5632&color=fff&size=80" alt="{{ auth()->user()?->name ?? 'Pengarah Institusi' }}" class="user-avatar">
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()?->name ?? 'Admin Institusi') }}&background=1a5632&color=fff&size=80" alt="{{ auth()->user()?->name ?? 'Admin Institusi' }}" class="user-avatar">
                     <div class="user-info">
-                        <h6>{{ auth()->user()?->name ?? 'Pengarah Institusi' }}</h6>
-                        <small class="text-muted">Pengarah Institusi</small>
+                        <h6>{{ auth()->user()?->name ?? 'Admin Institusi' }}</h6>
+                        <small class="text-muted">Admin Institusi</small>
                     </div>
                     <form action="{{ route('logout') }}" method="POST" class="d-inline">
                         @csrf
@@ -126,8 +126,8 @@
                         <h1>{{ $pageTitle }}</h1>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('pengarah.institusi.dashboard') }}"><i class="fas fa-home"></i></a></li>
-                                <li class="breadcrumb-item">Pengarah Institusi</li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.institusi.dashboard') }}"><i class="fas fa-home"></i></a></li>
+                                <li class="breadcrumb-item">Admin Institusi</li>
                                 <li class="breadcrumb-item active">{{ $pageTitle }}</li>
                             </ol>
                         </nav>
@@ -352,8 +352,15 @@
                     @elseif($activePage === 'senarai_user')
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Senarai Pengguna</h5>
-                                <p class="text-muted">Lihat semua pengguna untuk institusi terpilih (Paparan sahaja).</p>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <h5 class="card-title mb-0">Senarai Pengguna</h5>
+                                        <p class="text-muted mb-0">Lihat dan urus pengguna untuk institusi terpilih.</p>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" id="btnTambahPengguna" data-bs-toggle="modal" data-bs-target="#userModal">
+                                        <i class="fas fa-plus me-1"></i> Tambah Pengguna Baru
+                                    </button>
+                                </div>
                                 <div class="table-responsive">
                                     <table id="users-table" class="table table-bordered table-striped w-100">
                                         <thead>
@@ -363,6 +370,7 @@
                                                 <th>E-mel</th>
                                                 <th>No. Telefon</th>
                                                 <th>Jawatan / Peranan</th>
+                                                <th>Tindakan</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -377,6 +385,20 @@
                                                         <br>
                                                         <small class="text-muted">Peranan: {{ $user->effectiveRoleName() }}</small>
                                                     </td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary btn-edit-user" 
+                                                            data-id="{{ $user->id }}"
+                                                            data-name="{{ $user->name }}"
+                                                            data-email="{{ $user->email }}"
+                                                            data-phone="{{ $user->phone_number }}"
+                                                            data-role="{{ $user->role_id }}"
+                                                            data-position="{{ $user->position_id }}"
+                                                            data-status="{{ $user->status }}"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#userModal">
+                                                            <i class="fas fa-edit"></i> Edit
+                                                        </button>
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -390,13 +412,13 @@
                                 <div class="card text-center h-100">
                                     <div class="card-body">
                                         <div class="position-relative d-inline-block mb-3">
-                                            <img src="{{ auth()->user()?->image ? asset('storage/' . auth()->user()->image) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()?->name ?? 'Pengarah Institusi') . '&background=1a5632&color=fff&size=150' }}"
+                                            <img src="{{ auth()->user()?->image ? asset('storage/' . auth()->user()->image) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()?->name ?? 'Admin Institusi') . '&background=1a5632&color=fff&size=150' }}"
                                                 alt="Profile Picture"
                                                 class="rounded-circle img-thumbnail"
                                                 style="width: 150px; height: 150px; object-fit: cover;">
                                         </div>
-                                        <h4 class="mb-0">{{ auth()->user()?->name ?? 'Pengarah Institusi' }}</h4>
-                                        <p class="text-muted">{{ auth()->user()?->position?->name ?? 'Pengarah Institusi' }}</p>
+                                        <h4 class="mb-0">{{ auth()->user()?->name ?? 'Admin Institusi' }}</h4>
+                                        <p class="text-muted">{{ auth()->user()?->position?->name ?? 'Admin Institusi' }}</p>
                                         <div class="d-grid gap-2">
                                             <button class="btn btn-outline-primary" id="btnEditProfile">
                                                 <i class="fas fa-edit me-2"></i>Kemaskini Profil
@@ -546,6 +568,67 @@
                 </div>
             </div>
 
+            <!-- User Modal -->
+            <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold" id="userModalLabel"><i class="fas fa-user-edit me-2"></i>Tambah / Kemaskini Pengguna</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form id="userForm">
+                            @csrf
+                            <input type="hidden" id="user_id" name="user_id">
+                            <input type="hidden" id="user_institution" name="institution_id" value="{{ optional($selectedInstitution)->id }}">
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Nama</label>
+                                    <input type="text" class="form-control" id="user_name" name="name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">E-mel</label>
+                                    <input type="email" class="form-control" id="user_email" name="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">No. Telefon</label>
+                                    <input type="text" class="form-control" id="user_phone" name="phone_number">
+                                </div>
+                                <div class="mb-3" id="passwordGroup">
+                                    <label class="form-label">Kata Laluan (Biarkan kosong jika tidak mahu tukar/Isi jika pengguna baru)</label>
+                                    <input type="password" class="form-control" id="user_password" name="password">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Peranan</label>
+                                    <select class="form-select" id="user_role" name="role_id" required>
+                                        <option value="">Pilih Peranan</option>
+                                        @foreach($roles ?? collect() as $role)
+                                            <option value="{{ $role->id }}">{{ $role->role_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Jawatan</label>
+                                    <select class="form-select" id="user_position" name="position_id" required>
+                                        <option value="">Pilih Jawatan</option>
+                                        @foreach($positions ?? collect() as $position)
+                                            <option value="{{ $position->id }}">{{ $position->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-3 form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="user_status" name="status" value="1" checked>
+                                    <label class="form-check-label" for="user_status">Aktif</label>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="submit" class="btn btn-primary" id="btnSaveUser">Simpan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <!-- Supplier Detail Modal -->
             <div class="modal fade" id="supplierDetailModal" tabindex="-1" aria-labelledby="supplierDetailModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
@@ -663,6 +746,63 @@
 
             handleSidebarToggle();
             handleThemeToggle();
+            
+            // User Modal Logic
+            const userModalElement = document.getElementById('userModal');
+            let userModal;
+            if (userModalElement) {
+                userModal = new bootstrap.Modal(userModalElement);
+            }
+
+            $('#btnTambahPengguna').click(function() {
+                $('#userForm')[0].reset();
+                $('#user_id').val('');
+                $('#userModalLabel').html('<i class="fas fa-user-plus me-2"></i>Tambah Pengguna Baru');
+            });
+
+            $('.btn-edit-user').click(function() {
+                $('#userForm')[0].reset();
+                $('#user_id').val($(this).data('id'));
+                $('#user_name').val($(this).data('name'));
+                $('#user_email').val($(this).data('email'));
+                $('#user_phone').val($(this).data('phone'));
+                $('#user_role').val($(this).data('role'));
+                $('#user_position').val($(this).data('position'));
+                
+                if ($(this).data('status') == 1) {
+                    $('#user_status').prop('checked', true);
+                } else {
+                    $('#user_status').prop('checked', false);
+                }
+                
+                $('#userModalLabel').html('<i class="fas fa-user-edit me-2"></i>Kemaskini Pengguna');
+            });
+
+            $('#userForm').submit(function(e) {
+                e.preventDefault();
+                const userId = $('#user_id').val();
+                let url = userId ? `/admin/${userId}` : '/admin/register';
+                let method = userId ? 'PUT' : 'POST';
+
+                const formData = $(this).serialize();
+                const btn = $('#btnSaveUser');
+                const originalText = btn.text();
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...');
+
+                $.ajax({
+                    url: url,
+                    type: method,
+                    data: formData,
+                    success: function(response) {
+                        alert(response.message || 'Berjaya disimpan!');
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        alert('Ralat semasa menyimpan: ' + (xhr.responseJSON?.message || 'Ralat sistem'));
+                        btn.prop('disabled', false).text(originalText);
+                    }
+                });
+            });
             
             // Dashboard Charts Logic
             const dashDataStore = window.dashboardChartData || {};

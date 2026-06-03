@@ -78,6 +78,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/pengarah-negeri/inventori', [DashboardController::class, 'pengarahNegeriInventori'])->name('pengarah.negeri.inventori');
     Route::get('/pengarah-negeri/profil', [DashboardController::class, 'pengarahNegeriProfil'])->name('pengarah.negeri.profil');
 
+    Route::get('/admin-institusi', [DashboardController::class, 'adminInstitusiDashboard'])->name('admin.institusi.dashboard');
+    Route::get('/admin-institusi/ringkasan', [DashboardController::class, 'adminInstitusiRingkasanPesanan'])->name('admin.institusi.ringkasan');
+    Route::get('/admin-institusi/institusi', [DashboardController::class, 'adminInstitusiInstitusi'])->name('admin.institusi.institusi');
+    Route::get('/admin-institusi/pembekal', [DashboardController::class, 'adminInstitusiPembekal'])->name('admin.institusi.pembekal');
+    Route::get('/admin-institusi/senarai-user', [DashboardController::class, 'adminInstitusiSenaraiUser'])->name('admin.institusi.senarai_pengguna');
+    Route::get('/admin-institusi/profil', [DashboardController::class, 'adminInstitusiProfil'])->name('admin.institusi.profil');
+
     Route::get('/dashboard/critical-stock', [DashboardController::class, 'criticalStock'])->name('dashboard.critical-stock');
     Route::get('/dashboard/stock-forecast', [DashboardController::class, 'stockForecast'])->name('dashboard.stock-forecast');
     Route::get('/dashboard/stock-by-category', [DashboardController::class, 'stockByCategory'])->name('dashboard.stock-by-category');

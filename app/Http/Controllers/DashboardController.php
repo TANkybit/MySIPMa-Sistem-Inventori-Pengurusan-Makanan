@@ -163,7 +163,37 @@ class DashboardController extends Controller
         return $this->pengarahInstitusiView($request, 'profil');
     }
 
-    private function pengarahInstitusiView(Request $request, string $activePage)
+    public function adminInstitusiDashboard(Request $request)
+    {
+        return $this->pengarahInstitusiView($request, 'dashboard', 'admin_institusi_dashboard');
+    }
+
+    public function adminInstitusiRingkasanPesanan(Request $request)
+    {
+        return $this->pengarahInstitusiView($request, 'ringkasan', 'admin_institusi_dashboard');
+    }
+
+    public function adminInstitusiInstitusi(Request $request)
+    {
+        return $this->pengarahInstitusiView($request, 'institusi', 'admin_institusi_dashboard');
+    }
+
+    public function adminInstitusiPembekal(Request $request)
+    {
+        return $this->pengarahInstitusiView($request, 'pembekal', 'admin_institusi_dashboard');
+    }
+
+    public function adminInstitusiSenaraiUser(Request $request)
+    {
+        return $this->pengarahInstitusiView($request, 'senarai_user', 'admin_institusi_dashboard');
+    }
+
+    public function adminInstitusiProfil(Request $request)
+    {
+        return $this->pengarahInstitusiView($request, 'profil', 'admin_institusi_dashboard');
+    }
+
+    private function pengarahInstitusiView(Request $request, string $activePage, string $viewName = 'pengarah_institusi_dashboard')
     {
         $selectedInstitutionId = Auth::user()->institution_id;
         $selectedInstitution = Institution::find($selectedInstitutionId);
@@ -176,6 +206,8 @@ class DashboardController extends Controller
         $inventoryItems = collect();
         $suppliers = collect();
         $users = collect();
+        $roles = collect();
+        $positions = collect();
         $dashboardData = [];
 
         if ($selectedInstitution) {
@@ -220,6 +252,8 @@ class DashboardController extends Controller
                     ->where('institution_id', $selectedInstitution->id)
                     ->orderBy('name')
                     ->get();
+                $roles = \App\Models\Role::orderBy('id')->get();
+                $positions = \App\Models\Position::orderBy('id')->get();
             }
 
             if ($activePage === 'dashboard') {
@@ -254,7 +288,7 @@ class DashboardController extends Controller
             }
         }
 
-        return view('pengarah_institusi_dashboard', [
+        return view($viewName, [
             'activePage' => $activePage,
             'institutions' => $institutions,
             'selectedInstitution' => $selectedInstitution,
@@ -262,6 +296,8 @@ class DashboardController extends Controller
             'inventoryItems' => $inventoryItems,
             'suppliers' => $suppliers,
             'users' => $users,
+            'roles' => $roles,
+            'positions' => $positions,
             'dashboardData' => json_encode($dashboardData),
         ]);
     }

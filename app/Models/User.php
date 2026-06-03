@@ -78,6 +78,8 @@ class User extends Authenticatable
         return match (true) {
             $this->isPengarahNegeriAdmin($positionCode, $positionName)
                 => 'pengarah.negeri.dashboard',
+            $this->isAdminInstitusi($positionCode, $positionName)
+                => 'admin.institusi.dashboard',
             $this->isPengarahInstitusiAdmin($positionCode, $positionName)
                 => 'pengarah.institusi.dashboard',
             $this->role?->role_name === 'admin hq' || $positionCode === 'ADHQ'
@@ -97,6 +99,7 @@ class User extends Authenticatable
         if (
             $this->role?->role_name === 'admin hq' ||
             $positionCode === 'ADHQ' ||
+            $this->isAdminInstitusi($positionCode, $positionName) ||
             $this->isPengarahInstitusiAdmin($positionCode, $positionName) ||
             $this->isPengarahNegeriAdmin($positionCode, $positionName)
         ) {
@@ -119,8 +122,12 @@ class User extends Authenticatable
     private function isPengarahInstitusiAdmin(string $positionCode, string $positionName): bool
     {
         return in_array($positionCode, ['ADI', 'P006'], true)
-            || str_contains($positionName, 'pengarah institusi')
-            || str_contains($positionName, 'admin institusi');
+            || str_contains($positionName, 'pengarah institusi');
+    }
+
+    private function isAdminInstitusi(string $positionCode, string $positionName): bool
+    {
+        return str_contains($positionName, 'admin institusi');
     }
 
     private function isPengarahNegeriAdmin(string $positionCode, string $positionName): bool
