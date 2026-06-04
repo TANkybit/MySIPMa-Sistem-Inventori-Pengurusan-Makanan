@@ -461,7 +461,7 @@
                   @forelse (($pendingOrders ?? collect()) as $order)
                     <tr>
                       <td>{{ $loop->iteration }}</td>
-                      <td>{{ $order->order_no }}</td>
+                      <td><a href="{{ route('borang.inden.show', $order->id) }}" class="text-decoration-none fw-bold" style="color:#10b981;">{{ $order->order_no }}</a></td>
                       <td>{{ $order->order_date ? \Carbon\Carbon::parse($order->order_date)->format('d/m/Y') : '-' }}</td>
                       <td>{{ $order->institution_name ?? '-' }}</td>
                       <td>{{ $order->supplier_name ?? '-' }}</td>
@@ -469,7 +469,6 @@
                       <td><span class="badge bg-warning text-dark">Menunggu Pengesahan</span></td>
                       <td>
                         <button type="button" class="btn btn-sm btn-success btn-action btn-open-approval-modal" data-order-id="{{ $order->id }}" data-order-no="{{ $order->order_no }}" data-bs-toggle="modal" data-bs-target="#approvalModal"><i class="bi bi-check-circle"></i> Sahkan</button>
-                        <a class="btn btn-sm btn-outline-light btn-action" href="{{ route('borang.inden.show', $order->id) }}"><i class="bi bi-eye"></i> Lihat</a>
                       </td>
                     </tr>
                   @empty

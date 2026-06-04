@@ -8,6 +8,7 @@ use App\Models\Institution;
 use App\Models\State;
 use App\Models\Supplier;
 use App\Models\OrderItem;
+use App\Models\BorangIndenDraft;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -393,7 +394,9 @@ class DashboardController extends Controller
 
     public function borangInden()
     {
-        return $this->borangIndenView(null, false);
+        $draft = \App\Models\BorangIndenDraft::where('user_id', Auth::id())->first();
+        $view = $this->borangIndenView(null, false);
+        return $view->with('savedDraft', $draft ? $draft->data : null);
     }
 
     public function generateOrderNo(Request $request)
@@ -777,6 +780,8 @@ class DashboardController extends Controller
 
             return $orderId;
         });
+
+        BorangIndenDraft::where('user_id', Auth::id())->delete();
 
         return redirect()
             ->route('borang.inden')
@@ -1294,5 +1299,39 @@ class DashboardController extends Controller
         }
 
         return $stock > 0 ? $stock : 1;
+    }
+
+    public function saveDraft(Request $request)
+    {
+        $data = $request->only([
+            'contract_id', 'tarikh_pesanan', 'masa', 'sesi_kod',
+            'institution_id', 'supplier_id', 'wakil_pembekal', 'alamat_pembekal',
+            'muster_khas_daging', 'muster_ditolak_parol', 'parol', 'muster_penuh',
+            'tarikh_pembekal', 'catatan_inden',
+        ]);
+
+        $data['items'] = $request->input('items', []);
+
+        BorangIndenDraft::updateOrCreate(
+            ['user_id' => Auth::id()],
+            ['data' => $data]
+        );
+
+        return response()->json(['success' => true, 'saved_at' => now()->toIso8601String()]);
+    }
+
+    public function getDraft()
+    {
+        $draft = BorangIndenDraft::where('user_id', Auth::id())->first(['data', 'updated_at']);
+        if (!$draft) {
+            return response()->json(['success' => false, 'data' => null]);
+        }
+        return response()->json(['success' => true, 'data' => $draft->data, 'saved_at' => $draft->updated_at]);
+    }
+
+    public function deleteDraft()
+    {
+        BorangIndenDraft::where('user_id', Auth::id())->delete();
+        return response()->json(['success' => true]);
     }
 }

@@ -194,7 +194,7 @@
       <ul id="clientErrorList" class="mb-0 ps-3"></ul>
     </div>
 
-    <form method="POST" action="{{ route('borang.inden.store') }}">
+    <form id="borangIndenForm" method="POST" action="{{ route('borang.inden.store') }}">
       @csrf
       <div class="borang-menu" role="tablist" aria-label="Navigasi Borang Inden">
         <button class="active" type="button" data-borang-target="maklumat" role="tab" aria-selected="true">
@@ -438,7 +438,7 @@
                 <input class="form-control" name="wakil_pembekal" type="text" value="{{ old('wakil_pembekal', $inden->wakil_pembekal ?? $inden->nama_pembekal ?? '') }}" placeholder="Akan diisi automatik" readonly>
               </div>
               <div class="col-md-6">
-                <label class="form-label">Tarikh Pembekal <span class="text-danger">*</span></label>
+                <label class="form-label">Tarikh Pembekal</label>
                 <input class="form-control date-input @error('tarikh_pembekal') is-invalid @enderror" name="tarikh_pembekal" type="text" inputmode="numeric" pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$" value="{{ $formatTarikh(old('tarikh_pembekal', $inden->tarikh_pembekal ?? now()->format('d/m/Y'))) }}" placeholder="dd/mm/yyyy" {{ $fieldState }} required>
                 <div class="date-format-hint">Format: dd/mm/yyyy</div>
                 @error('tarikh_pembekal')
@@ -465,8 +465,12 @@
       </div>
 
       <div class="action-row">
-        <a href="{{ route('user.dashboard') }}" class="btn btn-round btn-soft">Kembali ke Dashboard</a>
-        <div class="d-flex flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-3">
+          <a href="{{ route('user.dashboard') }}" class="btn btn-round btn-soft">Kembali ke Dashboard</a>
+          <span id="draftStatus" class="small" style="color:var(--muted);"></span>
+          <span id="draftSavedIndicator" class="small d-none" style="color:var(--accent);"><i class="bi bi-check-circle-fill me-1"></i>Draf disimpan</span>
+        </div>
+        <div class="d-flex flex-wrap gap-2 align-items-center">
           @if($inden->inden_id)
           <button class="btn btn-round btn-soft" type="button" onclick="window.open('{{ route('borang.inden.cetak', ['order' => $inden->inden_id]) }}', '_blank')">Cetak Ringkasan</button>
           @endif
@@ -577,12 +581,25 @@
       const itemList = document.getElementById('itemList');
       const itemTemplate = document.getElementById('itemTemplate');
       const musterInputs = document.querySelectorAll('.muster-input');
-      const form = document.querySelector('form[action$="store"]');
+      const form = document.getElementById('borangIndenForm');
       const databaseItems = @json($indenItems ?? []);
       const isReadOnly = @json($isReadOnly);
       let itemDataTable = null;
+      let isRestoringDraft = false;
+      let hasUnsavedChanges = false;
+      let autoSaveTimer = null;
+      const AUTO_SAVE_MS = 60000;
       const today = new Date();
       today.setHours(0, 0, 0, 0);
+
+      const dayNames = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
+      function updateDayName(dateInput) {
+        var parsed = parseDisplayDate(dateInput.value);
+        var daySpan = document.getElementById('tarikhDayName');
+        if (daySpan && parsed) {
+          daySpan.textContent = dayNames[parsed.getDay()] || '--';
+        }
+      }
 
       if (isReadOnly) {
         document.querySelectorAll('input, textarea').forEach((input) => input.setAttribute('readonly', 'readonly'));
@@ -675,40 +692,32 @@
             .catch(() => {});
         }
 
-        // Day name helpers
-        const dayNames = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
-        function updateDayName(dateInput) {
-          const parsed = parseDisplayDate(dateInput.value);
-          const daySpan = document.getElementById('tarikhDayName');
-          if (daySpan && parsed) {
-            daySpan.textContent = dayNames[parsed.getDay()] || '--';
-          }
-        }
-
         // Supplier change → reload contracts
         if (supplierSelect) {
           supplierSelect.addEventListener('change', function() {
-            // Reload contracts filtered by supplier
             loadContracts();
-            // Also fill address
             if (typeof fillSupplierAddress === 'function') fillSupplierAddress();
-            // Clear items when supplier changes
-            if (itemDataTable) {
-              itemDataTable.clear().draw();
-            } else {
-              itemList.innerHTML = '';
+            if (!isRestoringDraft) {
+              if (itemDataTable) {
+                itemDataTable.clear().draw();
+              } else {
+                itemList.innerHTML = '';
+              }
             }
-            updateSummary();
+            if (!isRestoringDraft) updateSummary();
           });
         }
 
         if (contractSelect) {
           contractSelect.addEventListener('change', function() {
+            if (isRestoringDraft) return;
             loadContractItems(this.value);
           });
         }
         if (!noPesananInput.value) generateOrderNo();
+        @if(!($savedDraft ?? null))
         loadContracts();
+        @endif
         // Fill supplier address on load if pre-selected (edit mode)
         if (typeof fillSupplierAddress === 'function') fillSupplierAddress();
 
@@ -882,6 +891,10 @@
       }
 
       function updateSummary() {
+        if (!isRestoringDraft) {
+          hasUnsavedChanges = true;
+          if (typeof triggerAutoSave === 'function') triggerAutoSave();
+        }
         const cards = getItemRows();
         let orderQtyTotal = 0, grandTotal = 0;
         cards.forEach((card) => {
@@ -1240,6 +1253,235 @@
       })();
       updateMusterSummary();
       updateSummary();
+
+      // ── Draft Save Feature ──────────────────────────────────────────────
+      const savedDraft = @json($savedDraft ?? null);
+
+      function collectFormData() {
+        return {
+          contract_id: document.getElementById('contractSelect')?.value || '',
+          tarikh_pesanan: document.querySelector('input[name="tarikh_pesanan"]')?.value || '',
+          masa: document.querySelector('input[name="masa"]')?.value || '',
+          sesi_kod: document.querySelector('input[name="sesi_kod"]')?.value || '',
+          institution_id: document.getElementById('institutionIdHidden')?.value || '',
+          supplier_id: document.getElementById('supplierSelect')?.value || '',
+          wakil_pembekal: document.querySelector('input[name="wakil_pembekal"]')?.value || '',
+          alamat_pembekal: document.querySelector('textarea[name="alamat_pembekal"]')?.value || '',
+          muster_khas_daging: document.getElementById('musterKhas')?.value || 0,
+          muster_ditolak_parol: document.getElementById('musterTolakParol')?.value || 0,
+          parol: document.getElementById('parol')?.value || 0,
+          muster_penuh: document.getElementById('musterPenuh')?.value || 0,
+          tarikh_pembekal: document.querySelector('input[name="tarikh_pembekal"]')?.value || '',
+          catatan_inden: document.querySelector('textarea[name="catatan_inden"]')?.value || '',
+          items: collectItemsData(),
+        };
+      }
+
+      function collectItemsData() {
+        return getItemRows().map(function (card) {
+          return {
+            contract_item_id: card.querySelector('.item-contract-id')?.value || '',
+            name: card.querySelector('.item-name-hidden')?.value || card.querySelector('.item-name')?.value || '',
+            unit: card.querySelector('.item-unit-hidden')?.value || card.querySelector('.item-unit')?.value || '',
+            orderQty: card.querySelector('.item-order-qty')?.value || 0,
+            unitPrice: card.querySelector('.item-unit-price-hidden')?.value || 0,
+          };
+        });
+      }
+
+      function showDraftToast(msg) {
+        var el = document.getElementById('draftSavedIndicator');
+        if (el) {
+          el.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>' + msg;
+          el.classList.remove('d-none');
+          clearTimeout(el._hideTimer);
+          el._hideTimer = setTimeout(function () { el.classList.add('d-none'); }, 4000);
+        }
+      }
+
+      function saveDraft() {
+        var data = collectFormData();
+        fetch('{{ route("borang.inden.draft.save") }}', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+          body: JSON.stringify(data),
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (res.success) {
+            hasUnsavedChanges = false;
+            var d = new Date(res.saved_at);
+            var time = d.toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('draftStatus').textContent = 'Draf disimpan pada ' + time;
+            showDraftToast('\u2713 Draf disimpan');
+          }
+        })
+        .catch(function (e) { console.error('Draft save failed', e); });
+      }
+
+      function populateItemRows(items) {
+        if (itemDataTable) {
+          itemDataTable.clear().draw();
+        } else {
+          itemList.innerHTML = '';
+        }
+        if (items && items.length) {
+          items.forEach(function (item) { addItem(item); });
+        }
+      }
+
+      function loadContractsAndRestore(contractId, items) {
+        var instIdEl = document.getElementById('institutionIdHidden');
+        var supIdEl = document.getElementById('supplierSelect');
+        var instId = instIdEl ? instIdEl.value : '';
+        var supId = supIdEl ? supIdEl.value : '';
+        var contractSelect = document.getElementById('contractSelect');
+        contractSelect.innerHTML = '<option value="">-- Pilih Kontrak --</option>';
+        if (!instId || !supId) { isRestoringDraft = false; return; }
+
+        var url = '{{ route("borang.inden.contracts") }}?institution_id=' + encodeURIComponent(instId)
+                + '&supplier_id=' + encodeURIComponent(supId);
+
+        fetch(url)
+          .then(function (r) { return r.json(); })
+          .then(function (contracts) {
+            contracts.forEach(function (c) {
+              var opt = document.createElement('option');
+              opt.value = c.id;
+              opt.textContent = c.contract_no;
+              contractSelect.appendChild(opt);
+            });
+            if (contractId && Array.from(contractSelect.options).some(function (o) { return o.value == contractId; })) {
+              contractSelect.value = contractId;
+            } else if (contracts.length > 0) {
+              contractSelect.value = contracts[0].id;
+            }
+            if (items) populateItemRows(items);
+            isRestoringDraft = false;
+            updateSummary();
+            updateMusterSummary();
+            wireUlasanCounter();
+          })
+          .catch(function () { isRestoringDraft = false; });
+      }
+
+      function restoreDraft(data) {
+        if (!data || isReadOnly) return;
+        isRestoringDraft = true;
+
+        function setField(name, val) {
+          var el = document.querySelector('[name="' + name + '"]');
+          if (el && val !== undefined && val !== null && val !== '') el.value = val;
+        }
+
+        setField('tarikh_pesanan', data.tarikh_pesanan);
+        if (data.tarikh_pesanan) {
+          var tpInput = document.querySelector('input[name="tarikh_pesanan"]');
+          if (tpInput) updateDayName(tpInput);
+        }
+        setField('masa', data.masa);
+        setField('sesi_kod', data.sesi_kod);
+        setField('wakil_pembekal', data.wakil_pembekal);
+        setField('alamat_pembekal', data.alamat_pembekal);
+        setField('muster_khas_daging', data.muster_khas_daging);
+        setField('muster_ditolak_parol', data.muster_ditolak_parol);
+        setField('parol', data.parol);
+        setField('muster_penuh', data.muster_penuh);
+        setField('tarikh_pembekal', data.tarikh_pembekal);
+        setField('catatan_inden', data.catatan_inden);
+
+        if (data.supplier_id) {
+          document.getElementById('supplierSelect').value = data.supplier_id;
+          // Fill supplier address / wakil inline (fillSupplierAddress is block-scoped and inaccessible)
+          var sel = document.getElementById('supplierSelect');
+          if (sel) {
+            var opt = sel.options[sel.selectedIndex];
+            if (opt && opt.value) {
+              var addrField = document.querySelector('textarea[name="alamat_pembekal"]');
+              if (addrField) {
+                var addr = (opt.dataset.address || '').trim();
+                var pcode = (opt.dataset.postcode || '').trim();
+                addrField.value = addr + (addr && pcode ? ' ' : '') + pcode;
+              }
+              var wakilField = document.querySelector('input[name="wakil_pembekal"]');
+              if (wakilField) wakilField.value = opt.dataset.contact || '';
+            }
+          }
+          loadContractsAndRestore(data.contract_id, data.items);
+        } else {
+          if (data.items) populateItemRows(data.items);
+          isRestoringDraft = false;
+          updateSummary();
+          updateMusterSummary();
+          wireUlasanCounter();
+        }
+
+        hasUnsavedChanges = false;
+        document.getElementById('draftStatus').textContent = 'Draf dipulihkan';
+      }
+
+      // ── Auto-save on any input (debounced 800ms) ──
+      var debounceTimer = null;
+      function triggerAutoSave() {
+        hasUnsavedChanges = true;
+        if (debounceTimer) clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function () {
+          saveDraft();
+          debounceTimer = null;
+        }, 800);
+      }
+
+      if (!isReadOnly && form) {
+        form.querySelectorAll('input, textarea, select').forEach(function (el) {
+          el.addEventListener('input', triggerAutoSave);
+          el.addEventListener('change', triggerAutoSave);
+        });
+      }
+
+      // ── Fallback interval auto-save (60s) ──
+      if (!isReadOnly && form) {
+        autoSaveTimer = setInterval(function () {
+          if (hasUnsavedChanges) saveDraft();
+        }, AUTO_SAVE_MS);
+      }
+
+      // ── Save immediately when leaving the page ──
+      function saveDraftOnLeave() {
+        if (hasUnsavedChanges) {
+          var data = collectFormData();
+          fetch('{{ route("borang.inden.draft.save") }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            body: JSON.stringify(data),
+            keepalive: true,
+          }).catch(function () {});
+          hasUnsavedChanges = false;
+        }
+      }
+
+      if (!isReadOnly) {
+        window.addEventListener('beforeunload', saveDraftOnLeave);
+        document.addEventListener('visibilitychange', function () {
+          if (document.visibilityState === 'hidden') saveDraftOnLeave();
+        });
+      }
+
+      // ── Load saved draft on page init ──
+      if (savedDraft && !isReadOnly) {
+        restoreDraft(savedDraft);
+      }
+
+      // ── Clear draft on successful form submit ──
+      if (form && !isReadOnly) {
+        form.addEventListener('submit', function () {
+          // Clear draft from server after submission
+          fetch('{{ route("borang.inden.draft.delete") }}', {
+            method: 'DELETE',
+            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+          }).catch(function () {});
+          if (autoSaveTimer) clearInterval(autoSaveTimer);
+        });
+      }
     })();
   </script>
 </body>
