@@ -588,5 +588,6 @@
   <script src="{{ asset('frontend/Nexa/assets/js/particles.min.js') }}"></script>
   <script src="{{ asset('frontend/Nexa/assets/js/main.js') }}"></script>
 
+    <script src="{{ asset('js/session-timeout.js') }}"></script>
 </body>
 </html>

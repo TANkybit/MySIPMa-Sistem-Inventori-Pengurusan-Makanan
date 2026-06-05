@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -1028,7 +1028,7 @@
           <i class="bi bi-geo-alt icon"></i>
           <div class="address">
             <h4>Address</h4>
-            <p>Ibu Pejabat Penjara Malaysia<br>Kajangâ€“Semenyih<br>By Pass 43000 Kajang, Selangor</p>
+            <p>Ibu Pejabat Penjara Malaysia<br>Kajang–Semenyih<br>By Pass 43000 Kajang, Selangor</p>
           </div>
         </div>
         <div class="col-lg-3 col-md-6 d-flex">
@@ -1063,7 +1063,7 @@
         <p>Jabatan Penjara Malaysia tidak bertanggungjawab terhadap sebarang kehilangan atau kerosakan yang dialami kerana menggunakan maklumat yang dicapai dalam laman ini.</p>
       </div><br>
       <p>
-        <span>Hak Cipta Terpelihara</span> Â©<strong class="px-1 sitename">2026 MySIPMa</strong> 
+        <span>Hak Cipta Terpelihara</span> ©<strong class="px-1 sitename">2026 MySIPMa</strong> 
         <span>Kolaborasi Bersama <a href="https://pmj.mypolycc.edu.my" target="_blank">Politeknik Mersing</a></span>
       </p>
     </div>
@@ -1084,6 +1084,7 @@
   <script src="{{ asset('frontend/Nexa/assets/js/particles.min.js') }}"></script>
   <script src="{{ asset('frontend/Nexa/assets/js/main.js') }}"></script>
 
+    <script src="{{ asset('js/session-timeout.js') }}"></script>
 </body>
 </html>
 

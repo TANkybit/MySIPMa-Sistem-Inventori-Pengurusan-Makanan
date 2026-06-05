@@ -41,6 +41,9 @@ class User extends Authenticatable
         'status' => 'boolean',
     ];
 
+    private ?string $_effRole = null;
+    private array $_permCache = [];
+
     public function institution()
     {
         return $this->belongsTo(Institution::class);
@@ -57,6 +60,16 @@ class User extends Authenticatable
     }
 
     public function hasPermission(string $feature): bool
+    {
+        if (isset($this->_permCache[$feature])) return $this->_permCache[$feature];
+
+        $result = $this->computePermission($feature);
+
+        $this->_permCache[$feature] = $result;
+        return $result;
+    }
+
+    private function computePermission(string $feature): bool
     {
         if ($this->effectiveRoleName() === 'Admin') return true;
 
@@ -91,22 +104,23 @@ class User extends Authenticatable
 
     public function effectiveRoleName(): string
     {
+        if ($this->_effRole !== null) return $this->_effRole;
+
         $this->loadMissing(['role', 'position']);
 
         $positionCode = strtoupper($this->getPositionCode());
         $positionName = strtolower($this->getPositionName());
 
-        if (
-            $this->role?->role_name === 'admin hq' ||
-            $positionCode === 'ADHQ' ||
-            $this->isAdminInstitusi($positionCode, $positionName) ||
-            $this->isPengarahInstitusiAdmin($positionCode, $positionName) ||
-            $this->isPengarahNegeriAdmin($positionCode, $positionName)
-        ) {
-            return 'Admin';
-        }
+        $this->_effRole = match (true) {
+            $this->role?->role_name === 'admin hq',
+            $positionCode === 'ADHQ',
+            $this->isAdminInstitusi($positionCode, $positionName),
+            $this->isPengarahInstitusiAdmin($positionCode, $positionName),
+            $this->isPengarahNegeriAdmin($positionCode, $positionName) => 'Admin',
+            default => $this->role?->role_name ?? 'User',
+        };
 
-        return $this->role?->role_name ?? 'User';
+        return $this->_effRole;
     }
 
     public function getPositionCode(): string

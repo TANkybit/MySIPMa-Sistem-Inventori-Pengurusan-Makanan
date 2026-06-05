@@ -340,6 +340,7 @@
 
   <script src="{{ asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
   <script src="{{ asset('frontend/Nexa/assets/js/mobile-nav.js') }}"></script>
+    <script src="{{ asset('js/session-timeout.js') }}"></script>
 </body>
 
 </html>

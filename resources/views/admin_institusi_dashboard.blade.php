@@ -1008,5 +1008,6 @@
             }
         });
     </script>
+    <script src="{{ asset('js/session-timeout.js') }}"></script>
 </body>
 </html>

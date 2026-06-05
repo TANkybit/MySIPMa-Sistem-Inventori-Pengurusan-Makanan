@@ -23,16 +23,22 @@ class DashboardController extends Controller
      */
     public function userDashboard()
     {
-        $totalOrders = Order::count();
+        $statusCounts = Order::selectRaw("status, COUNT(*) as count")
+            ->groupBy('status')
+            ->pluck('count', 'status');
+
         $pendingApprovals = $this->pendingApprovalCount();
-        $inProgressOrders = Order::where('status', 'In Progress')->count();
-        $completedOrders = Order::where('status', 'Completed')->count();
 
         return view('user_dashboard', [
-            'totalOrders' => $totalOrders,
+            'totalOrders' => (int) ($statusCounts['Pending'] ?? 0)
+                + (int) ($statusCounts['In Progress'] ?? 0)
+                + (int) ($statusCounts['Completed'] ?? 0)
+                + (int) ($statusCounts['Draft'] ?? 0)
+                + (int) ($statusCounts['Cancelled'] ?? 0)
+                + (int) ($statusCounts['Rejected'] ?? 0),
             'pendingApprovals' => $pendingApprovals,
-            'inProgressOrders' => $inProgressOrders,
-            'completedOrders' => $completedOrders,
+            'inProgressOrders' => (int) ($statusCounts['In Progress'] ?? 0),
+            'completedOrders' => (int) ($statusCounts['Completed'] ?? 0),
         ]);
     }
 
@@ -374,20 +380,21 @@ class DashboardController extends Controller
 
     public function senaraiInden()
     {
+        $query = $this->ordersWithDetails();
+
         return view('senarai_inden', [
-            'orders' => $this->ordersWithDetails()->get(),
+            'orders' => $query->get(),
             'pendingApprovals' => $this->pendingApprovalCount(),
         ]);
     }
 
     public function pengesahanInden()
     {
-        $pendingOrders = $this->ordersWithDetails()
-            ->where('orders.status', 'Pending')
-            ->get();
+        $query = $this->ordersWithDetails()
+            ->where('orders.status', 'Pending');
 
         return view('pengesahan_inden', [
-            'pendingOrders' => $pendingOrders,
+            'pendingOrders' => $query->get(),
             'pendingApprovals' => $this->pendingApprovalCount(),
         ]);
     }
@@ -849,12 +856,13 @@ class DashboardController extends Controller
             ->count();
     }
 
-    private function ordersWithDetails()
+    private function ordersWithDetails(?int $institutionId = null)
     {
         return Order::query()
             ->leftJoin('institutions', 'orders.institution_id', '=', 'institutions.id')
             ->leftJoin('suppliers', 'orders.supplier_id', '=', 'suppliers.id')
             ->leftJoin('approvals', 'orders.id', '=', 'approvals.order_id')
+            ->when($institutionId, fn ($q) => $q->where('orders.institution_id', $institutionId))
             ->select([
                 'orders.id',
                 'orders.order_no',

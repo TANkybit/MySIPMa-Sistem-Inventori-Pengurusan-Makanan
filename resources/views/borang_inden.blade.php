@@ -14,6 +14,8 @@
   <link href="{{ asset('frontend/Nexa/assets/css/main2.css') }}" rel="stylesheet">
   <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
   <style>
     :root { --bg:#020204; --surface:#11151f; --surface-soft:#161a26; --surface-strong:#0c1119; --border:#2c333f; --text:#e2e8f0; --muted:#94a3b8; --accent:#10b981; --accent-soft:rgba(16,185,129,.16); }
     body { background: radial-gradient(circle at top, rgba(255,255,255,.05) 0%, transparent 40%), linear-gradient(180deg,#020204 0%,#07090f 40%,#0b1018 100%); color: var(--text); font-family: "Roboto", sans-serif; }
@@ -244,7 +246,7 @@
           <div class="col-md-4">
             <label class="form-label">Tarikh Pesanan <span class="text-danger">*</span></label>
             <div class="d-flex align-items-center gap-2">
-              <input class="form-control date-input flex-grow-1 @error('tarikh_pesanan') is-invalid @enderror" name="tarikh_pesanan" type="text" inputmode="numeric" pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$" value="{{ $formatTarikh(old('tarikh_pesanan', $inden->tarikh_pesanan ?? now()->format('d/m/Y'))) }}" placeholder="dd/mm/yyyy" {{ $fieldState }} required>
+              <input class="form-control date-input flex-grow-1 @error('tarikh_pesanan') is-invalid @enderror" name="tarikh_pesanan" type="text" inputmode="numeric" value="{{ $formatTarikh(old('tarikh_pesanan', $inden->tarikh_pesanan ?? now()->format('d/m/Y'))) }}" placeholder="dd/mm/yyyy" required>
               <span id="tarikhDayName" class="badge bg-accent text-dark fs-6 px-3 py-2" style="background:#10b981; white-space:nowrap;">--</span>
             </div>
             <div class="date-format-hint">Format: dd/mm/yyyy</div>
@@ -576,13 +578,15 @@
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ms.js"></script>
   <script>
     (function () {
       const itemList = document.getElementById('itemList');
       const itemTemplate = document.getElementById('itemTemplate');
       const musterInputs = document.querySelectorAll('.muster-input');
       const form = document.getElementById('borangIndenForm');
-      const databaseItems = @json($indenItems ?? []);
+      const databaseItems = @json(old('items', $indenItems ?? []));
       const isReadOnly = @json($isReadOnly);
       let itemDataTable = null;
       let isRestoringDraft = false;
@@ -593,8 +597,13 @@
       today.setHours(0, 0, 0, 0);
 
       const dayNames = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
+      function parseDateValue(value) {
+        if (!value) return null;
+        var d = new Date(value + 'T00:00:00');
+        return isNaN(d.getTime()) ? null : d;
+      }
       function updateDayName(dateInput) {
-        var parsed = parseDisplayDate(dateInput.value);
+        var parsed = dateInput.type === 'date' ? parseDateValue(dateInput.value) : parseDisplayDate(dateInput.value);
         var daySpan = document.getElementById('tarikhDayName');
         if (daySpan && parsed) {
           daySpan.textContent = dayNames[parsed.getDay()] || '--';
@@ -602,7 +611,9 @@
       }
 
       if (isReadOnly) {
-        document.querySelectorAll('input, textarea').forEach((input) => input.setAttribute('readonly', 'readonly'));
+        document.querySelectorAll('input, textarea').forEach((input) => {
+          if (input.name !== 'tarikh_pesanan') input.setAttribute('readonly', 'readonly');
+        });
         document.querySelectorAll('select').forEach((select) => select.setAttribute('disabled', 'disabled'));
       } else {
         const supplierSelect = document.getElementById('supplierSelect');
@@ -726,7 +737,9 @@
         const now = new Date();
         const localDate = formatDateForDisplay(now);
 
-        dateInputs.forEach(input => {
+        var todayStr = now.toISOString().slice(0, 10);
+
+        dateInputs.forEach(function (input) {
           input.addEventListener('input', function () {
             this.value = this.value.replace(/[^\d/]/g, '').slice(0, 10);
             this.setCustomValidity('');
@@ -740,10 +753,9 @@
           });
         });
 
-        dateInputs.forEach(input => {
+        dateInputs.forEach(function (input) {
           if (!input.value) input.value = localDate;
           input.dispatchEvent(new Event('change'));
-          // Init day name on load
           updateDayName(input);
         });
 
@@ -751,6 +763,23 @@
         timeInputs.forEach(input => {
           if (!input.value) input.value = localTime;
         });
+
+        // ── Flatpickr date pickers ──
+        if (typeof flatpickr !== 'undefined') {
+          document.querySelectorAll('.date-input:not([readonly])').forEach(function (el) {
+            flatpickr(el, {
+              dateFormat: 'd/m/Y',
+              allowInput: true,
+              locale: 'ms',
+              onChange: function (selectedDates, dateStr) {
+                hasUnsavedChanges = true;
+                triggerAutoSave();
+                updateTimeMinimum(dateStr, localDate, now, timeInputs);
+                updateDayName(el);
+              },
+            });
+          });
+        }
       }
 
       function numberValue(input) { return Number.parseFloat(input.value) || 0; }
@@ -770,7 +799,9 @@
         return parsed;
       }
       function updateTimeMinimum(dateValue, localDate, now, timeInputs) {
-        if (dateValue === localDate) {
+        var todayStr = now.toISOString().slice(0, 10);
+        var isToday = dateValue === localDate || dateValue === todayStr;
+        if (isToday) {
           const localTime = now.toTimeString().substring(0, 5);
           timeInputs.forEach(t => t.setAttribute('min', localTime));
         } else {
@@ -968,7 +999,7 @@
           document.getElementById('itemModalUnit').value = unit;
           document.getElementById('itemModalPrice').value = price;
           // Lock name/unit for contract items
-          const isContractItem = !!card.querySelector('.item-contract-id').value;
+          const isContractItem = card.querySelector('.item-contract-id').value !== '0' && !!card.querySelector('.item-contract-id').value;
           document.getElementById('itemModalName').readOnly = isContractItem;
           document.getElementById('itemModalUnit').readOnly = isContractItem;
           new bootstrap.Modal(document.getElementById('itemModal')).show();
@@ -982,7 +1013,7 @@
 
       function addItem(defaults = {}) {
         const card = itemTemplate.content.firstElementChild.cloneNode(true);
-        card.querySelector('.item-contract-id').value = defaults.contract_item_id || '';
+        card.querySelector('.item-contract-id').value = defaults.contract_item_id ?? '';
         card.querySelector('.item-name').value = defaults.name || '';
         card.querySelector('.item-name-hidden').value = defaults.name || '';
         card.querySelector('.item-unit').value = defaults.unit || 'Unit';
@@ -1124,6 +1155,14 @@
           }
           updateItemIndices();
 
+          // Ensure every item has a contract_item_id value (custom items use 0)
+          getItemRows().forEach(function (card) {
+            var cid = card.querySelector('.item-contract-id');
+            if (cid && (cid.value === '' || cid.value === undefined || cid.value === null)) {
+              cid.value = '0';
+            }
+          });
+
           const clientErrorAlert = document.getElementById('clientErrorAlert');
           const clientErrorList = document.getElementById('clientErrorList');
           clientErrorList.innerHTML = '';
@@ -1147,13 +1186,19 @@
 
           form.querySelectorAll('.date-input').forEach(input => {
             const labelText = input.previousElementSibling ? input.previousElementSibling.textContent.replace(' *', '').trim() : input.name;
-            const parsedDate = parseDisplayDate(input.value.trim());
+            let parsedDate = null;
+            if (input.type === 'date') {
+              const val = input.value.trim();
+              if (val) parsedDate = new Date(val + 'T00:00:00');
+            } else {
+              parsedDate = parseDisplayDate(input.value.trim());
+            }
             input.setCustomValidity('');
-            if (!parsedDate) {
+            if (!parsedDate || isNaN(parsedDate.getTime())) {
               input.classList.add('is-invalid');
-              input.setCustomValidity('Sila masukkan tarikh dalam format dd/mm/yyyy.');
+              input.setCustomValidity('Sila masukkan tarikh yang sah.');
               isValid = false;
-              errors.push(`${labelText} mesti dalam format dd/mm/yyyy.`);
+              errors.push(`${labelText} mesti diisi dengan tarikh yang sah.`);
             } else if (parsedDate < today) {
               input.classList.add('is-invalid');
               input.setCustomValidity('Tarikh tidak boleh sebelum hari ini.');
@@ -1484,5 +1529,6 @@
       }
     })();
   </script>
+    <script src="{{ asset('js/session-timeout.js') }}"></script>
 </body>
 </html>

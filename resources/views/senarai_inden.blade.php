@@ -238,7 +238,6 @@
                     <th>Jumlah</th>
                     <th>Status Pesanan</th>
                     <th>Status Kelulusan</th>
-                    <th>Tindakan</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -256,7 +255,7 @@
                     @endphp
                     <tr>
                       <td>{{ $loop->iteration }}</td>
-                      <td>{{ $order->order_no }}</td>
+                      <td><a href="{{ route('borang.inden.show', $order->id) }}" class="text-success fw-semibold text-decoration-none">{{ $order->order_no }}</a></td>
                       <td>{{ $order->order_date ? \Carbon\Carbon::parse($order->order_date)->format('d/m/Y') : '-' }}</td>
                       <td>{{ $order->institution_name ?? '-' }}</td>
                       <td>{{ $order->supplier_name ?? '-' }}</td>
@@ -264,13 +263,10 @@
                       <td>RM {{ number_format((float) $order->total_amount, 2) }}</td>
                       <td><span class="badge {{ $orderBadge }}">{{ $order->order_status ?? '-' }}</span></td>
                       <td><span class="badge {{ $approvalBadge }}">{{ $approvalText }}</span></td>
-                      <td>
-                        <a href="{{ route('borang.inden.show', $order->id) }}" class="btn btn-sm btn-outline-info">Lihat</a>
-                      </td>
                     </tr>
                   @empty
                     <tr>
-                      <td colspan="10" class="text-center text-white-50 py-4">Tiada rekod inden ditemui.</td>
+                      <td colspan="9" class="text-center text-white-50 py-4">Tiada rekod inden ditemui.</td>
                     </tr>
                   @endforelse
                 </tbody>
@@ -321,5 +317,6 @@
         });
     });
   </script>
+    <script src="{{ asset('js/session-timeout.js') }}"></script>
 </body>
 </html>

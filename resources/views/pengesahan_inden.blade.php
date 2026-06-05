@@ -559,5 +559,6 @@
   </script>
 
   @include('Penjara2.approval')
+    <script src="{{ asset('js/session-timeout.js') }}"></script>
 </body>
 </html>

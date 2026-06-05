@@ -3000,6 +3000,7 @@
         // ===== END INDEN PAGE LOGIC =====
     </script>
     <script src="{{ asset('script.js') }}"></script>
+    <script src="{{ asset('js/session-timeout.js') }}"></script>
 </body>
 
 </html>

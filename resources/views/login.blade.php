@@ -446,5 +446,11 @@
     });
   });
   </script>
+
+  @if(session('swal'))
+  <script>
+    Swal.fire({!! session('swal') !!});
+  </script>
+  @endif
 </body>
 </html>

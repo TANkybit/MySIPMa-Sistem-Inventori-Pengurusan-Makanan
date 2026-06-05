@@ -73,10 +73,12 @@ class ProfileController extends Controller
             $fullAddress = implode(', ', $parts);
         }
 
+        $pendingApprovals = \App\Http\Controllers\DashboardController::pendingApprovalCount();
+
         return view('profile', [
             'user' => $user,
             'avatarUrl' => $this->getAvatarUrl($user),
-            'pendingApprovals' => \App\Http\Controllers\DashboardController::pendingApprovalCount(),
+            'pendingApprovals' => $pendingApprovals,
             'institutionName' => $institutionName,
             'positionName' => $positionName,
             'roleName' => $roleName,
@@ -92,10 +94,12 @@ class ProfileController extends Controller
         $positions = \App\Models\Position::orderBy('name')->get();
         $roles = \App\Models\Role::orderBy('role_name')->get();
 
+        $pendingApprovals = \App\Http\Controllers\DashboardController::pendingApprovalCount();
+
         return view('update', [
             'user' => $user,
             'avatarUrl' => $this->getAvatarUrl($user),
-            'pendingApprovals' => \App\Http\Controllers\DashboardController::pendingApprovalCount(),
+            'pendingApprovals' => $pendingApprovals,
             'institutions' => $institutions,
             'positions' => $positions,
             'roles' => $roles,

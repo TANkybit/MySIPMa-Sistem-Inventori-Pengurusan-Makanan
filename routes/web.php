@@ -26,6 +26,27 @@ Route::get('/login', function () {
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Session heartbeat — keeps the PHP session alive
+Route::middleware('auth')->get('/session/heartbeat', function () {
+    return response()->json(['status' => 'ok', 'time' => now()->timestamp]);
+})->name('session.heartbeat');
+
+// Session expire — logs out and redirects to login
+Route::get('/session/expire', function () {
+    if (\Illuminate\Support\Facades\Auth::check()) {
+        \Illuminate\Support\Facades\Auth::logout();
+        \Illuminate\Support\Facades\Session::invalidate();
+        \Illuminate\Support\Facades\Session::regenerateToken();
+    }
+    return redirect()->route('login')->with('swal', json_encode([
+        'icon' => 'warning',
+        'title' => 'Sesi Tamat',
+        'text' => 'Sesi anda telah tamat kerana tiada aktiviti. Sila log masuk semula.',
+        'timer' => 5000,
+        'showConfirmButton' => true,
+    ]));
+})->name('session.expire');
+
 // Debug route - remove after testing
 Route::get('/debug-dashboard', function () {
     $user = \Illuminate\Support\Facades\Auth::user();
