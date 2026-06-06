@@ -3,16 +3,18 @@
     $pageTitles = [
         'dashboard' => 'Dashboard',
         'inventori' => 'Inventori',
+        'ringkasan' => 'Ringkasan Pesanan',
         'profil' => 'Profil Saya',
     ];
     $pageRoutes = [
         'dashboard' => 'pengarah.negeri.dashboard',
         'inventori' => 'pengarah.negeri.inventori',
+        'ringkasan' => 'pengarah.negeri.ringkasan',
         'profil' => 'pengarah.negeri.profil',
     ];
     $pageTitle = $pageTitles[$activePage] ?? 'Dashboard';
     $currentRoute = $pageRoutes[$activePage] ?? 'pengarah.negeri.dashboard';
-    $stateQuery = request()->only('state_id');
+    $institutionQuery = request()->only('institution_id');
 @endphp
 
 <!DOCTYPE html>
@@ -51,7 +53,7 @@
                 <ul class="nav flex-column">
                     <li class="nav-title">MAIN</li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.negeri.dashboard') ? 'active' : '' }}" href="{{ route('pengarah.negeri.dashboard', $stateQuery) }}">
+                        <a class="nav-link {{ request()->routeIs('pengarah.negeri.dashboard') ? 'active' : '' }}" href="{{ route('pengarah.negeri.dashboard', $institutionQuery) }}">
                             <i class="fas fa-home"></i>
                             <span>Dashboard</span>
                         </a>
@@ -59,7 +61,13 @@
                     
                     <li class="nav-title mt-4">PENGURUSAN DATA</li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.negeri.inventori') ? 'active' : '' }}" href="{{ route('pengarah.negeri.inventori', $stateQuery) }}">
+                        <a class="nav-link {{ request()->routeIs('pengarah.negeri.ringkasan') ? 'active' : '' }}" href="{{ route('pengarah.negeri.ringkasan', $institutionQuery) }}">
+                            <i class="fas fa-file-invoice"></i>
+                            <span>Ringkasan Pesanan</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('pengarah.negeri.inventori') ? 'active' : '' }}" href="{{ route('pengarah.negeri.inventori', $institutionQuery) }}">
                             <i class="fas fa-boxes"></i>
                             <span>Inventori</span>
                         </a>
@@ -131,11 +139,11 @@
                                 <div class="card-body">
                                     <form method="GET" action="{{ route($currentRoute) }}" class="row g-3 align-items-end">
                                         <div class="col-lg-6 col-md-8">
-                                            <label for="state_id" class="form-label">Pilih Negeri</label>
-                                            <select id="state_id" name="state_id" class="form-select">
-                                                <option value="">Pilih negeri</option>
-                                                @foreach($states as $state)
-                                                    <option value="{{ $state->id }}" {{ optional($selectedState)->id == $state->id ? 'selected' : '' }}>{{ $state->name }}</option>
+                                            <label for="institution_id" class="form-label">Pilih Institusi</label>
+                                            <select id="institution_id" name="institution_id" class="form-select">
+                                                <option value="">Semua Institusi ({{ optional($selectedState)->name }})</option>
+                                                @foreach($institutions as $inst)
+                                                    <option value="{{ $inst->id }}" {{ ($selectedInstitutionId ?? '') == $inst->id ? 'selected' : '' }}>{{ $inst->name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -151,8 +159,14 @@
                     <div class="row g-3 mb-4">
                         <div class="col-lg-4 col-md-6">
                             <div class="card p-4 h-100">
-                                <h6 class="text-uppercase text-muted mb-3">Negeri Terpilih</h6>
-                                <h3 class="mb-0">{{ optional($selectedState)->name ?? 'Tiada negeri dipilih' }}</h3>
+                                <h6 class="text-uppercase text-muted mb-3">Institusi Terpilih</h6>
+                                <h3 class="mb-0">
+                                    @if($selectedInstitutionId)
+                                        {{ $institutions->firstWhere('id', $selectedInstitutionId)->name ?? 'Tiada' }}
+                                    @else
+                                        Semua Institusi ({{ optional($selectedState)->name ?? '-' }})
+                                    @endif
+                                </h3>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
@@ -171,10 +185,37 @@
                     @endif
 
                     @if($activePage === 'dashboard')
+                        <div class="row g-4 mb-4">
+                            <div class="col-lg-6">
+                                <div class="card h-100">
+                                    <div class="card-header border-0 bg-transparent pb-0">
+                                        <h5 class="card-title fw-bold">Status Pesanan</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div style="position: relative; height:300px; width:100%">
+                                            <canvas id="orderStatusChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="card h-100">
+                                    <div class="card-header border-0 bg-transparent pb-0">
+                                        <h5 class="card-title fw-bold">5 Item Terbanyak Dipesan</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div style="position: relative; height:300px; width:100%">
+                                            <canvas id="topItemsChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @elseif($activePage === 'ringkasan')
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Ringkasan Pesanan</h5>
-                                <p class="text-muted">Lihat semua pesanan untuk negeri terpilih.</p>
+                                <p class="text-muted">Lihat semua pesanan untuk carian ini.</p>
                                 <div class="table-responsive">
                                     <table id="orders-table" class="table table-bordered table-striped w-100">
                                         <thead>
@@ -196,7 +237,26 @@
                                                     <td>{{ optional($order->institution)->name }}</td>
                                                     <td>{{ $order->order_date }}</td>
                                                     <td>{{ number_format($order->total_amount, 2) }}</td>
-                                                    <td>{{ $order->status }}</td>
+                                                    <td>
+                                                        @php
+                                                            $statusClass = match($order->status) {
+                                                                'Pending' => 'bg-warning',
+                                                                'In Progress' => 'bg-info',
+                                                                'Completed' => 'bg-success',
+                                                                'Rejected', 'Cancelled' => 'bg-danger',
+                                                                default => 'bg-secondary'
+                                                            };
+                                                            $statusLabel = match($order->status) {
+                                                                'Pending' => 'Menunggu',
+                                                                'In Progress' => 'Sedang Diproses',
+                                                                'Completed' => 'Selesai',
+                                                                'Rejected' => 'Ditolak',
+                                                                'Cancelled' => 'Dibatalkan',
+                                                                default => $order->status
+                                                            };
+                                                        @endphp
+                                                        <span class="badge {{ $statusClass }} fs-6">{{ $statusLabel }}</span>
+                                                    </td>
                                                     <td>{{ optional($order->supplier)->company_name }}</td>
                                                 </tr>
                                             @endforeach
@@ -403,6 +463,7 @@
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -546,6 +607,81 @@
                     searchResults.innerHTML = html;
                 }
             }
+
+            // Charts Rendering
+            @if($activePage === 'dashboard' && isset($dashboardData))
+                const dashData = {!! $dashboardData !!};
+
+                // Colors
+                const pieColors = ['#ffc107', '#0dcaf0', '#198754', '#dc3545', '#6c757d'];
+                const barColors = [
+                    'rgba(26, 86, 50, 0.8)',
+                    'rgba(40, 167, 69, 0.8)',
+                    'rgba(13, 110, 253, 0.8)',
+                    'rgba(255, 193, 7, 0.8)',
+                    'rgba(23, 162, 184, 0.8)'
+                ];
+
+                // 1. Order Status Chart
+                const statusCtx = document.getElementById('orderStatusChart');
+                if (statusCtx && dashData.order_status) {
+                    new Chart(statusCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: Object.keys(dashData.order_status),
+                            datasets: [{
+                                data: Object.values(dashData.order_status),
+                                backgroundColor: pieColors,
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'bottom' }
+                            },
+                            cutout: '65%'
+                        }
+                    });
+                }
+
+                // 2. Top 5 Items Chart
+                const topItemsCtx = document.getElementById('topItemsChart');
+                if (topItemsCtx && dashData.top_items && dashData.top_items.labels.length > 0) {
+                    new Chart(topItemsCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: dashData.top_items.labels,
+                            datasets: [{
+                                label: 'Kuantiti Terkumpul Dipesan',
+                                data: dashData.top_items.data,
+                                backgroundColor: barColors,
+                                borderWidth: 0,
+                                borderRadius: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: { beginAtZero: true, grid: { borderDash: [2, 2] } },
+                                x: { grid: { display: false }, ticks: {
+                                    callback: function(val, index) {
+                                        let label = this.getLabelForValue(val);
+                                        return label.length > 15 ? label.substr(0, 15) + '...' : label;
+                                    }
+                                }}
+                            },
+                            plugins: { legend: { display: false }, tooltip: {
+                                callbacks: {
+                                    title: function(context) { return context[0].label; }
+                                }
+                            }}
+                        }
+                    });
+                }
+            @endif
         });
     </script>
     <script src="{{ asset('js/session-timeout.js') }}"></script>

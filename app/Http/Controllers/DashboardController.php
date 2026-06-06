@@ -324,57 +324,116 @@ class DashboardController extends Controller
         return $this->pengarahNegeriView($request, 'profil');
     }
 
+    public function pengarahNegeriRingkasanPesanan(Request $request)
+    {
+        return $this->pengarahNegeriView($request, 'ringkasan');
+    }
+
     private function pengarahNegeriView(Request $request, string $activePage)
     {
-        $states = State::orderBy('name')->get();
-        $selectedStateId = $request->query('state_id');
-        $selectedState = $selectedStateId ? State::find($selectedStateId) : null;
+        // 1. Detect state from login
+        $userStateId = Auth::user()?->institution?->state_id;
+        $selectedState = $userStateId ? State::find($userStateId) : null;
+
+        // 2. Institutions in that state
+        $institutions = collect();
+        if ($selectedState) {
+            $institutions = Institution::where('state_id', $selectedState->id)->orderBy('name')->get();
+        }
+
+        // 3. User's choice of Institution
+        $selectedInstitutionId = $request->query('institution_id');
 
         $institutionIds = collect();
         $orders = collect();
         $inventoryItems = collect();
         $suppliers = collect();
+        $dashboardData = [];
 
         if ($selectedState) {
-            $institutionIds = Institution::where('state_id', $selectedState->id)->pluck('id');
+            // Filter by selected institution or all in state
+            if ($selectedInstitutionId) {
+                $institutionIds = collect([$selectedInstitutionId]);
+            } else {
+                $institutionIds = $institutions->pluck('id');
+            }
 
-            $orders = Order::with(['institution', 'supplier'])
-                ->whereIn('institution_id', $institutionIds)
-                ->get();
+            if (in_array($activePage, ['dashboard', 'ringkasan'])) {
+                $orders = Order::with(['institution', 'supplier'])
+                    ->whereIn('institution_id', $institutionIds)
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+            }
 
-            $inventoryItems = OrderItem::select('item_id', DB::raw('SUM(ordered_quantity) as total_ordered_quantity'), DB::raw('SUM(ordered_total_price) as total_ordered_price'))
-                ->join('orders', 'order_items.order_id', '=', 'orders.id')
-                ->whereIn('orders.institution_id', $institutionIds)
-                ->groupBy('item_id')
-                ->with('item')
-                ->get();
+            if (in_array($activePage, ['dashboard', 'inventori', 'ringkasan'])) {
+                $inventoryItems = OrderItem::select('item_id', DB::raw('SUM(ordered_quantity) as total_ordered_quantity'), DB::raw('SUM(ordered_total_price) as total_ordered_price'))
+                    ->join('orders', 'order_items.order_id', '=', 'orders.id')
+                    ->whereIn('orders.institution_id', $institutionIds)
+                    ->groupBy('item_id')
+                    ->with('item')
+                    ->get();
+            }
 
-            $suppliers = Supplier::with('state')
-                ->where(function($q) use ($institutionIds) {
-                    $q->whereExists(function ($query) use ($institutionIds) {
-                        $query->select(DB::raw(1))
-                              ->from('orders')
-                              ->whereColumn('orders.supplier_id', 'suppliers.id')
-                              ->whereIn('orders.institution_id', $institutionIds);
+            if (in_array($activePage, ['dashboard', 'pembekal'])) {
+                $suppliers = Supplier::with('state')
+                    ->where(function($q) use ($institutionIds) {
+                        $q->whereExists(function ($query) use ($institutionIds) {
+                            $query->select(DB::raw(1))
+                                  ->from('orders')
+                                  ->whereColumn('orders.supplier_id', 'suppliers.id')
+                                  ->whereIn('orders.institution_id', $institutionIds);
+                        })
+                        ->orWhereExists(function ($query) use ($institutionIds) {
+                            $query->select(DB::raw(1))
+                                  ->from('contracts')
+                                  ->whereColumn('contracts.supplier_id', 'suppliers.id')
+                                  ->whereIn('contracts.institution_id', $institutionIds);
+                        });
                     })
-                    ->orWhereExists(function ($query) use ($institutionIds) {
-                        $query->select(DB::raw(1))
-                              ->from('contracts')
-                              ->whereColumn('contracts.supplier_id', 'suppliers.id')
-                              ->whereIn('contracts.institution_id', $institutionIds);
-                    });
-                })
-                ->orderBy('company_name')
-                ->get();
+                    ->orderBy('company_name')
+                    ->get();
+            }
+
+            if ($activePage === 'dashboard') {
+                // 1. Order Status Breakdown
+                $statusCounts = Order::whereIn('institution_id', $institutionIds)
+                    ->select('status', DB::raw('count(*) as count'))
+                    ->groupBy('status')
+                    ->pluck('count', 'status')->toArray();
+                
+                $dashboardData['order_status'] = [
+                    'Menunggu' => $statusCounts['Pending'] ?? 0,
+                    'Sedang Diproses' => $statusCounts['In Progress'] ?? 0,
+                    'Selesai' => $statusCounts['Completed'] ?? 0,
+                    'Ditolak' => $statusCounts['Rejected'] ?? 0,
+                ];
+
+                // 2. Top 5 Items Ordered (Highest Quantity)
+                $topItems = OrderItem::select('items.name', DB::raw('SUM(ordered_quantity) as total_quantity'))
+                    ->join('orders', 'order_items.order_id', '=', 'orders.id')
+                    ->join('items', 'order_items.item_id', '=', 'items.id')
+                    ->whereIn('orders.institution_id', $institutionIds)
+                    ->groupBy('items.id', 'items.name')
+                    ->orderByDesc('total_quantity')
+                    ->limit(5)
+                    ->get();
+                
+                $dashboardData['top_items'] = [
+                    'labels' => $topItems->pluck('name')->toArray(),
+                    'data' => $topItems->pluck('total_quantity')->toArray(),
+                ];
+            }
         }
 
         return view('pengarah_negeri_dashboard', [
             'activePage' => $activePage,
-            'states' => $states,
             'selectedState' => $selectedState,
+            'institutions' => $institutions,
+            'selectedInstitutionId' => $selectedInstitutionId,
             'orders' => $orders,
             'inventoryItems' => $inventoryItems,
             'suppliers' => $suppliers,
+            'dashboardData' => json_encode($dashboardData),
         ]);
     }
 

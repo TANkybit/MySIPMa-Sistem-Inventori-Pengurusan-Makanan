@@ -95,7 +95,7 @@ class User extends Authenticatable
                 => 'admin.institusi.dashboard',
             $this->isPengarahInstitusiAdmin($positionCode, $positionName)
                 => 'pengarah.institusi.dashboard',
-            $this->role?->role_name === 'admin hq' || $positionCode === 'ADHQ'
+            $this->role?->role_name === 'admin hq' || in_array($positionCode, ['ADHQ', 'P001'], true) || $this->role_id == 1
                 => 'admin.dashboard',
             default
                 => 'user.dashboard',
@@ -113,7 +113,8 @@ class User extends Authenticatable
 
         $this->_effRole = match (true) {
             $this->role?->role_name === 'admin hq',
-            $positionCode === 'ADHQ',
+            $this->role_id === 1 || $this->role_id === '1',
+            in_array($positionCode, ['ADHQ', 'P001'], true),
             $this->isAdminInstitusi($positionCode, $positionName),
             $this->isPengarahInstitusiAdmin($positionCode, $positionName),
             $this->isPengarahNegeriAdmin($positionCode, $positionName) => 'Admin',
