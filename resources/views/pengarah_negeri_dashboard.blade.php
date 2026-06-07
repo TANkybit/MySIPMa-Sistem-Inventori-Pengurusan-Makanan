@@ -661,6 +661,7 @@
                     let hasResults = false;
                     
                     const configs = [
+                        { key: 'users', title: 'Senarai Pengguna', icon: 'fa-users' },
                         { key: 'items', title: 'Item & Inventori', icon: 'fa-box' },
                         { key: 'suppliers', title: 'Pembekal', icon: 'fa-truck' },
                         { key: 'orders', title: 'Pesanan (Inden)', icon: 'fa-file-invoice' },
@@ -680,6 +681,8 @@
                                 } else if (config.key === 'items') {
                                     itemUrl = `/pengarah-negeri/inventori?search=${encodeURIComponent(item.search_term)}`;
                                 } else if (config.key === 'suppliers') {
+                                    itemUrl = `/pengarah-negeri?search=${encodeURIComponent(item.search_term)}`; 
+                                } else if (config.key === 'users') {
                                     itemUrl = `/pengarah-negeri?search=${encodeURIComponent(item.search_term)}`; 
                                 }
 

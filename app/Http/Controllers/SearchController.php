@@ -6,6 +6,7 @@ use App\Models\Item;
 use App\Models\Supplier;
 use App\Models\Order;
 use App\Models\Institution;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
@@ -23,6 +24,7 @@ class SearchController extends Controller
             'suppliers' => [],
             'orders' => [],
             'institutions' => [],
+            'users' => [],
         ];
 
         $context = $request->input('context');
@@ -40,6 +42,12 @@ class SearchController extends Controller
         });
         $ordersQuery = Order::where('order_no', 'like', "%{$query}%");
         $institutionsQuery = Institution::where('name', 'like', "%{$query}%");
+        
+        $usersQuery = User::with('position')->where(function($q) use ($query) {
+            $q->where('name', 'like', "%{$query}%")
+              ->orWhere('email', 'like', "%{$query}%")
+              ->orWhere('phone_number', 'like', "%{$query}%");
+        });
 
         if ($context === 'institusi' && $filterId) {
             // Scope to specific Institution
@@ -68,6 +76,7 @@ class SearchController extends Controller
             });
             
             $institutionsQuery->where('id', $filterId);
+            $usersQuery->where('institution_id', $filterId);
             
         } elseif ($context === 'negeri' && $filterId) {
             // Scope to State
@@ -98,6 +107,7 @@ class SearchController extends Controller
             });
             
             $institutionsQuery->where('state_id', $filterId);
+            $usersQuery->whereIn('institution_id', $instIds);
         }
 
         $items = $itemsQuery->limit(5)->get();
@@ -137,6 +147,16 @@ class SearchController extends Controller
                 'title' => $institution->name,
                 'subtitle' => 'Jenis: ' . $institution->type,
                 'search_term' => $institution->name,
+            ];
+        }
+
+        $usersList = $usersQuery->limit(5)->get();
+        foreach ($usersList as $u) {
+            $results['users'][] = [
+                'id' => $u->id,
+                'title' => $u->name,
+                'subtitle' => 'Email: ' . ($u->email ?: 'Tiada') . ' - Cawangan: ' . optional($u->position)->name,
+                'search_term' => $u->name,
             ];
         }
 

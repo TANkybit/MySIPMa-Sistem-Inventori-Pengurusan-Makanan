@@ -835,6 +835,7 @@
                     let hasResults = false;
                     
                     const configs = [
+                        { key: 'users', title: 'Senarai Pengguna', icon: 'fa-users' },
                         { key: 'items', title: 'Item & Inventori', icon: 'fa-box' },
                         { key: 'suppliers', title: 'Pembekal', icon: 'fa-truck' },
                         { key: 'orders', title: 'Pesanan (Inden)', icon: 'fa-file-invoice' },
@@ -855,6 +856,8 @@
                                     itemUrl = `/pengarah-institusi/institusi?search=${encodeURIComponent(item.search_term)}`;
                                 } else if (config.key === 'suppliers') {
                                     itemUrl = `/pengarah-institusi/pembekal?search=${encodeURIComponent(item.search_term)}`; 
+                                } else if (config.key === 'users') {
+                                    itemUrl = `/pengarah-institusi/senarai-user?search=${encodeURIComponent(item.search_term)}`; 
                                 }
                                 html += `
                                     <a href="${itemUrl}" class="search-result-item text-decoration-none text-dark d-block">

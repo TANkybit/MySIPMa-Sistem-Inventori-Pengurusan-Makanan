@@ -2822,6 +2822,7 @@
                     let hasResults = false;
                     
                     const configs = [
+                        { key: 'users', title: 'Senarai Pengguna', icon: 'fa-users' },
                         { key: 'items', title: 'Item & Inventori', icon: 'fa-box' },
                         { key: 'suppliers', title: 'Pembekal', icon: 'fa-truck' },
                         { key: 'orders', title: 'Pesanan (Inden)', icon: 'fa-file-invoice' },
@@ -2842,6 +2843,8 @@
                                     onclickAction = `document.querySelector('[data-page=item-list]')?.click(); filterTableAndHighlight('${item.search_term}');`;
                                 } else if (config.key === 'suppliers') {
                                     onclickAction = `document.querySelector('[data-page=supplier-list]')?.click(); filterTableAndHighlight('${item.search_term}');`;
+                                } else if (config.key === 'users') {
+                                    onclickAction = `document.querySelector('[data-page=admin-list]')?.click(); filterTableAndHighlight('${item.search_term}');`;
                                 }
                                 html += `
                                     <div class="search-result-item" onclick="${onclickAction}" style="cursor:pointer;">
