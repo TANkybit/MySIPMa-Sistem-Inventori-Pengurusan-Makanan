@@ -187,11 +187,11 @@
                     @if($activePage === 'dashboard')
                         <div class="row g-4 mb-4">
                             <div class="col-lg-6">
-                                <div class="card h-100">
-                                    <div class="card-header border-0 bg-transparent pb-0">
-                                        <h5 class="card-title fw-bold">Status Pesanan</h5>
+                                <div class="card h-100 shadow-sm border-0">
+                                    <div class="card-header bg-transparent border-0 pb-0 pt-4 px-4">
+                                        <h5 class="card-title fw-bold"><i class="fas fa-chart-pie text-primary me-2"></i>Status Pesanan</h5>
                                     </div>
-                                    <div class="card-body">
+                                    <div class="card-body px-4 pb-4">
                                         <div style="position: relative; height:300px; width:100%">
                                             <canvas id="orderStatusChart"></canvas>
                                         </div>
@@ -199,13 +199,98 @@
                                 </div>
                             </div>
                             <div class="col-lg-6">
-                                <div class="card h-100">
-                                    <div class="card-header border-0 bg-transparent pb-0">
-                                        <h5 class="card-title fw-bold">5 Item Terbanyak Dipesan</h5>
+                                <div class="card h-100 shadow-sm border-0">
+                                    <div class="card-header bg-transparent border-0 pb-0 pt-4 px-4">
+                                        <h5 class="card-title fw-bold"><i class="fas fa-chart-bar text-success me-2"></i>Statistik Entiti (Negeri)</h5>
                                     </div>
-                                    <div class="card-body">
+                                    <div class="card-body px-4 pb-4">
                                         <div style="position: relative; height:300px; width:100%">
-                                            <canvas id="topItemsChart"></canvas>
+                                            <canvas id="entityStatsChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-lg-6">
+                                <div class="card h-100 shadow-sm border-0">
+                                    <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pb-2 pt-4 px-4">
+                                        <h5 class="card-title fw-bold mb-0"><i class="fas fa-clock text-warning me-2"></i>5 Inden Terkini</h5>
+                                        <a href="{{ route('pengarah.negeri.ringkasan', $institutionQuery) }}" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover align-middle mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th class="ps-4">No. Pesanan</th>
+                                                        <th>Institusi</th>
+                                                        <th>Tarikh</th>
+                                                        <th class="pe-4">Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse(collect($orders)->take(5) as $order)
+                                                    <tr>
+                                                        <td class="ps-4 fw-medium text-primary">{{ $order->order_no }}</td>
+                                                        <td>
+                                                            <div class="text-truncate" style="max-width: 150px;" title="{{ optional($order->institution)->name }}">
+                                                                {{ optional($order->institution)->name }}
+                                                            </div>
+                                                        </td>
+                                                        <td>{{ \Carbon\Carbon::parse($order->order_date)->format('d/m/Y') }}</td>
+                                                        <td class="pe-4">
+                                                            @php
+                                                                $statusClass = match($order->status) {
+                                                                    'Pending' => 'bg-warning',
+                                                                    'In Progress' => 'bg-info',
+                                                                    'Completed' => 'bg-success',
+                                                                    'Rejected', 'Cancelled' => 'bg-danger',
+                                                                    default => 'bg-secondary'
+                                                                };
+                                                                $statusLabel = match($order->status) {
+                                                                    'Pending' => 'Menunggu',
+                                                                    'In Progress' => 'Sedang Diproses',
+                                                                    'Completed' => 'Selesai',
+                                                                    'Rejected' => 'Ditolak',
+                                                                    'Cancelled' => 'Dibatalkan',
+                                                                    default => $order->status
+                                                                };
+                                                            @endphp
+                                                            <span class="badge {{ $statusClass }} rounded-pill">{{ $statusLabel }}</span>
+                                                        </td>
+                                                    </tr>
+                                                    @empty
+                                                    <tr>
+                                                        <td colspan="4" class="text-center py-4 text-muted">Tiada pesanan terkini</td>
+                                                    </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="card h-100 shadow-sm border-0">
+                                    <div class="card-header bg-transparent border-0 pb-2 pt-4 px-4">
+                                        <h5 class="card-title fw-bold mb-0"><i class="fas fa-boxes text-info me-2"></i>5 Item Terbanyak Dipesan</h5>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover align-middle mb-0" id="topItemsTableBody">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th class="ps-4">No.</th>
+                                                        <th>Nama Item</th>
+                                                        <th class="text-end pe-4">Kuantiti</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- Rendered via JS -->
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
@@ -646,19 +731,19 @@
                     });
                 }
 
-                // 2. Top 5 Items Chart
-                const topItemsCtx = document.getElementById('topItemsChart');
-                if (topItemsCtx && dashData.top_items && dashData.top_items.labels.length > 0) {
-                    new Chart(topItemsCtx, {
+                // 2. Entity Stats Chart (Institusi & Pembekal)
+                const entityStatsCtx = document.getElementById('entityStatsChart');
+                if (entityStatsCtx) {
+                    new Chart(entityStatsCtx, {
                         type: 'bar',
                         data: {
-                            labels: dashData.top_items.labels,
+                            labels: ['Institusi', 'Pembekal'],
                             datasets: [{
-                                label: 'Kuantiti Terkumpul Dipesan',
-                                data: dashData.top_items.data,
-                                backgroundColor: barColors,
-                                borderWidth: 0,
-                                borderRadius: 4
+                                label: 'Jumlah',
+                                data: [{{ $institutions->count() }}, {{ collect($suppliers ?? [])->count() }}],
+                                backgroundColor: ['rgba(13, 110, 253, 0.8)', 'rgba(255, 193, 7, 0.8)'],
+                                borderRadius: 6,
+                                barPercentage: 0.5
                             }]
                         },
                         options: {
@@ -666,20 +751,31 @@
                             maintainAspectRatio: false,
                             scales: {
                                 y: { beginAtZero: true, grid: { borderDash: [2, 2] } },
-                                x: { grid: { display: false }, ticks: {
-                                    callback: function(val, index) {
-                                        let label = this.getLabelForValue(val);
-                                        return label.length > 15 ? label.substr(0, 15) + '...' : label;
-                                    }
-                                }}
+                                x: { grid: { display: false } }
                             },
-                            plugins: { legend: { display: false }, tooltip: {
-                                callbacks: {
-                                    title: function(context) { return context[0].label; }
-                                }
-                            }}
+                            plugins: { legend: { display: false } }
                         }
                     });
+                }
+
+                // 3. Top Items Data Table
+                const tbody = document.querySelector('#topItemsTableBody tbody');
+                if (tbody && dashData.top_items && dashData.top_items.labels.length > 0) {
+                    let html = '';
+                    dashData.top_items.labels.forEach((label, i) => {
+                        html += `
+                            <tr>
+                                <td class="ps-4 text-muted">${i + 1}</td>
+                                <td class="fw-medium text-dark">${label}</td>
+                                <td class="text-end pe-4">
+                                    <span class="badge bg-primary rounded-pill px-3 py-2 fs-6">${dashData.top_items.data[i]}</span>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    tbody.innerHTML = html;
+                } else if(tbody) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-muted">Tiada data.</td></tr>';
                 }
             @endif
         });
