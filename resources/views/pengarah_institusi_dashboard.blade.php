@@ -846,14 +846,26 @@
                             hasResults = true;
                             html += `<h6 class="search-category-title">${config.title}</h6>`;
                             data[config.key].forEach(item => {
+                                let itemUrl = '#';
+                                if (config.key === 'orders') {
+                                    itemUrl = `/pengarah-institusi/ringkasan?search=${encodeURIComponent(item.search_term)}`;
+                                } else if (config.key === 'institutions') {
+                                    itemUrl = `/pengarah-institusi/institusi?search=${encodeURIComponent(item.search_term)}`;
+                                } else if (config.key === 'items') {
+                                    itemUrl = `/pengarah-institusi/institusi?search=${encodeURIComponent(item.search_term)}`;
+                                } else if (config.key === 'suppliers') {
+                                    itemUrl = `/pengarah-institusi/pembekal?search=${encodeURIComponent(item.search_term)}`; 
+                                }
                                 html += `
-                                    <div class="search-result-item">
-                                        <div class="search-result-icon"><i class="fas ${config.icon}"></i></div>
-                                        <div class="search-result-content">
-                                            <h6>${item.title}</h6>
-                                            <small>${item.subtitle}</small>
+                                    <a href="${itemUrl}" class="search-result-item text-decoration-none text-dark d-block">
+                                        <div class="d-flex w-100 align-items-center">
+                                            <div class="search-result-icon"><i class="fas ${config.icon}"></i></div>
+                                            <div class="search-result-content">
+                                                <h6 class="mb-0 text-primary">${item.title}</h6>
+                                                <small class="text-muted">${item.subtitle}</small>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </a>
                                 `;
                             });
                         }
@@ -869,5 +881,59 @@
         });
     </script>
     <script src="{{ asset('js/session-timeout.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            // Check for search parameter to auto-filter and highlight results
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchKeyword = urlParams.get('search');
+            
+            if (searchKeyword && $.fn.dataTable) {
+                setTimeout(() => {
+                    const tables = $.fn.dataTable.tables({ api: true });
+                    if (tables.length > 0) {
+                        tables.search(searchKeyword).draw();
+                    }
+                    
+                    setTimeout(() => {
+                        $('.table tbody tr').each(function() {
+                            if ($(this).text().includes(searchKeyword)) {
+                                const cells = $(this).children('td');
+                                cells.css({
+                                    'background-color': '#fff3cd', // Warning colored highlight
+                                    'transition': 'background-color 1s ease'
+                                });
+                                cells.first().css({
+                                    'border-left': '4px solid #ffc107'
+                                });
+                                
+                                // Remove highlight after 3 seconds for animation effect
+                                setTimeout(() => {
+                                    cells.css({
+                                        'background-color': '',
+                                        'border-left': ''
+                                    });
+                                }, 3000);
+                                
+                                // Scroll to element
+                                if (this.scrollIntoView && !isElementInViewport(this)) {
+                                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }
+                            }
+                        });
+                    }, 300);
+                }, 500); // Give time for DataTables to finish initialization
+            }
+
+            function isElementInViewport(el) {
+                const rect = el.getBoundingClientRect();
+                return (
+                    rect.top >= 0 &&
+                    rect.left >= 0 &&
+                    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+                );
+            }
+        });
+    </script>
 </body>
 </html>

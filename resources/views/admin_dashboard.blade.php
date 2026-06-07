@@ -2833,12 +2833,22 @@
                             hasResults = true;
                             html += `<h6 class="search-category-title">${config.title}</h6>`;
                             data[config.key].forEach(item => {
+                                let onclickAction = '';
+                                if (config.key === 'orders') {
+                                    onclickAction = `document.querySelector('[data-page=inden]')?.click(); filterTableAndHighlight('${item.search_term}');`;
+                                } else if (config.key === 'institutions') {
+                                    onclickAction = `document.querySelector('[data-page=institusi]')?.click(); filterTableAndHighlight('${item.search_term}');`;
+                                } else if (config.key === 'items') {
+                                    onclickAction = `document.querySelector('[data-page=item-list]')?.click(); filterTableAndHighlight('${item.search_term}');`;
+                                } else if (config.key === 'suppliers') {
+                                    onclickAction = `document.querySelector('[data-page=supplier-list]')?.click(); filterTableAndHighlight('${item.search_term}');`;
+                                }
                                 html += `
-                                    <div class="search-result-item">
+                                    <div class="search-result-item" onclick="${onclickAction}" style="cursor:pointer;">
                                         <div class="search-result-icon"><i class="fas ${config.icon}"></i></div>
                                         <div class="search-result-content">
-                                            <h6>${item.title}</h6>
-                                            <small>${item.subtitle}</small>
+                                            <h6 class="mb-0 text-primary">${item.title}</h6>
+                                            <small class="text-muted">${item.subtitle}</small>
                                         </div>
                                     </div>
                                 `;
@@ -2849,8 +2859,56 @@
                     if (!hasResults) {
                         html = '<div class="search-empty">Tiada padanan dijumpai.</div>';
                     }
-
+                    
                     searchResults.innerHTML = html;
+                }
+                
+                // Add helper function onto window to handle the SPA search highlight
+                window.filterTableAndHighlight = function(searchKeyword) {
+                    searchResults.classList.add('d-none');
+                    if (searchKeyword && $.fn.dataTable) {
+                        setTimeout(() => {
+                            const tables = $.fn.dataTable.tables({ api: true });
+                            if (tables.length > 0) {
+                                tables.search(searchKeyword).draw();
+                            }
+                            
+                            setTimeout(() => {
+                                $('.table:visible tbody tr').each(function() {
+                                    if ($(this).text().includes(searchKeyword)) {
+                                        const cells = $(this).children('td');
+                                        cells.css({
+                                            'background-color': '#fff3cd',
+                                            'transition': 'background-color 1s ease'
+                                        });
+                                        cells.first().css({
+                                            'border-left': '4px solid #ffc107'
+                                        });
+                                        
+                                        setTimeout(() => {
+                                            cells.css({
+                                                'background-color': '',
+                                                'border-left': ''
+                                            });
+                                        }, 3000);
+                                        if (this.scrollIntoView && !isElementInViewport(this)) {
+                                            this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        }
+                                    }
+                                });
+                            }, 300);
+                        }, 500);
+                    }
+                };
+
+                function isElementInViewport(el) {
+                    const rect = el.getBoundingClientRect();
+                    return (
+                        rect.top >= 0 &&
+                        rect.left >= 0 &&
+                        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+                    );
                 }
             }
         });

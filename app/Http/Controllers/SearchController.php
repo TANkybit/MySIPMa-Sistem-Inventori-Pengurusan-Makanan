@@ -28,6 +28,11 @@ class SearchController extends Controller
         $context = $request->input('context');
         $filterId = $request->input('filter_id');
 
+        // If context is specific but no filter ID is provided, return empty to prevent data leak
+        if (in_array($context, ['institusi', 'negeri'], true) && empty($filterId)) {
+            return response()->json(['results' => $results]);
+        }
+
         $itemsQuery = Item::with('uom')->where('name', 'like', "%{$query}%");
         $suppliersQuery = Supplier::where(function($q) use ($query) {
             $q->where('company_name', 'like', "%{$query}%")
@@ -37,13 +42,23 @@ class SearchController extends Controller
         $institutionsQuery = Institution::where('name', 'like', "%{$query}%");
 
         if ($context === 'institusi' && $filterId) {
+            // Scope to specific Institution
             $ordersQuery->where('institution_id', $filterId);
-            $suppliersQuery->whereExists(function ($q) use ($filterId) {
-                $q->select(\Illuminate\Support\Facades\DB::raw(1))
-                  ->from('orders')
-                  ->whereColumn('orders.supplier_id', 'suppliers.id')
-                  ->where('orders.institution_id', $filterId);
+            
+            $suppliersQuery->where(function ($q) use ($filterId) {
+                $q->whereExists(function ($subQ) use ($filterId) {
+                    $subQ->select(\Illuminate\Support\Facades\DB::raw(1))
+                      ->from('orders')
+                      ->whereColumn('orders.supplier_id', 'suppliers.id')
+                      ->where('orders.institution_id', $filterId);
+                })->orWhereExists(function ($subQ) use ($filterId) {
+                    $subQ->select(\Illuminate\Support\Facades\DB::raw(1))
+                      ->from('contracts')
+                      ->whereColumn('contracts.supplier_id', 'suppliers.id')
+                      ->where('contracts.institution_id', $filterId);
+                });
             });
+            
             $itemsQuery->whereExists(function ($q) use ($filterId) {
                 $q->select(\Illuminate\Support\Facades\DB::raw(1))
                   ->from('order_items')
@@ -51,17 +66,29 @@ class SearchController extends Controller
                   ->whereColumn('order_items.item_id', 'items.id')
                   ->where('orders.institution_id', $filterId);
             });
+            
             $institutionsQuery->where('id', $filterId);
             
         } elseif ($context === 'negeri' && $filterId) {
+            // Scope to State
             $instIds = Institution::where('state_id', $filterId)->pluck('id');
+            
             $ordersQuery->whereIn('institution_id', $instIds);
-            $suppliersQuery->whereExists(function ($q) use ($instIds) {
-                $q->select(\Illuminate\Support\Facades\DB::raw(1))
-                  ->from('orders')
-                  ->whereColumn('orders.supplier_id', 'suppliers.id')
-                  ->whereIn('orders.institution_id', $instIds);
+            
+            $suppliersQuery->where(function ($q) use ($instIds) {
+                $q->whereExists(function ($subQ) use ($instIds) {
+                    $subQ->select(\Illuminate\Support\Facades\DB::raw(1))
+                      ->from('orders')
+                      ->whereColumn('orders.supplier_id', 'suppliers.id')
+                      ->whereIn('orders.institution_id', $instIds);
+                })->orWhereExists(function ($subQ) use ($instIds) {
+                    $subQ->select(\Illuminate\Support\Facades\DB::raw(1))
+                      ->from('contracts')
+                      ->whereColumn('contracts.supplier_id', 'suppliers.id')
+                      ->whereIn('contracts.institution_id', $instIds);
+                });
             });
+            
             $itemsQuery->whereExists(function ($q) use ($instIds) {
                 $q->select(\Illuminate\Support\Facades\DB::raw(1))
                   ->from('order_items')
@@ -69,6 +96,7 @@ class SearchController extends Controller
                   ->whereColumn('order_items.item_id', 'items.id')
                   ->whereIn('orders.institution_id', $instIds);
             });
+            
             $institutionsQuery->where('state_id', $filterId);
         }
 
@@ -78,6 +106,7 @@ class SearchController extends Controller
                 'id' => $item->id,
                 'title' => $item->name,
                 'subtitle' => 'Harga: RM ' . number_format($item->price_per_unit, 2),
+                'search_term' => $item->name,
             ];
         }
 
@@ -87,6 +116,7 @@ class SearchController extends Controller
                 'id' => $supplier->id,
                 'title' => $supplier->company_name,
                 'subtitle' => 'PIC: ' . $supplier->contact_person,
+                'search_term' => $supplier->company_name,
             ];
         }
 
@@ -95,7 +125,8 @@ class SearchController extends Controller
             $results['orders'][] = [
                 'id' => $order->id,
                 'title' => 'Pesanan: ' . $order->order_no,
-                'subtitle' => 'Status: ' . $order->status . ' - ' . $order->order_date,
+                'subtitle' => 'Status: ' . $order->status . ' - ' . \Carbon\Carbon::parse($order->order_date)->format('d/m/Y'),
+                'search_term' => $order->order_no,
             ];
         }
 
@@ -105,6 +136,7 @@ class SearchController extends Controller
                 'id' => $institution->id,
                 'title' => $institution->name,
                 'subtitle' => 'Jenis: ' . $institution->type,
+                'search_term' => $institution->name,
             ];
         }
 
