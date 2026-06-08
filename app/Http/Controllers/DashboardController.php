@@ -1197,7 +1197,7 @@ class DashboardController extends Controller
             $order = Order::find($orderId);
             $deliveryRemarks = $request->remarks ?: null;
             $order->update([
-                'status' => $receivingStatus,
+                'status' => 'Completed',
                 'remarks' => 'Diterima pada ' . $request->received_date . ' oleh ' . $request->received_by . ($deliveryRemarks ? ' | Catatan: ' . $deliveryRemarks : ''),
                 'updated_at' => $today,
                 'updated_by' => Auth::id(),
