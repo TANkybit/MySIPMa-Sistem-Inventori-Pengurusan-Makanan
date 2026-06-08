@@ -236,8 +236,7 @@
                     <th>Pembekal</th>
                     <th>Emel Pembekal</th>
                     <th>Jumlah</th>
-                    <th>Status Pesanan</th>
-                    <th>Status Kelulusan</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -249,9 +248,6 @@
                           'Pending' => 'bg-warning text-dark',
                           default => 'bg-secondary',
                       };
-
-                      $approvalText = (int) $order->approval_status === 1 ? 'Diluluskan' : 'Menunggu';
-                      $approvalBadge = (int) $order->approval_status === 1 ? 'bg-success' : 'bg-warning text-dark';
                     @endphp
                     <tr>
                       <td>{{ $loop->iteration }}</td>
@@ -262,11 +258,10 @@
                       <td>{{ $order->supplier_email ?? '-' }}</td>
                       <td>RM {{ number_format((float) $order->total_amount, 2) }}</td>
                       <td><span class="badge {{ $orderBadge }}">{{ $order->order_status ?? '-' }}</span></td>
-                      <td><span class="badge {{ $approvalBadge }}">{{ $approvalText }}</span></td>
                     </tr>
                   @empty
                     <tr>
-                      <td colspan="9" class="text-center text-white-50 py-4">Tiada rekod inden ditemui.</td>
+                      <td colspan="8" class="text-center text-white-50 py-4">Tiada rekod inden ditemui.</td>
                     </tr>
                   @endforelse
                 </tbody>

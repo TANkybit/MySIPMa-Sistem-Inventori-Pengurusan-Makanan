@@ -88,6 +88,14 @@
     @media (max-width: 991.98px) { .borang-menu { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width: 575.98px) { .borang-menu { grid-template-columns: 1fr; } }
     
+    /* Disabled selects in read-only mode — keep dark theme */
+    select:disabled, input:disabled, textarea:disabled {
+      background: #111827 !important;
+      color: var(--text) !important;
+      opacity: 0.7;
+      -webkit-text-fill-color: var(--text);
+    }
+
     /* Sleek Validation Styles */
     .invalid-feedback { color: #f87171; font-size: 0.85rem; margin-top: 6px; font-weight: 500; display: none; }
     .is-invalid + .invalid-feedback, .is-invalid ~ .invalid-feedback { display: block; }
@@ -233,12 +241,17 @@
           </div>
           <div class="col-md-4">
             <label class="form-label">Pembekal <span class="text-danger">*</span></label>
-            <select class="form-select @error('supplier_id') is-invalid @enderror" name="supplier_id" id="supplierSelect" {{ $isReadOnly ? 'disabled' : '' }} required>
+            @if($isReadOnly)
+              <input class="form-control" type="text" value="{{ $inden->nama_pembekal ?? '' }}" readonly>
+              <input type="hidden" name="supplier_id" value="{{ $inden->supplier_id ?? '' }}">
+            @else
+            <select class="form-select @error('supplier_id') is-invalid @enderror" name="supplier_id" id="supplierSelect" required>
               <option value="">-- Pilih Pembekal --</option>
               @foreach($suppliers as $sup)
                 <option value="{{ $sup->id }}" data-address="{{ $sup->address }}" data-postcode="{{ $sup->postcode }}" data-contact="{{ $sup->contact_person ?? $sup->company_name }}" {{ old('supplier_id', $inden->supplier_id ?? '') == $sup->id ? 'selected' : '' }}>{{ $sup->company_name }}</option>
               @endforeach
             </select>
+            @endif
             @error('supplier_id')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -296,9 +309,14 @@
           </div>
           <div class="col-md-6">
             <label class="form-label">No. Kontrak <span class="text-danger">*</span></label>
-            <select class="form-select @error('contract_id') is-invalid @enderror" name="contract_id" id="contractSelect" {{ $isReadOnly ? 'disabled' : '' }} required>
+            @if($isReadOnly)
+              <input class="form-control" type="text" value="{{ $inden->no_kontrak ?? '' }}" readonly>
+              <input type="hidden" name="contract_id" value="{{ $inden->contract_id ?? '' }}">
+            @else
+            <select class="form-select @error('contract_id') is-invalid @enderror" name="contract_id" id="contractSelect" required>
               <option value="">-- Pilih Kontrak --</option>
             </select>
+            @endif
             @error('contract_id')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -654,6 +672,7 @@
         function loadContracts() {
           const instId = getInstId();
           const supId = document.getElementById('supplierSelect')?.value || '';
+          if (!contractSelect) return;
           contractSelect.innerHTML = '<option value="">-- Pilih Kontrak --</option>';
           if (!instId || !supId) return;
           fetch('{{ route("borang.inden.contracts") }}?institution_id=' + instId + '&supplier_id=' + supId)

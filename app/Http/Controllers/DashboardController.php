@@ -1144,13 +1144,31 @@ class DashboardController extends Controller
                     $replaceName = $item['replace_name'] ?? null;
                     $replaceUnit = $item['replace_unit'] ?? null;
                     $replaceQty = $item['replace_qty'] ?? null;
-                    $replacement = '';
-                    if ($replaceName) {
-                        $replacement = " Gantian: {$replaceName}";
-                        $replacement .= $replaceUnit ? " ({$replaceUnit})" : '';
-                        $replacement .= $replaceQty !== null && $replaceQty !== '' ? " x{$replaceQty}" : '';
+
+                    $remarks = ($remarks ? $remarks . ' | ' : '') . '[SALAH]';
+
+                    if ($replaceName && $replaceQty !== null && $replaceQty !== '') {
+                        $qty = (float) $replaceQty;
+                        $unitPrice = (float) (DB::table('items')->where('id', (int) $replaceName)->value('price_per_unit') ?? 0);
+                        $totalPrice = $qty * $unitPrice;
+
+                        $replaceItemId = DB::table('replacement_items')->insertGetId([
+                            'item_id' => (int) $replaceName,
+                            'quantity' => $qty,
+                            'unit_price' => $unitPrice,
+                            'total_price' => $totalPrice,
+                            'remarks' => $replaceUnit ? "Unit: {$replaceUnit}" : null,
+                            'created_at' => now(),
+                            'created_by' => Auth::id(),
+                            'updated_at' => now(),
+                            'updated_by' => Auth::id(),
+                        ]);
+
+                        DB::table('order_item_replace')->insert([
+                            'order_id' => $orderId,
+                            'replace_item_id' => $replaceItemId,
+                        ]);
                     }
-                    $remarks = ($remarks ? $remarks . ' | ' : '') . '[SALAH]' . $replacement;
                 }
 
                 $receivedQty = (float) ($item['received_qty'] ?? 0);
@@ -1175,10 +1193,11 @@ class DashboardController extends Controller
                 }
             }
 
+            $receivingStatus = $request->input('status', 'Lengkap');
             $order = Order::find($orderId);
             $deliveryRemarks = $request->remarks ?: null;
             $order->update([
-                'status' => 'Completed',
+                'status' => $receivingStatus,
                 'remarks' => 'Diterima pada ' . $request->received_date . ' oleh ' . $request->received_by . ($deliveryRemarks ? ' | Catatan: ' . $deliveryRemarks : ''),
                 'updated_at' => $today,
                 'updated_by' => Auth::id(),
@@ -1191,7 +1210,7 @@ class DashboardController extends Controller
                 ->update([
                     'received_by' => $receivedByUser ? $receivedByUser->id : null,
                     'receiver_date' => $request->received_date ?? $today,
-                    'status' => 'Completed',
+                    'status' => $receivingStatus,
                     'remarks' => $deliveryRemarks,
                     'updated_at' => $today,
                     'updated_by' => Auth::id(),
