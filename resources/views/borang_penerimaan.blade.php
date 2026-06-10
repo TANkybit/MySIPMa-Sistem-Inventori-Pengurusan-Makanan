@@ -14,6 +14,8 @@
   <link href="{{ asset('frontend/Nexa/assets/css/main2.css') }}" rel="stylesheet">
   <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
   <style>
     :root { --bg:#020204; --surface:#11151f; --surface-soft:#161a26; --surface-strong:#0c1119; --border:#2c333f; --text:#e2e8f0; --muted:#94a3b8; --accent:#10b981; --accent-soft:rgba(16,185,129,.16); }
     body { background: radial-gradient(circle at top, rgba(255,255,255,.05) 0%, transparent 40%), linear-gradient(180deg,#020204 0%,#07090f 40%,#0b1018 100%); color: var(--text); font-family: "Roboto", sans-serif; }
@@ -60,6 +62,10 @@
     .form-control.is-invalid, .form-select.is-invalid { border-color: #f87171 !important; }
     .action-row { display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; align-items:center; margin-top:24px; }
     .word-counter { color: rgba(255,255,255,.55); font-size: .85rem; }
+    .wrong-toggle { width:22px;height:22px;border-radius:6px;border:2px solid rgba(255,255,255,.2);background:transparent;cursor:pointer; }
+    .wrong-toggle:checked { background-color:var(--accent);border-color:var(--accent); }
+    .date-input { background:#111827;border:1px solid rgba(255,255,255,.08);border-radius:14px;color:var(--text);min-height:48px;padding:12px 14px; }
+    .date-input:focus { border-color:rgba(16,185,129,.45);box-shadow:0 0 0 .2rem rgba(16,185,129,.16);background:#111827;color:var(--text); }
     @media (max-width: 767.98px) { .hero,.section-card { padding:22px; } }
   </style>
 </head>
@@ -170,11 +176,11 @@
         <div class="row mb-4">
           <div class="col-md-4">
             <label class="form-label">Tarikh Terima</label>
-            <input type="date" class="form-control" name="received_date" value="{{ date('Y-m-d') }}">
+            <input class="form-control date-input" name="received_date" type="text" inputmode="numeric" value="{{ date('d/m/Y') }}" placeholder="dd/mm/yyyy">
           </div>
           <div class="col-md-4">
             <label class="form-label">Diterima Oleh</label>
-            <input type="text" class="form-control" name="received_by" value="{{ Auth::user()->name }}">
+            <input type="text" class="form-control" name="received_by" value="{{ Auth::user()->name }}" readonly>
           </div>
         </div>
 
@@ -228,6 +234,8 @@
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ms.js"></script>
   <script src="{{ asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
   <script>
@@ -235,6 +243,16 @@
     const itemSearchUrl = "{{ route('items.search') }}";
 
     $(document).ready(function() {
+      if (typeof flatpickr !== 'undefined') {
+        document.querySelectorAll('.date-input').forEach(function(el) {
+          flatpickr(el, {
+            dateFormat: 'd/m/Y',
+            allowInput: true,
+            locale: 'ms',
+          });
+        });
+      }
+
       $('#orderSelect').select2({
         placeholder: '-- Pilih No. Inden --',
         allowClear: true,
@@ -285,7 +303,7 @@
                       </div>
                       <div class="col-1 text-center">
                         <div class="form-check d-flex justify-content-center">
-                          <input class="form-check-input wrong-toggle" type="checkbox" name="items[${item.id}][is_wrong]" value="1" style="width:22px;height:22px;border-radius:6px;border:2px solid rgba(255,255,255,.2);background:transparent;cursor:pointer;">
+                          <input class="form-check-input wrong-toggle" type="checkbox" name="items[${item.id}][is_wrong]" value="1">
                         </div>
                       </div>
                     </div>

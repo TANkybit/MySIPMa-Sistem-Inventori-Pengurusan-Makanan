@@ -1050,7 +1050,7 @@ class DashboardController extends Controller
                 'institutions.name as institution_name',
                 'orders.status',
             ])
-            ->where('orders.status', '!=', 'Completed')
+            ->where('orders.status', 'In Progress')
             ->orderByDesc('orders.id')
             ->get()
             ->map(function ($order) {
