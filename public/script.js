@@ -141,6 +141,7 @@ class PrisonSystem {
             'inden': 'Inden',
             'pengesahan': 'Pengesahan',
             'laporan-prestasi': 'Laporan Prestasi',
+            'laporan-bahan': 'Laporan Stok Bahan',
             'analitik': 'Analitik',
             'pengguna': 'Pengguna',
             'tetapan': 'Tetapan',
@@ -213,6 +214,9 @@ class PrisonSystem {
                 break;
             case 'laporan-prestasi':
                 this.loadPerformanceReportsPage();
+                break;
+            case 'laporan-bahan':
+                this.loadRawMaterialReportPage();
                 break;
             case 'analitik':
                 this.loadAnalyticsPage();
@@ -1356,6 +1360,64 @@ class PrisonSystem {
         }
     }
 
+    loadRawMaterialReportPage() {
+        console.log('Loading Raw Material Stock Report Page...');
+
+        const stockChartEl = document.querySelector('#stockStatusReportChart');
+        if (stockChartEl && !this.charts.stockStatusReport) {
+            const options = {
+                series: [{
+                    name: 'Stok Semasa',
+                    data: [560, 180, 90]
+                }, {
+                    name: 'Stok Min',
+                    data: [120, 150, 100]
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 320,
+                    toolbar: { show: false }
+                },
+                plotOptions: {
+                    bar: {
+                        borderRadius: 6,
+                        horizontal: false,
+                        columnWidth: '55%'
+                    }
+                },
+                colors: ['#1a5632', '#ffc107'],
+                dataLabels: { enabled: false },
+                xaxis: {
+                    categories: ['Makanan Basah', 'Makanan Kering', 'Rempah Ratus']
+                },
+                yaxis: {
+                    title: {
+                        text: 'Unit'
+                    }
+                },
+                legend: {
+                    position: 'top'
+                }
+            };
+
+            const chart = new ApexCharts(stockChartEl, options);
+            chart.render();
+            this.charts.stockStatusReport = chart;
+        }
+
+        const exportBtn = document.getElementById('exportStockReportBtn');
+        if (exportBtn && !exportBtn.dataset.bound) {
+            exportBtn.dataset.bound = 'true';
+            exportBtn.addEventListener('click', () => {
+                this.exportStockReport();
+            });
+        }
+    }
+
+    exportStockReport() {
+        this.showNotification('Data stok bahan mentah sedang disediakan untuk eksport', 'info');
+    }
+
     loadPerformanceReportsPage() {
         console.log('Loading Performance Reports Page...');
 
@@ -1420,10 +1482,10 @@ class PrisonSystem {
         if (supplierEl && !this.charts.supplierPerformance) {
             const fallbackSuppliers = [
                 'Syarikat Bekalan Makanan Sedap',
-                'Pembekal Tekstil Maju',
-                'Peralatan Keselamatan Jitu',
-                'Pustaka Ilmu Enterprise',
-                'Hardware & Construction Supplies'
+                'Pembekal Beras Utama',
+                'Pembekal Sayur Segar',
+                'Pembekal Roti Sejahtera',
+                'Pembekal Minuman Sihat'
             ];
             const supplierNames = (window.prisonData.suppliers || [])
                 .slice(0, 5)
@@ -2679,6 +2741,13 @@ class PrisonSystem {
                     return;
                 }
                 this.navigateTo('laporan');
+            }
+
+            // Export stock report from the stock card action menu
+            if (e.target.closest('[data-action="export-stock"]')) {
+                e.preventDefault();
+                this.exportStockReport();
+                return;
             }
 
             // Table actions

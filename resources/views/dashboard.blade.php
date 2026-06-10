@@ -2514,7 +2514,7 @@
                                     <!-- Options will be populated by JS if possible, or just hardcode for demo -->
                                     <option value="1">Bahan Mentah - Makanan Basah</option>
                                     <option value="2">Bahan Mentah - Makanan Kering</option>
-                                    <option value="3">Peralatan</option>
+                                    <option value="3">Bahan Mentah - Rempah Ratus</option>
                                 </select>
                             </div>
                         </div>

@@ -28,6 +28,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $pageTitle }} Admin Institusi</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="session-lifetime" content="{{ config('session.lifetime') }}">
+    <meta name="session-warning" content="{{ config('session-timeout.warning_time') }}">
+    <meta name="session-grace" content="{{ config('session-timeout.grace_period') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css" rel="stylesheet">

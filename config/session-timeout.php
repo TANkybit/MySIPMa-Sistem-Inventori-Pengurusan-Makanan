@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'lifetime' => (int) env('SESSION_LIFETIME', 120),
+    'lifetime' => (int) env('SESSION_LIFETIME', 15),
 
     'warning_time' => (int) env('SESSION_TIMEOUT_WARNING', 10),
 

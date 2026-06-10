@@ -1414,10 +1414,10 @@ class PrisonSystem {
         if (supplierEl && !this.charts.supplierPerformance) {
             const fallbackSuppliers = [
                 'Syarikat Bekalan Makanan Sedap',
-                'Pembekal Tekstil Maju',
-                'Peralatan Keselamatan Jitu',
-                'Pustaka Ilmu Enterprise',
-                'Hardware & Construction Supplies'
+                'Pembekal Beras Utama',
+                'Pembekal Sayur Segar',
+                'Pembekal Roti Sejahtera',
+                'Pembekal Minuman Sihat'
             ];
             const supplierNames = (window.prisonData.suppliers || [])
                 .slice(0, 5)

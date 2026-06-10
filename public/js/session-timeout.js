@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  var SESSION_LIFETIME  = 70;        // minutes (must match config/session.php)
+  var SESSION_LIFETIME  = 15;        // minutes (default, can be overridden by meta tags)
   var WARNING_TIME      = 10;         // minutes before expiry to show warning
   var GRACE_PERIOD      = 120;        // seconds after warning before auto-logout
   var HEARTBEAT_URL     = '/session/heartbeat';

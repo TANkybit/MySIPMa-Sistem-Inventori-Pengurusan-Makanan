@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Pengurusan Penjara - Admin Dashboard</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="session-lifetime" content="{{ config('session.lifetime') }}">
+    <meta name="session-warning" content="{{ config('session-timeout.warning_time') }}">
+    <meta name="session-grace" content="{{ config('session-timeout.grace_period') }}">
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -472,8 +475,8 @@
                                                 <i class="fas fa-ellipsis-v"></i>
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item" href="#">Lihat Laporan</a></li>
-                                                <li><a class="dropdown-item" href="#">Eksport Data</a></li>
+                                                <li><a class="dropdown-item" href="#" data-page="laporan-bahan">Lihat Laporan</a></li>
+                                                <li><a class="dropdown-item" href="#" data-action="export-stock">Eksport Data</a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -1010,6 +1013,78 @@
                                             <h6 class="fw-bold mb-3">Prestasi Teratas Pembekal</h6>
                                             <div id="supplierPerformanceChart" style="min-height: 300px;"></div>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stock Report Page -->
+                <div class="page-content" id="laporan-bahan-content">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title mb-0">Laporan Stok Bahan Mentah</h5>
+                                <p class="text-muted mb-0">Ringkasan status stok bahan mentah mengikut kategori.</p>
+                            </div>
+                            <button class="btn btn-sm btn-outline-success" id="exportStockReportBtn">
+                                <i class="fas fa-file-export me-1"></i>Eksport Data Stok
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="row gy-4">
+                                <div class="col-lg-6">
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <h6 class="card-subtitle mb-2 text-muted">Jumlah Kategori</h6>
+                                            <h4 class="mb-0">5</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <h6 class="card-subtitle mb-2 text-muted">Item Kritikal</h6>
+                                            <h4 class="mb-0">3</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div id="stockStatusReportChart" style="min-height: 320px;"></div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Kategori</th>
+                                                    <th>Stok Semasa</th>
+                                                    <th>Stok Min</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Makanan Basah</td>
+                                                    <td>560</td>
+                                                    <td>120</td>
+                                                    <td><span class="badge bg-success">Stabil</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Makanan Kering</td>
+                                                    <td>430</td>
+                                                    <td>120</td>
+                                                    <td><span class="badge bg-warning">Awas</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Rempah Ratus</td>
+                                                    <td>210</td>
+                                                    <td>100</td>
+                                                    <td><span class="badge bg-danger">Kritis</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -2655,7 +2730,7 @@
                                     <!-- Options will be populated by JS if possible, or just hardcode for demo -->
                                     <option value="1">Bahan Mentah - Makanan Basah</option>
                                     <option value="2">Bahan Mentah - Makanan Kering</option>
-                                    <option value="3">Peralatan</option>
+                                    <option value="3">Bahan Mentah - Rempah Ratus</option>
                                 </select>
                             </div>
                         </div>
