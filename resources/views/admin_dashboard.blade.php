@@ -277,32 +277,32 @@
                             <h6 class="mb-3">Tindakan Pantas</h6>
                             <div class="row g-2">
                                 <div class="col-6">
-                                    <button class="btn btn-sm btn-outline-primary w-100" data-page="institusi">
+                                    <button class="btn btn-sm btn-outline-primary w-100" data-page="institusi" onclick="setTimeout(() => document.getElementById('addInstitutionBtn').click(), 200);">
                                         <i class="fas fa-building me-1"></i> + Institusi
                                     </button>
                                 </div>
                                 <div class="col-6">
-                                    <button class="btn btn-sm btn-outline-success w-100" data-page="admin-list">
+                                    <button class="btn btn-sm btn-outline-success w-100" data-page="admin-list" onclick="setTimeout(() => document.getElementById('addAdminBtn').click(), 200);">
                                         <i class="fas fa-user-shield me-1"></i> + Admin
                                     </button>
                                 </div>
                                 <div class="col-6">
-                                    <button class="btn btn-sm btn-outline-warning w-100" data-page="position-list">
+                                    <button class="btn btn-sm btn-outline-warning w-100" data-page="position-list" onclick="setTimeout(() => document.getElementById('addPositionBtn').click(), 200);">
                                         <i class="fas fa-id-badge me-1"></i> + Jawatan
                                     </button>
                                 </div>
                                 <div class="col-6">
-                                    <button class="btn btn-sm btn-outline-info w-100" data-page="supplier-list">
+                                    <button class="btn btn-sm btn-outline-info w-100" data-page="supplier-list" onclick="setTimeout(() => document.getElementById('addSupplierBtn').click(), 200);">
                                         <i class="fas fa-truck me-1"></i> + Pembekal
                                     </button>
                                 </div>
                                 <div class="col-6">
-                                    <button class="btn btn-sm btn-outline-secondary w-100" data-page="category-list">
+                                    <button class="btn btn-sm btn-outline-secondary w-100" data-page="category-list" onclick="setTimeout(() => document.getElementById('addCategoryBtn').click(), 200);">
                                         <i class="fas fa-tags me-1"></i> + Kategori
                                     </button>
                                 </div>
                                 <div class="col-6">
-                                    <button class="btn btn-sm btn-outline-dark w-100" data-page="item-list">
+                                    <button class="btn btn-sm btn-outline-dark w-100" data-page="item-list" onclick="setTimeout(() => document.getElementById('addItemBtn').click(), 200);">
                                         <i class="fas fa-box me-1"></i> + Item
                                     </button>
                                 </div>
@@ -1831,7 +1831,7 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0">Senarai Kategori Item</h5>
-                        <button class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i>Tambah Kategori</button>
+                        <button class="btn btn-sm btn-primary" id="addCategoryBtn" data-bs-toggle="modal" data-bs-target="#addCategoryModal"><i class="fas fa-plus me-1"></i>Tambah Kategori</button>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -1839,10 +1839,7 @@
                                 <thead>
                                     <tr>
                                         <th>BIL</th>
-                                        <th>Kod</th>
                                         <th>Nama Kategori</th>
-                                        <th>Keterangan</th>
-                                        <th>Status</th>
                                         <th>Tindakan</th>
                                     </tr>
                                 </thead>
@@ -2703,6 +2700,30 @@
                 <div class="modal-footer border-top-0 pt-0">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="button" class="btn btn-primary" id="saveSupplierBtn">Simpan Pembekal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tambah Kategori Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addCategoryForm">
+                        <div class="mb-3">
+                            <label class="form-label required">Nama Kategori</label>
+                            <input type="text" class="form-control" name="name" required placeholder="Contoh: Sayur-Sayuran">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="saveCategoryBtn">Simpan Kategori</button>
                 </div>
             </div>
         </div>

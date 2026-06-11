@@ -39,4 +39,31 @@ class CategoryController extends Controller
 
         return true;
     }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        try {
+            $category = Category::create([
+                'name' => $validated['name'],
+                'created_by' => auth()->id() ?? 1,
+                'updated_by' => auth()->id() ?? 1,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Kategori berjaya ditambah.',
+                'category' => $category
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error adding category: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menambah kategori: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

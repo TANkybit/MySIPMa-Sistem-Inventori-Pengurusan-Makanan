@@ -2417,7 +2417,7 @@ class PrisonSystem {
         const tableBody = document.querySelector('#category-list-table tbody');
         if (!tableBody) return;
 
-        tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4"><span class="spinner-border spinner-border-sm me-2"></span>Memuatkan kategori...</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-4"><span class="spinner-border spinner-border-sm me-2"></span>Memuatkan kategori...</td></tr>';
         
         await this.loadBackendCategories();
 
@@ -2429,10 +2429,7 @@ class PrisonSystem {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${index + 1}</td>
-                    <td><code>${cat.code}</code></td>
                     <td><div class="fw-medium">${cat.name}</div></td>
-                    <td>${cat.description}</td>
-                    <td><span class="badge bg-${cat.status === 'active' ? 'success' : 'secondary'}">${cat.status === 'active' ? 'Aktif' : 'Tidak Aktif'}</span></td>
                     <td>
                         <div class="btn-group btn-group-sm">
                             <button class="btn btn-sm btn-outline-primary" data-action="edit-category" data-id="${cat.id}"><i class="fas fa-edit"></i></button>
@@ -2968,6 +2965,59 @@ class PrisonSystem {
                         // Restore button
                         savePositionBtn.innerHTML = originalText;
                         savePositionBtn.disabled = false;
+                    }
+                } else {
+                    form.reportValidity();
+                }
+            });
+        }
+
+        // Save Category Btn
+        const saveCategoryBtn = document.getElementById('saveCategoryBtn');
+        if (saveCategoryBtn) {
+            saveCategoryBtn.addEventListener('click', async () => {
+                const form = document.getElementById('addCategoryForm');
+                if (form.checkValidity()) {
+                    const originalText = saveCategoryBtn.innerHTML;
+                    saveCategoryBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Menyimpan...';
+                    saveCategoryBtn.disabled = true;
+
+                    try {
+                        const formData = new FormData(form);
+                        const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+                        const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : '';
+
+                        const response = await fetch('/categories', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            body: formData
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok && result.success) {
+                            this.showNotification(result.message || 'Kategori Berjaya Ditambah!', 'success');
+                            bootstrap.Modal.getInstance(document.getElementById('addCategoryModal')).hide();
+                            form.reset();
+                            
+                            setTimeout(() => { window.location.reload(); }, 1500);
+                        } else {
+                            let errorMsg = result.message || 'Ralat menyimpan kategori.';
+                            if (result.errors) {
+                                const details = Object.values(result.errors).map(v => v.join(', ')).join('<br>');
+                                errorMsg += '<br>' + details;
+                            }
+                            this.showNotification(errorMsg, 'danger');
+                        }
+                    } catch (error) {
+                        console.error('Error saving category:', error);
+                        this.showNotification('Ralat sistem ketika berhubung dengan pelayan.', 'danger');
+                    } finally {
+                        saveCategoryBtn.innerHTML = originalText;
+                        saveCategoryBtn.disabled = false;
                     }
                 } else {
                     form.reportValidity();

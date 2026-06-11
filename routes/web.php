@@ -125,6 +125,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/items', [\App\Http\Controllers\ItemController::class, 'store'])->name('items.store');
 
     Route::get('/categories', [\App\Http\Controllers\CategoryController::class, 'index'])->name('categories.index');
+    Route::post('/categories', [\App\Http\Controllers\CategoryController::class, 'store'])->name('categories.store');
 
     Route::get('/uoms', [\App\Http\Controllers\UomController::class, 'index'])->name('uoms.index');
     Route::post('/uoms', [\App\Http\Controllers\UomController::class, 'store'])->name('uoms.store');
