@@ -514,5 +514,8 @@
     })();
   </script>
 
+  <!-- Tidio Chat Widget -->
+  <script src="//code.tidio.co/pgrnfjdqogbuoyxl5zjtvxtwclzdz9wv.js" async></script>
+
 </body>
 </html>
