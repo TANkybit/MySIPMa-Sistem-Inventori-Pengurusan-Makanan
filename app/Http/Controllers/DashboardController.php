@@ -1222,6 +1222,96 @@ class DashboardController extends Controller
             ->with('success', 'Penerimaan barang berjaya direkodkan.');
     }
 
+    public function cetakPenerimaanPdf(Order $order)
+    {
+        $rows = DB::table('orders as o')
+            ->leftJoin('institutions as i', 'o.institution_id', '=', 'i.id')
+            ->leftJoin('suppliers as s', 'o.supplier_id', '=', 's.id')
+            ->leftJoin('contracts as c', 'o.contract_id', '=', 'c.id')
+            ->leftJoin('deliveries as d', 'o.id', '=', 'd.order_id')
+            ->leftJoin('order_items as oi', 'o.id', '=', 'oi.order_id')
+            ->leftJoin('items as it', 'oi.item_id', '=', 'it.id')
+            ->leftJoin('uom as u', 'it.uom_id', '=', 'u.id')
+            ->leftJoin('users as uu', 'd.received_by', '=', 'uu.id')
+            ->where('o.id', $order->id)
+            ->select([
+                'o.id as order_id',
+                'o.order_no',
+                'o.order_date',
+                'o.total_amount',
+                'i.name as institution_name',
+                's.company_name as supplier_name',
+                'c.contract_no',
+                'd.receiver_date',
+                'd.status as penerimaan_status',
+                'd.remarks as penerimaan_catatan',
+                'uu.name as received_by_name',
+                'oi.id as order_item_id',
+                'it.name as item_name',
+                DB::raw("COALESCE(u.code, 'Unit') as unit"),
+                'oi.ordered_quantity',
+                'oi.received_quantity',
+                'oi.unit_price',
+                'oi.ordered_total_price',
+                'oi.received_total_price',
+                'oi.remarks as item_remarks',
+            ])
+            ->orderBy('oi.id')
+            ->get();
+
+        if ($rows->isEmpty()) {
+            abort(404, 'Penerimaan tidak dijumpai');
+        }
+
+        $header = (object) [
+            'order_no' => $rows->first()->order_no,
+            'order_date' => $rows->first()->order_date,
+            'institution_name' => $rows->first()->institution_name,
+            'supplier_name' => $rows->first()->supplier_name,
+            'contract_no' => $rows->first()->contract_no,
+            'receiver_date' => $rows->first()->receiver_date,
+            'received_by_name' => $rows->first()->received_by_name,
+            'penerimaan_status' => $rows->first()->penerimaan_status,
+            'penerimaan_catatan' => $rows->first()->penerimaan_catatan,
+            'total_amount' => $rows->first()->total_amount,
+        ];
+
+        $items = $rows->filter(fn($r) => $r->order_item_id !== null)->values();
+
+        // Get replacement items for this order
+        $replacements = DB::table('order_item_replace as oir')
+            ->join('replacement_items as ri', 'oir.replace_item_id', '=', 'ri.id')
+            ->join('items as it', 'ri.item_id', '=', 'it.id')
+            ->leftJoin('uom as u', 'it.uom_id', '=', 'u.id')
+            ->where('oir.order_id', $order->id)
+            ->select([
+                'ri.id',
+                'it.name as item_name',
+                DB::raw("COALESCE(u.code, 'Unit') as unit"),
+                'ri.quantity',
+                'ri.unit_price',
+                'ri.total_price',
+            ])
+            ->get();
+
+        $html = view('pdf.borang_penerimaan', [
+            'header' => $header,
+            'items' => $items,
+            'replacements' => $replacements,
+        ])->render();
+
+        $options = new Options();
+        $options->set('defaultFont', 'sans-serif');
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', false);
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $dompdf->stream("borang_penerimaan_{$order->order_no}.pdf", ['Attachment' => false]);
+    }
+
     public function criticalStock()
     {
         $items = DB::table('items')

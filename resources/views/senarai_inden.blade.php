@@ -237,6 +237,7 @@
                     <th>Emel Pembekal</th>
                     <th>Jumlah</th>
                     <th>Status</th>
+                    <th>Tindakan</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -258,10 +259,15 @@
                       <td>{{ $order->supplier_email ?? '-' }}</td>
                       <td>RM {{ number_format((float) $order->total_amount, 2) }}</td>
                       <td><span class="badge {{ $orderBadge }}">{{ $order->order_status ?? '-' }}</span></td>
+                      <td>
+                        @if($order->order_status === 'Completed')
+                          <a href="{{ route('borang.penerimaan.cetak', $order->id) }}" target="_blank" class="btn btn-sm" style="background:var(--accent);color:#0f172a;border-radius:999px;padding:4px 12px;font-size:.8rem;font-weight:600;text-decoration:none;"><i class="bi bi-printer me-1"></i>Cetak Penerimaan</a>
+                        @endif
+                      </td>
                     </tr>
                   @empty
                     <tr>
-                      <td colspan="8" class="text-center text-white-50 py-4">Tiada rekod inden ditemui.</td>
+                      <td colspan="9" class="text-center text-white-50 py-4">Tiada rekod inden ditemui.</td>
                     </tr>
                   @endforelse
                 </tbody>
