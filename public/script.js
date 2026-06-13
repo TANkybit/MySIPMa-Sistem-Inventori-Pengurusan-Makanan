@@ -964,12 +964,7 @@ class PrisonSystem {
         this.initDataTable('#materials-table');
 
         // Initialize add material button
-        const addBtn = document.getElementById('addMaterialBtn');
-        if (addBtn) {
-            addBtn.addEventListener('click', () => {
-                this.showAddMaterialModal();
-            });
-        }
+        // Logic handled by data-bs-toggle="modal" in the blade view
     }
 
     loadInmatesPage() {

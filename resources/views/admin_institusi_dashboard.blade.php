@@ -680,6 +680,24 @@
                     </div>
                 </div>
             </div>
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-0">&copy; 2026 <strong>Sistem Inventori Dan Pengurusan Makanan</strong>. Hak cipta terpelihara.</p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <p class="mb-0">Versi 2.2.0 | Dikemaskini: 17 Feb 2026 | <span id="server-status" class="text-success"><i class="fas fa-circle"></i> Server Aktif</span></p>
+                        </div>
+                    </div>
+                    <div class="row mt-2 border-top pt-2">
+                        <div class="col-12 text-center">
+                            <p class="text-muted small mb-0">Jabatan Penjara Malaysia tidak bertanggungjawab terhadap sebarang kehilangan atau kerosakan yang dialami kerana menggunakan maklumat yang dicapai dalam laman ini.</p>
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </main>
     </div>
 

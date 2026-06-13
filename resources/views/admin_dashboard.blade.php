@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Pengurusan Penjara - Admin Dashboard</title>
+    <title>Sistem Pengurusan Penjara - Admin Papan Pemuka</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="session-lifetime" content="{{ config('session.lifetime') }}">
     <meta name="session-warning" content="{{ config('session-timeout.warning_time') }}">
@@ -62,11 +62,11 @@
             <!-- Sidebar Menu -->
             <nav class="sidebar-menu">
                 <ul class="nav flex-column">
-                    <li class="nav-title">MAIN</li>
+                    <li class="nav-title">UTAMA</li>
                     <li class="nav-item">
                         <a class="nav-link active" href="#" data-page="home">
                             <i class="fas fa-home"></i>
-                            <span>Dashboard</span>
+                            <span>Papan Pemuka</span>
                         </a>
                     </li>
 
@@ -164,12 +164,12 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="page-title">
-                        <h1 id="pageTitle">Dashboard</h1>
+                        <h1 id="pageTitle">Papan Pemuka</h1>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="#" data-page="home"><i class="fas fa-home"></i></a>
                                 </li>
-                                <li class="breadcrumb-item active" id="breadcrumbCurrent">Dashboard</li>
+                                <li class="breadcrumb-item active" id="breadcrumbCurrent">Papan Pemuka</li>
                             </ol>
                         </nav>
                     </div>
@@ -306,6 +306,17 @@
                                         <i class="fas fa-box me-1"></i> + Item
                                     </button>
                                 </div>
+                                <div class="col-6">
+                                    <button class="btn btn-sm btn-outline-danger w-100" data-page="item-list" onclick="setTimeout(() => document.getElementById('addUomBtn').click(), 200);">
+                                        <i class="fas fa-balance-scale me-1"></i> + UOM
+                                    </button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-sm btn-outline-primary w-100" data-page="bahan-mentah" onclick="setTimeout(() => document.getElementById('addMaterialBtn').click(), 200);">
+                                        <i class="fas fa-box-open me-1"></i> + Bahan
+                                    </button>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -693,7 +704,7 @@
                                 <h5 class="card-title mb-0">Pengurusan Bahan Mentah</h5>
                                 <p class="text-muted mb-0">15 bahan aktif | Nilai Inventori: RM 45,230.00</p>
                             </div>
-                            <button class="btn btn-sm btn-primary" id="addMaterialBtn">
+                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal" id="addMaterialBtn">
                                 <i class="fas fa-plus me-1"></i>Tambah Bahan
                             </button>
                         </div>
