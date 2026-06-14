@@ -74,11 +74,13 @@ class ProfileController extends Controller
         }
 
         $pendingApprovals = \App\Http\Controllers\DashboardController::pendingApprovalCount();
+        $pendingPenerimaan = \App\Models\Order::where('status', 'In Progress')->count();
 
         return view('profile', [
             'user' => $user,
             'avatarUrl' => $this->getAvatarUrl($user),
             'pendingApprovals' => $pendingApprovals,
+            'pendingPenerimaan' => $pendingPenerimaan,
             'institutionName' => $institutionName,
             'positionName' => $positionName,
             'roleName' => $roleName,
@@ -95,11 +97,13 @@ class ProfileController extends Controller
         $roles = \App\Models\Role::orderBy('role_name')->get();
 
         $pendingApprovals = \App\Http\Controllers\DashboardController::pendingApprovalCount();
+        $pendingPenerimaan = \App\Models\Order::where('status', 'In Progress')->count();
 
         return view('update', [
             'user' => $user,
             'avatarUrl' => $this->getAvatarUrl($user),
             'pendingApprovals' => $pendingApprovals,
+            'pendingPenerimaan' => $pendingPenerimaan,
             'institutions' => $institutions,
             'positions' => $positions,
             'roles' => $roles,

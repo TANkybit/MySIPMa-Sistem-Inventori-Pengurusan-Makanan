@@ -560,6 +560,18 @@
           </span>
         </a>
         @endif
+        @if(Auth::user()->hasPermission('penerimaan_inden'))
+        <a href="{{ route('borang.penerimaan') }}" class="position-relative text-white fs-5 me-3"
+          style="transition: color 0.3s;" onmouseover="this.style.color='#f59e0b'"
+          onmouseout="this.style.color='white'">
+          <i class="bi bi-truck"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+            style="font-size: 0.65rem;">
+            {{ $pendingPenerimaan ?? 0 }}
+            <span class="visually-hidden">Penerimaan belum diproses</span>
+          </span>
+        </a>
+        @endif
         <a href="{{ route('profile') }}" class="profile-nav-link active text-decoration-none" style="transition: color 0.3s;"><i
             class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}</a>
         <form action="{{ route('logout') }}" method="POST" class="d-inline">

@@ -28,6 +28,7 @@ class DashboardController extends Controller
             ->pluck('count', 'status');
 
         $pendingApprovals = $this->pendingApprovalCount();
+        $pendingPenerimaan = (int) ($statusCounts['In Progress'] ?? 0);
 
         return view('user_dashboard', [
             'totalOrders' => (int) ($statusCounts['Pending'] ?? 0)
@@ -37,7 +38,8 @@ class DashboardController extends Controller
                 + (int) ($statusCounts['Cancelled'] ?? 0)
                 + (int) ($statusCounts['Rejected'] ?? 0),
             'pendingApprovals' => $pendingApprovals,
-            'inProgressOrders' => (int) ($statusCounts['In Progress'] ?? 0),
+            'pendingPenerimaan' => $pendingPenerimaan,
+            'inProgressOrders' => $pendingPenerimaan,
             'completedOrders' => (int) ($statusCounts['Completed'] ?? 0),
         ]);
     }
@@ -440,10 +442,12 @@ class DashboardController extends Controller
     public function senaraiInden()
     {
         $query = $this->ordersWithDetails();
+        $pendingPenerimaan = Order::where('status', 'In Progress')->count();
 
         return view('senarai_inden', [
             'orders' => $query->get(),
             'pendingApprovals' => $this->pendingApprovalCount(),
+            'pendingPenerimaan' => $pendingPenerimaan,
         ]);
     }
 
@@ -451,10 +455,12 @@ class DashboardController extends Controller
     {
         $query = $this->ordersWithDetails()
             ->where('orders.status', 'Pending');
+        $pendingPenerimaan = Order::where('status', 'In Progress')->count();
 
         return view('pengesahan_inden', [
             'pendingOrders' => $query->get(),
             'pendingApprovals' => $this->pendingApprovalCount(),
+            'pendingPenerimaan' => $pendingPenerimaan,
         ]);
     }
 
@@ -1018,12 +1024,14 @@ class DashboardController extends Controller
         $userGrade = optional(Auth::user()->position)->grade;
         $userPositionName = optional(Auth::user()->position)->name;
         $userInstitutionId = Auth::user()->institution_id;
+        $pendingPenerimaan = Order::where('status', 'In Progress')->count();
 
         return view('borang_inden', [
             'indenHeader' => $indenHeader,
             'indenItems' => $indenItems,
             'readOnly' => $readOnly,
             'pendingApprovals' => $this->pendingApprovalCount(),
+            'pendingPenerimaan' => $pendingPenerimaan,
             'institutions' => \App\Models\Institution::orderBy('name')->get(['id', 'name', 'code', 'location_code']),
             'suppliers' => \App\Models\Supplier::orderBy('company_name')->get(['id', 'company_name', 'contact_person', 'address', 'postcode']),
             'userGrade' => $userGrade,
@@ -1065,10 +1073,13 @@ class DashboardController extends Controller
             });
 
         $uoms = \App\Models\Uom::orderBy('code')->get(['id', 'code']);
+        $pendingPenerimaan = Order::where('status', 'In Progress')->count();
 
         return view('borang_penerimaan', [
             'orders' => $orders,
             'uoms' => $uoms,
+            'pendingApprovals' => $this->pendingApprovalCount(),
+            'pendingPenerimaan' => $pendingPenerimaan,
         ]);
     }
 

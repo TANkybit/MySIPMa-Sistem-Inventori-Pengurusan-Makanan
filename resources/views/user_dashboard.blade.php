@@ -216,7 +216,6 @@
 
       <div class="d-none d-xl-flex align-items-center gap-3">
         @if(Auth::user()->hasPermission('pengesahan_inden'))
-        <!-- Notification Bell -->
         <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3"
           style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'"
           onmouseout="this.style.color='white'">
@@ -225,6 +224,18 @@
             style="font-size: 0.65rem;">
             {{ $pendingApprovals ?? 0 }}
             <span class="visually-hidden">Inden belum disah</span>
+          </span>
+        </a>
+        @endif
+        @if(Auth::user()->hasPermission('penerimaan_inden'))
+        <a href="{{ route('borang.penerimaan') }}" class="position-relative text-white fs-5 me-3"
+          style="transition: color 0.3s;" onmouseover="this.style.color='#f59e0b'"
+          onmouseout="this.style.color='white'">
+          <i class="bi bi-truck"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+            style="font-size: 0.65rem;">
+            {{ $pendingPenerimaan ?? 0 }}
+            <span class="visually-hidden">Penerimaan belum diproses</span>
           </span>
         </a>
         @endif
@@ -283,6 +294,20 @@
             <p class="text-white-50 small mb-0 mt-2">Approved and being processed/delivered</p>
           </div>
         </div>
+
+        @if(Auth::user()->hasPermission('penerimaan_inden'))
+        <!-- Stat Card Penerimaan -->
+        <div class="col-md-6 col-lg-3">
+          <div class="stat-card text-center">
+            <div class="stat-icon" style="color: #f59e0b; background: rgba(245,158,11,.1);">
+              <i class="bi bi-box-seam"></i>
+            </div>
+            <h3 class="stat-title">Penerimaan</h3>
+            <p class="stat-value">{{ $pendingPenerimaan ?? 0 }}</p>
+            <p class="text-white-50 small mb-0 mt-2">Belum diterima</p>
+          </div>
+        </div>
+        @endif
 
         <!-- Stat Card 4 -->
         <div class="col-md-6 col-lg-3">
