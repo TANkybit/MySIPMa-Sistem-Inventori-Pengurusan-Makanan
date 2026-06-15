@@ -80,4 +80,27 @@ class UomController extends Controller
             ],
         ]);
     }
+
+    public function destroy(Uom $uom)
+    {
+        try {
+            $uom->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Unit ukuran berjaya dipadam.'
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            \Illuminate\Support\Facades\Log::error('Error deleting UOM: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memadam kerana unit ukuran ini sedang digunakan pada item.'
+            ], 400);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error deleting UOM: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi ralat semasa memadam rekod unit ukuran.'
+            ], 500);
+        }
+    }
 }

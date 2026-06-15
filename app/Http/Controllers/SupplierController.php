@@ -157,4 +157,27 @@ class SupplierController extends Controller
             ],
         ]);
     }
+
+    public function destroy(Supplier $supplier)
+    {
+        try {
+            $supplier->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Pembekal berjaya dipadam.'
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            \Illuminate\Support\Facades\Log::error('Error deleting supplier: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memadam kerana pembekal ini sedang digunakan (Terdapat rekod pesanan yang berkaitan).'
+            ], 400);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error deleting supplier: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi ralat semasa memadam rekod pembekal.'
+            ], 500);
+        }
+    }
 }

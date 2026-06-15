@@ -114,22 +114,31 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/users', [\App\Http\Controllers\AdminController::class, 'listAdmins'])->name('admin.users');
     Route::post('/admin/register', [\App\Http\Controllers\AdminController::class, 'registerAdmin'])->name('admin.register');
     Route::put('/admin/{admin}', [\App\Http\Controllers\AdminController::class, 'updateAdmin'])->name('admin.update');
+    Route::delete('/admin/{admin}', [\App\Http\Controllers\AdminController::class, 'destroy'])->name('admin.destroy');
 
     Route::post('/position/store', [\App\Http\Controllers\PositionController::class, 'store'])->name('position.store');
+    Route::put('/position/{position}', [\App\Http\Controllers\PositionController::class, 'update'])->name('position.update');
+    Route::delete('/position/{position}', [\App\Http\Controllers\PositionController::class, 'destroy'])->name('position.destroy');
 
     Route::get('/suppliers', [\App\Http\Controllers\SupplierController::class, 'index'])->name('suppliers.index');
     Route::post('/suppliers', [\App\Http\Controllers\SupplierController::class, 'store'])->name('suppliers.store');
     Route::put('/suppliers/{supplier}', [\App\Http\Controllers\SupplierController::class, 'update'])->name('suppliers.update');
+    Route::delete('/suppliers/{supplier}', [\App\Http\Controllers\SupplierController::class, 'destroy'])->name('suppliers.destroy');
 
     Route::get('/items/search', [\App\Http\Controllers\ItemController::class, 'search'])->name('items.search');
     Route::post('/items', [\App\Http\Controllers\ItemController::class, 'store'])->name('items.store');
+    Route::put('/items/{item}', [\App\Http\Controllers\ItemController::class, 'update'])->name('items.update');
+    Route::delete('/items/{item}', [\App\Http\Controllers\ItemController::class, 'destroy'])->name('items.destroy');
 
     Route::get('/categories', [\App\Http\Controllers\CategoryController::class, 'index'])->name('categories.index');
     Route::post('/categories', [\App\Http\Controllers\CategoryController::class, 'store'])->name('categories.store');
+    Route::put('/categories/{category}', [\App\Http\Controllers\CategoryController::class, 'update'])->name('categories.update');
+    Route::delete('/categories/{category}', [\App\Http\Controllers\CategoryController::class, 'destroy'])->name('categories.destroy');
 
     Route::get('/uoms', [\App\Http\Controllers\UomController::class, 'index'])->name('uoms.index');
     Route::post('/uoms', [\App\Http\Controllers\UomController::class, 'store'])->name('uoms.store');
     Route::put('/uoms/{uom}', [\App\Http\Controllers\UomController::class, 'update'])->name('uoms.update');
+    Route::delete('/uoms/{uom}', [\App\Http\Controllers\UomController::class, 'destroy'])->name('uoms.destroy');
 
     // --- User routes (per-position access) ---
     Route::get('/user/dashboard', [DashboardController::class, 'userDashboard'])->name('user.dashboard');

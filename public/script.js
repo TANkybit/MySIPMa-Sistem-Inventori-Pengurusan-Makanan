@@ -3377,23 +3377,79 @@ class PrisonSystem {
                     saveEditBtn.disabled = true;
 
                     try {
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                        let response, result;
+
                         if (type === 'user') {
                             await this.saveUserToBackend(id, formData);
+                            bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+
                         } else if (type === 'supplier') {
                             await this.saveSupplierToBackend(id, formData);
+                            bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+
+                        } else if (type === 'category') {
+                            response = await fetch(`/categories/${id}`, {
+                                method: 'PUT',
+                                headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
+                                body: new URLSearchParams(formData)
+                            });
+                            result = await response.json();
+                            if (result.success) {
+                                this.showNotification(result.message || 'Kategori berjaya dikemaskini.', 'success');
+                                bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+                                this.refreshCurrentPage();
+                            } else {
+                                const msg = result.errors ? Object.values(result.errors).flat().join('\n') : (result.message || 'Ralat mengemaskini kategori.');
+                                this.showNotification(msg, 'danger');
+                            }
+
+                        } else if (type === 'item') {
+                            response = await fetch(`/items/${id}`, {
+                                method: 'PUT',
+                                headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
+                                body: new URLSearchParams(formData)
+                            });
+                            result = await response.json();
+                            if (result.success) {
+                                this.showNotification(result.message || 'Item berjaya dikemaskini.', 'success');
+                                bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+                                this.refreshCurrentPage();
+                            } else {
+                                const msg = result.errors ? Object.values(result.errors).flat().join('\n') : (result.message || 'Ralat mengemaskini item.');
+                                this.showNotification(msg, 'danger');
+                            }
+
+                        } else if (type === 'position') {
+                            response = await fetch(`/position/${id}`, {
+                                method: 'PUT',
+                                headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
+                                body: new URLSearchParams(formData)
+                            });
+                            result = await response.json();
+                            if (result.success) {
+                                this.showNotification(result.message || 'Jawatan berjaya dikemaskini.', 'success');
+                                bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+                                this.refreshCurrentPage();
+                            } else {
+                                const msg = result.errors ? Object.values(result.errors).flat().join('\n') : (result.message || 'Ralat mengemaskini jawatan.');
+                                this.showNotification(msg, 'danger');
+                            }
+
+                        } else if (type === 'institution') {
+                            const updatedData = {};
+                            formData.forEach((value, key) => { updatedData[key] = value; });
+                            this.saveEntity(type, id, updatedData);
+                            bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+
                         } else {
                             const updatedData = {};
-
-                            formData.forEach((value, key) => {
-                                updatedData[key] = value;
-                            });
-
+                            formData.forEach((value, key) => { updatedData[key] = value; });
                             this.saveEntity(type, id, updatedData);
+                            bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
                         }
-
-                        bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
                     } catch (error) {
-                        console.error('Error updating entity:', error);
+                        console.error('Ralat mengemaskini entiti:', error);
                         this.showNotification(error.message || 'Ralat sistem ketika mengemaskini rekod.', 'danger');
                     } finally {
                         saveEditBtn.innerHTML = originalText;
@@ -3613,6 +3669,20 @@ class PrisonSystem {
         document.getElementById('editEntityId').value = id;
         document.getElementById('editEntityType').value = type;
 
+        // Set modal title dynamically in Malay
+        const modalTitleEl = document.getElementById('editModalTitle');
+        if (modalTitleEl) {
+            const titleMap = {
+                'institution': 'Kemaskini Maklumat Institusi',
+                'user':        'Kemaskini Maklumat Pengguna',
+                'supplier':    'Kemaskini Maklumat Pembekal',
+                'category':    'Kemaskini Maklumat Kategori',
+                'item':        'Kemaskini Maklumat Item',
+                'position':    'Kemaskini Maklumat Jawatan',
+            };
+            modalTitleEl.textContent = titleMap[type] || 'Kemaskini Maklumat';
+        }
+
         const fieldsContainer = document.getElementById('editFormFields');
         fieldsContainer.innerHTML = '';
 
@@ -3732,7 +3802,7 @@ class PrisonSystem {
                     <div class="form-text text-muted small">Orang untuk dihubungi</div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Email</label>
+                    <label class="form-label">E-mel</label>
                     <input type="email" class="form-control" name="email" value="${entity.email || ''}">
                 </div>
                 <div class="mb-3">
@@ -3859,6 +3929,110 @@ class PrisonSystem {
             return;
         }
 
+        if (type === 'position') {
+            fieldsContainer.innerHTML = `
+                <div class="mb-3">
+                    <label class="form-label">Kod Jawatan</label>
+                    <input type="text" class="form-control" name="code" value="${entity.code || ''}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Nama Jawatan</label>
+                    <input type="text" class="form-control" name="name" value="${entity.name || ''}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Gred</label>
+                    <input type="text" class="form-control" name="grade" value="${entity.grade || ''}" required>
+                </div>
+            `;
+            new bootstrap.Modal(document.getElementById('editModal')).show();
+            return;
+        }
+
+        if (type === 'category') {
+            fieldsContainer.innerHTML = `
+                <div class="mb-3">
+                    <label class="form-label">Kod Kategori</label>
+                    <input type="text" class="form-control" name="code" value="${entity.code || ''}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Nama Kategori</label>
+                    <input type="text" class="form-control" name="name" value="${entity.name || ''}" required>
+                </div>
+            `;
+            new bootstrap.Modal(document.getElementById('editModal')).show();
+            return;
+        }
+
+        if (type === 'item') {
+            const categories = Array.isArray(window.prisonData.categories) ? window.prisonData.categories : [];
+            const uoms = Array.isArray(window.prisonData.uoms) ? window.prisonData.uoms : [];
+
+            fieldsContainer.innerHTML = `
+                <div class="mb-3">
+                    <label class="form-label">Nama Item</label>
+                    <input type="text" class="form-control" name="name" value="${entity.name || ''}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Kategori</label>
+                    <select class="form-select" name="category_id" required>
+                        <option value="">Pilih Kategori</option>
+                        ${categories.map(cat => `
+                            <option value="${cat.id}" ${cat.id == entity.category_id || cat.name === entity.category ? 'selected' : ''}>${cat.code} - ${cat.name}</option>
+                        `).join('')}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Unit Ukuran (UOM)</label>
+                    <select class="form-select" name="uom_id" required>
+                        <option value="">Pilih UOM</option>
+                        ${uoms.map(uom => `
+                            <option value="${uom.id}" ${uom.id == entity.uom_id || uom.code === entity.uom ? 'selected' : ''}>${uom.code}</option>
+                        `).join('')}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="status" required>
+                        <option value="1" ${entity.status == 1 || entity.status === 'Aktif' || entity.status === 'active' ? 'selected' : ''}>Aktif</option>
+                        <option value="0" ${entity.status == 0 || entity.status === 'Tidak Aktif' || entity.status === 'inactive' ? 'selected' : ''}>Tidak Aktif</option>
+                    </select>
+                </div>
+            `;
+
+            new bootstrap.Modal(document.getElementById('editModal')).show();
+            return;
+        }
+
+        // Malay label map for generic fallback
+        const malayLabelMap = {
+            'name':             'Nama',
+            'email':            'E-mel',
+            'phone':            'No. Telefon',
+            'phone_number':     'No. Telefon',
+            'address':          'Alamat',
+            'postcode':         'Poskod',
+            'status':           'Status',
+            'code':             'Kod',
+            'description':      'Penerangan',
+            'grade':            'Gred',
+            'type':             'Jenis',
+            'capacity':         'Kapasiti',
+            'current':          'Jumlah Semasa',
+            'company_name':     'Nama Syarikat',
+            'contact_person':   'PIC',
+            'state':            'Negeri',
+            'district':         'Daerah',
+            'institution':      'Institusi',
+            'position':         'Jawatan',
+            'role':             'Peranan',
+            'category':         'Kategori',
+            'uom':              'Unit Ukuran',
+            'price_per_unit':   'Harga Seunit',
+            'current_quantity': 'Kuantiti Semasa',
+            'created_at':       'Tarikh Dicipta',
+            'updated_at':       'Tarikh Dikemaskini',
+        };
+
         for (const [key, value] of Object.entries(entity)) {
             if (key === 'id' || key === 'avatar' || key === 'lastUpdated' || key === 'joinDate' || key === 'lastLogin') continue;
             if (type === 'user' && ['institution_id', 'role_id', 'position_id', 'image'].includes(key)) continue;
@@ -3870,8 +4044,9 @@ class PrisonSystem {
                 .replace(/"/g, '&quot;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;');
+            const labelText = malayLabelMap[key] || (key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' '));
             fieldDiv.innerHTML = `
-                <label class="form-label">${key.charAt(0).toUpperCase() + key.slice(1)}</label>
+                <label class="form-label">${labelText}</label>
                 <input type="text" class="form-control" name="${key}" value="${safeValue}">
             `;
             fieldsContainer.appendChild(fieldDiv);
@@ -3880,15 +4055,51 @@ class PrisonSystem {
         new bootstrap.Modal(document.getElementById('editModal')).show();
     }
 
-    deleteEntity(type, id) {
-        const entities = this.getEntities(type);
-        const index = entities.findIndex(e => e.id === id);
+    async deleteEntity(type, id) {
+        let endpoint = '';
+        let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
-        if (index !== -1) {
-            entities.splice(index, 1);
-            this.showNotification(`Berjaya dipadam`, 'success');
-            this.refreshCurrentPage();
-            this.updateDashboardStats();
+        switch (type) {
+            case 'user': endpoint = `/admin/${id}`; break;
+            case 'supplier': endpoint = `/suppliers/${id}`; break;
+            case 'category': endpoint = `/categories/${id}`; break;
+            case 'item': endpoint = `/items/${id}`; break;
+            case 'uom': endpoint = `/uoms/${id}`; break;
+            case 'position': endpoint = `/position/${id}`; break;
+            default:
+                // Handle unsupported types with the legacy mock delete
+                const entities = this.getEntities(type);
+                const index = entities.findIndex(e => e.id === id);
+                if (index !== -1) {
+                    entities.splice(index, 1);
+                    this.showNotification(`Berjaya dipadam (Data Contoh)`, 'success');
+                    this.refreshCurrentPage();
+                    this.updateDashboardStats();
+                }
+                return;
+        }
+
+        try {
+            const response = await fetch(endpoint, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                }
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                this.showNotification(result.message || 'Berjaya mendapat maklum balas padam', 'success');
+                this.refreshCurrentPage();
+                this.updateDashboardStats();
+            } else {
+                this.showNotification(result.message || 'Ralat memadam entiti. Mungkin masih digunakan', 'danger');
+            }
+        } catch (error) {
+            console.error('Error in deletion request:', error);
+            this.showNotification('Ralat sambungan: Gagal memadam rekod.', 'danger');
         }
     }
 

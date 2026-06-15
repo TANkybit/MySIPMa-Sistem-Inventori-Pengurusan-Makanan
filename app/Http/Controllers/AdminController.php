@@ -232,6 +232,45 @@ class AdminController extends Controller
         }
     }
 
+    public function destroy($adminId)
+    {
+        try {
+            $admin = User::find($adminId);
+            if (!$admin) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Admin tidak wujud.',
+                ], 404);
+            }
+
+            if ($admin->id === auth()->id()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda tidak dibenarkan memadam akaun sendiri.'
+                ], 400);
+            }
+
+            $admin->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pengguna berjaya dipadam.'
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            Log::error('Error deleting admin: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memadam kerana pengguna ini sedang berkaitan dengan rekod (seperti pesanan) yang aktif.'
+            ], 400);
+        } catch (\Exception $e) {
+            Log::error('Error deleting admin: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi ralat semasa memadam rekod pengguna.'
+            ], 500);
+        }
+    }
+
     private function resolveReferenceId(string $table, string $nameColumn, mixed $id, ?string $name): ?int
     {
         if ($id !== null && $id !== '') {

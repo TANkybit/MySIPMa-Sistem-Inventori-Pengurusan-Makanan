@@ -2068,15 +2068,20 @@
                                 <form id="formUpdateProfile" action="{{ route('profile.update') }}" method="POST">
                                     @csrf
                                     <div class="row mb-3">
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <label class="form-label">Nama Penuh</label>
                                             <input type="text" class="form-control" name="name"
                                                 value="{{ auth()->user()?->name }}" id="inputProfileName" required>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <label class="form-label">Email</label>
                                             <input type="email" class="form-control" name="email"
                                                 value="{{ auth()->user()?->email }}" id="inputProfileEmail" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">No. Telefon</label>
+                                            <input type="text" class="form-control" name="phone_number"
+                                                value="{{ auth()->user()?->phone_number }}" id="inputProfilePhone">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -2446,7 +2451,7 @@
                                         <div class="fw-semibold" id="sdm-contact-person">-</div>
                                     </li>
                                     <li class="mb-3">
-                                        <div class="text-muted small"><i class="fas fa-envelope me-1 text-primary"></i>Email</div>
+                                        <div class="text-muted small"><i class="fas fa-envelope me-1 text-primary"></i>E-mel</div>
                                         <div><a id="sdm-email" href="#" class="text-decoration-none">-</a></div>
                                     </li>
                                     <li class="mb-0">
@@ -2669,7 +2674,7 @@
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label class="form-label">Emel</label>
+                                <label class="form-label">E-mel</label>
                                 <input type="email" class="form-control" name="email" required>
                             </div>
                             <div class="col-md-6">
@@ -3165,6 +3170,133 @@
                 }
             });
         });
+
+        // Global Search Logic for HQ Dashboard (SPA)
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('globalSearchInput');
+            const searchResults = document.getElementById('globalSearchResults');
+            let searchTimeout;
+
+            if (searchInput && searchResults) {
+                searchInput.addEventListener('input', function(e) {
+                    clearTimeout(searchTimeout);
+                    const query = e.target.value.trim();
+                    
+                    if (query.length < 2) {
+                        searchResults.classList.add('d-none');
+                        return;
+                    }
+                    
+                    searchResults.classList.remove('d-none');
+                    searchResults.innerHTML = '<div class="search-loading"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
+                    
+                    searchTimeout = setTimeout(function() {
+                        const context = searchInput.dataset.context || 'hq';
+                        const filterId = searchInput.dataset.filterId || '';
+                        fetch(`/api/global-search?q=${encodeURIComponent(query)}&context=${context}&filter_id=${filterId}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                renderSearchResults(data.results);
+                            })
+                            .catch(error => {
+                                searchResults.innerHTML = '<div class="search-empty text-danger">Ralat carian</div>';
+                            });
+                    }, 300);
+                });
+
+                document.addEventListener('click', function(e) {
+                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                        searchResults.classList.add('d-none');
+                    }
+                });
+                
+                searchInput.addEventListener('focus', function() {
+                    if (this.value.trim().length >= 2) {
+                        searchResults.classList.remove('d-none');
+                    }
+                });
+
+                function renderSearchResults(data) {
+                    let html = '';
+                    let hasResults = false;
+                    
+                    const configs = [
+                        { key: 'users', title: 'Senarai Pengguna', icon: 'fa-users', page: 'users' },
+                        { key: 'items', title: 'Item & Inventori', icon: 'fa-box', page: 'materials' },
+                        { key: 'suppliers', title: 'Pembekal', icon: 'fa-truck', page: 'suppliers' },
+                        { key: 'orders', title: 'Pesanan (Inden)', icon: 'fa-file-invoice', page: 'inden' },
+                        { key: 'institutions', title: 'Institusi', icon: 'fa-building', page: 'institutions' }
+                    ];
+
+                    configs.forEach(config => {
+                        if (data[config.key] && data[config.key].length > 0) {
+                            hasResults = true;
+                            html += `<h6 class="search-category-title">${config.title}</h6>`;
+                            data[config.key].forEach(item => {
+                                const term = (item.search_term || '').replace(/'/g, "\\'");
+                                html += `
+                                    <a href="#" class="search-result-item text-decoration-none text-dark d-block" onclick="event.preventDefault(); navigateToSearchHQ('${config.page}', '${term}')">
+                                        <div class="d-flex w-100 align-items-center">
+                                            <div class="search-result-icon"><i class="fas ${config.icon}"></i></div>
+                                            <div class="search-result-content">
+                                                <h6 class="mb-0 text-primary">${item.title}</h6>
+                                                <small class="text-muted">${item.subtitle}</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                `;
+                            });
+                        }
+                    });
+
+                    if (!hasResults) {
+                        html = '<div class="search-empty">Tiada padanan dijumpai.</div>';
+                    }
+
+                    searchResults.innerHTML = html;
+                }
+            }
+        });
+
+        // Navigation helper for Global Search inside SPA
+        window.navigateToSearchHQ = function(page, keyword) {
+            document.getElementById('globalSearchResults').classList.add('d-none');
+            // Find sidebar link and click it
+            const link = document.querySelector(`a[data-page="${page}"]`);
+            if (link) {
+                link.click();
+            }
+            
+            // Wait for data table to render, then search
+            setTimeout(() => {
+                const tables = $.fn.dataTable.tables({ api: true });
+                if (tables.length > 0) {
+                    tables.search(keyword).draw();
+                    
+                    // Highlight rows
+                    setTimeout(() => {
+                        $('.table tbody tr').each(function() {
+                            if ($(this).text().toLowerCase().includes(keyword.toLowerCase())) {
+                                const cells = $(this).children('td');
+                                cells.css({
+                                    'background-color': '#fff3cd',
+                                    'transition': 'background-color 1s ease'
+                                });
+                                cells.first().css({'border-left': '4px solid #ffc107'});
+                                
+                                setTimeout(() => {
+                                    cells.css({'background-color': '', 'border-left': ''});
+                                }, 3000);
+                                
+                                if (this.scrollIntoView) {
+                                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }
+                            }
+                        });
+                    }, 300);
+                }
+            }, 800); // 800ms to allow SPA API fetching to complete
+        };
         // ===== END INDEN PAGE LOGIC =====
     </script>
     <script src="{{ asset('script.js') }}"></script>

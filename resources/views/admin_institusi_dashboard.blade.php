@@ -321,7 +321,7 @@
                                             <tr>
                                                 <th>ID</th>
                                                 <th>Nama Syarikat</th>
-                                                <th>Pegawai Dihubungi</th>
+                                                <th>PIC</th>
                                                 <th>E-mel</th>
                                                 <th>Negeri</th>
                                             </tr>
@@ -648,7 +648,7 @@
                                         <td>: <span id="modal_supplier_name" class="fw-medium"></span></td>
                                     </tr>
                                     <tr>
-                                        <th>Pegawai Dihubungi</th>
+                                        <th>PIC</th>
                                         <td>: <span id="modal_supplier_contact"></span></td>
                                     </tr>
                                     <tr>
