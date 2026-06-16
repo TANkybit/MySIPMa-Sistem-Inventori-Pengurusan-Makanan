@@ -73,8 +73,8 @@ class ProfileController extends Controller
             $fullAddress = implode(', ', $parts);
         }
 
-        $pendingApprovals = \App\Http\Controllers\DashboardController::pendingApprovalCount();
-        $pendingPenerimaan = \App\Models\Order::where('status', 'In Progress')->count();
+        $pendingApprovals = \App\Http\Controllers\DashboardController::pendingApprovalCount(Auth::user()->institution_id);
+        $pendingPenerimaan = \App\Models\Order::where('status', 'In Progress')->where('institution_id', Auth::user()->institution_id)->count();
 
         return view('profile', [
             'user' => $user,
@@ -96,8 +96,8 @@ class ProfileController extends Controller
         $positions = \App\Models\Position::orderBy('name')->get();
         $roles = \App\Models\Role::orderBy('role_name')->get();
 
-        $pendingApprovals = \App\Http\Controllers\DashboardController::pendingApprovalCount();
-        $pendingPenerimaan = \App\Models\Order::where('status', 'In Progress')->count();
+        $pendingApprovals = \App\Http\Controllers\DashboardController::pendingApprovalCount(Auth::user()->institution_id);
+        $pendingPenerimaan = \App\Models\Order::where('status', 'In Progress')->where('institution_id', Auth::user()->institution_id)->count();
 
         return view('update', [
             'user' => $user,

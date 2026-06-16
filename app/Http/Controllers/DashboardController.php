@@ -23,11 +23,13 @@ class DashboardController extends Controller
      */
     public function userDashboard()
     {
-        $statusCounts = Order::selectRaw("status, COUNT(*) as count")
+        $instId = Auth::user()->institution_id;
+        $statusCounts = Order::where('institution_id', $instId)
+            ->selectRaw("status, COUNT(*) as count")
             ->groupBy('status')
             ->pluck('count', 'status');
 
-        $pendingApprovals = $this->pendingApprovalCount();
+        $pendingApprovals = $this->pendingApprovalCount($instId);
         $pendingPenerimaan = (int) ($statusCounts['In Progress'] ?? 0);
 
         return view('user_dashboard', [
@@ -441,25 +443,27 @@ class DashboardController extends Controller
 
     public function senaraiInden()
     {
-        $query = $this->ordersWithDetails();
-        $pendingPenerimaan = Order::where('status', 'In Progress')->count();
+        $instId = Auth::user()->institution_id;
+        $query = $this->ordersWithDetails($instId);
+        $pendingPenerimaan = Order::where('status', 'In Progress')->where('institution_id', $instId)->count();
 
         return view('senarai_inden', [
             'orders' => $query->get(),
-            'pendingApprovals' => $this->pendingApprovalCount(),
+            'pendingApprovals' => $this->pendingApprovalCount($instId),
             'pendingPenerimaan' => $pendingPenerimaan,
         ]);
     }
 
     public function pengesahanInden()
     {
-        $query = $this->ordersWithDetails()
+        $instId = Auth::user()->institution_id;
+        $query = $this->ordersWithDetails($instId)
             ->where('orders.status', 'Pending');
-        $pendingPenerimaan = Order::where('status', 'In Progress')->count();
+        $pendingPenerimaan = Order::where('status', 'In Progress')->where('institution_id', $instId)->count();
 
         return view('pengesahan_inden', [
             'pendingOrders' => $query->get(),
-            'pendingApprovals' => $this->pendingApprovalCount(),
+            'pendingApprovals' => $this->pendingApprovalCount($instId),
             'pendingPenerimaan' => $pendingPenerimaan,
         ]);
     }
@@ -911,13 +915,14 @@ class DashboardController extends Controller
             ->with('success', $message);
     }
 
-    public static function pendingApprovalCount(): int
+    public static function pendingApprovalCount(?int $institutionId = null): int
     {
         return Order::where('orders.status', 'Pending')
             ->where(function ($q) {
                 $q->whereDoesntHave('approvals')
                   ->orWhereHas('approvals', fn ($q2) => $q2->where('status', 0));
             })
+            ->when($institutionId, fn ($q) => $q->where('orders.institution_id', $institutionId))
             ->count();
     }
 
@@ -948,6 +953,10 @@ class DashboardController extends Controller
 
     private function borangIndenView(?Order $order, bool $readOnly)
     {
+        if ($order && $order->institution_id !== Auth::user()->institution_id) {
+            abort(403, 'Anda tidak mempunyai akses kepada pesanan ini.');
+        }
+
         $rows = collect();
 
         if ($order) {
@@ -1024,13 +1033,13 @@ class DashboardController extends Controller
         $userGrade = optional(Auth::user()->position)->grade;
         $userPositionName = optional(Auth::user()->position)->name;
         $userInstitutionId = Auth::user()->institution_id;
-        $pendingPenerimaan = Order::where('status', 'In Progress')->count();
+        $pendingPenerimaan = Order::where('status', 'In Progress')->where('institution_id', Auth::user()->institution_id)->count();
 
         return view('borang_inden', [
             'indenHeader' => $indenHeader,
             'indenItems' => $indenItems,
             'readOnly' => $readOnly,
-            'pendingApprovals' => $this->pendingApprovalCount(),
+            'pendingApprovals' => $this->pendingApprovalCount(Auth::user()->institution_id),
             'pendingPenerimaan' => $pendingPenerimaan,
             'institutions' => \App\Models\Institution::orderBy('name')->get(['id', 'name', 'code', 'location_code']),
             'suppliers' => \App\Models\Supplier::orderBy('company_name')->get(['id', 'company_name', 'contact_person', 'address', 'postcode']),
@@ -1048,6 +1057,7 @@ class DashboardController extends Controller
 
     public function borangPenerimaan()
     {
+        $instId = Auth::user()->institution_id;
         $orders = Order::leftJoin('suppliers', 'orders.supplier_id', '=', 'suppliers.id')
             ->leftJoin('institutions', 'orders.institution_id', '=', 'institutions.id')
             ->select([
@@ -1059,6 +1069,7 @@ class DashboardController extends Controller
                 'orders.status',
             ])
             ->where('orders.status', 'In Progress')
+            ->where('orders.institution_id', $instId)
             ->orderByDesc('orders.id')
             ->get()
             ->map(function ($order) {
@@ -1073,12 +1084,12 @@ class DashboardController extends Controller
             });
 
         $uoms = \App\Models\Uom::orderBy('code')->get(['id', 'code']);
-        $pendingPenerimaan = Order::where('status', 'In Progress')->count();
+        $pendingPenerimaan = Order::where('status', 'In Progress')->where('institution_id', $instId)->count();
 
         return view('borang_penerimaan', [
             'orders' => $orders,
             'uoms' => $uoms,
-            'pendingApprovals' => $this->pendingApprovalCount(),
+            'pendingApprovals' => $this->pendingApprovalCount($instId),
             'pendingPenerimaan' => $pendingPenerimaan,
         ]);
     }
@@ -1088,6 +1099,9 @@ class DashboardController extends Controller
         $order = Order::find($order);
         if (!$order) {
             return response()->json(['success' => false, 'message' => 'Pesanan tidak dijumpai.']);
+        }
+        if ($order->institution_id !== Auth::user()->institution_id) {
+            return response()->json(['success' => false, 'message' => 'Akses ditolak.']);
         }
 
         $items = DB::table('order_items')
@@ -1147,6 +1161,11 @@ class DashboardController extends Controller
 
         $orderId = $request->order_id;
         $today = now()->toDateString();
+
+        $orderCheck = Order::find($orderId);
+        if (!$orderCheck || $orderCheck->institution_id !== Auth::user()->institution_id) {
+            return redirect()->back()->withErrors('Akses ditolak.')->withInput();
+        }
 
         DB::transaction(function () use ($request, $orderId, $today) {
             foreach ($request->items as $orderItemId => $item) {

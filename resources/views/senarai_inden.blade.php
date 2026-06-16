@@ -302,6 +302,7 @@
   
   <script>
     $(document).ready(function() {
+        @if(($orders ?? collect())->isNotEmpty())
         $('#senaraiIndenTable').DataTable({
             pageLength: 5,
             pagingType: 'full_numbers',
@@ -325,6 +326,7 @@
                 }
             }
         });
+        @endif
     });
   </script>
     <script src="{{ asset('js/session-timeout.js') }}"></script>

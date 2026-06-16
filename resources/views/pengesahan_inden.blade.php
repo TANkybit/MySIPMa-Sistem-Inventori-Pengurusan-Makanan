@@ -508,6 +508,7 @@
   
   <script>
     $(document).ready(function() {
+        @if(($pendingOrders ?? collect())->isNotEmpty())
         $('#pengesahanIndenTable').DataTable({
             pageLength: 5,
             pagingType: 'full_numbers',
@@ -531,6 +532,7 @@
                 }
             }
         });
+        @endif
 
         const approvalBaseUrl = "{{ url('/user/pengesahan-inden') }}";
         const approvalForm = document.getElementById('approvalConfirmForm');
