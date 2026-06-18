@@ -3633,13 +3633,48 @@ class PrisonSystem {
             return;
         }
 
+        const malayLabelMap = {
+            'name':             'Nama',
+            'email':            'E-mel',
+            'phone':            'No. Telefon',
+            'phone_number':     'No. Telefon',
+            'address':          'Alamat',
+            'postcode':         'Poskod',
+            'status':           'Status',
+            'code':             'Kod',
+            'description':      'Penerangan',
+            'grade':            'Gred',
+            'type':             'Jenis',
+            'capacity':         'Kapasiti',
+            'current':          'Jumlah Semasa',
+            'company_name':     'Nama Syarikat',
+            'contact_person':   'PIC',
+            'state':            'Negeri',
+            'district':         'Daerah',
+            'institution':      'Institusi',
+            'position':         'Jawatan',
+            'role':             'Peranan',
+            'category':         'Kategori',
+            'uom':              'Unit Ukuran',
+            'price_per_unit':   'Harga Seunit',
+            'current_quantity': 'Kuantiti Semasa',
+            'created_at':       'Tarikh Dicipta',
+            'updated_at':       'Tarikh Dikemaskini',
+            'stock':            'Jumlah Stok',
+            'minStock':         'Stok Minimum',
+            'price':            'Harga',
+            'unit':             'Unit Ukuran',
+            'lastUpdated':      'Kemaskini Terakhir'
+        };
+
         let html = '<div class="table-responsive"><table class="table table-sm">';
         for (const [key, value] of Object.entries(entity)) {
             if (key === 'id' || key === 'avatar') continue;
+            const labelText = malayLabelMap[key] || (key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' '));
             html += `
                 <tr>
-                    <th class="text-muted" style="width: 35%">${key.charAt(0).toUpperCase() + key.slice(1)}</th>
-                    <td>${Array.isArray(value) ? value.join(', ') : value}</td>
+                    <th class="text-muted" style="width: 35%">${labelText}</th>
+                    <td>${Array.isArray(value) ? value.join(', ') : (value === '' || value === null ? '-' : value)}</td>
                 </tr>
             `;
         }
@@ -3995,6 +4030,70 @@ class PrisonSystem {
                     <select class="form-select" name="status" required>
                         <option value="1" ${entity.status == 1 || entity.status === 'Aktif' || entity.status === 'active' ? 'selected' : ''}>Aktif</option>
                         <option value="0" ${entity.status == 0 || entity.status === 'Tidak Aktif' || entity.status === 'inactive' ? 'selected' : ''}>Tidak Aktif</option>
+                    </select>
+                </div>
+            `;
+
+            new bootstrap.Modal(document.getElementById('editModal')).show();
+            return;
+        }
+
+        if (type === 'material') {
+            const categories = Array.isArray(window.prisonData.categories) ? window.prisonData.categories : [];
+            const uoms = Array.isArray(window.prisonData.uoms) ? window.prisonData.uoms : [];
+
+            const catOptions = categories.length > 0 
+                ? categories.map(c => `<option value="${c.name}" ${c.name === entity.category ? 'selected' : ''}>${c.name}</option>`).join('')
+                : ['SAYUR', 'IKAN', 'AYAM', 'DAGING', 'BUAH', 'PERENCAH', 'LAIN-LAIN'].map(c => `<option value="${c}" ${c === entity.category ? 'selected' : ''}>${c}</option>`).join('');
+
+            const unitOptions = uoms.length > 0
+                ? uoms.map(u => `<option value="${u.code}" ${u.code === entity.unit ? 'selected' : ''}>${u.code}</option>`).join('')
+                : ['kg', 'g', 'biji', 'ikat', 'bungkus', 'botol', 'tin', 'peket', 'liter'].map(u => `<option value="${u}" ${u === entity.unit ? 'selected' : ''}>${u}</option>`).join('');
+
+            fieldsContainer.innerHTML = `
+                <div class="mb-3">
+                    <label class="form-label">Nama Bahan</label>
+                    <input type="text" class="form-control" name="name" value="${entity.name || ''}" required>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Kategori</label>
+                        <select class="form-select" name="category" required>
+                            <option value="">Pilih Kategori</option>
+                            ${catOptions}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Unit</label>
+                        <select class="form-select" name="unit" required>
+                            <option value="">Pilih Unit</option>
+                            ${unitOptions}
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Jumlah Stok</label>
+                        <input type="number" step="0.01" class="form-control" name="stock" value="${entity.stock !== undefined ? entity.stock : ''}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Stok Minimum</label>
+                        <input type="number" step="0.01" class="form-control" name="minStock" value="${entity.minStock !== undefined ? entity.minStock : ''}" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Harga Seunit (RM)</label>
+                    <input type="number" step="0.01" class="form-control" name="price" value="${entity.price !== undefined ? entity.price : ''}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Penerangan</label>
+                    <textarea class="form-control" name="description" rows="2">${entity.description || ''}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="status" required>
+                        <option value="aktif" ${entity.status === 'aktif' || entity.status === 'active' ? 'selected' : ''}>Aktif</option>
+                        <option value="tidak aktif" ${entity.status === 'tidak aktif' || entity.status === 'inactive' ? 'selected' : ''}>Tidak Aktif</option>
                     </select>
                 </div>
             `;
