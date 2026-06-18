@@ -2885,148 +2885,182 @@
             // Override rawMaterials with database items for charts and materials table
             window.prisonData.rawMaterials = @json($rawMaterials);
             @endif
-            // Global Search Logic
-            const searchInput = document.getElementById('globalSearchInput');
-            const searchResults = document.getElementById('globalSearchResults');
-            let searchTimeout;
+        } // end if (window.prisonData)
 
-            if (searchInput && searchResults) {
-                searchInput.addEventListener('input', function(e) {
-                    clearTimeout(searchTimeout);
-                    const query = e.target.value.trim();
-                    
-                    if (query.length < 2) {
-                        searchResults.classList.add('d-none');
-                        return;
-                    }
-                    
-                    searchResults.classList.remove('d-none');
-                    searchResults.innerHTML = '<div class="search-loading"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
-                    
-                    searchTimeout = setTimeout(function() {
-                        const context = searchInput.dataset.context || '';
-                        const filterId = searchInput.dataset.filterId || '';
-                        fetch(`/api/global-search?q=${encodeURIComponent(query)}&context=${context}&filter_id=${filterId}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                renderSearchResults(data.results);
-                            })
-                            .catch(error => {
-                                searchResults.innerHTML = '<div class="search-empty text-danger">Ralat carian</div>';
-                            });
-                    }, 300);
-                });
+        // ===== Global Search Logic for HQ Dashboard (SPA) =====
+        document.addEventListener('DOMContentLoaded', function() {
+            var searchInput = document.getElementById('globalSearchInput');
+            var searchResults = document.getElementById('globalSearchResults');
+            var searchTimeout;
 
-                document.addEventListener('click', function(e) {
-                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-                        searchResults.classList.add('d-none');
-                    }
-                });
-                
-                searchInput.addEventListener('focus', function() {
-                    if (this.value.trim().length >= 2) {
-                        searchResults.classList.remove('d-none');
-                    }
-                });
+            if (!searchInput || !searchResults) return;
 
-                function renderSearchResults(data) {
-                    let html = '';
-                    let hasResults = false;
-                    
-                    const configs = [
-                        { key: 'users', title: 'Senarai Pengguna', icon: 'fa-users' },
-                        { key: 'items', title: 'Item & Inventori', icon: 'fa-box' },
-                        { key: 'suppliers', title: 'Pembekal', icon: 'fa-truck' },
-                        { key: 'orders', title: 'Pesanan (Inden)', icon: 'fa-file-invoice' },
-                        { key: 'institutions', title: 'Institusi', icon: 'fa-building' }
-                    ];
+            searchInput.addEventListener('input', function(e) {
+                clearTimeout(searchTimeout);
+                var query = e.target.value.trim();
 
-                    configs.forEach(config => {
-                        if (data[config.key] && data[config.key].length > 0) {
-                            hasResults = true;
-                            html += `<h6 class="search-category-title">${config.title}</h6>`;
-                            data[config.key].forEach(item => {
-                                let onclickAction = '';
-                                if (config.key === 'orders') {
-                                    onclickAction = `document.querySelector('[data-page=inden]')?.click(); filterTableAndHighlight('${item.search_term}');`;
-                                } else if (config.key === 'institutions') {
-                                    onclickAction = `document.querySelector('[data-page=institusi]')?.click(); filterTableAndHighlight('${item.search_term}');`;
-                                } else if (config.key === 'items') {
-                                    onclickAction = `document.querySelector('[data-page=item-list]')?.click(); filterTableAndHighlight('${item.search_term}');`;
-                                } else if (config.key === 'suppliers') {
-                                    onclickAction = `document.querySelector('[data-page=supplier-list]')?.click(); filterTableAndHighlight('${item.search_term}');`;
-                                } else if (config.key === 'users') {
-                                    onclickAction = `document.querySelector('[data-page=admin-list]')?.click(); filterTableAndHighlight('${item.search_term}');`;
-                                }
-                                html += `
-                                    <div class="search-result-item" onclick="${onclickAction}" style="cursor:pointer;">
-                                        <div class="search-result-icon"><i class="fas ${config.icon}"></i></div>
-                                        <div class="search-result-content">
-                                            <h6 class="mb-0 text-primary">${item.title}</h6>
-                                            <small class="text-muted">${item.subtitle}</small>
-                                        </div>
-                                    </div>
-                                `;
-                            });
-                        }
-                    });
-
-                    if (!hasResults) {
-                        html = '<div class="search-empty">Tiada padanan dijumpai.</div>';
-                    }
-                    
-                    searchResults.innerHTML = html;
-                }
-                
-                // Add helper function onto window to handle the SPA search highlight
-                window.filterTableAndHighlight = function(searchKeyword) {
+                if (query.length < 2) {
                     searchResults.classList.add('d-none');
-                    if (searchKeyword && $.fn.dataTable) {
-                        setTimeout(() => {
-                            const tables = $.fn.dataTable.tables({ api: true });
-                            if (tables.length > 0) {
-                                tables.search(searchKeyword).draw();
-                            }
-                            
-                            setTimeout(() => {
-                                $('.table:visible tbody tr').each(function() {
-                                    if ($(this).text().includes(searchKeyword)) {
-                                        const cells = $(this).children('td');
-                                        cells.css({
-                                            'background-color': '#fff3cd',
-                                            'transition': 'background-color 1s ease'
-                                        });
-                                        cells.first().css({
-                                            'border-left': '4px solid #ffc107'
-                                        });
-                                        
-                                        setTimeout(() => {
-                                            cells.css({
-                                                'background-color': '',
-                                                'border-left': ''
-                                            });
-                                        }, 3000);
-                                        if (this.scrollIntoView && !isElementInViewport(this)) {
-                                            this.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                        }
-                                    }
-                                });
-                            }, 300);
-                        }, 500);
-                    }
-                };
-
-                function isElementInViewport(el) {
-                    const rect = el.getBoundingClientRect();
-                    return (
-                        rect.top >= 0 &&
-                        rect.left >= 0 &&
-                        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-                        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-                    );
+                    return;
                 }
+
+                searchResults.classList.remove('d-none');
+                searchResults.innerHTML = '<div class="search-loading"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
+
+                searchTimeout = setTimeout(function() {
+                    var context = searchInput.dataset.context || 'hq';
+                    var filterId = searchInput.dataset.filterId || '';
+                    fetch('/api/global-search?q=' + encodeURIComponent(query) + '&context=' + context + '&filter_id=' + filterId, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                    .then(function(response) { return response.json(); })
+                    .then(function(data) {
+                        renderHQSearchResults(data.results);
+                    })
+                    .catch(function() {
+                        searchResults.innerHTML = '<div class="search-empty text-danger">Ralat carian. Cuba semula.</div>';
+                    });
+                }, 350);
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.classList.add('d-none');
+                }
+            });
+
+            searchInput.addEventListener('focus', function() {
+                if (this.value.trim().length >= 2) {
+                    searchResults.classList.remove('d-none');
+                }
+            });
+
+            function renderHQSearchResults(data) {
+                var html = '';
+                var hasResults = false;
+
+                var configs = [
+                    { key: 'users',        title: 'Senarai Pengguna',  icon: 'fa-users',        page: 'admin-list' },
+                    { key: 'items',        title: 'Item & Inventori',  icon: 'fa-box',          page: 'item-list' },
+                    { key: 'suppliers',    title: 'Pembekal',          icon: 'fa-truck',        page: 'supplier-list' },
+                    { key: 'orders',       title: 'Pesanan (Inden)',   icon: 'fa-file-invoice', page: 'inden' },
+                    { key: 'institutions', title: 'Institusi',         icon: 'fa-building',     page: 'institusi' }
+                ];
+
+                configs.forEach(function(config) {
+                    if (data[config.key] && data[config.key].length > 0) {
+                        hasResults = true;
+                        html += '<h6 class="search-category-title">' + config.title + '</h6>';
+                        data[config.key].forEach(function(item) {
+                            var term = (item.search_term || '').replace(/"/g, '&quot;');
+                            html += '<div class="search-result-item" onclick="hqSearchNavigate(\'' + config.page + '\', \'' + term.replace(/'/g, "\\'") + '\')" style="cursor:pointer;">'
+                                  + '<div class="search-result-icon"><i class="fas ' + config.icon + '"></i></div>'
+                                  + '<div class="search-result-content">'
+                                  + '<h6 class="mb-0 text-primary">' + item.title + '</h6>'
+                                  + '<small class="text-muted">' + item.subtitle + '</small>'
+                                  + '</div></div>';
+                        });
+                    }
+                });
+
+                if (!hasResults) {
+                    html = '<div class="search-empty">Tiada padanan dijumpai.</div>';
+                }
+
+                searchResults.innerHTML = html;
             }
         });
+
+        // HQ SPA Search Navigator
+        window.hqSearchNavigate = function(page, keyword) {
+            var sr = document.getElementById('globalSearchResults');
+            if (sr) sr.classList.add('d-none');
+
+            var link = document.querySelector('[data-page="' + page + '"]');
+            if (link) link.click();
+
+            var targetTableId = '';
+            if (page === 'admin-list') targetTableId = '#admin-list-table';
+            else if (page === 'item-list') targetTableId = '#item-list-table';
+            else if (page === 'supplier-list') targetTableId = '#supplier-list-table';
+            else if (page === 'inden') targetTableId = '#inden-table';
+            else if (page === 'institusi') targetTableId = '#institutions-table';
+
+            var attempts = 0;
+            var maxAttempts = 30; // 6 seconds total max polling
+
+            var highlightInterval = setInterval(function() {
+                var found = false;
+                
+                if (targetTableId && typeof $ !== 'undefined' && $.fn && $.fn.dataTable) {
+                    var tableWrapper = $(targetTableId);
+                    
+                    if (tableWrapper.length > 0 && $.fn.DataTable.isDataTable(targetTableId)) {
+                        var dtApi = tableWrapper.DataTable();
+                        
+                        // Proceed only if the table is populated
+                        if (dtApi.data().length > 0) {
+                            var searchKey = keyword.replace(/\s+/g, ' ').toLowerCase();
+                            var targetRowIdx = -1;
+
+                            // 1. Find the row index that matches the keyword
+                            dtApi.rows({ search: 'applied' }).every(function(rowIdx, tableLoop, rowLoop) {
+                                if (targetRowIdx !== -1) return; // already found
+                                
+                                var node = this.node();
+                                if (node) {
+                                    var rowText = $(node).text().replace(/\s+/g, ' ').toLowerCase();
+                                    if (rowText.indexOf(searchKey) >= 0) {
+                                        targetRowIdx = rowIdx;
+                                    }
+                                }
+                            });
+
+                            if (targetRowIdx !== -1) {
+                                found = true; // successfully located
+
+                                // 2. Determine which page the row is currently on
+                                var displayIndex = dtApi.rows({ order: 'current', search: 'applied' }).indexes().indexOf(targetRowIdx);
+                                var pageLength = dtApi.page.len();
+                                if (pageLength > 0 && displayIndex >= 0) {
+                                    var targetPage = Math.floor(displayIndex / pageLength);
+                                    
+                                    // 3. Switch to that page if not already there
+                                    if (dtApi.page() !== targetPage) {
+                                        dtApi.page(targetPage).draw(false);
+                                    }
+                                }
+
+                                // 4. Highlight the target row
+                                var tr = $(dtApi.row(targetRowIdx).node());
+                                if (tr.length > 0) {
+                                    var cells = tr.children('td');
+                                    var originalBg = cells.css('background-color') || '';
+                                    var originalBorder = cells.first().css('border-left') || '';
+                                    
+                                    cells.css({ 'background-color': '#fff3cd', 'transition': 'background-color 1s ease' });
+                                    cells.first().css({ 'border-left': '4px solid #ffc107' });
+                                    
+                                    setTimeout(function() {
+                                        cells.css({ 'background-color': originalBg, 'border-left': originalBorder });
+                                    }, 4000); // highlight for 4 seconds
+                                    
+                                    if (tr[0].scrollIntoView) {
+                                        tr[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                attempts++;
+                if (found || attempts >= maxAttempts) {
+                    clearInterval(highlightInterval);
+                }
+            }, 200);
+        };
+
 
         // ===== INDEN PAGE LOGIC =====
         document.addEventListener('DOMContentLoaded', function() {
@@ -3171,132 +3205,6 @@
             });
         });
 
-        // Global Search Logic for HQ Dashboard (SPA)
-        document.addEventListener('DOMContentLoaded', function() {
-            const searchInput = document.getElementById('globalSearchInput');
-            const searchResults = document.getElementById('globalSearchResults');
-            let searchTimeout;
-
-            if (searchInput && searchResults) {
-                searchInput.addEventListener('input', function(e) {
-                    clearTimeout(searchTimeout);
-                    const query = e.target.value.trim();
-                    
-                    if (query.length < 2) {
-                        searchResults.classList.add('d-none');
-                        return;
-                    }
-                    
-                    searchResults.classList.remove('d-none');
-                    searchResults.innerHTML = '<div class="search-loading"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
-                    
-                    searchTimeout = setTimeout(function() {
-                        const context = searchInput.dataset.context || 'hq';
-                        const filterId = searchInput.dataset.filterId || '';
-                        fetch(`/api/global-search?q=${encodeURIComponent(query)}&context=${context}&filter_id=${filterId}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                renderSearchResults(data.results);
-                            })
-                            .catch(error => {
-                                searchResults.innerHTML = '<div class="search-empty text-danger">Ralat carian</div>';
-                            });
-                    }, 300);
-                });
-
-                document.addEventListener('click', function(e) {
-                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-                        searchResults.classList.add('d-none');
-                    }
-                });
-                
-                searchInput.addEventListener('focus', function() {
-                    if (this.value.trim().length >= 2) {
-                        searchResults.classList.remove('d-none');
-                    }
-                });
-
-                function renderSearchResults(data) {
-                    let html = '';
-                    let hasResults = false;
-                    
-                    const configs = [
-                        { key: 'users', title: 'Senarai Pengguna', icon: 'fa-users', page: 'users' },
-                        { key: 'items', title: 'Item & Inventori', icon: 'fa-box', page: 'materials' },
-                        { key: 'suppliers', title: 'Pembekal', icon: 'fa-truck', page: 'suppliers' },
-                        { key: 'orders', title: 'Pesanan (Inden)', icon: 'fa-file-invoice', page: 'inden' },
-                        { key: 'institutions', title: 'Institusi', icon: 'fa-building', page: 'institutions' }
-                    ];
-
-                    configs.forEach(config => {
-                        if (data[config.key] && data[config.key].length > 0) {
-                            hasResults = true;
-                            html += `<h6 class="search-category-title">${config.title}</h6>`;
-                            data[config.key].forEach(item => {
-                                const term = (item.search_term || '').replace(/'/g, "\\'");
-                                html += `
-                                    <a href="#" class="search-result-item text-decoration-none text-dark d-block" onclick="event.preventDefault(); navigateToSearchHQ('${config.page}', '${term}')">
-                                        <div class="d-flex w-100 align-items-center">
-                                            <div class="search-result-icon"><i class="fas ${config.icon}"></i></div>
-                                            <div class="search-result-content">
-                                                <h6 class="mb-0 text-primary">${item.title}</h6>
-                                                <small class="text-muted">${item.subtitle}</small>
-                                            </div>
-                                        </div>
-                                    </a>
-                                `;
-                            });
-                        }
-                    });
-
-                    if (!hasResults) {
-                        html = '<div class="search-empty">Tiada padanan dijumpai.</div>';
-                    }
-
-                    searchResults.innerHTML = html;
-                }
-            }
-        });
-
-        // Navigation helper for Global Search inside SPA
-        window.navigateToSearchHQ = function(page, keyword) {
-            document.getElementById('globalSearchResults').classList.add('d-none');
-            // Find sidebar link and click it
-            const link = document.querySelector(`a[data-page="${page}"]`);
-            if (link) {
-                link.click();
-            }
-            
-            // Wait for data table to render, then search
-            setTimeout(() => {
-                const tables = $.fn.dataTable.tables({ api: true });
-                if (tables.length > 0) {
-                    tables.search(keyword).draw();
-                    
-                    // Highlight rows
-                    setTimeout(() => {
-                        $('.table tbody tr').each(function() {
-                            if ($(this).text().toLowerCase().includes(keyword.toLowerCase())) {
-                                const cells = $(this).children('td');
-                                cells.css({
-                                    'background-color': '#fff3cd',
-                                    'transition': 'background-color 1s ease'
-                                });
-                                cells.first().css({'border-left': '4px solid #ffc107'});
-                                
-                                setTimeout(() => {
-                                    cells.css({'background-color': '', 'border-left': ''});
-                                }, 3000);
-                                
-                                if (this.scrollIntoView) {
-                                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                }
-                            }
-                        });
-                    }, 300);
-                }
-            }, 800); // 800ms to allow SPA API fetching to complete
-        };
         // ===== END INDEN PAGE LOGIC =====
     </script>
     <script src="{{ asset('script.js') }}"></script>
