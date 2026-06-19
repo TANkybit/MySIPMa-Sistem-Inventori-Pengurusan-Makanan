@@ -217,53 +217,45 @@
                     <div class="dropdown notifications">
                         <button class="btn btn-icon" type="button" data-bs-toggle="dropdown">
                             <i class="fas fa-bell"></i>
-                            <span class="badge-notification">5</span>
+                            @if(($lowStockCount ?? collect($lowStockItems ?? [])->count()) > 0)
+                                <span class="badge-notification">{{ $lowStockCount ?? collect($lowStockItems ?? [])->count() }}</span>
+                            @endif
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
                             <div class="dropdown-header">
                                 <h6>Pemberitahuan</h6>
-                                <a href="#" class="text-muted small">Tandai semua dibaca</a>
+                                <span class="text-muted small">Stok minimum</span>
                             </div>
                             <div class="dropdown-body">
-                                <a href="#" class="dropdown-item">
-                                    <div class="d-flex">
-                                        <div class="notification-icon bg-success">
-                                            <i class="fas fa-check"></i>
+                                @forelse(collect($lowStockItems ?? [])->take(5) as $stockItem)
+                                    <a href="#" class="dropdown-item" data-page="bahan-mentah">
+                                        <div class="d-flex">
+                                            <div class="notification-icon bg-warning">
+                                                <i class="fas fa-exclamation"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6>Stok Minimum</h6>
+                                                <p class="mb-0">
+                                                    {{ data_get($stockItem, 'name') }}:
+                                                    {{ number_format((float) data_get($stockItem, 'stock', 0), 2) }}
+                                                    {{ data_get($stockItem, 'unit', 'Unit') }}
+                                                </p>
+                                                <small class="text-muted">
+                                                    Min:
+                                                    {{ number_format((float) data_get($stockItem, 'minStock', 0), 2) }}
+                                                    {{ data_get($stockItem, 'unit', 'Unit') }}
+                                                </small>
+                                            </div>
                                         </div>
-                                        <div class="flex-grow-1">
-                                            <h6>Inden Disahkan</h6>
-                                            <p class="mb-0">Inden #IN-2023-0456 telah disahkan</p>
-                                            <small class="text-muted">10 minit lalu</small>
-                                        </div>
+                                    </a>
+                                @empty
+                                    <div class="dropdown-item text-muted">
+                                        Tiada bahan yang mencecah stok minimum.
                                     </div>
-                                </a>
-                                <a href="#" class="dropdown-item">
-                                    <div class="d-flex">
-                                        <div class="notification-icon bg-warning">
-                                            <i class="fas fa-exclamation"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <h6>Stok Rendah</h6>
-                                            <p class="mb-0">Bahan "Gula" hampir habis</p>
-                                            <small class="text-muted">1 jam lalu</small>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="#" class="dropdown-item">
-                                    <div class="d-flex">
-                                        <div class="notification-icon bg-info">
-                                            <i class="fas fa-user-plus"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <h6>Banduan Baru</h6>
-                                            <p class="mb-0">Banduan #INM-7823 didaftarkan</p>
-                                            <small class="text-muted">2 jam lalu</small>
-                                        </div>
-                                    </div>
-                                </a>
+                                @endforelse
                             </div>
                             <div class="dropdown-footer">
-                                <a href="#" class="text-primary">Lihat semua pemberitahuan</a>
+                                <a href="#" class="text-primary" data-page="bahan-mentah">Lihat inventori</a>
                             </div>
                         </div>
                     </div>
@@ -357,6 +349,12 @@
             <div class="content-area">
                 <!-- Dashboard Page -->
                 <div class="page-content active" id="home-content">
+                    @include('partials.low_stock_notification', [
+                        'lowStockItems' => $lowStockItems ?? collect(),
+                        'lowStockCount' => $lowStockCount ?? null,
+                        'inventoryPage' => 'bahan-mentah',
+                    ])
+
                     <!-- Welcome Banner -->
                     <div class="row mb-4">
                         <div class="col-12">
@@ -3208,6 +3206,7 @@
         // ===== END INDEN PAGE LOGIC =====
     </script>
     <script src="{{ asset('script.js') }}"></script>
+    <script src="{{ asset('js/table-download.js') }}"></script>
     <script src="{{ asset('js/session-timeout.js') }}"></script>
 </body>
 

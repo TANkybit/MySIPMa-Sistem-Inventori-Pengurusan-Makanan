@@ -2649,6 +2649,7 @@
         }
     </script>
     <script src="{{ asset('script.js') }}"></script>
+    <script src="{{ asset('js/table-download.js') }}"></script>
 </body>
 
 </html>

@@ -159,6 +159,11 @@
                         </div>
                     </div>
 
+                    @include('partials.low_stock_notification', [
+                        'lowStockItems' => $lowStockItems ?? collect(),
+                        'inventoryUrl' => route('pengarah.negeri.inventori', $institutionQuery),
+                    ])
+
                     <div class="row g-3 mb-4">
                         <div class="col-lg-4 col-md-6">
                             <div class="card p-4 h-100">
@@ -817,6 +822,7 @@
             @endif
         });
     </script>
+    <script src="{{ asset('js/table-download.js') }}"></script>
     <script src="{{ asset('js/session-timeout.js') }}"></script>
     <script>
         $(document).ready(function() {

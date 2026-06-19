@@ -414,6 +414,7 @@
       }
     });
   </script>
+    <script src="{{ asset('js/table-download.js') }}"></script>
     <script src="{{ asset('js/session-timeout.js') }}"></script>
 </body>
 </html>

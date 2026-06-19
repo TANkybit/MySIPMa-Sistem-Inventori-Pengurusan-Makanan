@@ -63,17 +63,25 @@ class DashboardController extends Controller
         $pendingApprovals = $this->pendingApprovalCount();
 
         $rawMaterials = \App\Models\Item::leftJoin('categories', 'items.category_id', '=', 'categories.id')
+            ->leftJoin('ceiling_limits', 'items.ceiling_limit_id', '=', 'ceiling_limits.id')
             ->leftJoin('uom', 'items.uom_id', '=', 'uom.id')
-            ->select('items.*', 'categories.name as categoryName', 'uom.code as uomCode')
+            ->select(
+                'items.*',
+                'categories.name as categoryName',
+                'uom.code as uomCode',
+                'ceiling_limits.monthly_limit',
+                'ceiling_limits.yearly_limit',
+                'ceiling_limits.contract_limit'
+            )
             ->get()->map(function($item) {
-                // Determine a safe minStock to avoid div by zero in JS
-                $min = $item->monthly_limit ?: ($item->yearly_limit ? $item->yearly_limit / 12 : ($item->contract_limit ? $item->contract_limit / 12 : max(1, $item->current_quantity * 0.2)));
+                $stock = (float) ($item->current_quantity ?? 0);
+                $min = $this->configuredMinimumStock($item) ?? max(1, $stock * 0.2);
                 
                 return [
                     'id' => $item->id,
                     'name' => $item->name,
                     'category' => $item->categoryName ?? 'Tiada',
-                    'stock' => (float)$item->current_quantity,
+                    'stock' => $stock,
                     'unit' => $item->uomCode ?? 'Unit',
                     'minStock' => (float)$min,
                     'price' => (float)$item->price_per_unit,
@@ -83,7 +91,10 @@ class DashboardController extends Controller
                 ];
             });
 
-        return view('admin_dashboard', compact('institutions', 'uoms', 'totalSuppliers', 'totalInstitutions', 'totalItems', 'pendingApprovals', 'rawMaterials'));
+        $lowStockItems = $this->lowStockItems();
+        $lowStockCount = $lowStockItems->count();
+
+        return view('admin_dashboard', compact('institutions', 'uoms', 'totalSuppliers', 'totalInstitutions', 'totalItems', 'pendingApprovals', 'rawMaterials', 'lowStockItems', 'lowStockCount'));
     }
 
     /**
@@ -310,6 +321,7 @@ class DashboardController extends Controller
             'roles' => $roles,
             'positions' => $positions,
             'dashboardData' => json_encode($dashboardData),
+            'lowStockItems' => $this->lowStockItems(),
         ]);
     }
 
@@ -438,6 +450,7 @@ class DashboardController extends Controller
             'inventoryItems' => $inventoryItems,
             'suppliers' => $suppliers,
             'dashboardData' => json_encode($dashboardData),
+            'lowStockItems' => $this->lowStockItems(),
         ]);
     }
 
@@ -1497,14 +1510,76 @@ class DashboardController extends Controller
 
     private function resolveMinimumStock(object $item, float $stock): float
     {
-        foreach (['monthly_limit', 'yearly_limit', 'contract_limit'] as $field) {
-            $value = (float) ($item->{$field} ?? 0);
-            if ($value > 0) {
-                return $value;
-            }
+        $configuredMinimum = $this->configuredMinimumStock($item);
+        if ($configuredMinimum !== null) {
+            return $configuredMinimum;
         }
 
         return $stock > 0 ? $stock : 1;
+    }
+
+    private function configuredMinimumStock(object $item): ?float
+    {
+        $monthlyLimit = (float) ($item->monthly_limit ?? 0);
+        if ($monthlyLimit > 0) {
+            return $monthlyLimit;
+        }
+
+        $yearlyLimit = (float) ($item->yearly_limit ?? 0);
+        if ($yearlyLimit > 0) {
+            return $yearlyLimit / 12;
+        }
+
+        $contractLimit = (float) ($item->contract_limit ?? 0);
+        if ($contractLimit > 0) {
+            return $contractLimit / 12;
+        }
+
+        return null;
+    }
+
+    private function lowStockItems()
+    {
+        return DB::table('items')
+            ->leftJoin('categories', 'items.category_id', '=', 'categories.id')
+            ->leftJoin('ceiling_limits', 'items.ceiling_limit_id', '=', 'ceiling_limits.id')
+            ->leftJoin('uom', 'items.uom_id', '=', 'uom.id')
+            ->select([
+                'items.id',
+                'items.name',
+                'items.current_quantity',
+                'uom.code as uom_code',
+                'items.status',
+                'categories.name as category',
+                'ceiling_limits.monthly_limit',
+                'ceiling_limits.yearly_limit',
+                'ceiling_limits.contract_limit',
+            ])
+            ->where('items.status', 1)
+            ->orderBy('items.name')
+            ->get()
+            ->map(function ($item) {
+                $minStock = $this->configuredMinimumStock($item);
+                if ($minStock === null) {
+                    return null;
+                }
+
+                $stock = (float) ($item->current_quantity ?? 0);
+                $percentage = $minStock > 0 ? round(($stock / $minStock) * 100) : 0;
+
+                return [
+                    'id' => (int) $item->id,
+                    'name' => $item->name,
+                    'category' => $item->category ?? 'Tanpa Kategori',
+                    'stock' => $stock,
+                    'minStock' => $minStock,
+                    'unit' => $item->uom_code ?? 'Unit',
+                    'stockPercentage' => $percentage,
+                ];
+            })
+            ->filter(fn ($item) => $item && $item['stock'] <= $item['minStock'])
+            ->sortBy('stockPercentage')
+            ->values();
     }
 
     public function saveDraft(Request $request)
