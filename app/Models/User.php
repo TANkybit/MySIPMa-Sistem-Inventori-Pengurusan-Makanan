@@ -136,8 +136,17 @@ class User extends Authenticatable
 
     private function isPengarahInstitusiAdmin(string $positionCode, string $positionName): bool
     {
+        $posName = strtolower($positionName);
+        $userName = strtolower($this->name);
+        
         return in_array($positionCode, ['ADI', 'P006'], true)
-            || str_contains($positionName, 'pengarah institusi');
+            || str_contains($posName, 'pengarah institusi')
+            || (
+                   (str_contains($posName, 'pengarah') || str_contains($userName, 'pengarah'))
+                   && !str_contains($posName, 'negeri') && !str_contains($userName, 'negeri')
+                   && !str_contains($posName, 'hq') && !str_contains($userName, 'hq')
+                   && !str_contains($userName, 'utama')
+               );
     }
 
     private function isAdminInstitusi(string $positionCode, string $positionName): bool
