@@ -43,7 +43,6 @@ class DashboardController extends Controller
             'pendingPenerimaan' => $pendingPenerimaan,
             'inProgressOrders' => $pendingPenerimaan,
             'completedOrders' => (int) ($statusCounts['Completed'] ?? 0),
-            'rejectedOrders' => (int) ($statusCounts['Rejected'] ?? 0),
         ]);
     }
 
