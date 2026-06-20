@@ -43,6 +43,7 @@ class DashboardController extends Controller
             'pendingPenerimaan' => $pendingPenerimaan,
             'inProgressOrders' => $pendingPenerimaan,
             'completedOrders' => (int) ($statusCounts['Completed'] ?? 0),
+            'rejectedOrders' => (int) ($statusCounts['Rejected'] ?? 0),
         ]);
     }
 
@@ -1165,7 +1166,7 @@ class DashboardController extends Controller
     {
         $request->validate([
             'order_id' => 'required|exists:orders,id',
-            'received_date' => 'required|date',
+            'received_date' => 'required|date_format:d/m/Y',
             'received_by' => 'required|string|max:255',
             'items' => 'required|array',
             'items.*.received_qty' => 'required|numeric|min:0',
@@ -1174,6 +1175,7 @@ class DashboardController extends Controller
 
         $orderId = $request->order_id;
         $today = now()->toDateString();
+        $receivedDateDb = \Carbon\Carbon::createFromFormat('d/m/Y', $request->received_date)->format('Y-m-d');
 
         $orderCheck = Order::find($orderId);
         if (!$orderCheck || $orderCheck->institution_id !== Auth::user()->institution_id) {
@@ -1252,7 +1254,7 @@ class DashboardController extends Controller
                 ->where('order_id', $orderId)
                 ->update([
                     'received_by' => $receivedByUser ? $receivedByUser->id : null,
-                    'receiver_date' => $request->received_date ?? $today,
+                    'receiver_date' => $receivedDateDb ?? $today,
                     'status' => $receivingStatus,
                     'remarks' => $deliveryRemarks,
                     'updated_at' => $today,

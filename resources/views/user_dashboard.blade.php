@@ -319,6 +319,17 @@
             <p class="stat-value">{{ $completedOrders ?? 0 }}</p>
           </div>
         </div>
+
+        <!-- Stat Card Rejected -->
+        <div class="col-md-6 col-lg-3">
+          <div class="stat-card text-center">
+            <div class="stat-icon" style="color: #ef4444; background: rgba(239,68,68,.1);">
+              <i class="bi bi-x-circle"></i>
+            </div>
+            <h3 class="stat-title">Rejected</h3>
+            <p class="stat-value">{{ $rejectedOrders ?? 0 }}</p>
+          </div>
+        </div>
       </div>
 
       <div class="row justify-content-center">
