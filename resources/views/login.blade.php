@@ -220,10 +220,11 @@
         <div class="col-lg-4 col-md-6" data-aos="zoom-in">
           
           <div class="card login-card text-center">
-            <img src="{{ url('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" class="login-logo mx-auto" alt="MySIPMa">
+            <img src="{{ url('frontend/Nexa/assets/img/LOGOMYSIPMA.png') }}" class="login-logo mx-auto" alt="MySIPMa">
             <h3 class="mb-4">Selamat Datang</h3>
 
-            <form id="loginForm">
+            <form id="loginForm" method="POST" action="">
+  <input type="hidden" name="_token" value="{{ csrf_token() }}">
   <div class="text-start mb-3">
     <label for="email" class="form-label text-light small">Emel</label>
     <div class="input-group">
@@ -274,7 +275,8 @@
   <script src="{{ asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
   <script src="{{ asset('frontend/Nexa/assets/vendor/aos/aos.js') }}"></script>
   <script src="{{ asset('frontend/Nexa/assets/js/main.js') }}"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
+  <link href="{{ asset('css/sweetalert2.min.css') }}" rel="stylesheet">
   
 
   <script>
@@ -369,7 +371,7 @@
         loginBtn.innerHTML = 'Sedang Log Masuk...';
         loginBtn.disabled = true;
 
-        fetch('{{ route('login.post') }}', {
+        fetch(window.location.pathname, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -425,11 +427,12 @@
         .catch(error => {
           loginBtn.innerHTML = 'Log Masuk';
           loginBtn.disabled = false;
-          Swal.fire({
-            icon: 'error',
-            title: 'Ralat Sistem',
-            text: 'Sila cuba sebentar lagi.'
-          });
+          var errMsg = 'Sila cuba sebentar lagi. URL: ' + window.location.pathname + ' Error: ' + error.message;
+          if (typeof Swal !== 'undefined') {
+            Swal.fire({ icon: 'error', title: 'Ralat Sistem', text: errMsg });
+          } else {
+            alert(errMsg);
+          }
           console.error('Error:', error);
         });
       }

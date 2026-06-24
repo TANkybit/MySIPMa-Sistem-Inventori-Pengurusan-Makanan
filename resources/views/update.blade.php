@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 
 <head>
+  <script>document.documentElement.setAttribute('data-bs-theme',localStorage.getItem('theme')||'light')</script>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Kemaskini</title>
@@ -18,6 +19,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
   <link href="{{ asset('frontend/Nexa/assets/css/main2.css') }}" rel="stylesheet">
+  <link href="{{ asset('css/user-theme.css') }}" rel="stylesheet">
   <link href="{{ asset('frontend/Nexa/assets/css/index.css') }}" rel="stylesheet">
 
   <style>
@@ -551,7 +553,7 @@
         @if(Auth::user()->hasPermission('pengesahan_inden'))
         <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3"
           style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'"
-          onmouseout="this.style.color='white'">
+          onmouseout="this.style.color=''">
           <i class="bi bi-bell-fill"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
             style="font-size: 0.65rem;">
@@ -563,7 +565,7 @@
         @if(Auth::user()->hasPermission('penerimaan_inden'))
         <a href="{{ route('borang.penerimaan') }}" class="position-relative text-white fs-5 me-3"
           style="transition: color 0.3s;" onmouseover="this.style.color='#f59e0b'"
-          onmouseout="this.style.color='white'">
+          onmouseout="this.style.color=''">
           <i class="bi bi-truck"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
             style="font-size: 0.65rem;">
@@ -572,6 +574,7 @@
           </span>
         </a>
         @endif
+        <button class="btn btn-icon" id="themeToggle" style="background:none;border:none;color:var(--text);font-size:1.2rem;padding:4px 8px"><i class="bi bi-moon-fill"></i></button>
         <a href="{{ route('profile') }}" class="profile-nav-link active text-decoration-none" style="transition: color 0.3s;"><i
             class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}</a>
         <form action="{{ route('logout') }}" method="POST" class="d-inline">
@@ -702,12 +705,13 @@
     function initializeParticles() {
       const particleCanvas = document.getElementById('particle-canvas');
       if (particleCanvas && particleCanvas.offsetWidth > 0 && particleCanvas.offsetHeight > 0) {
+        var themeAttr = document.documentElement.getAttribute('data-bs-theme') || 'light';
         new ParticleNetwork(particleCanvas, {
           particleColor: '#62e2ff',
-          background: '#000000',
+          background: themeAttr === 'light' ? '#e9ecef' : '#000000',
           interactive: true,
-          speed: 'high',
-          density: 'high'
+          speed: '2',
+          density: '8000'
         });
       } else {
         // Retry if dimensions aren't available yet
@@ -1097,6 +1101,7 @@
   <script src="{{ asset('frontend/Nexa/assets/js/main.js') }}"></script>
 
     <script src="{{ asset('js/session-timeout.js') }}"></script>
+  <script src="{{ asset('js/user-theme.js') }}"></script>
 </body>
 </html>
 

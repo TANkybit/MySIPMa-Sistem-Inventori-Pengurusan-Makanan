@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="ms" data-bs-theme="light">
+
 <head>
+  <script>document.documentElement.setAttribute('data-bs-theme',localStorage.getItem('theme')||'light')</script>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Borang Inden - MySIPMa</title>
@@ -12,6 +14,7 @@
   <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
   <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
   <link href="{{ asset('frontend/Nexa/assets/css/main2.css') }}" rel="stylesheet">
+  <link href="{{ asset('css/user-theme.css') }}" rel="stylesheet">
   <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -57,6 +60,7 @@
     .borang-menu { display:grid; gap:12px; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom:24px; }
     .borang-menu button { align-items:flex-start; background:var(--surface); border:1px solid var(--border); border-radius:18px; color:var(--text); display:flex; flex-direction:column; gap:6px; padding:16px; text-align:left; transition:all .2s ease; }
     .borang-menu button.active, .borang-menu button:hover { border-color:rgba(16,185,129,.55); box-shadow:0 16px 36px rgba(16,185,129,.12); transform:translateY(-2px); }
+    .borang-menu button.active .menu-title { color:var(--accent); }
     .borang-menu .menu-step { color:var(--accent); font-size:.78rem; font-weight:800; text-transform:uppercase; }
     .borang-menu .menu-title { color:#fff; font-family:"Montserrat", sans-serif; font-weight:800; }
     .borang-page { display:none; }
@@ -154,7 +158,7 @@
         @if(Auth::user()->hasPermission('pengesahan_inden'))
         <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3"
           style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'"
-          onmouseout="this.style.color='white'">
+          onmouseout="this.style.color=''">
           <i class="bi bi-bell-fill"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
             style="font-size: 0.65rem;">
@@ -166,7 +170,7 @@
         @if(Auth::user()->hasPermission('penerimaan_inden'))
         <a href="{{ route('borang.penerimaan') }}" class="position-relative text-white fs-5 me-3"
           style="transition: color 0.3s;" onmouseover="this.style.color='#f59e0b'"
-          onmouseout="this.style.color='white'">
+          onmouseout="this.style.color=''">
           <i class="bi bi-truck"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
             style="font-size: 0.65rem;">
@@ -175,8 +179,9 @@
           </span>
         </a>
         @endif
+        <button class="btn btn-icon" id="themeToggle" style="background:none;border:none;color:var(--text);font-size:1.2rem;padding:4px 8px"><i class="bi bi-moon-fill"></i></button>
         <a href="{{ route('profile') }}" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'"
-          onmouseout="this.style.color='rgba(255,255,255,0.5)'"><i
+          onmouseout="this.style.color=''"><i
             class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}</a>
         <form action="{{ route('logout') }}" method="POST" class="d-inline">
           @csrf
@@ -245,6 +250,8 @@
             <p class="muted mb-0">Maklumat kepala borang daripada PDF disusun semula kepada satu seksyen yang lebih jelas.</p>
           </div>
           <div class="chip">Langkah 1</div>
+          <span class="small ms-3" id="draftStatus1" style="color:var(--muted);"></span>
+          <span class="small d-none ms-1" id="draftSavedIndicator1" style="color:var(--accent);"><i class="bi bi-check-circle-fill me-1"></i>Draf disimpan</span>
         </div>
         <div class="row g-4">
           <div class="col-md-4">
@@ -356,6 +363,8 @@
             <p class="muted mb-0">Masukkan mana-mana nilai untuk mendapatkan pengiraan secara automatik berdasarkan formula Muster Penuh − Parol = Muster Ditolak Parol.</p>
           </div>
           <div class="chip">Langkah 2</div>
+          <span class="small ms-3" id="draftStatus2" style="color:var(--muted);"></span>
+          <span class="small d-none ms-1" id="draftSavedIndicator2" style="color:var(--accent);"><i class="bi bi-check-circle-fill me-1"></i>Draf disimpan</span>
         </div>
         <div class="row g-4">
           <div class="col-md-3">
@@ -408,6 +417,8 @@
             <p class="muted mb-0">Bahagian panjang dalam PDF dipermudahkan kepada item baris demi baris dengan kiraan automatik.</p>
           </div>
           <div class="chip">Langkah 3</div>
+          <span class="small ms-3" id="draftStatus3" style="color:var(--muted);"></span>
+          <span class="small d-none ms-1" id="draftSavedIndicator3" style="color:var(--accent);"><i class="bi bi-check-circle-fill me-1"></i>Draf disimpan</span>
         </div>
         <div class="items-wrap">
           <div class="items-toolbar">
@@ -1366,13 +1377,18 @@
       }
 
       function showDraftToast(msg) {
-        var el = document.getElementById('draftSavedIndicator');
-        if (el) {
+        var els = document.querySelectorAll('#draftSavedIndicator, #draftSavedIndicator1, #draftSavedIndicator2, #draftSavedIndicator3');
+        els.forEach(function (el) {
           el.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>' + msg;
           el.classList.remove('d-none');
           clearTimeout(el._hideTimer);
           el._hideTimer = setTimeout(function () { el.classList.add('d-none'); }, 4000);
-        }
+        });
+      }
+
+      function setDraftStatusText(text) {
+        var els = document.querySelectorAll('#draftStatus, #draftStatus1, #draftStatus2, #draftStatus3');
+        els.forEach(function (el) { if (el) el.textContent = text; });
       }
 
       function saveDraft() {
@@ -1388,7 +1404,7 @@
             hasUnsavedChanges = false;
             var d = new Date(res.saved_at);
             var time = d.toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('draftStatus').textContent = 'Draf disimpan pada ' + time;
+            setDraftStatusText('Draf disimpan pada ' + time);
             showDraftToast('\u2713 Draf disimpan');
           }
         })
@@ -1493,7 +1509,7 @@
         }
 
         hasUnsavedChanges = false;
-        document.getElementById('draftStatus').textContent = 'Draf dipulihkan';
+        setDraftStatusText('Draf dipulihkan');
       }
 
       // ── Auto-save on any input (debounced 800ms) ──
@@ -1545,6 +1561,8 @@
       // ── Load saved draft on page init ──
       if (savedDraft && !isReadOnly) {
         restoreDraft(savedDraft);
+      } else if (isReadOnly) {
+        setDraftStatusText('Mod lihatan sahaja');
       }
 
       // ── Clear draft on successful form submit ──
@@ -1562,5 +1580,6 @@
   </script>
     <script src="{{ asset('js/table-download.js') }}"></script>
     <script src="{{ asset('js/session-timeout.js') }}"></script>
+  <script src="{{ asset('js/user-theme.js') }}"></script>
 </body>
 </html>

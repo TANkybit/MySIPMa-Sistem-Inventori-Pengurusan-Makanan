@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="ms" data-bs-theme="light">
+
 <head>
+  <script>document.documentElement.setAttribute('data-bs-theme',localStorage.getItem('theme')||'light')</script>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Borang Penerimaan - MySIPMa</title>
@@ -12,6 +14,7 @@
   <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
   <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
   <link href="{{ asset('frontend/Nexa/assets/css/main2.css') }}" rel="stylesheet">
+  <link href="{{ asset('css/user-theme.css') }}" rel="stylesheet">
   <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -93,7 +96,7 @@
       </nav>
       <div class="d-none d-xl-flex align-items-center gap-3">
         @if(Auth::user()->hasPermission('pengesahan_inden'))
-        <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color='white'">
+        <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''">
           <i class="bi bi-bell-fill"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
             {{ $pendingApprovals ?? 0 }}
@@ -102,7 +105,7 @@
         </a>
         @endif
         @if(Auth::user()->hasPermission('penerimaan_inden'))
-        <a href="{{ route('borang.penerimaan') }}" class="position-relative text-white fs-5 me-3" style="transition: color 0.3s;" onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color='white'">
+        <a href="{{ route('borang.penerimaan') }}" class="position-relative text-white fs-5 me-3" style="transition: color 0.3s;" onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color=''">
           <i class="bi bi-truck"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
             {{ $pendingPenerimaan ?? 0 }}
@@ -110,7 +113,8 @@
           </span>
         </a>
         @endif
-        <a href="{{ route('profile') }}" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color='rgba(255,255,255,0.5)'"><i class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}</a>
+        <button class="btn btn-icon" id="themeToggle" style="background:none;border:none;color:var(--text);font-size:1.2rem;padding:4px 8px"><i class="bi bi-moon-fill"></i></button>
+        <a href="{{ route('profile') }}" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''"><i class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}</a>
         <form action="{{ route('logout') }}" method="POST" class="d-inline">
           @csrf
           <button type="submit" class="btn btn-custom btn-logout btn-sm px-3 py-2"><i class="bi bi-box-arrow-right me-2"></i>Log Keluar</button>
@@ -240,7 +244,7 @@
         </div>
 
         <div class="action-row">
-          <a href="{{ route('borang.penerimaan') }}" class="btn btn-custom" style="background:rgba(255,255,255,.1); color:#fff;">Set Semula</a>
+          <a href="{{ route('borang.penerimaan') }}" class="btn btn-outline-secondary">Set Semula</a>
           <button type="submit" class="btn btn-custom" id="submitBtn">Simpan Penerimaan</button>
         </div>
       </div>
@@ -416,5 +420,6 @@
   </script>
     <script src="{{ asset('js/table-download.js') }}"></script>
     <script src="{{ asset('js/session-timeout.js') }}"></script>
+  <script src="{{ asset('js/user-theme.js') }}"></script>
 </body>
 </html>
