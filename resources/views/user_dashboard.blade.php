@@ -269,7 +269,7 @@
             <div class="stat-icon">
               <i class="bi bi-file-earmark-text"></i>
             </div>
-            <h3 class="stat-title">Total Indens</h3>
+            <h3 class="stat-title">Jumlah Inden</h3>
             <p class="stat-value">{{ $totalOrders ?? 0 }}</p>
           </div>
         </div>
@@ -280,9 +280,9 @@
             <div class="stat-icon" style="color: #f59e0b; background: rgba(245,158,11,.1);">
               <i class="bi bi-hourglass-split"></i>
             </div>
-            <h3 class="stat-title">Pending</h3>
+            <h3 class="stat-title">Menunggu</h3>
             <p class="stat-value">{{ $pendingApprovals ?? 0 }}</p>
-            <p class="text-white-50 small mb-0 mt-2">Waiting for approval</p>
+            <p class="text-white-50 small mb-0 mt-2">Menunggu kelulusan</p>
           </div>
         </div>
 
@@ -292,9 +292,9 @@
             <div class="stat-icon" style="color: #38bdf8; background: rgba(56,189,248,.1);">
               <i class="bi bi-truck"></i>
             </div>
-            <h3 class="stat-title">In Progress</h3>
+            <h3 class="stat-title">Dalam Proses</h3>
             <p class="stat-value">{{ $inProgressOrders ?? 0 }}</p>
-            <p class="text-white-50 small mb-0 mt-2">Approved and being processed/delivered</p>
+            <p class="text-white-50 small mb-0 mt-2">Diluluskan dan sedang diproses / dihantar</p>
           </div>
         </div>
 
@@ -318,7 +318,7 @@
             <div class="stat-icon" style="color: #22c55e; background: rgba(34,197,94,.1);">
               <i class="bi bi-check2-circle"></i>
             </div>
-            <h3 class="stat-title">Completed</h3>
+            <h3 class="stat-title">Selesai</h3>
             <p class="stat-value">{{ $completedOrders ?? 0 }}</p>
           </div>
         </div>

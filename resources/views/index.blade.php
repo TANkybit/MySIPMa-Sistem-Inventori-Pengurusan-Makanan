@@ -56,6 +56,90 @@
     margin-bottom: 0.5rem;
     font-weight: 600;
   }
+
+  #contact {
+    padding-top: 40px !important;
+    padding-bottom: 40px !important;
+  }
+  #contact .section-title {
+    margin-bottom: 20px !important;
+  }
+  #contact .container > .contact-wrapper {
+    gap: 20px;
+  }
+  #contact .contact-info-panel {
+    padding: 20px !important;
+  }
+  #contact .contact-info-header h3 {
+    font-size: 1.3rem !important;
+    margin-bottom: 6px !important;
+  }
+  #contact .contact-info-header p {
+    font-size: 0.85rem !important;
+    margin-bottom: 0 !important;
+  }
+  #contact .contact-info-cards {
+    gap: 8px !important;
+    margin: 14px 0 !important;
+  }
+  #contact .info-card {
+    padding: 10px 12px !important;
+    gap: 10px !important;
+  }
+  #contact .info-card .icon-container {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+  }
+  #contact .info-card h4 {
+    font-size: 0.85rem !important;
+    margin-bottom: 1px !important;
+  }
+  #contact .info-card p {
+    font-size: 0.78rem !important;
+    margin-bottom: 0 !important;
+  }
+  #contact .social-links-panel {
+    padding: 10px 0 0 !important;
+  }
+  #contact .social-links-panel h5 {
+    font-size: 0.85rem !important;
+    margin-bottom: 6px !important;
+  }
+  #contact .social-icons a {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 0.9rem !important;
+  }
+  #contact .form-container {
+    padding: 20px !important;
+  }
+  #contact .form-container h3 {
+    font-size: 1.1rem !important;
+    margin-bottom: 14px !important;
+  }
+  #contact .form-container iframe {
+    height: 180px !important;
+  }
+  #contact .form-floating {
+    margin-bottom: 10px !important;
+  }
+  #contact .form-floating > .form-control {
+    min-height: 42px !important;
+    padding: 8px 12px !important;
+  }
+  #contact .form-floating > textarea.form-control {
+    min-height: 80px !important;
+    height: 80px !important;
+  }
+  #contact .form-floating > label {
+    padding: 8px 12px !important;
+    font-size: 0.85rem !important;
+  }
+  #contact .btn-submit {
+    font-size: 0.9rem !important;
+    padding: 10px 20px !important;
+  }
 </style>
 </head>
 
@@ -135,7 +219,7 @@
           <div class="col-lg-6" data-aos="zoom-out" data-aos-delay="200">
             <div class="image-wrapper">
               <div class="image-box">
-                <img src="{{ asset('frontend/Nexa/assets/img/STORE2.png') }}" class="img-fluid" alt="Penjara Malaysia" loading="lazy">
+                <img src="{{ asset('frontend/Nexa/assets/img/STORE3.png') }}" class="img-fluid" alt="Penjara Malaysia" loading="lazy">
               </div>
             </div>
           </div>

@@ -14,7 +14,7 @@ use App\Mail\ResetPasswordMail;
 class AuthController extends Controller
 {
     const MAX_ATTEMPTS = 4;
-    const COOLDOWN_SECONDS = 15;
+    const BASE_COOLDOWN = 30;
 
     /**
      * Handle an authentication attempt.
@@ -32,6 +32,7 @@ class AuthController extends Controller
 
         $email = $request->email;
         $cacheKey = 'login_attempts_' . md5($email);
+        $levelKey = $cacheKey . '_level';
 
         // Check cooldown
         $cooldownUntil = Cache::get($cacheKey . '_cooldown');
@@ -52,6 +53,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             Cache::forget($cacheKey);
             Cache::forget($cacheKey . '_cooldown');
+            Cache::forget($levelKey);
 
             $request->session()->regenerate();
 
@@ -72,13 +74,25 @@ class AuthController extends Controller
         $remaining = self::MAX_ATTEMPTS - $attempts;
 
         if ($remaining <= 0) {
-            Cache::put($cacheKey . '_cooldown', now()->timestamp + self::COOLDOWN_SECONDS, now()->addMinutes(1));
+            // Escalating cooldown: each round doubles
+            $level = (int) Cache::get($levelKey, 0);
+            $cooldown = self::BASE_COOLDOWN * pow(2, $level);
+            Cache::put($levelKey, $level + 1, now()->addHours(1));
+            Cache::put($cacheKey . '_cooldown', now()->timestamp + $cooldown, now()->addMinutes(5));
             Cache::forget($cacheKey);
+
+            $minutes = floor($cooldown / 60);
+            $seconds = $cooldown % 60;
+            if ($minutes > 0) {
+                $msg = "Terlalu banyak percubaan. Sila tunggu {$minutes} minit {$seconds} saat.";
+            } else {
+                $msg = "Terlalu banyak percubaan. Sila tunggu {$cooldown} saat.";
+            }
 
             return response()->json([
                 'success' => false,
-                'message' => 'Terlalu banyak percubaan. Sila tunggu ' . self::COOLDOWN_SECONDS . ' saat.',
-                'cooldown_remaining' => self::COOLDOWN_SECONDS,
+                'message' => $msg,
+                'cooldown_remaining' => $cooldown,
                 'attempts_remaining' => 0,
             ], 429);
         }

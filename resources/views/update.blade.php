@@ -182,7 +182,7 @@
     }
 
     .tab-panel > h3 {
-      color: #62e2ff !important;
+      color: #10b981 !important;
       margin-bottom: 10px;
       text-align: center;
       font-weight: 700;
