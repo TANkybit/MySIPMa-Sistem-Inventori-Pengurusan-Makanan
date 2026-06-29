@@ -22,6 +22,15 @@ class ContactController extends Controller
             'g-recaptcha-response' => 'required|string',
         ]);
 
+        // Check if email domain has valid MX records
+        $domain = substr(strrchr($data['email'], '@'), 1);
+        if (!$domain || !checkdnsrr($domain, 'MX')) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response('Alamat emel tidak wujud atau domain tidak sah.', 422);
+            }
+            return back()->with('error', 'Alamat emel tidak wujud atau domain tidak sah.');
+        }
+
         \Log::info('Form data validated', ['name' => $data['name'], 'email' => $data['email']]);
         \Log::info('reCAPTCHA token received: ' . substr($data['g-recaptcha-response'], 0, 20) . '...');
 

@@ -259,18 +259,20 @@
                           'Completed' => 'bg-success',
                           'In Progress' => 'bg-info text-dark',
                           'Pending' => 'bg-warning text-dark',
+                          'Rejected' => 'bg-danger',
                           default => 'bg-secondary',
                       };
                       $statusLabel = match ($order->order_status) {
                           'Completed' => 'Selesai',
                           'In Progress' => 'Dalam Proses',
                           'Pending' => 'Menunggu',
+                          'Rejected' => 'Ditolak',
                           default => $order->order_status ?? '-',
                       };
                     @endphp
                     <tr>
                       <td>{{ $loop->iteration }}</td>
-                      <td><a href="{{ route('borang.inden.show', $order->id) }}" class="text-success fw-semibold text-decoration-none">{{ $order->order_no }}</a></td>
+                      <td><a href="{{ route('borang.inden.edit', $order->id) }}" class="text-success fw-semibold text-decoration-none">{{ $order->order_no }}</a></td>
                       <td>{{ $order->order_date ? \Carbon\Carbon::parse($order->order_date)->format('d/m/Y') : '-' }}</td>
                       <td>{{ $order->institution_name ?? '-' }}</td>
                       <td>{{ $order->supplier_name ?? '-' }}</td>

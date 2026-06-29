@@ -557,6 +557,12 @@ class DashboardController extends Controller
         return $this->borangIndenView($order, true);
     }
 
+    public function editBorangInden(Order $order)
+    {
+        $readOnly = $order->status !== 'Pending';
+        return $this->borangIndenView($order, $readOnly);
+    }
+
     public function cetakIndenPdf(Order $order)
     {
         $rows = DB::table('orders as o')
@@ -1353,7 +1359,11 @@ class DashboardController extends Controller
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
-        $dompdf->stream("borang_penerimaan_{$order->order_no}.pdf", ['Attachment' => false]);
+        $pdfOutput = $dompdf->output();
+        return response($pdfOutput, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="borang_penerimaan_' . $order->order_no . '.pdf"',
+        ]);
     }
 
     public function criticalStock()

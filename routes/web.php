@@ -150,6 +150,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:borang_inden')->group(function () {
         Route::get('/borang-inden', [DashboardController::class, 'borangInden'])->name('borang.inden');
         Route::post('/borang-inden', [DashboardController::class, 'simpanBorangInden'])->name('borang.inden.store');
+        Route::get('/borang-inden/{order}/edit', [DashboardController::class, 'editBorangInden'])->name('borang.inden.edit')->where('order', '[0-9]+');
         Route::get('/borang-inden/generate-number', [DashboardController::class, 'generateOrderNo'])->name('borang.inden.generate');
         Route::get('/borang-inden/contracts', [DashboardController::class, 'getContractsByInstitution'])->name('borang.inden.contracts');
         Route::get('/borang-inden/contract-items/{contract}', [DashboardController::class, 'getContractItems'])->name('borang.inden.contract-items');

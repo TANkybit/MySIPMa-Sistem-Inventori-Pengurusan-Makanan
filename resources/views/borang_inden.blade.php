@@ -584,32 +584,23 @@
 
 <template id="itemTemplate">
   <tr class="item-card">
-    <td><span class="item-index"></span></td>
-    <td>
-      <input class="form-control item-name" type="text" readonly>
+    <td data-order="0"><span class="item-index"></span></td>
+    <td data-order=""><input class="form-control item-name" type="text" readonly>
       <input class="item-contract-id" type="hidden" name="items[0][contract_item_id]">
       <input type="hidden" class="item-name-hidden" name="items[0][name]">
     </td>
-    <td>
-      <input class="form-control item-order-qty item-calc" type="number" min="0" step="0.01" value="0" required>
-    </td>
-    <td>
-      <input class="form-control item-unit" type="text" readonly>
+    <td data-order="0"><input class="form-control item-order-qty item-calc" type="number" min="0" step="0.01" value="0" required></td>
+    <td data-order=""><input class="form-control item-unit" type="text" readonly>
       <input type="hidden" class="item-unit-hidden" name="items[0][unit]">
     </td>
-    <td>
-      <input class="form-control item-unit-price" type="text" readonly>
+    <td data-order="0"><input class="form-control item-unit-price" type="text" readonly>
       <input type="hidden" class="item-unit-price-hidden" name="items[0][unitPrice]">
     </td>
-    <td>
-      <input class="form-control item-total" type="text" value="RM 0.00" readonly>
-    </td>
-    <td>
-      <div class="d-flex flex-wrap gap-1">
+    <td data-order="0"><input class="form-control item-total" type="text" value="RM 0.00" readonly></td>
+    <td data-order=""><div class="d-flex flex-wrap gap-1">
         <button class="btn btn-sm btn-outline-info edit-item" type="button" title="Edit"><i class="bi bi-pencil"></i></button>
         <button class="btn btn-sm btn-outline-danger remove-item" type="button" title="Padam"><i class="bi bi-trash"></i></button>
-      </div>
-    </td>
+      </div></td>
   </tr>
 </template>
 
@@ -977,6 +968,8 @@
           orderQtyTotal += orderQty;
           grandTotal += lineTotal;
           card.querySelector('.item-total').value = formatCurrency(lineTotal);
+          var tdTotal = card.cells[5];
+          if (tdTotal) tdTotal.setAttribute('data-order', lineTotal);
         });
         document.getElementById('summaryItemCount').textContent = cards.length;
         document.getElementById('summaryOrderQty').textContent = formatNumber(orderQtyTotal);
@@ -994,7 +987,7 @@
           pagingType: 'full_numbers',
           pageLength: 5,
           lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'Semua']],
-          ordering: false,
+          ordering: true,
           language: {
             url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/ms.json',
             emptyTable: 'Tiada item pesanan.',
@@ -1063,6 +1056,14 @@
         card.querySelector('.item-order-qty').value = defaults.orderQty ?? 0;
         card.querySelector('.item-unit-price').value = formatCurrency(defaults.unitPrice ?? 0);
         card.querySelector('.item-unit-price-hidden').value = defaults.unitPrice ?? 0;
+        // Set data-order attributes for sorting
+        var cells = card.querySelectorAll('td');
+        if (cells.length >= 5) {
+          cells[1].setAttribute('data-order', defaults.name || '');
+          cells[2].setAttribute('data-order', defaults.orderQty ?? 0);
+          cells[3].setAttribute('data-order', defaults.unit || '');
+          cells[4].setAttribute('data-order', defaults.unitPrice ?? 0);
+        }
         if (itemDataTable) {
           itemDataTable.row.add(card).draw(false);
         } else {

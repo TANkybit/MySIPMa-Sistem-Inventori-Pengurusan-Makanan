@@ -507,18 +507,18 @@
           body: formData,
           headers: { "X-Requested-With": "XMLHttpRequest" },
         })
-          .then((response) => {
+          .then(async (response) => {
+            const text = await response.text();
             if (response.ok) {
-              return response.text();
+              return text;
             }
-            throw new Error(`${response.status} ${response.statusText}`);
+            throw new Error(text || `${response.status} ${response.statusText}`);
           })
           .then((data) => {
             if (data.trim() === "OK") {
               if (sentEl) {
                 sentEl.classList.add("d-block");
-                // Hide the success message after 3 seconds
-                setTimeout(() => {
+                setTimeout(function () {
                   sentEl.classList.remove("d-block");
                 }, 3000);
               }
@@ -584,9 +584,26 @@
         modal.show();
       }
 
+      function validateForm() {
+        resetMessages();
+        var name = document.getElementById('nameInput').value.trim();
+        var email = document.getElementById('emailInput').value.trim();
+        var subject = document.getElementById('subjectInput').value.trim();
+        var message = document.getElementById('messageInput').value.trim();
+        if (!name) { showError('Sila masukkan nama penuh.'); return false; }
+        if (!email) { showError('Sila masukkan alamat emel.'); return false; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('Sila masukkan format emel yang sah.'); return false; }
+        if (!subject) { showError('Sila masukkan tajuk.'); return false; }
+        if (!message) { showError('Sila masukkan mesej anda.'); return false; }
+        return true;
+      }
+
       form.addEventListener("submit", function (event) {
         event.preventDefault();
         if (submitting) {
+          return;
+        }
+        if (!validateForm()) {
           return;
         }
         openRecaptchaModal();
