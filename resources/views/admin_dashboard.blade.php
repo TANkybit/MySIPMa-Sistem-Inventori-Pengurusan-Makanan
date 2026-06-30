@@ -885,8 +885,8 @@
                         <div class="col-lg-3 col-md-6">
                             <div class="card p-3 h-100 border-0 shadow-sm">
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary bg-opacity-10" style="width:50px;height:50px;">
-                                        <i class="bi bi-cart3 text-primary fs-5"></i>
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:50px;height:50px;background-color: rgba(26, 86, 50, 0.1);">
+                                        <i class="fas fa-file-invoice text-primary fs-5"></i>
                                     </div>
                                     <div>
                                         <div class="text-muted small text-uppercase fw-semibold">Jumlah Inden</div>
@@ -976,52 +976,88 @@
                 <div class="page-content" id="laporan-prestasi-content">
                     <div class="row">
                         <div class="col-12">
-                            <div class="card mb-4">
-                                <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                                     <div>
-                                        <h5 class="card-title mb-0">Laporan Prestasi Sistem</h5>
-                                        <p class="text-muted mb-0">Prestasi Pembekal dan Ringkasan Inventori</p>
+                                        <h5 class="card-title mb-0 fw-bold">Ringkasan Prestasi Pembekal</h5>
+                                        <p class="text-muted small mb-0">Analisis data berdasarkan Borang BK-PSPK-09-03</p>
                                     </div>
-                                    <button class="btn btn-sm btn-outline-primary" id="exportPerformanceReportBtn">
-                                        <i class="fas fa-file-export me-1"></i>Eksport Laporan
-                                    </button>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-primary shadow-sm" id="addNewEvaluationBtn">
+                                            <i class="fas fa-plus me-1"></i>Tambah Penilaian
+                                        </button>
+                                        <button class="btn btn-outline-secondary shadow-sm" id="exportPerformanceReportBtn">
+                                            <i class="fas fa-file-export me-1"></i>Eksport
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="card-body">
-                                    <div class="row mb-4 g-3">
-                                        <div class="col-md-4">
-                                            <div class="card bg-light border-0">
-                                                <div class="card-body text-center">
-                                                    <h6 class="text-muted mb-2">Penghantaran Tepat Masa</h6>
-                                                    <h3 class="mb-0 text-success">92.5%</h3>
-                                                </div>
+                                    <div class="row g-4 mb-4">
+                                        <div class="col-md-3">
+                                            <div class="p-3 rounded-3" style="background-color: #e8f5e9;">
+                                                <div class="text-muted small mb-1">Jumlah Penilaian</div>
+                                                <h3 class="mb-0 fw-bold text-success" id="statTotalEval">0</h3>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="card bg-light border-0">
-                                                <div class="card-body text-center">
-                                                    <h6 class="text-muted mb-2">Penolakan Kualiti Bahan</h6>
-                                                    <h3 class="mb-0 text-danger">3.1%</h3>
-                                                </div>
+                                        <div class="col-md-3">
+                                            <div class="p-3 rounded-3" style="background-color: #e3f2fd;">
+                                                <div class="text-muted small mb-1">Purata Prestasi (%)</div>
+                                                <h3 class="mb-0 fw-bold text-primary" id="statAvgPercentage">0%</h3>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="card bg-light border-0">
-                                                <div class="card-body text-center">
-                                                    <h6 class="text-muted mb-2">Kecekapan Inden</h6>
-                                                    <h3 class="mb-0 text-primary">88.4%</h3>
-                                                </div>
+                                        <div class="col-md-3">
+                                            <div class="p-3 rounded-3" style="background-color: #fff8e1;">
+                                                <div class="text-muted small mb-1">Rating Cemerlang</div>
+                                                <h3 class="mb-0 fw-bold" style="color: #f57f17;" id="statCemerlangCount">0</h3>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="p-3 rounded-3" style="background-color: #fce4ec;">
+                                                <div class="text-muted small mb-1">Rating Lemah</div>
+                                                <h3 class="mb-0 fw-bold text-danger" id="statLemahCount">0</h3>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-lg-6 mb-4 mb-lg-0">
-                                            <h6 class="fw-bold mb-3">Tred Prestasi (Indeks Bulanan)</h6>
+
+                                    <div class="row mb-5">
+                                        <div class="col-lg-7">
+                                            <h6 class="fw-bold mb-3"><i class="fas fa-chart-line me-2 text-primary"></i>Tred Prestasi Keseluruhan</h6>
                                             <div id="performanceTrendChart" style="min-height: 300px;"></div>
                                         </div>
-                                        <div class="col-lg-6">
-                                            <h6 class="fw-bold mb-3">Prestasi Teratas Pembekal</h6>
-                                            <div id="supplierPerformanceChart" style="min-height: 300px;"></div>
+                                        <div class="col-lg-5">
+                                            <h6 class="fw-bold mb-3"><i class="fas fa-chart-pie me-2 text-success"></i>Taburan Rating Prestasi</h6>
+                                            <div id="performanceRatingChart" style="min-height: 300px;"></div>
                                         </div>
+                                    </div>
+
+                                    <hr class="my-4 opacity-25">
+
+                                    <h6 class="fw-bold mb-4 d-flex align-items-center">
+                                        <i class="fas fa-history me-2 text-info"></i>Sejarah Penilaian Prestasi
+                                    </h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle border-top" id="performance-history-table" style="width: 100%">
+                                            <thead class="bg-light">
+                                                <tr>
+                                                    <th>Tarikh</th>
+                                                    <th>No. Inden</th>
+                                                    <th>Pembekal</th>
+                                                    <th>Institusi</th>
+                                                    <th class="text-center">Skor (%)</th>
+                                                    <th class="text-center">Rating</th>
+                                                    <th class="text-center">Tindakan</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="performanceHistoryBody">
+                                                <!-- Populated by JS -->
+                                                <tr>
+                                                    <td colspan="7" class="text-center py-4 text-muted">
+                                                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                                        Memuat data penilaian...
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -2645,6 +2681,156 @@
                     </div>
                 </form>
             </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Evaluation Modal -->
+    <div class="modal fade" id="addEvaluationModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fas fa-star me-2"></i>Penilaian Prestasi Pembekal (BK-PSPK-09-03)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="evaluationForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">No. Inden / Pesanan</label>
+                                <select class="form-select" name="order_id" id="evalOrderId" required>
+                                    <option value="">Pilih Pesanan</option>
+                                    <!-- Populated by JS -->
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">Tarikh Penilaian</label>
+                                <input type="date" class="form-control" name="evaluation_date" value="{{ date('Y-m-d') }}" required>
+                            </div>
+                        </div>
+                        
+                        <div id="evalSupplierInfo" class="alert alert-info border-0 shadow-sm d-none mb-4">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="small text-muted">Pembekal:</div>
+                                    <div id="evalSupplierName" class="fw-bold fs-6">-</div>
+                                    <input type="hidden" name="supplier_id" id="evalSupplierId">
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="small text-muted">Institusi:</div>
+                                    <div id="evalInstitutionName" class="fw-bold fs-6">-</div>
+                                    <input type="hidden" name="institution_id" id="evalInstitutionId">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle text-center overflow-hidden" style="border-radius: 8px;">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th style="width: 50%" class="text-start py-3 ps-3">Kriteria Penilaian</th>
+                                        <th style="width: 50%" class="py-3">Skala (1 - 7)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-start ps-3">
+                                            <div class="fw-bold">1. Kuantiti Bekalan</div>
+                                            <div class="small text-muted">Mencukupi dan mengikut pesanan</div>
+                                        </td>
+                                        <td>
+                                            <div class="px-3">
+                                                <input type="range" class="form-range slider-score" min="1" max="7" step="1" name="criteria_quantity" value="4">
+                                                <div class="fw-bold score-display text-success fs-5">4</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start ps-3">
+                                            <div class="fw-bold">2. Masa Penghantaran</div>
+                                            <div class="small text-muted">Menepati masa yang ditetapkan</div>
+                                        </td>
+                                        <td>
+                                            <div class="px-3">
+                                                <input type="range" class="form-range slider-score" min="1" max="7" step="1" name="criteria_delivery" value="4">
+                                                <div class="fw-bold score-display text-success fs-5">4</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start ps-3">
+                                            <div class="fw-bold">3. Harga Bekalan</div>
+                                            <div class="small text-muted">Berpatutan dan kompetitif</div>
+                                        </td>
+                                        <td>
+                                            <div class="px-3">
+                                                <input type="range" class="form-range slider-score" min="1" max="7" step="1" name="criteria_price" value="4">
+                                                <div class="fw-bold score-display text-success fs-5">4</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start ps-3">
+                                            <div class="fw-bold">4. Kualiti Bekalan</div>
+                                            <div class="small text-muted">Bahan mentah segar dan berkualiti</div>
+                                        </td>
+                                        <td>
+                                            <div class="px-3">
+                                                <input type="range" class="form-range slider-score" min="1" max="7" step="1" name="criteria_quality" value="4">
+                                                <div class="fw-bold score-display text-success fs-5">4</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start ps-3">
+                                            <div class="fw-bold">5. Kerjasama</div>
+                                            <div class="small text-muted">Responsif dan mudah dihubungi</div>
+                                        </td>
+                                        <td>
+                                            <div class="px-3">
+                                                <input type="range" class="form-range slider-score" min="1" max="7" step="1" name="criteria_cooperation" value="4">
+                                                <div class="fw-bold score-display text-success fs-5">4</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="row mt-4 align-items-center">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <div class="card border-0 shadow-sm" style="background-color: #f8f9fa;">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="text-muted">Jumlah Skor:</span>
+                                            <span class="fw-bold fs-5" id="evalTotalScore">20 / 35</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="text-muted">Peratus:</span>
+                                            <span class="fw-bold fs-4 text-primary" id="evalPercentage">57.1%</span>
+                                        </div>
+                                        <div class="mt-3 text-center">
+                                            <span class="badge rounded-pill px-4 py-2 fs-6 shadow-sm" id="evalRatingBadge" style="background-color: #ffc107; color: #000;">SEDERHANA</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-muted mb-1">Pegawai Penilai:</label>
+                                <input type="text" class="form-control mb-3 bg-light" name="evaluator_name" value="{{ Auth::user()->name }}" readonly>
+                                
+                                <label class="form-label fw-bold small text-muted mb-1">Ulasan / Catatan:</label>
+                                <textarea class="form-control" name="remarks" rows="2" placeholder="Masukkan ulasan tambahan jika perlu..."></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-success px-4 shadow-sm" id="saveEvaluationBtn">
+                        <i class="fas fa-save me-2"></i>Simpan Penilaian
+                    </button>
+                </div>
             </div>
         </div>
     </div>

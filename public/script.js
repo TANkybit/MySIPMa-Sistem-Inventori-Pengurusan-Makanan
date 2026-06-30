@@ -23,6 +23,7 @@ class PrisonSystem {
                 { name: 'Critical Stock', fn: () => this.loadCriticalStockTable() },
                 { name: 'Event Listeners', fn: () => this.initEventListeners() },
                 { name: 'Dashboard Stats', fn: () => this.updateDashboardStats() },
+                { name: 'Evaluation Events', fn: () => this.initEvaluationEvents() },
                 { name: 'Messages', fn: () => this.loadMessages() },
                 { name: 'UOMs', fn: () => this.loadBackendUoms() },
                 { name: 'Tooltips', fn: () => this.initTooltips() }
@@ -1413,129 +1414,163 @@ class PrisonSystem {
         this.showNotification('Data stok bahan mentah sedang disediakan untuk eksport', 'info');
     }
 
-    loadPerformanceReportsPage() {
-        console.log('Loading Performance Reports Page...');
-
-        const trendEl = document.querySelector("#performanceTrendChart");
-        if (trendEl && !this.charts.performanceTrend) {
-            const trendOptions = {
-                series: [
-                    {
-                        name: 'Prestasi Keseluruhan',
-                        data: [82, 84, 86, 85, 88, 90, 89, 91, 92, 93, 92, 94]
-                    },
-                    {
-                        name: 'Kecekapan Inden',
-                        data: [76, 78, 80, 82, 81, 84, 86, 87, 88, 89, 88, 90]
-                    }
-                ],
-                chart: {
-                    type: 'area',
-                    height: 300,
-                    toolbar: { show: false }
-                },
-                colors: ['#1a5632', '#0dcaf0'],
-                dataLabels: { enabled: false },
-                stroke: {
-                    curve: 'smooth',
-                    width: 2
-                },
-                fill: {
-                    type: 'gradient',
-                    gradient: {
-                        opacityFrom: 0.35,
-                        opacityTo: 0.05
-                    }
-                },
-                xaxis: {
-                    categories: ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis']
-                },
-                yaxis: {
-                    min: 60,
-                    max: 100,
-                    labels: {
-                        formatter: value => `${Math.round(value)}%`
-                    }
-                },
-                tooltip: {
-                    y: {
-                        formatter: value => `${value}%`
-                    }
-                },
-                legend: {
-                    position: 'top',
-                    horizontalAlign: 'left'
-                }
-            };
-
-            const chart = new ApexCharts(trendEl, trendOptions);
-            chart.render();
-            this.charts.performanceTrend = chart;
+    async loadPerformanceReportsPage() {
+        console.log('Loading Performance Reports (Real-time)...');
+        
+        const historyBody = document.getElementById('performanceHistoryBody');
+        if (historyBody) {
+            historyBody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Memuatkan data...</td></tr>';
         }
 
-        const supplierEl = document.querySelector("#supplierPerformanceChart");
-        if (supplierEl && !this.charts.supplierPerformance) {
-            const fallbackSuppliers = [
-                'Syarikat Bekalan Makanan Sedap',
-                'Pembekal Beras Utama',
-                'Pembekal Sayur Segar',
-                'Pembekal Roti Sejahtera',
-                'Pembekal Minuman Sihat'
-            ];
-            const supplierNames = (window.prisonData.suppliers || [])
-                .slice(0, 5)
-                .map(supplier => supplier.company_name || supplier.name)
-                .filter(Boolean);
-            const labels = supplierNames.length ? supplierNames : fallbackSuppliers;
-
-            const supplierOptions = {
-                series: [{
-                    name: 'Skor Prestasi',
-                    data: labels.map((_, index) => [96, 94, 91, 88, 85][index] || 82)
-                }],
-                chart: {
-                    type: 'bar',
-                    height: 300,
-                    toolbar: { show: false }
-                },
-                plotOptions: {
-                    bar: {
-                        borderRadius: 4,
-                        horizontal: true,
-                        barHeight: '62%'
-                    }
-                },
-                colors: ['#1a5632'],
-                dataLabels: {
-                    enabled: true,
-                    formatter: value => `${value}%`
-                },
-                xaxis: {
-                    categories: labels,
-                    max: 100,
-                    labels: {
-                        formatter: value => `${Math.round(value)}%`
-                    }
-                },
-                tooltip: {
-                    y: {
-                        formatter: value => `${value}%`
-                    }
-                }
-            };
-
-            const chart = new ApexCharts(supplierEl, supplierOptions);
-            chart.render();
-            this.charts.supplierPerformance = chart;
-        }
-
-        const exportBtn = document.getElementById('exportPerformanceReportBtn');
-        if (exportBtn && !exportBtn.dataset.bound) {
-            exportBtn.dataset.bound = 'true';
-            exportBtn.addEventListener('click', () => {
-                this.showNotification('Laporan prestasi sedang disediakan untuk eksport', 'info');
+        try {
+            // Fetch stats for cards and charts
+            const statsRes = await fetch('/evaluations/stats', {
+                headers: { 'Accept': 'application/json' }
             });
+            
+            if (!statsRes.ok) throw new Error(`HTTP error! status: ${statsRes.status}`);
+            
+            const statsResult = await statsRes.json();
+            
+            if (statsResult.success) {
+                const stats = statsResult.stats;
+                if (document.getElementById('statTotalEval')) document.getElementById('statTotalEval').textContent = stats.total;
+                if (document.getElementById('statAvgPercentage')) document.getElementById('statAvgPercentage').textContent = `${stats.average}%`;
+                if (document.getElementById('statCemerlangCount')) document.getElementById('statCemerlangCount').textContent = stats.ratings['Cemerlang'] || 0;
+                if (document.getElementById('statLemahCount')) document.getElementById('statLemahCount').textContent = stats.ratings['Lemah'] || 0;
+                
+                this.updatePerformanceRatingChart(stats.ratings);
+            }
+            
+            // Fetch history for table
+            const histRes = await fetch('/evaluations', {
+                headers: { 'Accept': 'application/json' }
+            });
+            
+            if (!histRes.ok) throw new Error(`HTTP error! status: ${histRes.status}`);
+            
+            const histResult = await histRes.json();
+            
+            if (histResult.success && historyBody) {
+                historyBody.innerHTML = '';
+                if (histResult.data.length === 0) {
+                    historyBody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">Tiada rekod penilaian ditemui. Sila tambah penilaian baru.</td></tr>';
+                } else {
+                    histResult.data.forEach(ev => {
+                        const row = document.createElement('tr');
+                        const ratingBadge = ev.performance_rating === 'Cemerlang' ? 'bg-success' : 
+                                          (ev.performance_rating === 'Sederhana' ? 'bg-warning text-dark' : 'bg-danger');
+                        
+                        row.innerHTML = `
+                            <td>${new Date(ev.evaluation_date).toLocaleDateString('ms-MY')}</td>
+                            <td><span class="badge bg-light text-dark border">${ev.order?.order_no || 'N/A'}</span></td>
+                            <td><div class="fw-bold">${ev.supplier?.company_name || 'N/A'}</div></td>
+                            <td><div class="small">${ev.institution?.name || 'N/A'}</div></td>
+                            <td class="text-center"><div class="fw-bold text-primary">${ev.percentage}%</div></td>
+                            <td class="text-center"><span class="badge rounded-pill px-3 ${ratingBadge}">${ev.performance_rating}</span></td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-info" onclick="prisonSystem.viewEvaluation(${ev.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </td>
+                        `;
+                        historyBody.appendChild(row);
+                    });
+                }
+            }
+            
+            // Re-render Trend Chart
+            this.renderPerformanceTrendChart();
+
+        } catch (error) {
+            console.error('Error loading performance page:', error);
+            if (historyBody) historyBody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger">Ralat memuatkan data: ${error.message}. Sila cuba lagi.</td></tr>`;
         }
+    }
+
+    renderPerformanceTrendChart() {
+        const trendEl = document.querySelector("#performanceTrendChart");
+        if (!trendEl) return;
+        
+        if (this.charts.performanceTrend) {
+            this.charts.performanceTrend.destroy();
+        }
+
+        const options = {
+            series: [{
+                name: 'Purata Prestasi (%)',
+                data: [75, 78, 80, 82, 85, 84, 88, 90, 89, 92, 91, 93],
+            }],
+            chart: {
+                type: 'area',
+                height: 300,
+                toolbar: { show: false },
+            },
+            colors: ['#1a5632'],
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.45,
+                    opacityTo: 0.05,
+                    stops: [20, 100],
+                },
+            },
+            stroke: { curve: 'smooth', width: 3 },
+            xaxis: {
+                categories: ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'],
+            },
+            yaxis: { max: 100, min: 0 },
+        };
+
+        const chart = new ApexCharts(trendEl, options);
+        chart.render();
+        this.charts.performanceTrend = chart;
+    }
+
+    updatePerformanceRatingChart(ratings) {
+        const ratingEl = document.querySelector("#performanceRatingChart");
+        if (!ratingEl) return;
+
+        if (this.charts.performanceRating) {
+            this.charts.performanceRating.destroy();
+        }
+
+        const data = [
+            ratings['Cemerlang'] || 0,
+            ratings['Sederhana'] || 0,
+            ratings['Lemah'] || 0
+        ];
+
+        const options = {
+            series: data,
+            chart: {
+                type: 'donut',
+                height: 300
+            },
+            labels: ['Cemerlang', 'Sederhana', 'Lemah'],
+            colors: ['#198754', '#ffc107', '#dc3545'],
+            legend: { position: 'bottom' },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '70%',
+                        labels: {
+                            show: true,
+                            total: {
+                                show: true,
+                                label: 'Jumlah',
+                                formatter: w => w.globals.seriesTotals.reduce((a, b) => a + b, 0)
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        const chart = new ApexCharts(ratingEl, options);
+        chart.render();
+        this.charts.performanceRating = chart;
     }
 
     initReportStatsChart() {
@@ -4669,6 +4704,208 @@ class PrisonSystem {
             month: '2-digit',
             year: 'numeric'
         });
+    }
+
+    initEvaluationEvents() {
+        const modalEl = document.getElementById('addEvaluationModal');
+        if (!modalEl) return;
+
+        // Sliders interaction
+        const sliders = modalEl.querySelectorAll('.slider-score');
+        sliders.forEach(slider => {
+            slider.addEventListener('input', () => {
+                const display = slider.nextElementSibling;
+                display.textContent = slider.value;
+                
+                // Color scaling for the small score display
+                if (slider.value >= 6) display.className = 'fw-bold score-display text-success fs-5';
+                else if (slider.value >= 4) display.className = 'fw-bold score-display text-warning fs-5';
+                else display.className = 'fw-bold score-display text-danger fs-5';
+                
+                this.calculateEvaluationScore();
+            });
+        });
+
+        // Order Selection logic
+        const orderSelect = document.getElementById('evalOrderId');
+        if (orderSelect) {
+            orderSelect.addEventListener('change', () => {
+                const orderId = orderSelect.value;
+                const orders = window.prisonData.inden || [];
+                const order = orders.find(o => o.id == orderId);
+                const infoBox = document.getElementById('evalSupplierInfo');
+                
+                if (order) {
+                    document.getElementById('evalSupplierName').textContent = order.supplier?.company_name || 'N/A';
+                    document.getElementById('evalSupplierId').value = order.supplier_id;
+                    document.getElementById('evalInstitutionName').textContent = order.institution?.name || 'N/A';
+                    document.getElementById('evalInstitutionId').value = order.institution_id;
+                    infoBox.classList.remove('d-none');
+                } else {
+                    infoBox.classList.add('d-none');
+                }
+            });
+        }
+
+        // Save Button logic
+        const saveBtn = document.getElementById('saveEvaluationBtn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', async () => {
+                const form = document.getElementById('evaluationForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                const formData = new FormData(form);
+                const originalContent = saveBtn.innerHTML;
+                saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
+                saveBtn.disabled = true;
+
+                try {
+                    const response = await fetch('/evaluations', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                            'Accept': 'application/json'
+                        },
+                        body: formData
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        this.showNotification(result.message, 'success');
+                        bootstrap.Modal.getInstance(modalEl).hide();
+                        form.reset();
+                        this.loadPerformanceReportsPage();
+                    } else {
+                        const errorMsg = result.errors ? Object.values(result.errors).flat().join('\n') : (result.message || 'Ralat menyimpan.');
+                        this.showNotification(errorMsg, 'danger');
+                    }
+                } catch (error) {
+                    console.error('Error saving eval:', error);
+                    this.showNotification('Ralat sistem ketika menyimpan penilaian.', 'danger');
+                } finally {
+                    saveBtn.innerHTML = originalContent;
+                    saveBtn.disabled = false;
+                }
+            });
+        }
+
+        // Add Button Trigger
+        const addBtn = document.getElementById('addNewEvaluationBtn');
+        if (addBtn) {
+            addBtn.addEventListener('click', () => {
+                this.populateOrdersForEvaluation();
+                new bootstrap.Modal(modalEl).show();
+            });
+        }
+    }
+
+    calculateEvaluationScore() {
+        const sliders = document.querySelectorAll('.slider-score');
+        let total = 0;
+        sliders.forEach(s => total += parseInt(s.value));
+        
+        const percentage = ((total / 35) * 100).toFixed(1);
+        document.getElementById('evalTotalScore').textContent = `${total} / 35`;
+        document.getElementById('evalPercentage').textContent = `${percentage}%`;
+        
+        const badge = document.getElementById('evalRatingBadge');
+        if (percentage >= 81) {
+            badge.textContent = 'CEMERLANG';
+            badge.style.backgroundColor = '#198754';
+            badge.style.color = '#fff';
+        } else if (percentage >= 51) {
+            badge.textContent = 'SEDERHANA';
+            badge.style.backgroundColor = '#ffc107';
+            badge.style.color = '#000';
+        } else {
+            badge.textContent = 'LEMAH';
+            badge.style.backgroundColor = '#dc3545';
+            badge.style.color = '#fff';
+        }
+    }
+
+    populateOrdersForEvaluation() {
+        const select = document.getElementById('evalOrderId');
+        if (!select) return;
+        
+        select.innerHTML = '<option value="">Pilih Pesanan</option>';
+        const orders = window.prisonData.inden || [];
+        
+        orders.slice(0, 50).forEach(order => {
+            const supplierName = order.supplier?.company_name || 'N/A';
+            const option = document.createElement('option');
+            option.value = order.id;
+            option.textContent = `${order.order_no || 'INDEN'} - ${supplierName}`;
+            select.appendChild(option);
+        });
+    }
+
+    async viewEvaluation(id) {
+        try {
+            const response = await fetch(`/evaluations/${id}`);
+            const result = await response.json();
+            
+            if (result.success) {
+                const ev = result.data;
+                const content = `
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <div class="text-muted small">Pembekal</div>
+                                    <div class="fw-bold">${ev.supplier?.company_name || 'N/A'}</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-muted small">Tarikh Penilaian</div>
+                                    <div class="fw-bold">${new Date(ev.evaluation_date).toLocaleDateString('ms-MY')}</div>
+                                </div>
+                            </div>
+                            <hr class="my-2 opacity-10">
+                            <ul class="list-unstyled mb-0">
+                                <li class="d-flex justify-content-between mb-1">
+                                    <span>Kuantiti Bekalan:</span>
+                                    <span class="fw-bold text-success">${ev.criteria_quantity} / 7</span>
+                                </li>
+                                <li class="d-flex justify-content-between mb-1">
+                                    <span>Masa Penghantaran:</span>
+                                    <span class="fw-bold text-success">${ev.criteria_delivery} / 7</span>
+                                </li>
+                                <li class="d-flex justify-content-between mb-1">
+                                    <span>Harga Bekalan:</span>
+                                    <span class="fw-bold text-success">${ev.criteria_price} / 7</span>
+                                </li>
+                                <li class="d-flex justify-content-between mb-1">
+                                    <span>Kualiti Bekalan:</span>
+                                    <span class="fw-bold text-success">${ev.criteria_quality} / 7</span>
+                                </li>
+                                <li class="d-flex justify-content-between mb-1">
+                                    <span>Kerjasama:</span>
+                                    <span class="fw-bold text-success">${ev.criteria_cooperation} / 7</span>
+                                </li>
+                            </ul>
+                            <div class="mt-3 p-2 rounded bg-light text-center">
+                                <div class="fw-bold text-primary fs-5">${ev.percentage}% - ${ev.performance_rating}</div>
+                            </div>
+                            ${ev.remarks ? `<div class="mt-3 small text-muted"><strong>Ulasan:</strong> ${ev.remarks}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                const viewBody = document.getElementById('viewModalBody');
+                const viewTitle = document.getElementById('viewModalTitle');
+                if (viewBody && viewTitle) {
+                    viewTitle.textContent = 'Butiran Penilaian Prestasi';
+                    viewBody.innerHTML = content;
+                    new bootstrap.Modal(document.getElementById('viewModal')).show();
+                }
+            }
+        } catch (error) {
+            console.error('Error viewing eval:', error);
+            this.showNotification('Ralat memuatkan butiran.', 'danger');
+        }
     }
 }
 

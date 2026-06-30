@@ -75,9 +75,9 @@ class User extends Authenticatable
         // They cannot access user pages like senarai_inden, pengesahan_inden, penerimaan_inden
         $positionCode = strtoupper($this->getPositionCode());
         
-        if ($this->role_id == 1 || $this->role?->role_name === 'admin hq') {
-            // Admin HQ can only view orders (via borang_inden show), not access user pages
-            return $feature === 'view_order_only';
+        if ($this->role_id == 1 || $this->role?->role_name === 'admin hq' || $this->role?->role_name === 'Admin' || in_array($positionCode, ['ADHQ', 'P001'], true)) {
+            // Admin HQ can view orders and manage performance evaluations
+            return in_array($feature, ['view_order_only', 'penilaian_prestasi']);
         }
 
         return match ($this->position?->code) {

@@ -140,6 +140,14 @@ Route::middleware('auth')->group(function () {
     Route::put('/uoms/{uom}', [\App\Http\Controllers\UomController::class, 'update'])->name('uoms.update');
     Route::delete('/uoms/{uom}', [\App\Http\Controllers\UomController::class, 'destroy'])->name('uoms.destroy');
 
+    // --- Supplier Performance Evaluation Routes (Restricted to Admin HQ) ---
+    Route::middleware('permission:penilaian_prestasi')->group(function () {
+        Route::get('/evaluations', [\App\Http\Controllers\SupplierEvaluationController::class, 'index'])->name('evaluations.index');
+        Route::post('/evaluations', [\App\Http\Controllers\SupplierEvaluationController::class, 'store'])->name('evaluations.store');
+        Route::get('/evaluations/stats', [\App\Http\Controllers\SupplierEvaluationController::class, 'getStats'])->name('evaluations.stats');
+        Route::get('/evaluations/{id}', [\App\Http\Controllers\SupplierEvaluationController::class, 'show'])->name('evaluations.show');
+    });
+
     // --- User routes (per-position access) ---
     Route::middleware('permission:dashboard')->get('/user/dashboard', [DashboardController::class, 'userDashboard'])->name('user.dashboard');
 
