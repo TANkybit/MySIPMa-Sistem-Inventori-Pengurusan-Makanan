@@ -39,6 +39,10 @@
   <link href="{{ asset('frontend/Nexa/assets/css/main2.css') }}" rel="stylesheet">
 
 <style>
+  .index-page {
+    --nav-color: rgba(255,255,255,0.85);
+  }
+
   .logo-glow {
     width: auto;
     height: auto;

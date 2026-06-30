@@ -349,6 +349,11 @@ body.login-page main::after {
     color: var(--nav-hover-color);
   }
 
+  body.index-page .navmenu a,
+  body.index-page .navmenu a:focus {
+    color: var(--nav-hover-color);
+  }
+
   .navmenu .dropdown ul {
     margin: 0;
     padding: 10px 0;
@@ -415,6 +420,10 @@ body.login-page main::after {
     margin-right: 10px;
     cursor: pointer;
     transition: color 0.3s;
+  }
+
+  body.index-page .mobile-nav-toggle {
+    color: #fff;
   }
 
   .navmenu {

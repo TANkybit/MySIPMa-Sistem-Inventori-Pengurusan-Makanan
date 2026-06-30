@@ -55,6 +55,10 @@
       --bg-dark: #070708;
     }
 
+    body {
+      --nav-color: rgba(255,255,255,0.85);
+    }
+
     html, body {
       height: 100%;
       margin: 0;
@@ -382,21 +386,25 @@
             password: password
           })
         })
-        .then(response => response.json())
-        .then(data => {
+        .then(function(response) {
+          return response.text().then(function(text) {
+            try { return JSON.parse(text); }
+            catch(e) {
+              // Response was not JSON — something went wrong server-side
+              throw new Error('Server returned non-JSON response');
+            }
+          });
+        })
+        .then(function(data) {
           loginBtn.innerHTML = 'Log Masuk';
           loginBtn.disabled = false;
 
           if (data.success) {
-            Swal.fire({
-              icon: 'success',
-              title: 'Berjaya',
-              text: data.message,
-              timer: 500,
-              showConfirmButton: false
-            }).then(() => {
-                window.location.href = data.redirect;
-            });
+            if (typeof Swal !== 'undefined') {
+              Swal.fire({ icon: 'success', title: 'Berjaya', text: data.message, timer: 500, showConfirmButton: false });
+            }
+            setTimeout(function() { window.location.href = data.redirect; }, 100);
+            return;
           } else {
             const attemptsInfo = document.getElementById('attemptsInfo');
             const attemptsText = document.getElementById('attemptsText');
@@ -427,7 +435,7 @@
         .catch(error => {
           loginBtn.innerHTML = 'Log Masuk';
           loginBtn.disabled = false;
-          var errMsg = 'Sila cuba sebentar lagi. URL: ' + window.location.pathname + ' Error: ' + error.message;
+          var errMsg = 'Sila cuba sebentar lagi. Error: ' + error.message;
           if (typeof Swal !== 'undefined') {
             Swal.fire({ icon: 'error', title: 'Ralat Sistem', text: errMsg });
           } else {
