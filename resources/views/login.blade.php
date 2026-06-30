@@ -55,6 +55,10 @@
       --bg-dark: #070708;
     }
 
+    body {
+      --nav-color: rgba(255,255,255,0.85);
+    }
+
     html, body {
       height: 100%;
       margin: 0;
