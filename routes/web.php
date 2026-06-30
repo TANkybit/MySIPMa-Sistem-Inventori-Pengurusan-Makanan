@@ -141,7 +141,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/uoms/{uom}', [\App\Http\Controllers\UomController::class, 'destroy'])->name('uoms.destroy');
 
     // --- User routes (per-position access) ---
-    Route::get('/user/dashboard', [DashboardController::class, 'userDashboard'])->name('user.dashboard');
+    Route::middleware('permission:dashboard')->get('/user/dashboard', [DashboardController::class, 'userDashboard'])->name('user.dashboard');
 
     Route::get('/borang-inden/{order}/cetak-pdf', [DashboardController::class, 'cetakIndenPdf'])->name('borang.inden.cetak')->where('order', '[0-9]+');
     Route::get('/borang-penerimaan/{order}/cetak-pdf', [DashboardController::class, 'cetakPenerimaanPdf'])->name('borang.penerimaan.cetak')->where('order', '[0-9]+');
@@ -165,7 +165,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/borang-penerimaan', [DashboardController::class, 'simpanPenerimaan'])->name('borang.penerimaan.store');
     });
 
-    Route::get('/user/senarai-inden', [DashboardController::class, 'senaraiInden'])->name('user.senarai.inden');
+    Route::middleware('permission:senarai_inden')->get('/user/senarai-inden', [DashboardController::class, 'senaraiInden'])->name('user.senarai.inden');
 
     Route::middleware('permission:pengesahan_inden')->group(function () {
         Route::get('/user/pengesahan-inden', [DashboardController::class, 'pengesahanInden'])->name('user.pengesahan.inden');

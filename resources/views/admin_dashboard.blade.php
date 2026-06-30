@@ -886,7 +886,7 @@
                             <div class="card p-3 h-100 border-0 shadow-sm">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary bg-opacity-10" style="width:50px;height:50px;">
-                                        <i class="fas fa-file-invoice text-primary fs-5"></i>
+                                        <i class="bi bi-cart3 text-primary fs-5"></i>
                                     </div>
                                     <div>
                                         <div class="text-muted small text-uppercase fw-semibold">Jumlah Inden</div>
@@ -952,13 +952,13 @@
                                 <table class="table table-hover align-middle" id="inden-table">
                                     <thead class="table-light">
                                         <tr>
+                                            <th>Bil</th>
                                             <th>No. Pesanan</th>
                                             <th>Institusi</th>
                                             <th>Pembekal</th>
                                             <th>Tarikh Pesanan</th>
                                             <th>Jumlah (RM)</th>
                                             <th>Status</th>
-                                            <th>Pengesahan</th>
                                             <th>Tindakan</th>
                                         </tr>
                                     </thead>
@@ -3139,15 +3139,15 @@
                         return;
                     }
 
-                    data.orders.forEach(o => {
+                    data.orders.forEach((o, index) => {
                         rows += `<tr>
+                            <td><span class="badge bg-light text-dark">${index + 1}</span></td>
                             <td><span class="fw-medium">${o.order_no}</span></td>
                             <td>${o.institution_name ?? '-'}</td>
                             <td>${o.supplier_name ?? '-'}</td>
                             <td>${o.order_date ?? '-'}</td>
                             <td class="text-end">RM ${parseFloat(o.total_amount).toLocaleString('ms-MY', {minimumFractionDigits:2})}</td>
                             <td>${getStatusBadge(o.order_status)}</td>
-                            <td>${getApprovalBadge(o.approval_status)}</td>
                             <td>
                                 <a href="/borang-inden/${o.id}" class="btn btn-sm btn-outline-primary" title="Lihat Borang" target="_blank">
                                     <i class="fas fa-eye"></i>

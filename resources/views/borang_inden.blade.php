@@ -113,6 +113,7 @@
   @php
     $inden = optional($indenHeader ?? null);
     $isReadOnly = $readOnly ?? false;
+    $isAdminHQ = Auth::user()->role_id == 1 || strtolower(Auth::user()->role?->role_name ?? '') === 'admin hq';
     $fieldState = $isReadOnly ? 'readonly' : '';
     $formatTarikh = function ($value) {
       if (!$value) return '';
@@ -134,10 +135,15 @@
 
       <nav id="navmenu" class="navmenu">
         <ul>
+          @if($isAdminHQ)
+          <li><a href="{{ route('admin.dashboard') }}"
+              class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a></li>
+          @else
           <li><a href="{{ route('user.dashboard') }}"
               class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Dashboard</a></li>
           <li><a href="{{ route('user.senarai.inden') }}"
               class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
+          @endif
           @if(Auth::user()->hasPermission('pengesahan_inden'))
           <li><a href="{{ route('user.pengesahan.inden') }}"
               class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
@@ -509,7 +515,7 @@
 
       <div class="action-row">
         <div class="d-flex align-items-center gap-3">
-          <a href="{{ route('user.dashboard') }}" class="btn btn-round btn-soft">Kembali ke Dashboard</a>
+          <a href="{{ $isAdminHQ ? route('admin.dashboard') : route('user.dashboard') }}" class="btn btn-round btn-soft">Kembali ke Dashboard</a>
           <span id="draftStatus" class="small" style="color:var(--muted);"></span>
           <span id="draftSavedIndicator" class="small d-none" style="color:var(--accent);"><i class="bi bi-check-circle-fill me-1"></i>Draf disimpan</span>
         </div>

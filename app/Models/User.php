@@ -71,7 +71,14 @@ class User extends Authenticatable
 
     private function computePermission(string $feature): bool
     {
-        if ($this->effectiveRoleName() === 'Admin') return true;
+        // Pengarah HQ (Admin HQ) can only view borang_inden in read-only mode
+        // They cannot access user pages like senarai_inden, pengesahan_inden, penerimaan_inden
+        $positionCode = strtoupper($this->getPositionCode());
+        
+        if ($this->role_id == 1 || $this->role?->role_name === 'admin hq') {
+            // Admin HQ can only view orders (via borang_inden show), not access user pages
+            return $feature === 'view_order_only';
+        }
 
         return match ($this->position?->code) {
             'PP' => in_array($feature, ['dashboard', 'senarai_inden', 'pengesahan_inden']),

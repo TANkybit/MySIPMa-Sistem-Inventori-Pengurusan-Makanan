@@ -972,7 +972,13 @@ class DashboardController extends Controller
 
     private function borangIndenView(?Order $order, bool $readOnly)
     {
-        if ($order && $order->institution_id !== Auth::user()->institution_id) {
+        // Allow access if user is admin HQ or belongs to the institution
+        $user = Auth::user();
+        $user->loadMissing('role');
+        
+        $isAdminHQ = $user->role_id == 1 || $user->role?->role_name === 'admin hq';
+        
+        if ($order && $order->institution_id !== $user->institution_id && !$isAdminHQ) {
             abort(403, 'Anda tidak mempunyai akses kepada pesanan ini.');
         }
 
@@ -1012,7 +1018,6 @@ class DashboardController extends Controller
                     'd.muster_ditolak_parol',
                     'd.parol',
                     'd.muster_penuh',
-                    'd.special_exclusion',
                     'u.name as disediakan_oleh',
                     'p.name as jawatan_cop',
                     'd.supplier_declaration_date as tarikh_pembekal',
@@ -1060,7 +1065,7 @@ class DashboardController extends Controller
             'readOnly' => $readOnly,
             'pendingApprovals' => $this->pendingApprovalCount(Auth::user()->institution_id),
             'pendingPenerimaan' => $pendingPenerimaan,
-            'institutions' => \App\Models\Institution::orderBy('name')->get(['id', 'name', 'code', 'location_code']),
+            'institutions' => \App\Models\Institution::orderBy('name')->get(['id', 'name']),
             'suppliers' => \App\Models\Supplier::orderBy('company_name')->get(['id', 'company_name', 'contact_person', 'address', 'postcode']),
             'userGrade' => $userGrade,
             'userPositionName' => $userPositionName,
