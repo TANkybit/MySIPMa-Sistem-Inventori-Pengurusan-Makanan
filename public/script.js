@@ -3964,8 +3964,12 @@ class PrisonSystem {
                     <label class="form-label">Peranan</label>
                     <select class="form-select" name="role_id" required>
                         <option value="">Pilih Peranan</option>
-                        <option value="1" ${entity.role_id == 1 || entity.role === 'Admin' ? 'selected' : ''}>Admin</option>
-                        <option value="2" ${entity.role_id == 2 || entity.role === 'User' ? 'selected' : ''}>User</option>
+                        <option value="1" ${entity.role_id == 1 || entity.role === 'admin hq' ? 'selected' : ''}>Admin HQ</option>
+                        <option value="2" ${entity.role_id == 2 || entity.role === 'admin negeri' ? 'selected' : ''}>Admin Negeri</option>
+                        <option value="3" ${entity.role_id == 3 || entity.role === 'admin institusi' ? 'selected' : ''}>Admin Institusi</option>
+                        <option value="4" ${entity.role_id == 4 || entity.role === 'pegawai pengesah' ? 'selected' : ''}>Pegawai Pengesah</option>
+                        <option value="5" ${entity.role_id == 5 || entity.role === 'pegawai penerima' ? 'selected' : ''}>Pegawai Penerima</option>
+                        <option value="6" ${entity.role_id == 6 || entity.role === 'pegawai stor' ? 'selected' : ''}>Pegawai Stor</option>
                     </select>
                 </div>
                 <div class="mb-3">

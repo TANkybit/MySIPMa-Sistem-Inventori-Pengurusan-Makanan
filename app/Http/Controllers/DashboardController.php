@@ -94,7 +94,23 @@ class DashboardController extends Controller
         $lowStockItems = $this->lowStockItems();
         $lowStockCount = $lowStockItems->count();
 
-        return view('admin_dashboard', compact('institutions', 'uoms', 'totalSuppliers', 'totalInstitutions', 'totalItems', 'pendingApprovals', 'rawMaterials', 'lowStockItems', 'lowStockCount'));
+        $suppliers = \App\Models\Supplier::with(['state', 'district'])->orderBy('company_name')->get()->map(fn($s) => [
+            'id' => $s->id,
+            'company_name' => $s->company_name,
+            'contact_person' => $s->contact_person,
+            'email' => $s->email,
+            'phone_number' => $s->phone_number,
+            'address' => $s->address,
+            'postcode' => $s->postcode,
+            'state' => $s->state?->name ?? 'N/A',
+            'district' => $s->district?->name ?? 'N/A',
+            'status' => $s->status,
+            'created_at' => $s->created_at ? (is_string($s->created_at) ? $s->created_at : $s->created_at->toDateString()) : null,
+        ]);
+
+        $positions = \App\Models\Position::orderBy('id')->get();
+
+        return view('admin_dashboard', compact('institutions', 'uoms', 'totalSuppliers', 'totalInstitutions', 'totalItems', 'pendingApprovals', 'rawMaterials', 'lowStockItems', 'lowStockCount', 'suppliers', 'positions'));
     }
 
     /**
