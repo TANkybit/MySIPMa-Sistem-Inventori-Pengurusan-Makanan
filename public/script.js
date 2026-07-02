@@ -4827,20 +4827,60 @@ class PrisonSystem {
         }
     }
 
-    populateOrdersForEvaluation() {
+    async populateOrdersForEvaluation() {
         const select = document.getElementById('evalOrderId');
         if (!select) return;
         
-        select.innerHTML = '<option value="">Pilih Pesanan</option>';
-        const orders = window.prisonData.inden || [];
+        select.innerHTML = '<option value="">Memuatkan pesanan...</option>';
         
-        orders.slice(0, 50).forEach(order => {
-            const supplierName = order.supplier?.company_name || 'N/A';
-            const option = document.createElement('option');
-            option.value = order.id;
-            option.textContent = `${order.order_no || 'INDEN'} - ${supplierName}`;
-            select.appendChild(option);
-        });
+        try {
+            // Fetch real orders from the database
+            const response = await fetch('/inden/all-data'); // Assuming an endpoint exists or we use existing ones
+            // Wait, let's check if there's a better endpoint.
+            // Actually, we can use the existing window.prisonData.inden if we update it.
+            // But let's just use a direct fetch to be sure we have real IDs.
+            
+            const res = await fetch('/evaluations/orders'); // I will create this endpoint
+            const result = await res.json();
+            
+            if (result.success) {
+                select.innerHTML = '<option value="">Pilih Pesanan</option>';
+                result.data.forEach(order => {
+                    const supplierName = order.supplier?.company_name || 'N/A';
+                    const option = document.createElement('option');
+                    option.value = order.id;
+                    option.textContent = `${order.order_no || 'INDEN'} - ${supplierName}`;
+                    
+                    // Attach data for easy retrieval on change
+                    option.dataset.supplierId = order.supplier_id;
+                    option.dataset.supplierName = supplierName;
+                    option.dataset.instId = order.institution_id;
+                    option.dataset.instName = order.institution?.name || 'N/A';
+                    
+                    select.appendChild(option);
+                });
+
+                // Update info box on change by reading dataset
+                select.onchange = () => {
+                    const selected = select.options[select.selectedIndex];
+                    const infoBox = document.getElementById('evalSupplierInfo');
+                    if (selected.value) {
+                        document.getElementById('evalSupplierName').textContent = selected.dataset.supplierName;
+                        document.getElementById('evalSupplierId').value = selected.dataset.supplierId;
+                        document.getElementById('evalInstitutionName').textContent = selected.dataset.instName;
+                        document.getElementById('evalInstitutionId').value = selected.dataset.instId;
+                        infoBox.classList.remove('d-none');
+                    } else {
+                        infoBox.classList.add('d-none');
+                    }
+                };
+            } else {
+                select.innerHTML = '<option value="">Gagal memuatkan pesanan</option>';
+            }
+        } catch (error) {
+            console.error('Error fetching orders for eval:', error);
+            select.innerHTML = '<option value="">Ralat memuatkan pesanan</option>';
+        }
     }
 
     async viewEvaluation(id) {

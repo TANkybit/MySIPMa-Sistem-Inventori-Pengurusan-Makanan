@@ -2711,15 +2711,19 @@
                         
                         <div id="evalSupplierInfo" class="alert alert-info border-0 shadow-sm d-none mb-4">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="small text-muted">Pembekal:</div>
                                     <div id="evalSupplierName" class="fw-bold fs-6">-</div>
                                     <input type="hidden" name="supplier_id" id="evalSupplierId">
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="small text-muted">Institusi:</div>
                                     <div id="evalInstitutionName" class="fw-bold fs-6">-</div>
                                     <input type="hidden" name="institution_id" id="evalInstitutionId">
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="small text-muted">Nama Penilai:</div>
+                                    <input type="text" class="form-control form-control-sm mt-1" name="evaluator_name" value="{{ Auth::user()->name }}" readonly>
                                 </div>
                             </div>
                         </div>

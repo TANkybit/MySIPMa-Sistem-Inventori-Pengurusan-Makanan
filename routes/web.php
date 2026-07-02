@@ -143,6 +143,7 @@ Route::middleware('auth')->group(function () {
     // --- Supplier Performance Evaluation Routes (Restricted to Admin HQ) ---
     Route::middleware('permission:penilaian_prestasi')->group(function () {
         Route::get('/evaluations', [\App\Http\Controllers\SupplierEvaluationController::class, 'index'])->name('evaluations.index');
+        Route::get('/evaluations/orders', [\App\Http\Controllers\SupplierEvaluationController::class, 'getOrders'])->name('evaluations.orders');
         Route::post('/evaluations', [\App\Http\Controllers\SupplierEvaluationController::class, 'store'])->name('evaluations.store');
         Route::get('/evaluations/stats', [\App\Http\Controllers\SupplierEvaluationController::class, 'getStats'])->name('evaluations.stats');
         Route::get('/evaluations/{id}', [\App\Http\Controllers\SupplierEvaluationController::class, 'show'])->name('evaluations.show');

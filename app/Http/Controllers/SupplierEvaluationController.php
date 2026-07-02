@@ -101,4 +101,18 @@ class SupplierEvaluationController extends Controller
             ]
         ]);
     }
+
+    public function getOrders()
+    {
+        // Fetch recent orders that need evaluation
+        $orders = Order::with(['supplier', 'institution'])
+            ->orderBy('id', 'desc')
+            ->limit(100)
+            ->get();
+            
+        return response()->json([
+            'success' => true,
+            'data' => $orders
+        ]);
+    }
 }
