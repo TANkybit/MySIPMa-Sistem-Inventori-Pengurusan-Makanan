@@ -159,7 +159,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => false,
-            'message' => 'Emel tidak dijumpai dalam pangkalan data kami.'
+            'message' => 'Emel belum didaftarkan'
         ], 404);
     }
 }

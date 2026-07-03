@@ -47,6 +47,10 @@
         position: absolute;
         transform: translateX(-50%);
       }
+
+      .navmenu a { color: #ffffff !important; }
+      .navmenu a:hover,
+      .navmenu a.active { color: #10b981 !important; }
     }
 
     .btn-custom {
@@ -77,9 +81,9 @@
       border-color: #fff;
     }
 
-    .profile-nav-link.active {
-      color: #10b981 !important;
-    }
+    .profile-nav-link { color: #ffffff !important; }
+    .profile-nav-link.active,
+    .profile-nav-link:hover { color: #10b981 !important; }
 
     /* Full height layout */
     html, body {
@@ -510,6 +514,26 @@
         flex-wrap: wrap;
       }
     }
+
+    [data-bs-theme="light"] body { background: #f8f9fa; color: #212529; }
+    [data-bs-theme="light"] .header { background: rgba(255,255,255,0.95) !important; }
+    [data-bs-theme="light"] h1, [data-bs-theme="light"] h2, [data-bs-theme="light"] h3, [data-bs-theme="light"] h4 { color: #111827; }
+    [data-bs-theme="light"] .profile-view-container > h1 { color: #111827 !important; }
+    [data-bs-theme="light"] .profile-card { background: #ffffff !important; color: #212529 !important; backdrop-filter: none !important; border-color: #dee2e6 !important; }
+    [data-bs-theme="light"] .tab-button { color: #6c757d !important; }
+    [data-bs-theme="light"] .tab-button:hover { color: #111827 !important; }
+    [data-bs-theme="light"] .tab-button.active { color: #10b981 !important; border-bottom-color: #10b981 !important; }
+    [data-bs-theme="light"] .tab-nav { border-bottom-color: #dee2e6 !important; }
+    [data-bs-theme="light"] .form-group label { color: #374151 !important; }
+    [data-bs-theme="light"] .form-control, [data-bs-theme="light"] .form-select { background: #ffffff; border-color: #d1d5db; color: #111827; }
+    [data-bs-theme="light"] .btn-logout { color: #374151 !important; border-color: rgba(0,0,0,.2) !important; }
+    [data-bs-theme="light"] .btn-logout:hover { background: rgba(0,0,0,.05) !important; }
+    [data-bs-theme="light"] .text-white-50 { color: #6c757d !important; }
+    [data-bs-theme="light"] #footer { background: #f1f3f5 !important; border-top-color: #dee2e6 !important; }
+    [data-bs-theme="light"] #footer h4 { color: #111827 !important; }
+    [data-bs-theme="light"] #footer p, [data-bs-theme="light"] #footer .copyright { color: #6c757d !important; }
+    [data-bs-theme="light"] #footer .social-links a { background: rgba(16,185,129,.1); border-color: rgba(16,185,129,.3); color: #10b981; }
+    [data-bs-theme="light"] #particle-canvas { display: none !important; }
   </style>
 </head>
 

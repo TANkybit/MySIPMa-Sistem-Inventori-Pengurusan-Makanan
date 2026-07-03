@@ -1,5 +1,13 @@
 :root { --theme-toggle-display: inline-flex; }
 
+[data-bs-theme="dark"] .navmenu a {
+  color: #ffffff !important;
+}
+[data-bs-theme="dark"] .navmenu a:hover,
+[data-bs-theme="dark"] .navmenu a.active {
+  color: #10b981 !important;
+}
+
 :root[data-bs-theme="light"] {
   --bg: #f8f9fa;
   --surface: #ffffff;

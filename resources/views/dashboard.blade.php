@@ -2,6 +2,7 @@
 <html lang="ms" data-bs-theme="light">
 
 <head>
+    <script>document.documentElement.setAttribute('data-bs-theme',localStorage.getItem('theme')||'light')</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Pengurusan Penjara - Admin Dashboard</title>

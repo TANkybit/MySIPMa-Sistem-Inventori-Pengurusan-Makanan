@@ -288,6 +288,11 @@
         position: absolute;
         transform: translateX(-50%);
       }
+
+      .navmenu a { color: #ffffff !important; }
+      .navmenu a:hover,
+      .navmenu a.active { color: #10b981 !important; }
+      .text-white-50:hover { color: #10b981 !important; }
     }
 
     .card-table {

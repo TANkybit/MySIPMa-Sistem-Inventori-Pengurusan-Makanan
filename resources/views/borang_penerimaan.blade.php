@@ -28,6 +28,10 @@
     .page-shell { padding: 32px 0 56px; }
     .card-box { background: var(--surface); border:1px solid var(--border); border-radius:24px; box-shadow:0 18px 48px rgba(0,0,0,.55); }
     @media (min-width: 1200px) { .header .container > .logo-glow, .header .container > .d-xl-flex { position: relative; z-index: 2; } .header .navmenu { left: 50%; position: absolute; transform: translateX(-50%); } }
+    .navmenu a { color: #ffffff !important; }
+    .navmenu a:hover,
+    .navmenu a.active { color: #10b981 !important; }
+    .text-white-50:hover { color: #10b981 !important; }
     .hero, .section-card { padding:28px; }
     .hero-title { font-size: clamp(2rem,4vw,3rem); font-weight:800; line-height:1.05; margin:10px 0 14px; }
     .muted { color: var(--muted); line-height:1.7; }
