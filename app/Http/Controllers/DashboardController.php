@@ -952,23 +952,36 @@ class DashboardController extends Controller
         DB::transaction(function () use ($order, $statusVal, $remarksVal) {
             $approval = Approval::where('order_id', $order->id)
                 ->where('status', 0)
-                ->firstOrFail();
+                ->first();
 
-            $today = now()->toDateString();
+            if (!$approval) {
+                $approval = Approval::create([
+                    'order_id' => $order->id,
+                    'approved_by' => Auth::id(),
+                    'approval_date' => now()->toDateString(),
+                    'status' => $statusVal,
+                    'remarks' => $remarksVal,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                    'updated_by' => Auth::id(),
+                ]);
+            } else {
+                $today = now()->toDateString();
 
-            $approval->update([
-                'approved_by' => Auth::id(),
-                'approval_date' => $today,
-                'status' => $statusVal,
-                'remarks' => $remarksVal,
-                'updated_at' => $today,
-                'updated_by' => Auth::id(),
-            ]);
+                $approval->update([
+                    'approved_by' => Auth::id(),
+                    'approval_date' => $today,
+                    'status' => $statusVal,
+                    'remarks' => $remarksVal,
+                    'updated_at' => $today,
+                    'updated_by' => Auth::id(),
+                ]);
+            }
 
             $orderStatus = $statusVal === 1 ? 'In Progress' : 'Rejected';
             $order->update([
                 'status' => $orderStatus,
-                'updated_at' => $today,
+                'updated_at' => now(),
                 'updated_by' => Auth::id(),
             ]);
         });
@@ -1649,7 +1662,7 @@ class DashboardController extends Controller
     public function saveDraft(Request $request)
     {
         $data = $request->only([
-            'contract_id', 'tarikh_pesanan', 'masa', 'sesi_kod',
+            'no_pesanan', 'contract_id', 'tarikh_pesanan', 'masa', 'sesi_kod',
             'institution_id', 'supplier_id', 'wakil_pembekal', 'alamat_pembekal',
             'muster_khas_daging', 'muster_ditolak_parol', 'parol', 'muster_penuh',
             'tarikh_pembekal', 'catatan_inden',
