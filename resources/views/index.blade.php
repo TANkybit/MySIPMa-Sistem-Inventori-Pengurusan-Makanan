@@ -470,7 +470,7 @@
       </div><br>
       <p>
         <span>Hak Cipta Terpelihara</span> ©<strong class="px-1 sitename">2026 MySIPMa</strong> 
-        <span>Kolaborasi Bersama <a href="https://pmj.mypolycc.edu.my" target="_blank">Politeknik Mersing</a></span>
+        <span>Kolaborasi Bersama <a href="https://pmj.mypolycc.edu.my" target="_blank">Politeknik Mersing, Johor</a></span>
       </p>
     </div>
   </footer>

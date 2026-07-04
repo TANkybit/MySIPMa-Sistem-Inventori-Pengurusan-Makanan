@@ -383,14 +383,56 @@
         border: 1px solid var(--border) !important;
         color: var(--text) !important;
     }
+    @keyframes logoPulse { 0% { filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0,0,0,.8)) drop-shadow(1px 1px 0 rgba(0,0,0,.5)) drop-shadow(0 0 8px rgba(16,185,129,.3)); transform: scale(1); } 50% { filter: brightness(210%) drop-shadow(2px 3px 0 rgba(0,0,0,.9)) drop-shadow(1px 1px 0 rgba(0,0,0,.6)) drop-shadow(0 0 16px rgba(16,185,129,.6)) drop-shadow(0 0 30px rgba(16,185,129,.2)); transform: scale(1.03); } 100% { filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0,0,0,.8)) drop-shadow(1px 1px 0 rgba(0,0,0,.5)) drop-shadow(0 0 8px rgba(16,185,129,.3)); transform: scale(1); } }
+    @keyframes logoShine { 0% { filter: brightness(150%) drop-shadow(0 0 0 transparent); } 50% { filter: brightness(200%) drop-shadow(0 0 8px rgba(16,185,129,.5)); } 100% { filter: brightness(150%) drop-shadow(0 0 0 transparent); } }
+    [data-bs-theme="light"] .logo-glow img { filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0,0,0,.8)) drop-shadow(1px 1px 0 rgba(0,0,0,.5)) drop-shadow(-1px -1px 0 rgba(255,255,255,.4)) !important; animation: logoPulse 3s ease-in-out infinite; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    [data-bs-theme="light"] .logo-glow:hover img { filter: brightness(250%) drop-shadow(3px 4px 0 rgba(0,0,0,.9)) drop-shadow(2px 2px 0 rgba(0,0,0,.6)) drop-shadow(0 0 20px rgba(16,185,129,.6)) drop-shadow(0 0 40px rgba(16,185,129,.3)) !important; transform: scale(1.08) !important; animation: logoShine 1s ease-in-out infinite; }
+    [data-bs-theme="light"] .logo-glow { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    [data-bs-theme="light"] .logo-glow:hover { transform: scale(1.08) !important; }
+    .mobile-nav-toggle { font-size:24px; cursor:pointer; }
+    .mobile-nav-toggle.bi::before { color:#fff; }
+    [data-bs-theme="light"] .mobile-nav-toggle.bi::before { color:#111827; }
+    [data-bs-theme="light"] body { background:#f8f9fa; color:#111827; }
+    [data-bs-theme="light"] h1,[data-bs-theme="light"] h2,[data-bs-theme="light"] h3,[data-bs-theme="light"] h4 { color:#111827; }
+    [data-bs-theme="light"] .table-dark-custom { color:#111827 !important; border-color:#e5e7eb !important; }
+    [data-bs-theme="light"] .table-dark-custom th { background:#f3f4f6 !important; color:#111827 !important; border-color:#e5e7eb !important; }
+    [data-bs-theme="light"] .table-dark-custom td { background:#fff !important; color:#111827 !important; border-color:#e5e7eb !important; }
+    [data-bs-theme="light"] .table-dark-custom tbody tr:hover td { background:#f9fafb !important; }
+    [data-bs-theme="light"] div.dataTables_wrapper div.dataTables_length label,[data-bs-theme="light"] div.dataTables_wrapper div.dataTables_filter label,[data-bs-theme="light"] div.dataTables_wrapper div.dataTables_info { color:#6b7280 !important; }
+    [data-bs-theme="light"] .page-item .page-link { background:#fff !important; border-color:#e5e7eb !important; color:#374151 !important; }
+    [data-bs-theme="light"] .page-item.active .page-link { background:#10b981 !important; border-color:#10b981 !important; color:#fff !important; }
+    [data-bs-theme="light"] .form-control-sm,[data-bs-theme="light"] .form-select-sm { background:#fff !important; border-color:#d1d5db !important; color:#111827 !important; }
+    [data-bs-theme="light"] .modal-content-custom { background:rgba(255,255,255,.95) !important; color:#111827; border-color:#e5e7eb; }
+    [data-bs-theme="light"] .radio-option { color:#111827; }
+    [data-bs-theme="light"] .modal-body-custom textarea { background-color:#fff; color:#111827; }
+    [data-bs-theme="light"] #header { background:rgba(255,255,255,.8) !important; border-bottom:1px solid #e5e7eb !important; }
+    [data-bs-theme="light"] .dropdown-menu { background:#fff; border-color:#e5e7eb; color:#111827; }
+    [data-bs-theme="light"] .dropdown-item { color:#374151; }
+    [data-bs-theme="light"] .dropdown-item:hover,[data-bs-theme="light"] .dropdown-item:focus { background:#f3f4f6; color:#111827; }
+    [data-bs-theme="light"] select option { color:#111827; background:#fff; }
+
+    /* Mobile nav links */
+    .navmenu ul li a.text-danger { color:#f87171 !important; }
+    .navmenu ul li a.text-danger:hover { color:#ef4444 !important; }
+    [data-bs-theme="light"] .navmenu ul li a.text-danger { color:#dc2626 !important; }
+
+    /* Logout confirmation modal */
+    #logoutConfirmModal .modal-content { background:var(--surface); border:1px solid var(--border); border-radius:20px; color:var(--text); }
+    [data-bs-theme="light"] #logoutConfirmModal .modal-content { background:#fff; border-color:#e5e7eb; color:#111827; }
+    #logoutConfirmModal .modal-header { border-bottom:1px solid var(--border); }
+    [data-bs-theme="light"] #logoutConfirmModal .modal-header { border-bottom-color:#e5e7eb; }
+    #logoutConfirmModal .modal-title { font-weight:700; }
+    #logoutConfirmModal .btn-cancel { background:rgba(255,255,255,.08); border:1px solid var(--border); color:var(--text); }
+    #logoutConfirmModal .btn-cancel:hover { background:rgba(255,255,255,.15); }
+    [data-bs-theme="light"] #logoutConfirmModal .btn-cancel { background:#f3f4f6; border-color:#d1d5db; color:#374151; }
+    [data-bs-theme="light"] #logoutConfirmModal .btn-cancel:hover { background:#e5e7eb; }
   </style>
-</head>
 
 <body>
 
   <header id="header" class="header d-flex align-items-center sticky-top" style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
     <div class="container position-relative d-flex align-items-center justify-content-between">
-      <a href="{{ route('index') }}" class="logo-glow d-flex align-items-center me-auto me-xl-0">
+      <a href="#" class="logo-glow d-flex align-items-center me-auto me-xl-0" id="logoLogoutTrigger">
         <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" style="height: 55px; width: auto;" alt="MySIPMa logo">
       </a>
 
@@ -407,6 +449,8 @@
           @if(Auth::user()->hasPermission('penerimaan_inden'))
           <li><a href="{{ route('borang.penerimaan') }}" class="{{ request()->routeIs('borang.penerimaan') ? 'active' : '' }}">Penerimaan</a></li>
           @endif
+          <li class="d-xl-none"><a href="{{ route('profile') }}" class="{{ request()->routeIs('profile') ? 'active' : '' }}">Profil</a></li>
+          <li class="d-xl-none"><a href="#" id="navLogoutBtn" class="text-danger">Log Keluar</a></li>
           </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
@@ -435,10 +479,7 @@
         <a href="{{ route('profile') }}" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''">
           <i class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}
         </a>
-        <form action="{{ route('logout') }}" method="POST" class="d-inline">
-            @csrf
-            <button type="submit" class="btn btn-custom btn-logout btn-sm px-3 py-2"><i class="bi bi-box-arrow-right me-2"></i>Log Keluar</button>
-        </form>
+        <button type="button" class="btn btn-custom btn-logout btn-sm px-3 py-2" id="desktopLogoutBtn"><i class="bi bi-box-arrow-right me-2"></i>Log Keluar</button>
       </div>
     </div>
   </header>
@@ -581,5 +622,39 @@
     <script src="{{ asset('js/table-download.js') }}"></script>
     <script src="{{ asset('js/session-timeout.js') }}"></script>
   <script src="{{ asset('js/user-theme.js') }}"></script>
+
+  <!-- Logout confirmation modal -->
+  <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="logoutConfirmModalLabel"><i class="bi bi-box-arrow-right me-2"></i>Log Keluar</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0">Adakah anda pasti ingin log keluar dari sistem?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-cancel btn-sm px-3" data-bs-dismiss="modal">Batal</button>
+          <form action="{{ route('logout') }}" method="POST" id="logoutForm" class="d-inline">
+            @csrf
+            <button type="submit" class="btn btn-danger btn-sm px-3"><i class="bi bi-box-arrow-right me-1"></i>Log Keluar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var logoutModal = new bootstrap.Modal(document.getElementById('logoutConfirmModal'));
+      var desktopBtn = document.getElementById('desktopLogoutBtn');
+      var navBtn = document.getElementById('navLogoutBtn');
+      var logoBtn = document.getElementById('logoLogoutTrigger');
+      if (desktopBtn) desktopBtn.addEventListener('click', function () { logoutModal.show(); });
+      if (navBtn) navBtn.addEventListener('click', function (e) { e.preventDefault(); logoutModal.show(); });
+      if (logoBtn) logoBtn.addEventListener('click', function (e) { e.preventDefault(); logoutModal.show(); });
+    })();
+  </script>
 </body>
 </html>

@@ -509,9 +509,13 @@ class DashboardController extends Controller
         $institutionId = $request->input('institution_id');
         $categoryCode = 'BK';
 
-        $institution = DB::table('institutions')->where('id', $institutionId)->first(['code', 'location_code']);
+        try {
+            $institution = DB::table('institutions')->where('id', $institutionId)->first(['code', 'location_code']);
+        } catch (\Throwable $e) {
+            return response()->json(['success' => false, 'message' => '[Maklumat Pesanan] Ralat pada pangkalan data institusi. Sila pastikan lajur "code" wujud pada jadual institutions.']);
+        }
         if (!$institution || !$institution->code) {
-            return response()->json(['success' => false, 'message' => 'Institution code not found.']);
+            return response()->json(['success' => false, 'message' => '[Maklumat Pesanan] Kod institusi tidak dijumpai. Sila hubungi pentadbir.']);
         }
 
         $instCode = $institution->code;
@@ -685,16 +689,25 @@ class DashboardController extends Controller
 
             $wordCount = str_word_count(trim(strip_tags($value)));
             if ($wordCount > 250) {
-                $fail('Ulasan / Catatan tidak boleh melebihi 250 patah perkataan.');
+                $prefix = str_starts_with($attribute, 'items') ? '[Senarai Barang] ' : '[Perakuan Pembekal] ';
+                $fail($prefix . 'Ulasan / Catatan tidak boleh melebihi 250 patah perkataan.');
             }
         };
 
+        // Pre-process: strip seconds from masa if present (DB time type stores H:i:s)
+        if ($request->filled('masa')) {
+            $masa = $request->input('masa');
+            if (preg_match('/^\d{1,2}:\d{2}:\d{2}$/', $masa)) {
+                $request->merge(['masa' => substr($masa, 0, 5)]);
+            }
+        }
+
         $validated = $request->validate([
-            'no_pesanan' => ['nullable', 'string', 'max:100'],
+            'no_pesanan' => ['required', 'string', 'max:100'],
             'contract_id' => ['required', 'exists:contracts,id'],
             'tarikh_pesanan' => ['required', 'date'],
             'masa' => ['required', 'date_format:H:i'],
-            'sesi_kod' => ['required', 'string', 'max:50'],
+            'sesi_kod' => ['required', 'in:M1,M2,M3,M4'],
             'institution_id' => ['required', 'exists:institutions,id'],
             'supplier_id' => ['required', 'exists:suppliers,id'],
             'wakil_pembekal' => ['required', 'string', 'max:255'],
@@ -713,34 +726,46 @@ class DashboardController extends Controller
             'items.*.unitPrice' => ['required', 'numeric', 'min:0'],
             'items.*.notes' => ['nullable', 'string', $maxUlasanWords],
         ], [
-            'contract_id.required' => 'No. Kontrak wajib dipilih.',
-            'tarikh_pesanan.required' => 'Tarikh Pesanan wajib diisi.',
-            'masa.required' => 'Masa wajib diisi.',
-            'sesi_kod.required' => 'Sesi / Kod wajib diisi.',
-            'institution_id.required' => 'Institusi (Kepada) wajib dipilih.',
-            'institution_id.exists' => 'Institusi yang dipilih tidak sah.',
-            'supplier_id.required' => 'Pembekal wajib dipilih.',
-            'supplier_id.exists' => 'Pembekal yang dipilih tidak sah.',
-            'wakil_pembekal.required' => 'Nama Wakil Pembekal wajib diisi.',
-            'alamat_pembekal.required' => 'Alamat Pembekal wajib diisi.',
-            'muster_khas_daging.required' => 'Muster Khas (Daging) wajib diisi.',
-            'muster_khas_daging.integer' => 'Muster Khas (Daging) mestilah nombor bulat.',
-            'muster_khas_daging.min' => 'Muster Khas (Daging) tidak boleh negatif.',
-            'muster_ditolak_parol.required' => 'Muster Ditolak Parol wajib diisi.',
-            'muster_ditolak_parol.integer' => 'Muster Ditolak Parol mestilah nombor bulat.',
-            'muster_ditolak_parol.min' => 'Muster Ditolak Parol tidak boleh negatif.',
-            'parol.required' => 'Parol wajib diisi.',
-            'parol.integer' => 'Parol mestilah nombor bulat.',
-            'parol.min' => 'Parol tidak boleh negatif.',
-            'muster_penuh.required' => 'Muster Penuh wajib diisi.',
-            'muster_penuh.integer' => 'Muster Penuh mestilah nombor bulat.',
-            'muster_penuh.min' => 'Muster Penuh tidak boleh negatif.',
-            'tarikh_pembekal.required' => 'Tarikh Pembekal wajib diisi.',
-            'items.required' => 'Sila tambah sekurang-kurangnya satu item pesanan.',
-            'items.min' => 'Sila tambah sekurang-kurangnya satu item pesanan.',
-            'items.*.orderQty.required' => 'Kuantiti pesanan wajib diisi.',
-            'items.*.orderQty.numeric' => 'Kuantiti pesanan mestilah dalam bentuk nombor.',
-            'items.*.orderQty.min' => 'Kuantiti pesanan tidak boleh negatif.',
+            'no_pesanan.required'       => '[Maklumat Pesanan] No. Pesanan wajib diisi.',
+            'contract_id.required'       => '[Maklumat Pesanan] No. Kontrak wajib dipilih.',
+            'tarikh_pesanan.required'    => '[Maklumat Pesanan] Tarikh Pesanan wajib diisi.',
+            'tarikh_pesanan.date'        => '[Maklumat Pesanan] Tarikh Pesanan mesti dalam format tarikh yang sah.',
+            'masa.required'              => '[Maklumat Pesanan] Masa wajib diisi.',
+            'masa.date_format'           => '[Maklumat Pesanan] Masa mesti dalam format jam:minit (cth: 14:30).',
+            'sesi_kod.required'          => '[Maklumat Pesanan] Sesi / Kod wajib dipilih.',
+            'sesi_kod.in'                => '[Maklumat Pesanan] Sesi / Kod mesti salah satu daripada M1, M2, M3, atau M4.',
+            'institution_id.required'    => '[Maklumat Pesanan] Institusi (Kepada) wajib dipilih.',
+            'institution_id.exists'      => '[Maklumat Pesanan] Institusi yang dipilih tidak sah.',
+            'supplier_id.required'       => '[Maklumat Pesanan] Pembekal wajib dipilih.',
+            'supplier_id.exists'         => '[Maklumat Pesanan] Pembekal yang dipilih tidak sah.',
+            'alamat_pembekal.required'   => '[Maklumat Pesanan] Alamat Pembekal wajib diisi.',
+            'muster_penuh.required'      => '[Ringkasan Muster] Muster Penuh wajib diisi.',
+            'muster_penuh.integer'       => '[Ringkasan Muster] Muster Penuh mestilah nombor bulat.',
+            'muster_penuh.min'           => '[Ringkasan Muster] Muster Penuh tidak boleh negatif.',
+            'parol.required'             => '[Ringkasan Muster] Parol wajib diisi.',
+            'parol.integer'              => '[Ringkasan Muster] Parol mestilah nombor bulat.',
+            'parol.min'                  => '[Ringkasan Muster] Parol tidak boleh negatif.',
+            'muster_ditolak_parol.required' => '[Ringkasan Muster] Muster Ditolak Parol wajib diisi.',
+            'muster_ditolak_parol.integer'  => '[Ringkasan Muster] Muster Ditolak Parol mestilah nombor bulat.',
+            'muster_ditolak_parol.min'      => '[Ringkasan Muster] Muster Ditolak Parol tidak boleh negatif.',
+            'muster_khas_daging.required' => '[Ringkasan Muster] Muster Khas (Daging) wajib diisi.',
+            'muster_khas_daging.integer'  => '[Ringkasan Muster] Muster Khas (Daging) mestilah nombor bulat.',
+            'muster_khas_daging.min'      => '[Ringkasan Muster] Muster Khas (Daging) tidak boleh negatif.',
+            'items.required'             => '[Senarai Barang] Sila tambah sekurang-kurangnya satu item pesanan.',
+            'items.min'                  => '[Senarai Barang] Sila tambah sekurang-kurangnya satu item pesanan.',
+            'items.*.contract_item_id.required' => '[Senarai Barang] ID item kontrak wajib diisi.',
+            'items.*.contract_item_id.integer'  => '[Senarai Barang] ID item kontrak mesti nombor bulat.',
+            'items.*.name.required'      => '[Senarai Barang] Nama barang wajib diisi.',
+            'items.*.unit.required'      => '[Senarai Barang] Unit barang wajib diisi.',
+            'items.*.orderQty.required'  => '[Senarai Barang] Kuantiti pesanan wajib diisi.',
+            'items.*.orderQty.numeric'   => '[Senarai Barang] Kuantiti pesanan mestilah dalam bentuk nombor.',
+            'items.*.orderQty.min'       => '[Senarai Barang] Kuantiti pesanan tidak boleh negatif.',
+            'items.*.unitPrice.required' => '[Senarai Barang] Harga seunit wajib diisi.',
+            'items.*.unitPrice.numeric'  => '[Senarai Barang] Harga seunit mestilah dalam bentuk nombor.',
+            'items.*.unitPrice.min'      => '[Senarai Barang] Harga seunit tidak boleh negatif.',
+            'wakil_pembekal.required'    => '[Perakuan Pembekal] Nama Wakil Pembekal wajib diisi.',
+            'tarikh_pembekal.required'   => '[Perakuan Pembekal] Tarikh Pembekal wajib diisi.',
+            'tarikh_pembekal.date'       => '[Perakuan Pembekal] Tarikh Pembekal mesti dalam format tarikh yang sah.',
         ]);
 
         $orderId = DB::transaction(function () use ($validated) {
@@ -757,46 +782,53 @@ class DashboardController extends Controller
 
             $contractId = $validated['contract_id'];
 
-            // Auto-generate order_no
-            $categoryCode = 'BK';
-
-            $institutionData = DB::table('institutions')->where('id', $institutionId)->first(['code', 'location_code']);
-            $instCode = $institutionData->code ?? 'XXX';
-            $locCode = $institutionData->location_code ?: $instCode;
-            $year = (int) now()->format('Y');
-            $yearShort = now()->format('y');
-            $month = (int) now()->format('m');
-
-            $seqRow = DB::table('order_sequences')
-                ->where('institution_code', $instCode)
-                ->where('category_code', $categoryCode)
-                ->where('year', $year)
-                ->where('month', $month)
-                ->lockForUpdate()
-                ->first();
-
-            if ($seqRow) {
-                $nextSeq = $seqRow->sequence_no + 1;
-                DB::table('order_sequences')
-                    ->where('id', $seqRow->id)
-                    ->update(['sequence_no' => $nextSeq, 'updated_at' => now()]);
-            } else {
-                $nextSeq = 1;
-                DB::table('order_sequences')->insert([
-                    'institution_code' => $instCode,
-                    'category_code' => $categoryCode,
-                    'year' => $year,
-                    'month' => $month,
-                    'sequence_no' => 1,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
-
-            $autoOrderNo = sprintf('%s/%s/%s/%s/%s/%03d', $instCode, $locCode, $categoryCode, $yearShort, str_pad((string) $month, 2, '0', STR_PAD_LEFT), $nextSeq);
+            // Auto-generate order_no (commented out — user enters no_pesanan manually)
+            // $categoryCode = 'BK';
+            //
+            // try {
+            //     $institutionData = DB::table('institutions')->where('id', $institutionId)->first(['code', 'location_code']);
+            // } catch (\Throwable $e) {
+            //     DB::rollBack();
+            //     return redirect()->back()->withErrors([
+            //         'institution_id' => '[Maklumat Pesanan] Ralat pada pangkalan data institusi. Sila pastikan lajur "code" wujud pada jadual institutions.',
+            //     ])->withInput();
+            // }
+            // $instCode = $institutionData->code ?? 'XXX';
+            // $locCode = $institutionData->location_code ?: $instCode;
+            // $year = (int) now()->format('Y');
+            // $yearShort = now()->format('y');
+            // $month = (int) now()->format('m');
+            //
+            // $seqRow = DB::table('order_sequences')
+            //     ->where('institution_code', $instCode)
+            //     ->where('category_code', $categoryCode)
+            //     ->where('year', $year)
+            //     ->where('month', $month)
+            //     ->lockForUpdate()
+            //     ->first();
+            //
+            // if ($seqRow) {
+            //     $nextSeq = $seqRow->sequence_no + 1;
+            //     DB::table('order_sequences')
+            //         ->where('id', $seqRow->id)
+            //         ->update(['sequence_no' => $nextSeq, 'updated_at' => now()]);
+            // } else {
+            //     $nextSeq = 1;
+            //     DB::table('order_sequences')->insert([
+            //         'institution_code' => $instCode,
+            //         'category_code' => $categoryCode,
+            //         'year' => $year,
+            //         'month' => $month,
+            //         'sequence_no' => 1,
+            //         'created_at' => now(),
+            //         'updated_at' => now(),
+            //     ]);
+            // }
+            //
+            // $autoOrderNo = sprintf('%s/%s/%s/%s/%s/%03d', $instCode, $locCode, $categoryCode, $yearShort, str_pad((string) $month, 2, '0', STR_PAD_LEFT), $nextSeq);
 
             $orderId = DB::table('orders')->insertGetId([
-                'order_no' => $autoOrderNo,
+                'order_no' => $validated['no_pesanan'],
                 'institution_id' => $institutionId,
                 'supplier_id' => $supplierId,
                 'contract_id' => $contractId,

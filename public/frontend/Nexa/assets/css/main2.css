@@ -579,6 +579,34 @@ body.login-page main {
     text-shadow: none;
     font-size: 17px !important;
     padding: 10px 20px !important;
+    transition: color 0.3s ease, background-color 0.3s ease !important;
+    border-radius: 8px !important;
+  }
+
+  body.mobile-nav-active #navmenu a:hover,
+  body.mobile-nav-active #navmenu a:focus:hover {
+    color: #10b981 !important;
+    -webkit-text-fill-color: #10b981 !important;
+    background-color: rgba(16, 185, 129, 0.1) !important;
+  }
+
+  body.mobile-nav-active #navmenu a.active,
+  body.mobile-nav-active #navmenu a.active:focus {
+    color: #10b981 !important;
+    -webkit-text-fill-color: #10b981 !important;
+    background-color: rgba(16, 185, 129, 0.12) !important;
+    font-weight: 700 !important;
+  }
+
+  body.mobile-nav-active #navmenu a.text-danger {
+    color: #f87171 !important;
+    -webkit-text-fill-color: #f87171 !important;
+  }
+
+  body.mobile-nav-active #navmenu a.text-danger:hover {
+    color: #ef4444 !important;
+    -webkit-text-fill-color: #ef4444 !important;
+    background-color: rgba(248, 113, 113, 0.1) !important;
   }
 }
 
