@@ -94,7 +94,24 @@ class DashboardController extends Controller
         $lowStockItems = $this->lowStockItems();
         $lowStockCount = $lowStockItems->count();
 
-        return view('admin_dashboard', compact('institutions', 'uoms', 'totalSuppliers', 'totalInstitutions', 'totalItems', 'pendingApprovals', 'rawMaterials', 'lowStockItems', 'lowStockCount'));
+        $suppliers = \App\Models\Supplier::with(['state', 'district', 'createdBy'])->orderBy('company_name')->get()->map(fn($s) => [
+            'id' => $s->id,
+            'company_name' => $s->company_name,
+            'contact_person' => $s->contact_person,
+            'email' => $s->email,
+            'phone_number' => $s->phone_number,
+            'address' => $s->address,
+            'postcode' => $s->postcode,
+            'state' => $s->state?->name ?? 'N/A',
+            'is_hq' => $s->createdBy?->effectiveRoleName() === 'Admin',
+            'district' => $s->district?->name ?? 'N/A',
+            'status' => $s->status,
+            'created_at' => $s->created_at ? (is_string($s->created_at) ? $s->created_at : $s->created_at->toDateString()) : null,
+        ]);
+
+        $positions = \App\Models\Position::orderBy('id')->get();
+
+        return view('admin_dashboard', compact('institutions', 'uoms', 'totalSuppliers', 'totalInstitutions', 'totalItems', 'pendingApprovals', 'rawMaterials', 'lowStockItems', 'lowStockCount', 'suppliers', 'positions'));
     }
 
     /**
@@ -158,6 +175,123 @@ class DashboardController extends Controller
     public function pengarahInstitusiDashboard(Request $request)
     {
         return $this->pengarahInstitusiView($request, 'dashboard');
+    }
+
+    /**
+     * API: Return dashboard data for Pengarah Institusi (filterable by year and month)
+     */
+    public function apiPengarahInstitusiDashboard(Request $request)
+    {
+        $selectedInstitutionId = Auth::user()->institution_id;
+        if (!$selectedInstitutionId) {
+            return response()->json(['success' => false, 'message' => 'No institution assigned'], 400);
+        }
+
+        $queryOrders = Order::where('institution_id', $selectedInstitutionId);
+
+        if ($request->filled('year')) {
+            $year = intval($request->input('year'));
+            $queryOrders->whereYear('order_date', $year);
+        }
+
+        if ($request->filled('month')) {
+            $month = intval($request->input('month'));
+            if ($month >=1 && $month <= 12) {
+                $queryOrders->whereMonth('order_date', $month);
+            }
+        }
+
+        // Order Status Breakdown
+        $statusCounts = (clone $queryOrders)
+            ->select('status', DB::raw('count(*) as count'))
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->toArray();
+
+        $dashboardData['order_status'] = [
+            'Pending' => $statusCounts['Pending'] ?? 0,
+            'In Progress' => $statusCounts['In Progress'] ?? 0,
+            'Completed' => $statusCounts['Completed'] ?? 0,
+            'Rejected' => $statusCounts['Rejected'] ?? 0,
+        ];
+
+        // Top 5 Items Ordered
+        $topItemsQuery = OrderItem::select('items.name', DB::raw('SUM(ordered_quantity) as total_quantity'))
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->join('items', 'order_items.item_id', '=', 'items.id')
+            ->where('orders.institution_id', $selectedInstitutionId);
+
+        if ($request->filled('year')) {
+            $year = intval($request->input('year'));
+            $topItemsQuery->whereYear('orders.order_date', $year);
+        }
+
+        if ($request->filled('month')) {
+            $month = intval($request->input('month'));
+            if ($month >=1 && $month <= 12) {
+                $topItemsQuery->whereMonth('orders.order_date', $month);
+            }
+        }
+
+        $topItems = $topItemsQuery->groupBy('items.id', 'items.name')
+            ->orderByDesc('total_quantity')
+            ->limit(5)
+            ->get();
+
+        $dashboardData['top_items'] = [
+            'labels' => $topItems->pluck('name')->toArray(),
+            'data' => $topItems->pluck('total_quantity')->toArray(),
+        ];
+
+        return response()->json(['success' => true, 'data' => $dashboardData]);
+    }
+
+    /**
+     * API: Return 5 most recent orders for Pengarah Institusi (filterable by year and month)
+     */
+    public function apiPengarahInstitusiRecentOrders(Request $request)
+    {
+        $selectedInstitutionId = Auth::user()->institution_id;
+        if (!$selectedInstitutionId) {
+            return response()->json(['success' => false, 'message' => 'No institution assigned'], 400);
+        }
+
+        $query = Order::with('supplier')
+            ->where('institution_id', $selectedInstitutionId)
+            ->orderByDesc('order_date')
+            ->orderByDesc('id');
+
+        if ($request->filled('year')) {
+            $year = intval($request->input('year'));
+            $query->whereYear('order_date', $year);
+        }
+
+        if ($request->filled('month')) {
+            $month = intval($request->input('month'));
+            if ($month >= 1 && $month <= 12) $query->whereMonth('order_date', $month);
+        }
+
+        $orders = $query->limit(5)->get()->map(function ($o) {
+            $statusMalay = match($o->status) {
+                'Pending' => 'Menunggu',
+                'In Progress' => 'Dalam Proses',
+                'Completed' => 'Selesai',
+                'Rejected' => 'Ditolak',
+                default => $o->status,
+            };
+
+            return [
+                'id' => $o->id,
+                'order_no' => $o->order_no,
+                'order_date' => $o->order_date,
+                'total_amount' => (float) $o->total_amount,
+                'status' => $o->status,
+                'status_malay' => $statusMalay,
+                'supplier' => $o->supplier?->company_name,
+            ];
+        });
+
+        return response()->json(['success' => true, 'data' => $orders]);
     }
 
     public function pengarahInstitusiInstitusi(Request $request)
@@ -241,16 +375,29 @@ class DashboardController extends Controller
             }
 
             if (in_array($activePage, ['dashboard', 'institusi', 'ringkasan'])) {
-                $inventoryItems = OrderItem::select('item_id', DB::raw('SUM(ordered_quantity) as total_ordered_quantity'), DB::raw('SUM(ordered_total_price) as total_ordered_price'))
+                $inventoryQuery = OrderItem::select('item_id', DB::raw('SUM(ordered_quantity) as total_ordered_quantity'), DB::raw('SUM(ordered_total_price) as total_ordered_price'))
                     ->join('orders', 'order_items.order_id', '=', 'orders.id')
-                    ->where('orders.institution_id', $selectedInstitution->id)
-                    ->groupBy('item_id')
+                    ->where('orders.institution_id', $selectedInstitution->id);
+
+                // Apply optional year/month filters from query string
+                if ($request->filled('year')) {
+                    $year = intval($request->input('year'));
+                    $inventoryQuery->whereYear('orders.order_date', $year);
+                }
+                if ($request->filled('month')) {
+                    $month = intval($request->input('month'));
+                    if ($month >= 1 && $month <= 12) {
+                        $inventoryQuery->whereMonth('orders.order_date', $month);
+                    }
+                }
+
+                $inventoryItems = $inventoryQuery->groupBy('item_id')
                     ->with('item')
                     ->get();
             }
 
             if ($activePage === 'pembekal') {
-                $suppliers = Supplier::with('state')
+                $suppliers = Supplier::with(['state','createdBy'])
                     ->where(function($q) use ($selectedInstitution) {
                         $q->whereExists(function ($query) use ($selectedInstitution) {
                             $query->select(DB::raw(1))
@@ -322,6 +469,10 @@ class DashboardController extends Controller
             'positions' => $positions,
             'dashboardData' => json_encode($dashboardData),
             'lowStockItems' => $this->lowStockItems(),
+            'inventoryTotals' => [
+                'total_quantity' => $inventoryItems->sum('total_ordered_quantity'),
+                'total_value' => $inventoryItems->sum('total_ordered_price'),
+            ],
         ]);
     }
 
@@ -382,16 +533,29 @@ class DashboardController extends Controller
             }
 
             if (in_array($activePage, ['dashboard', 'inventori', 'ringkasan'])) {
-                $inventoryItems = OrderItem::select('item_id', DB::raw('SUM(ordered_quantity) as total_ordered_quantity'), DB::raw('SUM(ordered_total_price) as total_ordered_price'))
+                $inventoryQuery = OrderItem::select('item_id', DB::raw('SUM(ordered_quantity) as total_ordered_quantity'), DB::raw('SUM(ordered_total_price) as total_ordered_price'))
                     ->join('orders', 'order_items.order_id', '=', 'orders.id')
-                    ->whereIn('orders.institution_id', $institutionIds)
-                    ->groupBy('item_id')
+                    ->whereIn('orders.institution_id', $institutionIds);
+
+                // Apply optional year/month filters from query string
+                if ($request->filled('year')) {
+                    $year = intval($request->input('year'));
+                    $inventoryQuery->whereYear('orders.order_date', $year);
+                }
+                if ($request->filled('month')) {
+                    $month = intval($request->input('month'));
+                    if ($month >= 1 && $month <= 12) {
+                        $inventoryQuery->whereMonth('orders.order_date', $month);
+                    }
+                }
+
+                $inventoryItems = $inventoryQuery->groupBy('item_id')
                     ->with('item')
                     ->get();
             }
 
             if (in_array($activePage, ['dashboard', 'pembekal'])) {
-                $suppliers = Supplier::with('state')
+                $suppliers = Supplier::with(['state','createdBy'])
                     ->where(function($q) use ($institutionIds) {
                         $q->whereExists(function ($query) use ($institutionIds) {
                             $query->select(DB::raw(1))
@@ -451,6 +615,10 @@ class DashboardController extends Controller
             'suppliers' => $suppliers,
             'dashboardData' => json_encode($dashboardData),
             'lowStockItems' => $this->lowStockItems(),
+            'inventoryTotals' => [
+                'total_quantity' => $inventoryItems->sum('total_ordered_quantity'),
+                'total_value' => $inventoryItems->sum('total_ordered_price'),
+            ],
         ]);
     }
 

@@ -181,6 +181,7 @@
                             <div class="card p-4 h-100">
                                 <h6 class="text-uppercase text-muted mb-3">Jumlah Pesanan</h6>
                                 <h3 class="mb-0">{{ collect($orders ?? [])->count() }}</h3>
+                                <div class="small text-muted mt-2">Jumlah Item: <strong>{{ number_format($inventoryTotals['total_quantity'] ?? 0, 2) }}</strong> &nbsp;•&nbsp; Nilai: <strong>RM {{ number_format($inventoryTotals['total_value'] ?? 0, 2) }}</strong></div>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
@@ -359,29 +360,85 @@
                             </div>
                         </div>
                     @elseif($activePage === 'inventori')
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Inventori Pesanan Mengikut Negeri</h5>
-                                <p class="text-muted">Lihat ringkasan item yang dipesan untuk negeri terpilih.</p>
-                                <div class="table-responsive">
-                                    <table id="inventory-table" class="table table-bordered table-striped w-100">
-                                        <thead>
-                                            <tr>
-                                                <th>Nama Item</th>
-                                                <th>Jumlah Dipesan</th>
-                                                <th>Jumlah Harga</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($inventoryItems as $item)
-                                                <tr>
-                                                    <td>{{ optional($item->item)->name ?? 'Item tidak dijumpai' }}</td>
-                                                    <td>{{ number_format($item->total_ordered_quantity, 2) }}</td>
-                                                    <td>{{ number_format($item->total_ordered_price, 2) }}</td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <div>
+                                                <h5 class="card-title mb-0">Inventori Pesanan Mengikut Negeri</h5>
+                                                <p class="text-muted small mb-0">Lihat ringkasan item yang dipesan untuk negeri terpilih.</p>
+                                            </div>
+                                            <form id="negeriInventoryFilterForm" method="GET" action="{{ route('pengarah.negeri.inventori') }}" class="d-flex gap-2 align-items-center">
+                                                @if(request('institution_id'))
+                                                    <input type="hidden" name="institution_id" value="{{ request('institution_id') }}" />
+                                                @endif
+                                                <label class="mb-0 small text-muted">Tahun:</label>
+                                                <select name="year" id="negeriInventoryYear" class="form-select form-select-sm" style="width:120px;">
+                                                    <option value="">Semua</option>
+                                                    @for($y = now()->year; $y >= now()->year - 5; $y--)
+                                                        <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}</option>
+                                                    @endfor
+                                                </select>
+                                                <label class="mb-0 small text-muted ms-2">Bulan:</label>
+                                                <select name="month" id="negeriInventoryMonth" class="form-select form-select-sm" style="width:140px;">
+                                                    <option value="">Semua</option>
+                                                    @foreach([1=>'Jan',2=>'Feb',3=>'Mac',4=>'Apr',5=>'Mei',6=>'Jun',7=>'Jul',8=>'Ogo',9=>'Sep',10=>'Okt',11=>'Nov',12=>'Dis'] as $m => $label)
+                                                        <option value="{{ $m }}" {{ request('month') == $m ? 'selected' : '' }}>{{ $label }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </form>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table id="inventory-table" class="table table-bordered table-striped w-100">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Nama Item</th>
+                                                        <th>Jumlah Dipesan</th>
+                                                        <th>Jumlah Harga</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse($inventoryItems as $item)
+                                                        <tr>
+                                                            <td>{{ optional($item->item)->name ?? 'Item tidak dijumpai' }}</td>
+                                                            <td>{{ number_format($item->total_ordered_quantity, 2) }}</td>
+                                                            <td>{{ number_format($item->total_ordered_price, 2) }}</td>
+                                                        </tr>
+                                                    @empty
+                                                        <tr><td colspan="3" class="text-center text-muted py-4">Tiada data inventori untuk tempoh dipilih.</td></tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h6 class="text-uppercase text-muted">Stok Kritikal</h6>
+                                        <p class="small text-muted">5 item yang berada di bawah atau hampir minimum stok.</p>
+                                        <div class="list-group list-group-flush small">
+                                            @forelse($lowStockItems->take(5) as $l)
+                                                <div class="list-group-item d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <div class="fw-medium">{{ $l['name'] }}</div>
+                                                        <div class="text-muted small">{{ $l['category'] ?? '-' }}</div>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <div class="fw-bold">{{ $l['stock'] }}</div>
+                                                        <div class="text-muted small">Min: {{ $l['minStock'] }}</div>
+                                                    </div>
+                                                </div>
+                                            @empty
+                                                <div class="list-group-item text-center text-muted">Tiada item kritikal.</div>
+                                            @endforelse
+                                        </div>
+                                        <div class="mt-3 text-end">
+                                            <button class="btn btn-sm btn-outline-warning" id="btnViewCriticalFromNegeri"><i class="fas fa-eye me-1"></i>Lihat Semua</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -548,6 +605,37 @@
                 </div>
             </div>
             <!-- Footer -->
+            <!-- Critical Stock Modal -->
+            <div class="modal fade" id="criticalStockModal" tabindex="-1" aria-labelledby="criticalStockModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold" id="criticalStockModalLabel"><i class="fas fa-triangle-exclamation me-2"></i>Stok Kritikal</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered" id="criticalStockTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Bil</th>
+                                            <th>Nama Item</th>
+                                            <th>Kategori</th>
+                                            <th>Stok</th>
+                                            <th>Minimum</th>
+                                            <th>Unit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <footer class="footer">
                 <div class="container-fluid">
                     <div class="row">
@@ -575,9 +663,15 @@
     <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Register chart datalabels plugin
+            if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
+                try { Chart.register(ChartDataLabels); } catch(e) { console.warn('ChartDataLabels register failed', e); }
+            }
+
             // Initialize DataTables if elements exist
             if ($.fn.DataTable) {
                 if (document.getElementById('orders-table')) {
@@ -766,7 +860,15 @@
                             responsive: true,
                             maintainAspectRatio: false,
                             plugins: {
-                                legend: { position: 'bottom' }
+                                legend: { position: 'bottom' },
+                                datalabels: {
+                                    color: '#fff',
+                                    formatter: function(value, ctx) {
+                                        const total = ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0);
+                                        const pct = total ? Math.round((value/total)*100) : 0;
+                                        return value + ' (' + pct + '%)';
+                                    }
+                                }
                             },
                             cutout: '65%'
                         }
@@ -795,7 +897,15 @@
                                 y: { beginAtZero: true, grid: { borderDash: [2, 2] } },
                                 x: { grid: { display: false } }
                             },
-                            plugins: { legend: { display: false } }
+                            plugins: { 
+                                legend: { display: false },
+                                datalabels: {
+                                    anchor: 'end',
+                                    align: 'end',
+                                    color: '#0a0a0a',
+                                    formatter: function(value) { return value; }
+                                }
+                            }
                         }
                     });
                 }
@@ -820,6 +930,44 @@
                     tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-muted">Tiada data.</td></tr>';
                 }
             @endif
+
+            // Inventory filter handlers for Negeri page
+            const negeriYear = document.getElementById('negeriInventoryYear');
+            const negeriMonth = document.getElementById('negeriInventoryMonth');
+            const negeriForm = document.getElementById('negeriInventoryFilterForm');
+            if (negeriForm && (negeriYear || negeriMonth)) {
+                [negeriYear, negeriMonth].forEach(el => {
+                    if (!el) return;
+                    el.addEventListener('change', function () { negeriForm.submit(); });
+                });
+            }
+
+            const btnViewNegeri = document.getElementById('btnViewCriticalFromNegeri');
+            if (btnViewNegeri) {
+                btnViewNegeri.addEventListener('click', function () {
+                    // reuse same critical-stock endpoint
+                    fetch('/dashboard/critical-stock').then(r => r.json()).then(json => {
+                        const items = (json && json.success && Array.isArray(json.data)) ? json.data : [];
+                        const tbody = document.querySelector('#criticalStockTable tbody');
+                        if (!tbody) return;
+                        tbody.innerHTML = '';
+                        items.forEach((it, idx) => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${idx + 1}</td>
+                                <td>${it.name || '-'}</td>
+                                <td>${it.category || '-'}</td>
+                                <td>${Number(it.stock).toLocaleString()}</td>
+                                <td>${Number(it.minStock).toLocaleString()}</td>
+                                <td>${it.unit || '-'}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                        const modalEl = document.getElementById('criticalStockModal');
+                        if (modalEl) new bootstrap.Modal(modalEl).show();
+                    }).catch(() => {});
+                });
+            }
         });
     </script>
     <script src="{{ asset('js/table-download.js') }}"></script>

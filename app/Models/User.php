@@ -71,12 +71,9 @@ class User extends Authenticatable
 
     private function computePermission(string $feature): bool
     {
-        // Pengarah HQ (Admin HQ) can only view borang_inden in read-only mode
-        // They cannot access user pages like senarai_inden, pengesahan_inden, penerimaan_inden
         $positionCode = strtoupper($this->getPositionCode());
-        
-        if ($this->role_id == 1 || $this->role?->role_name === 'admin hq' || $this->role?->role_name === 'Admin' || in_array($positionCode, ['ADHQ', 'P001'], true)) {
-            // Admin HQ can view orders and manage performance evaluations
+
+        if (in_array($this->role_id, [1, 2, 3]) || $this->role?->role_name === 'admin hq' || $this->role?->role_name === 'Admin' || in_array($positionCode, ['ADHQ', 'ADN', 'ADI', 'P001'], true)) {
             return in_array($feature, ['view_order_only', 'penilaian_prestasi']);
         }
 
@@ -93,16 +90,13 @@ class User extends Authenticatable
         $this->loadMissing(['role', 'position']);
 
         $positionCode = strtoupper($this->getPositionCode());
-        $positionName = strtolower($this->getPositionName());
 
         return match (true) {
-            $this->isPengarahNegeriAdmin($positionCode, $positionName)
+            $this->role_id == 2 || $positionCode === 'ADN'
                 => 'pengarah.negeri.dashboard',
-            $this->isAdminInstitusi($positionCode, $positionName)
-                => 'admin.institusi.dashboard',
-            $this->isPengarahInstitusiAdmin($positionCode, $positionName)
+            $this->role_id == 3 || $positionCode === 'ADI'
                 => 'pengarah.institusi.dashboard',
-            $this->role?->role_name === 'admin hq' || in_array($positionCode, ['ADHQ', 'P001'], true) || $this->role_id == 1
+            $this->role_id == 1 || $positionCode === 'ADHQ' || $this->role?->role_name === 'admin hq'
                 => 'admin.dashboard',
             default
                 => 'user.dashboard',
@@ -116,15 +110,14 @@ class User extends Authenticatable
         $this->loadMissing(['role', 'position']);
 
         $positionCode = strtoupper($this->getPositionCode());
-        $positionName = strtolower($this->getPositionName());
 
         $this->_effRole = match (true) {
-            $this->role?->role_name === 'admin hq',
-            $this->role_id === 1 || $this->role_id === '1',
-            in_array($positionCode, ['ADHQ', 'P001'], true),
-            $this->isAdminInstitusi($positionCode, $positionName),
-            $this->isPengarahInstitusiAdmin($positionCode, $positionName),
-            $this->isPengarahNegeriAdmin($positionCode, $positionName) => 'Admin',
+            $this->role_id == 1 || $this->role_id == 2 || $this->role_id == 3
+                => 'Admin',
+            in_array($positionCode, ['ADHQ', 'ADN', 'ADI'], true)
+                => 'Admin',
+            $this->role?->role_name === 'admin hq'
+                => 'Admin',
             default => $this->role?->role_name ?? 'User',
         };
 
@@ -141,30 +134,4 @@ class User extends Authenticatable
         return $this->position?->name ?? '';
     }
 
-    private function isPengarahInstitusiAdmin(string $positionCode, string $positionName): bool
-    {
-        $posName = strtolower($positionName);
-        $userName = strtolower($this->name);
-        
-        return in_array($positionCode, ['ADI', 'P006'], true)
-            || str_contains($posName, 'pengarah institusi')
-            || (
-                   (str_contains($posName, 'pengarah') || str_contains($userName, 'pengarah'))
-                   && !str_contains($posName, 'negeri') && !str_contains($userName, 'negeri')
-                   && !str_contains($posName, 'hq') && !str_contains($userName, 'hq')
-                   && !str_contains($userName, 'utama')
-               );
-    }
-
-    private function isAdminInstitusi(string $positionCode, string $positionName): bool
-    {
-        return str_contains($positionName, 'admin institusi');
-    }
-
-    private function isPengarahNegeriAdmin(string $positionCode, string $positionName): bool
-    {
-        return in_array($positionCode, ['ADN', 'P007'], true)
-            || str_contains($positionName, 'pengarah negeri')
-            || str_contains($positionName, 'admin negeri');
-    }
 }

@@ -43,6 +43,17 @@
     --nav-color: rgba(255,255,255,0.85);
   }
 
+  .index-page .navmenu a,
+  .index-page .navmenu a:focus {
+    color: var(--nav-color) !important;
+  }
+
+  .index-page .navmenu li:hover>a,
+  .index-page .navmenu .active,
+  .index-page .navmenu .active:focus {
+    color: var(--nav-hover-color) !important;
+  }
+
   .logo-glow {
     width: auto;
     height: auto;

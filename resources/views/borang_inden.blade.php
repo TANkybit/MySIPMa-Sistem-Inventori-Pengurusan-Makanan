@@ -113,7 +113,7 @@
   @php
     $inden = optional($indenHeader ?? null);
     $isReadOnly = $readOnly ?? false;
-    $isAdminHQ = Auth::user()->role_id == 1 || strtolower(Auth::user()->role?->role_name ?? '') === 'admin hq';
+    $isAdminHQ = Auth::user()->role_id == 1 || Auth::user()->role?->role_name === 'admin hq';
     $fieldState = $isReadOnly ? 'readonly' : '';
     $formatTarikh = function ($value) {
       if (!$value) return '';

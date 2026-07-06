@@ -95,6 +95,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/pengarah-institusi/pembekal', [DashboardController::class, 'pengarahInstitusiPembekal'])->name('pengarah.institusi.pembekal');
     Route::get('/pengarah-institusi/senarai-user', [DashboardController::class, 'pengarahInstitusiSenaraiUser'])->name('pengarah.institusi.senarai_pengguna');
     Route::get('/pengarah-institusi/profil', [DashboardController::class, 'pengarahInstitusiProfil'])->name('pengarah.institusi.profil');
+    // API: Dashboard data for Pengarah Institusi (filter by year/month)
+    Route::middleware('auth')->get('/api/dashboard/pengarah-institusi', [DashboardController::class, 'apiPengarahInstitusiDashboard'])->name('api.pengarah.institusi.dashboard');
+    Route::middleware('auth')->get('/api/pengarah-institusi/recent-orders', [DashboardController::class, 'apiPengarahInstitusiRecentOrders'])->name('api.pengarah.institusi.recent_orders');
     Route::get('/pengarah-negeri', [DashboardController::class, 'pengarahNegeriDashboard'])->name('pengarah.negeri.dashboard');
     Route::get('/pengarah-negeri/ringkasan', [DashboardController::class, 'pengarahNegeriRingkasanPesanan'])->name('pengarah.negeri.ringkasan');
     Route::get('/pengarah-negeri/inventori', [DashboardController::class, 'pengarahNegeriInventori'])->name('pengarah.negeri.inventori');

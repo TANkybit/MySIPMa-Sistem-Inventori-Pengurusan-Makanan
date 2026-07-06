@@ -12,7 +12,7 @@ class SupplierController extends Controller
 {
     public function index()
     {
-        $suppliers = Supplier::with(['state', 'district'])->get();
+        $suppliers = Supplier::with(['state', 'district', 'createdBy'])->get();
         
         return response()->json([
             'success' => true,
@@ -29,6 +29,7 @@ class SupplierController extends Controller
                     'state' => $supplier->state ? $supplier->state->name : 'N/A',
                     'district' => $supplier->district ? $supplier->district->name : 'N/A',
                     'created_at' => $supplier->created_at ? $supplier->created_at->toDateString() : null,
+                    'is_hq' => $supplier->createdBy?->effectiveRoleName() === 'Admin',
                 ];
             })
         ]);
@@ -92,6 +93,7 @@ class SupplierController extends Controller
                 'state' => $supplier->state ? $supplier->state->name : 'N/A',
                 'district' => $supplier->district ? $supplier->district->name : 'N/A',
                 'created_at' => $supplier->created_at ? $supplier->created_at->toDateString() : null,
+                'is_hq' => $supplier->createdBy?->effectiveRoleName() === 'Admin',
             ],
         ]);
     }
@@ -154,6 +156,7 @@ class SupplierController extends Controller
                 'state' => $supplier->state ? $supplier->state->name : 'N/A',
                 'district' => $supplier->district ? $supplier->district->name : 'N/A',
                 'created_at' => $supplier->created_at ? $supplier->created_at->toDateString() : null,
+                'is_hq' => $supplier->createdBy?->effectiveRoleName() === 'Admin',
             ],
         ]);
     }

@@ -329,6 +329,7 @@
                                                 <th>PIC</th>
                                                 <th>E-mel</th>
                                                 <th>Negeri</th>
+                                                <th>Sumber</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -343,13 +344,21 @@
                                                            data-phone="{{ $supplier->phone_number }}"
                                                            data-address="{{ $supplier->address }}"
                                                            data-postcode="{{ $supplier->postcode }}"
-                                                           data-state="{{ optional($supplier->state)->name }}">
+                                                           data-state="{{ optional($supplier->state)->name }}"
+                                                           data-source="{{ $supplier->createdBy?->effectiveRoleName() === 'Admin' ? 'HQ' : 'Institusi' }}">
                                                             <i class="fas fa-building me-1"></i> {{ $supplier->company_name }}
                                                         </a>
                                                     </td>
                                                     <td>{{ $supplier->contact_person }}</td>
                                                     <td>{{ $supplier->email }}</td>
                                                     <td>{{ optional($supplier->state)->name }}</td>
+                                                    <td>
+                                                        @if($supplier->createdBy?->effectiveRoleName() === 'Admin')
+                                                            <span class="badge bg-primary">HQ</span>
+                                                        @else
+                                                            <span class="badge bg-secondary">Institusi</span>
+                                                        @endif
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -909,10 +918,8 @@
                     document.getElementById('modal_supplier_phone').textContent = this.dataset.phone || '-';
                     document.getElementById('modal_supplier_address').textContent = this.dataset.address || '-';
                     document.getElementById('modal_supplier_postcode').textContent = this.dataset.postcode || '-';
-                    document.getElementById('modal_supplier_state').textContent = this.dataset.state || '-';
-                    
-                    const modal = new bootstrap.Modal(document.getElementById('supplierDetailModal'));
-                    modal.show();
+                            document.getElementById('modal_supplier_state').textContent = this.dataset.state || '-';
+                    const source = this.dataset.source || this.getAttribute('data-source') || '';
                 });
             });
 

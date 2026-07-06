@@ -22,7 +22,7 @@
 @endphp
 
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="ms" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -195,6 +195,7 @@
                             <div class="card p-4 h-100">
                                 <h6 class="text-uppercase text-muted mb-3">Jumlah Pesanan</h6>
                                 <h3 class="mb-0">{{ $orders->count() }}</h3>
+                                <div class="small text-muted mt-2">Jumlah Item: <strong>{{ number_format($inventoryTotals['total_quantity'] ?? 0, 2) }}</strong> &nbsp;•&nbsp; Nilai: <strong>RM {{ number_format($inventoryTotals['total_value'] ?? 0, 2) }}</strong></div>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
@@ -204,9 +205,54 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <div class="card p-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-uppercase text-muted mb-1">Stok Kritikal</h6>
+                                        <h4 id="criticalStockCount" class="mb-0">—</h4>
+                                        <small class="text-muted">Item yang mencecah atau di bawah minimum</small>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-warning" id="btnViewCriticalStock"><i class="fas fa-triangle-exclamation me-2"></i>Lihat</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     @endif
 
                     @if($activePage === 'dashboard')
+                        <div class="row mb-2 align-items-center">
+                            <div class="col-md-6">
+                                <div class="d-flex gap-2 align-items-center">
+                                    <label class="mb-0 small text-muted">Tahun:</label>
+                                    <select id="chartFilterYear" class="form-select form-select-sm" style="width:120px;">
+                                        <option value="">Semua</option>
+                                    </select>
+
+                                    <label class="mb-0 small text-muted ms-3">Bulan:</label>
+                                    <select id="chartFilterMonth" class="form-select form-select-sm" style="width:140px;">
+                                        <option value="">Semua</option>
+                                        <option value="1">Januari</option>
+                                        <option value="2">Februari</option>
+                                        <option value="3">Mac</option>
+                                        <option value="4">April</option>
+                                        <option value="5">Mei</option>
+                                        <option value="6">Jun</option>
+                                        <option value="7">Julai</option>
+                                        <option value="8">Ogos</option>
+                                        <option value="9">September</option>
+                                        <option value="10">Oktober</option>
+                                        <option value="11">November</option>
+                                        <option value="12">Disember</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="row mb-4">
                             <!-- Order Status Chart -->
                             <div class="col-lg-6 mb-4">
@@ -231,6 +277,53 @@
                                         <div id="topItemsNoData" class="text-center text-muted" style="display:none;">
                                             <i class="fas fa-chart-bar fa-3x mb-3 opacity-25"></i>
                                             <p class="mb-0">Tiada rekod item yang dipesan lagi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Recent Orders -->
+                            <div class="col-lg-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-white border-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+                                        <h5 class="card-title fw-bold mb-0">5 Pesanan Terkini</h5>
+                                        <div class="d-flex gap-2 align-items-center">
+                                            <select id="recentFilterYear" class="form-select form-select-sm">
+                                                <option value="">Semua Tahun</option>
+                                            </select>
+                                            <select id="recentFilterMonth" class="form-select form-select-sm">
+                                                <option value="">Semua Bulan</option>
+                                                <option value="1">Jan</option>
+                                                <option value="2">Feb</option>
+                                                <option value="3">Mac</option>
+                                                <option value="4">Apr</option>
+                                                <option value="5">Mei</option>
+                                                <option value="6">Jun</option>
+                                                <option value="7">Jul</option>
+                                                <option value="8">Ogo</option>
+                                                <option value="9">Sep</option>
+                                                <option value="10">Okt</option>
+                                                <option value="11">Nov</option>
+                                                <option value="12">Dis</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm mb-0" id="recentOrdersTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Bil</th>
+                                                        <th>No Pesanan</th>
+                                                        <th>Tarikh</th>
+                                                        <th>Jumlah</th>
+                                                        <th>Status</th>
+                                                        <th>Pembekal</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr><td colspan="6" class="text-center text-muted">Memuatkan...</td></tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
@@ -287,31 +380,88 @@
                             </div>
                         </div>
                     @elseif($activePage === 'institusi')
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Inventori Pesanan</h5>
-                                <p class="text-muted">Lihat ringkasan item yang dipesan untuk institusi terpilih.</p>
-                                <div class="table-responsive">
-                                    <table id="inventory-table" class="table table-bordered table-striped w-100">
-                                        <thead>
-                                            <tr>
-                                                <th style="width: 50px;">Bil</th>
-                                                <th>Nama Item</th>
-                                                <th>Jumlah Dipesan</th>
-                                                <th>Jumlah Harga</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($inventoryItems as $item)
-                                                <tr>
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ optional($item->item)->name ?? 'Item tidak dijumpai' }}</td>
-                                                    <td>{{ number_format($item->total_ordered_quantity, 2) }}</td>
-                                                    <td>{{ number_format($item->total_ordered_price, 2) }}</td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-8">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center justify-content-between mb-3">
+                                            <div>
+                                                <h5 class="card-title mb-0">Inventori Pesanan</h5>
+                                                <p class="text-muted small mb-0">Lihat ringkasan item yang dipesan untuk institusi terpilih.</p>
+                                            </div>
+                                            <form id="inventoryFilterForm" method="GET" action="{{ route('pengarah.institusi.institusi') }}" class="d-flex gap-2 align-items-center">
+                                                <label class="mb-0 small text-muted">Tahun:</label>
+                                                <select name="year" id="inventoryFilterYear" class="form-select form-select-sm" style="width:120px;">
+                                                    <option value="">Semua</option>
+                                                    @for($y = now()->year; $y >= now()->year - 5; $y--)
+                                                        <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}</option>
+                                                    @endfor
+                                                </select>
+
+                                                <label class="mb-0 small text-muted ms-2">Bulan:</label>
+                                                <select name="month" id="inventoryFilterMonth" class="form-select form-select-sm" style="width:140px;">
+                                                    <option value="">Semua</option>
+                                                    @foreach([1=>'Jan',2=>'Feb',3=>'Mac',4=>'Apr',5=>'Mei',6=>'Jun',7=>'Jul',8=>'Ogo',9=>'Sep',10=>'Okt',11=>'Nov',12=>'Dis'] as $m => $label)
+                                                        <option value="{{ $m }}" {{ request('month') == $m ? 'selected' : '' }}>{{ $label }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <input type="hidden" name="" />
+                                            </form>
+                                        </div>
+
+                                        <div class="table-responsive">
+                                            <table id="inventory-table" class="table table-bordered table-striped w-100">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width: 50px;">Bil</th>
+                                                        <th>Nama Item</th>
+                                                        <th>Jumlah Dipesan</th>
+                                                        <th>Jumlah Harga</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse($inventoryItems as $item)
+                                                        <tr>
+                                                            <td>{{ $loop->iteration }}</td>
+                                                            <td>{{ optional($item->item)->name ?? 'Item tidak dijumpai' }}</td>
+                                                            <td>{{ number_format($item->total_ordered_quantity, 2) }}</td>
+                                                            <td>{{ number_format($item->total_ordered_price, 2) }}</td>
+                                                        </tr>
+                                                    @empty
+                                                        <tr><td colspan="4" class="text-center text-muted py-4">Tiada data inventori untuk tempoh dipilih.</td></tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h6 class="text-uppercase text-muted">Stok Kritikal</h6>
+                                        <p class="small text-muted">5 item yang berada di bawah atau hampir minimum stok.</p>
+                                        <div class="list-group list-group-flush small" id="institusi-critical-list">
+                                            @forelse($lowStockItems->take(5) as $l)
+                                                <div class="list-group-item d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <div class="fw-medium">{{ $l['name'] }}</div>
+                                                        <div class="text-muted small">{{ $l['category'] ?? '-' }}</div>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <div class="fw-bold">{{ $l['stock'] }}</div>
+                                                        <div class="text-muted small">Min: {{ $l['minStock'] }}</div>
+                                                    </div>
+                                                </div>
+                                            @empty
+                                                <div class="list-group-item text-center text-muted">Tiada item kritikal.</div>
+                                            @endforelse
+                                        </div>
+                                        <div class="mt-3 text-end">
+                                            <button class="btn btn-sm btn-outline-warning" id="btnViewCriticalFromInstitusi"><i class="fas fa-eye me-1"></i>Lihat Semua</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -329,6 +479,7 @@
                                                 <th>Pegawai Dihubungi</th>
                                                 <th>E-mel</th>
                                                 <th>Negeri</th>
+                                                <th>Sumber</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -343,13 +494,21 @@
                                                            data-phone="{{ $supplier->phone_number }}"
                                                            data-address="{{ $supplier->address }}"
                                                            data-postcode="{{ $supplier->postcode }}"
-                                                           data-state="{{ optional($supplier->state)->name }}">
+                                                           data-state="{{ optional($supplier->state)->name }}"
+                                                           data-source="{{ $supplier->createdBy?->effectiveRoleName() === 'Admin' ? 'HQ' : 'Institusi' }}">
                                                             <i class="fas fa-building me-1"></i> {{ $supplier->company_name }}
                                                         </a>
                                                     </td>
                                                     <td>{{ $supplier->contact_person }}</td>
                                                     <td>{{ $supplier->email }}</td>
                                                     <td>{{ optional($supplier->state)->name }}</td>
+                                                    <td>
+                                                        @if($supplier->createdBy?->effectiveRoleName() === 'Admin')
+                                                            <span class="badge bg-primary">HQ</span>
+                                                        @else
+                                                            <span class="badge bg-secondary">Institusi</span>
+                                                        @endif
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -553,6 +712,37 @@
                     @endif
                 </div>
             </div>
+            <!-- Critical Stock Modal -->
+            <div class="modal fade" id="criticalStockModal" tabindex="-1" aria-labelledby="criticalStockModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold" id="criticalStockModalLabel"><i class="fas fa-triangle-exclamation me-2"></i>Stok Kritikal</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered" id="criticalStockTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Bil</th>
+                                            <th>Nama Item</th>
+                                            <th>Kategori</th>
+                                            <th>Stok</th>
+                                            <th>Minimum</th>
+                                            <th>Unit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Supplier Detail Modal -->
             <div class="modal fade" id="supplierDetailModal" tabindex="-1" aria-labelledby="supplierDetailModalLabel" aria-hidden="true">
@@ -593,6 +783,10 @@
                                         <th>Negeri</th>
                                         <td>: <span id="modal_supplier_state"></span></td>
                                     </tr>
+                                    <tr>
+                                        <th>Sumber</th>
+                                        <td>: <span id="modal_supplier_source"></span></td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -630,7 +824,11 @@
     <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script>
+        if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
+            try { Chart.register(ChartDataLabels); } catch(e) { console.warn('ChartDataLabels register failed', e); }
+        }
         function handleSidebarToggle() {
             const sidebarToggle = document.getElementById('sidebarToggle');
             const sidebar = document.getElementById('sidebar');
@@ -689,9 +887,259 @@
 
             handleSidebarToggle();
             handleThemeToggle();
+            // Load critical stock count for Pengarah Institusi
+            (function loadCriticalStock(){
+                const countEl = document.getElementById('criticalStockCount');
+                const btn = document.getElementById('btnViewCriticalStock');
+                if (!countEl) return;
+
+                fetch('/dashboard/critical-stock')
+                    .then(res => res.json())
+                    .then(json => {
+                        if (json && json.success && Array.isArray(json.data)) {
+                            const items = json.data;
+                            countEl.textContent = items.length;
+                            window.criticalStockItems = items;
+                        } else {
+                            countEl.textContent = '0';
+                            window.criticalStockItems = [];
+                        }
+                    })
+                    .catch(() => {
+                        countEl.textContent = '—';
+                        window.criticalStockItems = [];
+                    });
+
+                if (btn) {
+                    btn.addEventListener('click', function () {
+                        const items = window.criticalStockItems || [];
+                        const tbody = document.querySelector('#criticalStockTable tbody');
+                        if (!tbody) return;
+                        tbody.innerHTML = '';
+                        items.forEach((it, idx) => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${idx + 1}</td>
+                                <td>${it.name || '-'}</td>
+                                <td>${it.category || '-'}</td>
+                                <td>${Number(it.stock).toLocaleString()}</td>
+                                <td>${Number(it.minStock).toLocaleString()}</td>
+                                <td>${it.unit || '-'}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+
+                        const modalEl = document.getElementById('criticalStockModal');
+                        if (modalEl) {
+                            const modal = new bootstrap.Modal(modalEl);
+                            modal.show();
+                        }
+                    });
+                }
+
+                // Inventory filters: submit form when selects change
+                const invYear = document.getElementById('inventoryFilterYear');
+                const invMonth = document.getElementById('inventoryFilterMonth');
+                const invForm = document.getElementById('inventoryFilterForm');
+                if (invForm && (invYear || invMonth)) {
+                    [invYear, invMonth].forEach(el => {
+                        if (!el) return;
+                        el.addEventListener('change', function () {
+                            invForm.submit();
+                        });
+                    });
+                }
+
+                // 'Lihat Semua' on the institusi critical panel
+                const btnViewFromInst = document.getElementById('btnViewCriticalFromInstitusi');
+                if (btnViewFromInst) {
+                    btnViewFromInst.addEventListener('click', function () {
+                        const items = window.criticalStockItems || [];
+                        const tbody = document.querySelector('#criticalStockTable tbody');
+                        if (!tbody) return;
+                        tbody.innerHTML = '';
+                        items.forEach((it, idx) => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${idx + 1}</td>
+                                <td>${it.name || '-'}</td>
+                                <td>${it.category || '-'}</td>
+                                <td>${Number(it.stock).toLocaleString()}</td>
+                                <td>${Number(it.minStock).toLocaleString()}</td>
+                                <td>${it.unit || '-'}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+
+                        const modalEl = document.getElementById('criticalStockModal');
+                        if (modalEl) {
+                            const modal = new bootstrap.Modal(modalEl);
+                            modal.show();
+                        }
+                    });
+                }
+            })();
             
-            // Dashboard Charts Logic
+                // Dashboard Charts Logic
             const dashDataStore = window.dashboardChartData || {};
+            const orderStatusChartEl = document.getElementById('orderStatusChart');
+            const topItemsChartEl = document.getElementById('topItemsChart');
+            let orderStatusChart = null;
+            let topItemsChart = null;
+
+            function renderCharts(dataset) {
+                try {
+                    // Order Status
+                    if (dataset.order_status && orderStatusChartEl) {
+                        const labels = ['Menunggu', 'Dalam Proses', 'Selesai', 'Ditolak'];
+                        const data = [
+                            dataset.order_status['Pending'] || 0,
+                            dataset.order_status['In Progress'] || 0,
+                            dataset.order_status['Completed'] || 0,
+                            dataset.order_status['Rejected'] || 0,
+                        ];
+
+                        // Destroy previous
+                        if (orderStatusChart) orderStatusChart.destroy();
+
+                        orderStatusChart = new Chart(orderStatusChartEl.getContext('2d'), {
+                            type: 'doughnut',
+                            data: { labels, datasets: [{ data, backgroundColor: ['#ffc107','#0d6efd','#198754','#dc3545'] }] },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    tooltip: { callbacks: { label: function(ctx) { return ctx.label + ': ' + ctx.parsed + ' pesanan'; } } },
+                                    legend: { position: 'bottom' },
+                                    datalabels: {
+                                        color: '#fff',
+                                        formatter: function(value, ctx) {
+                                            const total = ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0);
+                                            const pct = total ? Math.round((value/total)*100) : 0;
+                                            return value + ' (' + pct + '%)';
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    // Top Items Bar
+                    if (dataset.top_items && topItemsChartEl) {
+                        const labels = dataset.top_items.labels || [];
+                        const data = dataset.top_items.data || [];
+
+                        // Destroy previous
+                        if (topItemsChart) topItemsChart.destroy();
+
+                        topItemsChart = new Chart(topItemsChartEl.getContext('2d'), {
+                            type: 'bar',
+                            data: { labels, datasets: [{ label: 'Jumlah Dipesan', data, backgroundColor: ['#1a5632','#2d8653','#3aac6b','#5ec48a','#8ed4ab'] }] },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: { display: false },
+                                    tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label + ': ' + ctx.parsed.y; } } },
+                                    datalabels: {
+                                        anchor: 'end',
+                                        align: 'end',
+                                        color: '#0a0a0a',
+                                        formatter: function(value) { return value; }
+                                    }
+                                },
+                                scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error('Render charts error', e);
+                }
+            }
+
+            // Initial render from server-provided store
+            if (Object.keys(dashDataStore).length > 0) {
+                try { renderCharts(dashDataStore); } catch(e) { console.error(e); }
+            }
+            
+            // Setup filters
+            const yearSelect = document.getElementById('chartFilterYear');
+            const monthSelect = document.getElementById('chartFilterMonth');
+
+            function populateYearOptions() {
+                const now = new Date();
+                const currentYear = now.getFullYear();
+                const startYear = currentYear - 4;
+                for (let y = currentYear; y >= startYear; y--) {
+                    const opt = document.createElement('option'); opt.value = y; opt.textContent = y; yearSelect.appendChild(opt);
+                }
+                // populate recent orders year select as well
+                const recentYear = document.getElementById('recentFilterYear');
+                if (recentYear) {
+                    recentYear.innerHTML = '<option value="">Semua Tahun</option>';
+                    for (let y = currentYear; y >= startYear; y--) {
+                        const opt = document.createElement('option'); opt.value = y; opt.textContent = y; recentYear.appendChild(opt);
+                    }
+                }
+            }
+
+            populateYearOptions();
+
+            function fetchAndRender() {
+                const params = new URLSearchParams();
+                if (yearSelect && yearSelect.value) params.set('year', yearSelect.value);
+                if (monthSelect && monthSelect.value) params.set('month', monthSelect.value);
+                fetch('/api/dashboard/pengarah-institusi?' + params.toString())
+                    .then(r => r.json())
+                    .then(j => { if (j && j.success) renderCharts(j.data); })
+                    .catch(e => console.error('Error fetching dashboard data', e));
+            }
+
+            // Initial fetch for recent orders
+            fetchRecentOrders();
+
+            // Fetch and render recent orders card
+            const recentOrdersTableBody = document.querySelector('#recentOrdersTable tbody');
+            const recentYear = document.getElementById('recentFilterYear');
+            const recentMonth = document.getElementById('recentFilterMonth');
+
+            function fetchRecentOrders() {
+                const params = new URLSearchParams();
+                if (recentYear && recentYear.value) params.set('year', recentYear.value);
+                if (recentMonth && recentMonth.value) params.set('month', recentMonth.value);
+                fetch('/api/pengarah-institusi/recent-orders?' + params.toString())
+                    .then(r => r.json())
+                    .then(j => {
+                        if (j && j.success) {
+                            const rows = j.data || [];
+                            if (recentOrdersTableBody) {
+                                recentOrdersTableBody.innerHTML = '';
+                                rows.forEach((o, idx) => {
+                                    const tr = document.createElement('tr');
+                                    tr.innerHTML = `
+                                        <td>${idx+1}</td>
+                                        <td>${o.order_no}</td>
+                                        <td>${o.order_date}</td>
+                                        <td>RM ${Number(o.total_amount).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+                                        <td><span class="badge ${o.status == 'Pending' ? 'bg-warning' : (o.status == 'In Progress' ? 'bg-primary' : (o.status == 'Completed' ? 'bg-success' : 'bg-danger'))}">${o.status_malay}</span></td>
+                                        <td>${o.supplier || '-'}</td>
+                                    `;
+                                    recentOrdersTableBody.appendChild(tr);
+                                });
+                            }
+                        }
+                    })
+                    .catch(e => console.error('Error fetching recent orders', e));
+            }
+
+            if (recentYear) recentYear.addEventListener('change', () => { fetchRecentOrders(); fetchAndRender(); });
+            if (recentMonth) recentMonth.addEventListener('change', () => { fetchRecentOrders(); fetchAndRender(); });
+
+            if (yearSelect) yearSelect.addEventListener('change', fetchAndRender);
+            if (monthSelect) monthSelect.addEventListener('change', fetchAndRender);
+
+            // End new chart handling
+            
             if (Object.keys(dashDataStore).length > 0 && typeof Chart !== 'undefined') {
                 try {
                     const dashboardData = dashDataStore;
@@ -770,6 +1218,11 @@
                     document.getElementById('modal_supplier_address').textContent = this.dataset.address || '-';
                     document.getElementById('modal_supplier_postcode').textContent = this.dataset.postcode || '-';
                     document.getElementById('modal_supplier_state').textContent = this.dataset.state || '-';
+                    const source = this.dataset.source || this.getAttribute('data-source') || '';
+                    const sourceEl = document.getElementById('modal_supplier_source');
+                    if (sourceEl) {
+                        sourceEl.textContent = source ? (source === 'HQ' ? 'HQ' : 'Institusi') : '-';
+                    }
                     
                     const modal = new bootstrap.Modal(document.getElementById('supplierDetailModal'));
                     modal.show();

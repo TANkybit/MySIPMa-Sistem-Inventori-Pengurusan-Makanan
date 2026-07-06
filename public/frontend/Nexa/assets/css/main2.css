@@ -316,11 +316,6 @@ body.login-page main {
     color: var(--nav-hover-color);
   }
 
-  body.index-page .navmenu a,
-  body.index-page .navmenu a:focus {
-    color: var(--nav-hover-color);
-  }
-
   .navmenu .dropdown ul {
     margin: 0;
     padding: 10px 0;

@@ -3073,6 +3073,15 @@
             // Override rawMaterials with database items for charts and materials table
             window.prisonData.rawMaterials = @json($rawMaterials);
             @endif
+
+
+            @if(isset($suppliers))
+            window.prisonData.suppliers = @json($suppliers);
+            @endif
+
+            @if(isset($positions))
+            window.prisonData.positions = @json($positions);
+            @endif
         } // end if (window.prisonData)
 
         // ===== Global Search Logic for HQ Dashboard (SPA) =====

@@ -272,7 +272,7 @@
                     @endphp
                     <tr>
                       <td>{{ $loop->iteration }}</td>
-                      <td><a href="{{ route('borang.inden.edit', $order->id) }}" class="text-success fw-semibold text-decoration-none">{{ $order->order_no }}</a></td>
+                      <td><a href="{{ Auth::user()->hasPermission('borang_inden') ? route('borang.inden.edit', $order->id) : route('borang.inden.show', $order->id) }}" class="text-success fw-semibold text-decoration-none">{{ $order->order_no }}</a></td>
                       <td>{{ $order->order_date ? \Carbon\Carbon::parse($order->order_date)->format('d/m/Y') : '-' }}</td>
                       <td>{{ $order->institution_name ?? '-' }}</td>
                       <td>{{ $order->supplier_name ?? '-' }}</td>
