@@ -860,7 +860,7 @@
                             responsive: true,
                             maintainAspectRatio: false,
                             plugins: {
-                                legend: { position: 'bottom' },
+                                legend: { position: 'top' },
                                 datalabels: {
                                     color: '#fff',
                                     formatter: function(value, ctx) {

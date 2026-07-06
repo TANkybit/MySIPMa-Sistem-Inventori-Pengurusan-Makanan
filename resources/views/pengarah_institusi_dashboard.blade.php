@@ -266,62 +266,50 @@
                                 </div>
                             </div>
                             
-                            <!-- Top Items Chart -->
+                            <!-- Top Items Table -->
                             <div class="col-lg-6 mb-4">
-                                <div class="card h-100">
-                                    <div class="card-header bg-white border-0 pt-4 pb-0">
-                                        <h5 class="card-title fw-bold mb-0">5 Item Paling Banyak Dipesan</h5>
+                                <div class="card h-100 shadow-sm border-0">
+                                    <div class="card-header bg-transparent border-0 pb-2 pt-4 px-4">
+                                        <h5 class="card-title fw-bold mb-0"><i class="fas fa-boxes text-info me-2"></i>5 Item Terbanyak Dipesan</h5>
                                     </div>
-                                    <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 300px;">
-                                        <canvas id="topItemsChart" style="max-height: 300px; display:none;"></canvas>
-                                        <div id="topItemsNoData" class="text-center text-muted" style="display:none;">
-                                            <i class="fas fa-chart-bar fa-3x mb-3 opacity-25"></i>
-                                            <p class="mb-0">Tiada rekod item yang dipesan lagi.</p>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover align-middle mb-0" id="topItemsTable">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th class="ps-4">No.</th>
+                                                        <th>Nama Item</th>
+                                                        <th class="text-end pe-4">Kuantiti</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr><td colspan="3" class="text-center py-4 text-muted">Memuatkan...</td></tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <!-- Recent Orders -->
                             <div class="col-lg-6 mb-4">
-                                <div class="card h-100">
-                                    <div class="card-header bg-white border-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
-                                        <h5 class="card-title fw-bold mb-0">5 Pesanan Terkini</h5>
-                                        <div class="d-flex gap-2 align-items-center">
-                                            <select id="recentFilterYear" class="form-select form-select-sm">
-                                                <option value="">Semua Tahun</option>
-                                            </select>
-                                            <select id="recentFilterMonth" class="form-select form-select-sm">
-                                                <option value="">Semua Bulan</option>
-                                                <option value="1">Jan</option>
-                                                <option value="2">Feb</option>
-                                                <option value="3">Mac</option>
-                                                <option value="4">Apr</option>
-                                                <option value="5">Mei</option>
-                                                <option value="6">Jun</option>
-                                                <option value="7">Jul</option>
-                                                <option value="8">Ogo</option>
-                                                <option value="9">Sep</option>
-                                                <option value="10">Okt</option>
-                                                <option value="11">Nov</option>
-                                                <option value="12">Dis</option>
-                                            </select>
-                                        </div>
+                                <div class="card h-100 shadow-sm border-0">
+                                    <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pb-2 pt-4 px-4">
+                                        <h5 class="card-title fw-bold mb-0"><i class="fas fa-clock text-warning me-2"></i>5 Pesanan Terkini</h5>
+                                        <a href="{{ route('pengarah.institusi.ringkasan') }}" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
                                     </div>
                                     <div class="card-body p-0">
                                         <div class="table-responsive">
-                                            <table class="table table-sm mb-0" id="recentOrdersTable">
-                                                <thead>
+                                            <table class="table table-hover align-middle mb-0" id="recentOrdersTable">
+                                                <thead class="table-light">
                                                     <tr>
-                                                        <th>Bil</th>
-                                                        <th>No Pesanan</th>
+                                                        <th class="ps-4">No. Pesanan</th>
                                                         <th>Tarikh</th>
-                                                        <th>Jumlah</th>
                                                         <th>Status</th>
                                                         <th>Pembekal</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr><td colspan="6" class="text-center text-muted">Memuatkan...</td></tr>
+                                                    <tr><td colspan="4" class="text-center py-4 text-muted">Memuatkan...</td></tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -983,9 +971,8 @@
                 // Dashboard Charts Logic
             const dashDataStore = window.dashboardChartData || {};
             const orderStatusChartEl = document.getElementById('orderStatusChart');
-            const topItemsChartEl = document.getElementById('topItemsChart');
+            const topItemsTableBody = document.querySelector('#topItemsTable tbody');
             let orderStatusChart = null;
-            let topItemsChart = null;
 
             function renderCharts(dataset) {
                 try {
@@ -999,7 +986,6 @@
                             dataset.order_status['Rejected'] || 0,
                         ];
 
-                        // Destroy previous
                         if (orderStatusChart) orderStatusChart.destroy();
 
                         orderStatusChart = new Chart(orderStatusChartEl.getContext('2d'), {
@@ -1010,7 +996,7 @@
                                 maintainAspectRatio: false,
                                 plugins: {
                                     tooltip: { callbacks: { label: function(ctx) { return ctx.label + ': ' + ctx.parsed + ' pesanan'; } } },
-                                    legend: { position: 'bottom' },
+                                    legend: { position: 'top' },
                                     datalabels: {
                                         color: '#fff',
                                         formatter: function(value, ctx) {
@@ -1024,33 +1010,21 @@
                         });
                     }
 
-                    // Top Items Bar
-                    if (dataset.top_items && topItemsChartEl) {
+                    // Top Items Table
+                    if (dataset.top_items && Array.isArray(dataset.top_items.labels) && topItemsTableBody) {
                         const labels = dataset.top_items.labels || [];
                         const data = dataset.top_items.data || [];
-
-                        // Destroy previous
-                        if (topItemsChart) topItemsChart.destroy();
-
-                        topItemsChart = new Chart(topItemsChartEl.getContext('2d'), {
-                            type: 'bar',
-                            data: { labels, datasets: [{ label: 'Jumlah Dipesan', data, backgroundColor: ['#1a5632','#2d8653','#3aac6b','#5ec48a','#8ed4ab'] }] },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: { display: false },
-                                    tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label + ': ' + ctx.parsed.y; } } },
-                                    datalabels: {
-                                        anchor: 'end',
-                                        align: 'end',
-                                        color: '#0a0a0a',
-                                        formatter: function(value) { return value; }
-                                    }
-                                },
-                                scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
-                            }
-                        });
+                        if (labels.length > 0) {
+                            topItemsTableBody.innerHTML = labels.map((label, idx) => `
+                                <tr>
+                                    <td class="ps-4 text-muted">${idx + 1}</td>
+                                    <td class="fw-medium text-dark">${label}</td>
+                                    <td class="text-end pe-4"><span class="badge bg-success rounded-pill px-3 py-2 fs-6">${data[idx] ?? 0}</span></td>
+                                </tr>
+                            `).join('');
+                        } else {
+                            topItemsTableBody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-muted">Tiada data.</td></tr>';
+                        }
                     }
                 } catch (e) {
                     console.error('Render charts error', e);
@@ -1162,45 +1136,6 @@
                             },
                             options: { responsive: true, maintainAspectRatio: false }
                         });
-                    }
-                    
-                    const topItemsCanvas = document.getElementById('topItemsChart');
-                    const topItemsNoData = document.getElementById('topItemsNoData');
-                    if (dashboardData.top_items && dashboardData.top_items.labels && dashboardData.top_items.labels.length > 0) {
-                        topItemsCanvas.style.display = 'block';
-                        if (topItemsNoData) topItemsNoData.style.display = 'none';
-                        new Chart(topItemsCanvas.getContext('2d'), {
-                            type: 'bar',
-                            data: {
-                                labels: dashboardData.top_items.labels,
-                                datasets: [{
-                                    label: 'Jumlah Dipesan',
-                                    data: dashboardData.top_items.data,
-                                    backgroundColor: [
-                                        '#1a5632', '#2d8653', '#3aac6b', '#5ec48a', '#8ed4ab'
-                                    ],
-                                    borderRadius: 6,
-                                    borderSkipped: false,
-                                }]
-                            },
-                            options: { 
-                                responsive: true, 
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: { display: false }
-                                },
-                                scales: { 
-                                    y: { 
-                                        beginAtZero: true,
-                                        ticks: { precision: 0 }
-                                    }
-                                }
-                            }
-                        });
-                    } else {
-                        if (topItemsCanvas) topItemsCanvas.style.display = 'none';
-                        if (topItemsNoData) topItemsNoData.style.display = 'flex';
-                        if (topItemsNoData) topItemsNoData.style.flexDirection = 'column';
                     }
                 } catch(e) {
                     console.error("Error loading charts:", e);
