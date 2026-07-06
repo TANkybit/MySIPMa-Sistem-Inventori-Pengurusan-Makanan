@@ -28,6 +28,10 @@
     .page-shell { padding: 32px 0 56px; }
     .card-box { background: var(--surface); border:1px solid var(--border); border-radius:24px; box-shadow:0 18px 48px rgba(0,0,0,.55); }
     @media (min-width: 1200px) { .header .container > .logo-glow, .header .container > .d-xl-flex { position: relative; z-index: 2; } .header .navmenu { left: 50%; position: absolute; transform: translateX(-50%); } }
+    .navmenu a { color: #ffffff !important; }
+    .navmenu a:hover,
+    .navmenu a.active { color: #10b981 !important; }
+    .text-white-50:hover { color: #10b981 !important; }
     .hero, .section-card { padding:28px; }
     .hero { margin-bottom:24px; }
     .hero-title { font-size: clamp(2rem,4vw,3rem); font-weight:800; line-height:1.05; margin:10px 0 14px; }
@@ -78,6 +82,7 @@
     .table-dark-custom { color:var(--text) !important; border-color:var(--border) !important; }
     .table-dark-custom th { background:var(--surface-soft) !important; color:#fff !important; }
     .table-dark-custom td { background:transparent !important; border-bottom:1px solid rgba(255,255,255,.08) !important; color:#fff !important; vertical-align:middle; }
+    #itemDataTable td { white-space: normal; }
     .dataTables_wrapper .page-link { background:var(--surface-soft) !important; border-color:var(--border) !important; color:var(--text) !important; }
     .dataTables_wrapper .page-item.active .page-link { background:var(--accent) !important; border-color:var(--accent) !important; color:#0f172a !important; }
     .dataTables_wrapper .form-select-sm, .dataTables_wrapper .form-control-sm { background:#111827 !important; border:1px solid rgba(255,255,255,.08) !important; color:var(--text) !important; }
@@ -107,6 +112,116 @@
     .was-validated .form-control:invalid, .was-validated .form-select:invalid { border-color: #f87171 !important; box-shadow: 0 0 0 .2rem rgba(248,113,113,.16) !important; }
     .was-validated .form-control:invalid ~ .invalid-feedback, .was-validated .form-select:invalid ~ .invalid-feedback { display: block; }
     .was-validated .form-control:valid, .was-validated .form-select:valid { border-color: var(--accent) !important; box-shadow: 0 0 0 .2rem rgba(16,185,129,.1) !important; }
+
+    /* Auto-filled readonly field styling */
+    .field-auto-wrap { position: relative; }
+    .field-auto-wrap .form-control,
+    .field-auto-wrap .form-select {
+      background-color: rgba(107,114,128,.08) !important;
+      border-style: dashed !important;
+      border-color: rgba(107,114,128,.3) !important;
+      color: rgba(107,114,128,.7) !important;
+      cursor: default !important;
+    }
+    .field-auto-wrap .form-control::placeholder { color: rgba(107,114,128,.4); }
+    .field-auto-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: .65rem; font-weight: 600; text-transform: uppercase; letter-spacing: .5px;
+      color: rgba(107,114,128,.6); margin-bottom: 5px;
+    }
+    .field-auto-badge i { font-size: .7rem; }
+    [data-bs-theme="dark"] .field-auto-wrap .form-control,
+    [data-bs-theme="dark"] .field-auto-wrap .form-select {
+      background-color: rgba(255,255,255,.04) !important;
+      border-color: rgba(255,255,255,.15) !important;
+      color: rgba(255,255,255,.35) !important;
+    }
+    [data-bs-theme="dark"] .field-auto-badge { color: rgba(255,255,255,.35); }
+    [data-bs-theme="light"] .field-auto-wrap .form-control,
+    [data-bs-theme="light"] .field-auto-wrap .form-select {
+      background-color: rgba(107,114,128,.06) !important;
+      border-color: rgba(107,114,128,.25) !important;
+      color: rgba(107,114,128,.55) !important;
+    }
+    [data-bs-theme="light"] .field-auto-badge { color: rgba(107,114,128,.5); }
+    @keyframes logoPulse { 0% { filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0,0,0,.8)) drop-shadow(1px 1px 0 rgba(0,0,0,.5)) drop-shadow(0 0 8px rgba(16,185,129,.3)); transform: scale(1); } 50% { filter: brightness(210%) drop-shadow(2px 3px 0 rgba(0,0,0,.9)) drop-shadow(1px 1px 0 rgba(0,0,0,.6)) drop-shadow(0 0 16px rgba(16,185,129,.6)) drop-shadow(0 0 30px rgba(16,185,129,.2)); transform: scale(1.03); } 100% { filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0,0,0,.8)) drop-shadow(1px 1px 0 rgba(0,0,0,.5)) drop-shadow(0 0 8px rgba(16,185,129,.3)); transform: scale(1); } }
+    @keyframes logoShine { 0% { filter: brightness(150%) drop-shadow(0 0 0 transparent); } 50% { filter: brightness(200%) drop-shadow(0 0 8px rgba(16,185,129,.5)); } 100% { filter: brightness(150%) drop-shadow(0 0 0 transparent); } }
+    [data-bs-theme="light"] .logo-glow img { filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0,0,0,.8)) drop-shadow(1px 1px 0 rgba(0,0,0,.5)) drop-shadow(-1px -1px 0 rgba(255,255,255,.4)) !important; animation: logoPulse 3s ease-in-out infinite; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    [data-bs-theme="light"] .logo-glow:hover img { filter: brightness(250%) drop-shadow(3px 4px 0 rgba(0,0,0,.9)) drop-shadow(2px 2px 0 rgba(0,0,0,.6)) drop-shadow(0 0 20px rgba(16,185,129,.6)) drop-shadow(0 0 40px rgba(16,185,129,.3)) !important; transform: scale(1.08) !important; animation: logoShine 1s ease-in-out infinite; }
+    [data-bs-theme="light"] .logo-glow { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    [data-bs-theme="light"] .logo-glow:hover { transform: scale(1.08) !important; }
+
+    /* ── Light mode overrides ── */
+    [data-bs-theme="light"] body { background:#f8f9fa; color:#111827; }
+    [data-bs-theme="light"] h1,[data-bs-theme="light"] h2,[data-bs-theme="light"] h3,[data-bs-theme="light"] h4 { color:#111827; }
+    [data-bs-theme="light"] .muted { color:#6b7280; }
+    [data-bs-theme="light"] .card-box { background:#fff; border-color:#e5e7eb; box-shadow:0 4px 12px rgba(0,0,0,.08); }
+    [data-bs-theme="light"] .form-label { color:#374151; }
+    [data-bs-theme="light"] .form-control,[data-bs-theme="light"] .form-select { background:#fff; border-color:#d1d5db; color:#111827; }
+    [data-bs-theme="light"] .form-control::placeholder,[data-bs-theme="light"] .form-select option { color:#9ca3af; }
+    [data-bs-theme="light"] .form-control:focus,[data-bs-theme="light"] .form-select:focus { background:#fff; color:#111827; border-color:#10b981; box-shadow:0 0 0 .2rem rgba(16,185,129,.15); }
+    [data-bs-theme="light"] .form-select option { color:#111827; background:#fff; }
+    [data-bs-theme="light"] textarea.form-control { min-height:110px; }
+    [data-bs-theme="light"] .chip { background:#f3f4f6; border-color:#e5e7eb; color:#374151; }
+    [data-bs-theme="light"] .hero,[data-bs-theme="light"] .section-card { background:#fff; }
+    [data-bs-theme="light"] .btn-soft { background:#f3f4f6; border-color:#d1d5db; color:#374151; }
+    [data-bs-theme="light"] .btn-logout { border-color:#d1d5db; color:#374151; }
+    [data-bs-theme="light"] .btn-logout:hover { background:#f3f4f6; border-color:#9ca3af; }
+    [data-bs-theme="light"] .items-wrap { border-color:#e5e7eb; }
+    [data-bs-theme="light"] .items-toolbar { background:#fff; border-color:#e5e7eb; }
+    [data-bs-theme="light"] .item-card { background:#fff; border-color:#e5e7eb; }
+    [data-bs-theme="light"] .item-card td { color:#111827 !important; border-color:#e5e7eb !important; }
+    [data-bs-theme="light"] .totals-box { background:linear-gradient(180deg,#fff 0%,#f9fafb 100%); color:#111827; }
+    [data-bs-theme="light"] .totals-box p { color:#6b7280; }
+    [data-bs-theme="light"] .totals-row { border-color:#e5e7eb; }
+    [data-bs-theme="light"] .totals-row:last-child { border-color:#d1d5db; }
+    [data-bs-theme="light"] .word-helper { color:#6b7280; }
+    [data-bs-theme="light"] .date-format-hint { color:#6b7280; }
+    [data-bs-theme="light"] .borang-menu button { background:#fff; border-color:#e5e7eb; color:#374151; }
+    [data-bs-theme="light"] .borang-menu .menu-title { color:#111827; }
+    [data-bs-theme="light"] .table-dark-custom { color:#111827 !important; border-color:#e5e7eb !important; }
+    [data-bs-theme="light"] .table-dark-custom th { background:#f3f4f6 !important; color:#111827 !important; }
+    [data-bs-theme="light"] .table-dark-custom td { background:#fff !important; color:#111827 !important; border-color:#e5e7eb !important; }
+    [data-bs-theme="light"] table.dataTable > thead > tr > th { border-color:#e5e7eb !important; }
+    [data-bs-theme="light"] .dataTables_wrapper .page-link { background:#fff !important; border-color:#e5e7eb !important; color:#374151 !important; }
+    [data-bs-theme="light"] .dataTables_wrapper .page-item.active .page-link { background:#10b981 !important; border-color:#10b981 !important; color:#fff !important; }
+    [data-bs-theme="light"] .dataTables_wrapper .form-select-sm,[data-bs-theme="light"] .dataTables_wrapper .form-control-sm { background:#fff !important; border-color:#d1d5db !important; color:#111827 !important; }
+    [data-bs-theme="light"] .item-table-toolbar .dataTables_length label,[data-bs-theme="light"] .item-table-toolbar .dataTables_filter label { color:#6b7280 !important; }
+    [data-bs-theme="light"] select:disabled,[data-bs-theme="light"] input:disabled,[data-bs-theme="light"] textarea:disabled { background:#f3f4f6 !important; color:#9ca3af !important; -webkit-text-fill-color:#9ca3af; }
+    [data-bs-theme="light"] .select2-container--default .select2-selection--single { background:#fff; border-color:#d1d5db; color:#111827; }
+    [data-bs-theme="light"] .select2-container--default .select2-selection--single .select2-selection__rendered { color:#111827; }
+    [data-bs-theme="light"] .select2-dropdown { background:#fff; border-color:#d1d5db; color:#111827; }
+    [data-bs-theme="light"] .select2-results__option { color:#111827; }
+    [data-bs-theme="light"] .select2-results__option--highlighted { background:#10b981 !important; color:#fff !important; }
+    [data-bs-theme="light"] .select2-search__field { background:#fff; border-color:#d1d5db !important; color:#111827; }
+    [data-bs-theme="light"] .dropdown-menu { background:#fff; border-color:#e5e7eb; color:#111827; }
+    [data-bs-theme="light"] .dropdown-item { color:#374151; }
+    [data-bs-theme="light"] .dropdown-item:hover,[data-bs-theme="light"] .dropdown-item:focus { background:#f3f4f6; color:#111827; }
+    [data-bs-theme="light"] select option { color:#111827; background:#fff; }
+    [data-bs-theme="light"] .item-order-qty { background:#fff !important; color:#111827 !important; border-color:#d1d5db !important; }
+    [data-bs-theme="light"] .invalid-feedback { color:#dc2626; }
+    [data-bs-theme="light"] .was-validated .form-control:valid,[data-bs-theme="light"] .was-validated .form-select:valid { border-color:#10b981 !important; }
+    [data-bs-theme="light"] .was-validated .form-control:invalid,[data-bs-theme="light"] .was-validated .form-select:invalid { border-color:#f87171 !important; }
+    [data-bs-theme="light"] #header { background:rgba(255,255,255,.8) !important; border-bottom:1px solid #e5e7eb !important; }
+    .mobile-nav-toggle { font-size:24px; cursor:pointer; }
+    .mobile-nav-toggle.bi::before { color:#fff; }
+    [data-bs-theme="light"] .mobile-nav-toggle.bi::before { color:#111827; }
+
+    /* Mobile nav links */
+    .navmenu ul li a.text-danger { color:#f87171 !important; }
+    .navmenu ul li a.text-danger:hover { color:#ef4444 !important; }
+    [data-bs-theme="light"] .navmenu ul li a.text-danger { color:#dc2626 !important; }
+
+    /* Logout confirmation modal */
+    #logoutConfirmModal .modal-content { background:var(--surface); border:1px solid var(--border); border-radius:20px; color:var(--text); }
+    [data-bs-theme="light"] #logoutConfirmModal .modal-content { background:#fff; border-color:#e5e7eb; color:#111827; }
+    #logoutConfirmModal .modal-header { border-bottom:1px solid var(--border); }
+    [data-bs-theme="light"] #logoutConfirmModal .modal-header { border-bottom-color:#e5e7eb; }
+    #logoutConfirmModal .modal-title { font-weight:700; }
+    #logoutConfirmModal .btn-cancel { background:rgba(255,255,255,.08); border:1px solid var(--border); color:var(--text); }
+    #logoutConfirmModal .btn-cancel:hover { background:rgba(255,255,255,.15); }
+    [data-bs-theme="light"] #logoutConfirmModal .btn-cancel { background:#f3f4f6; border-color:#d1d5db; color:#374151; }
+    [data-bs-theme="light"] #logoutConfirmModal .btn-cancel:hover { background:#e5e7eb; }
   </style>
 </head>
 <body>
@@ -128,7 +243,7 @@
 
   <header id="header" class="header d-flex align-items-center sticky-top" style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
     <div class="container position-relative d-flex align-items-center justify-content-between">
-      <a href="{{ route('index') }}" class="logo-glow d-flex align-items-center me-auto me-xl-0">
+      <a href="#" class="logo-glow d-flex align-items-center me-auto me-xl-0" id="logoLogoutTrigger">
         <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" style="height: 55px; width: auto;"
           alt="MySIPMa logo">
       </a>
@@ -156,6 +271,9 @@
           <li><a href="{{ route('borang.penerimaan') }}"
               class="{{ request()->routeIs('borang.penerimaan') ? 'active' : '' }}">Penerimaan</a></li>
           @endif
+          <li class="d-xl-none"><a href="{{ route('profile') }}"
+              class="{{ request()->routeIs('profile') ? 'active' : '' }}">Profil</a></li>
+          <li class="d-xl-none"><a href="#" id="navLogoutBtn" class="text-danger">Log Keluar</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
@@ -189,11 +307,8 @@
         <a href="{{ route('profile') }}" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'"
           onmouseout="this.style.color=''"><i
             class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}</a>
-        <form action="{{ route('logout') }}" method="POST" class="d-inline">
-          @csrf
-          <button type="submit" class="btn btn-custom btn-logout btn-sm px-3 py-2"><i
+        <button type="button" class="btn btn-custom btn-logout btn-sm px-3 py-2" id="desktopLogoutBtn"><i
               class="bi bi-box-arrow-right me-2"></i>Log Keluar</button>
-        </form>
       </div>
     </div>
   </header>
@@ -215,7 +330,7 @@
         <h5 class="alert-heading fw-bold mb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>Sila semak semula maklumat borang sebelum dihantar:</h5>
         <ul class="mb-0 ps-3">
           @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
+            <li>{!! preg_replace('/^\[([^\]]+)\]\s*/', '<strong class="text-decoration-underline">[$1]</strong> ', e($error)) !!}</li>
           @endforeach
         </ul>
       </div>
@@ -262,7 +377,10 @@
         <div class="row g-4">
           <div class="col-md-4">
             <label class="form-label">No. Pesanan <span class="text-danger">*</span></label>
-            <input class="form-control" id="noPesanan" type="text" value="{{ old('no_pesanan', $inden->no_pesanan ?? '') }}" placeholder="Akan dijana automatik" readonly>
+            <input class="form-control @error('no_pesanan') is-invalid @enderror" id="noPesanan" name="no_pesanan" type="text" value="{{ old('no_pesanan', $inden->no_pesanan ?? '') }}" placeholder="Cth: SKPJ/PJ/BK/26/07/001" {{ $fieldState }} required>
+            @error('no_pesanan')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
           <div class="col-md-4">
             <label class="form-label">Pembekal <span class="text-danger">*</span></label>
@@ -301,36 +419,29 @@
           </div>
           <div class="col-md-4">
             <label class="form-label">Sesi / Kod <span class="text-danger">*</span></label>
-            {{-- TODO: Checkbox selection may be needed in future. Keep commented for reference.
-            <div class="d-flex gap-3 flex-wrap mt-1">
-              @php
-                $selectedSessions = old('sesi_kod', $inden->sesi_kod ?? '');
-                $selectedArr = is_array($selectedSessions) ? $selectedSessions : explode('/', $selectedSessions);
-              @endphp
-              @foreach($mealSessions as $code => $desc)
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" name="sesi_kod[]" value="{{ $code }}" id="sesi_{{ $code }}"
-                    {{ in_array($code, $selectedArr) ? 'checked' : '' }}
-                    {{ $isReadOnly ? 'disabled' : '' }}>
-                  <label class="form-check-label" for="sesi_{{ $code }}">{{ $code }} - {{ $desc }}</label>
-                </div>
-              @endforeach
-            </div>
-            --}}
-            <input class="form-control @error('sesi_kod') is-invalid @enderror" name="sesi_kod" type="text" value="{{ old('sesi_kod', $inden->sesi_kod ?? '') }}" placeholder="e.g. M1/M2/M3/M4" {{ $fieldState }} required>
+            <select class="form-select @error('sesi_kod') is-invalid @enderror" name="sesi_kod" {{ $fieldState }} required>
+              <option value="">-- Pilih Sesi --</option>
+              <option value="M1" {{ old('sesi_kod', $inden->sesi_kod ?? '') === 'M1' ? 'selected' : '' }}>M1 - Sarapan Pagi</option>
+              <option value="M2" {{ old('sesi_kod', $inden->sesi_kod ?? '') === 'M2' ? 'selected' : '' }}>M2 - Makan Tengah Hari</option>
+              <option value="M3" {{ old('sesi_kod', $inden->sesi_kod ?? '') === 'M3' ? 'selected' : '' }}>M3 - Minum Petang</option>
+              <option value="M4" {{ old('sesi_kod', $inden->sesi_kod ?? '') === 'M4' ? 'selected' : '' }}>M4 - Makan Malam / Lain-lain</option>
+            </select>
             @error('sesi_kod')
-              <div class="invalid-feedback d-block">{{ $message }}</div>
+              <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
           <div class="col-md-6">
-            <label class="form-label">Kepada (Institusi) <span class="text-danger">*</span></label>
-            @php
-              $selectedInst = $institutions->firstWhere('id', old('institution_id', $inden->institution_id ?? $userInstitutionId));
-            @endphp
-            <input class="form-control" type="text" value="{{ $selectedInst->name ?? 'N/A' }}" readonly>
-            <input type="hidden" name="institution_id" value="{{ old('institution_id', $inden->institution_id ?? $userInstitutionId) }}" id="institutionIdHidden">
-            <input type="hidden" id="institutionCode" value="{{ $selectedInst->code ?? '' }}">
-            <input type="hidden" id="institutionLocation" value="{{ $selectedInst->location_code ?? '' }}">
+            <div class="field-auto-badge"><i class="bi bi-lock-fill"></i> Diisi automatik</div>
+            <div class="field-auto-wrap">
+              <label class="form-label">Kepada (Institusi) <span class="text-danger">*</span></label>
+              @php
+                $selectedInst = $institutions->firstWhere('id', old('institution_id', $inden->institution_id ?? $userInstitutionId));
+              @endphp
+              <input class="form-control" type="text" value="{{ $selectedInst->name ?? 'N/A' }}" readonly>
+              <input type="hidden" name="institution_id" value="{{ old('institution_id', $inden->institution_id ?? $userInstitutionId) }}" id="institutionIdHidden">
+              <input type="hidden" id="institutionCode" value="{{ $selectedInst->code ?? '' }}">
+              <input type="hidden" id="institutionLocation" value="{{ $selectedInst->location_code ?? '' }}">
+            </div>
           </div>
           <div class="col-md-6">
             <label class="form-label">No. Kontrak <span class="text-danger">*</span></label>
@@ -480,11 +591,26 @@
               <div class="chip">Langkah 4</div>
             </div>
             <div class="row g-4">
-              <div class="col-md-6"><label class="form-label">Disediakan Oleh</label><input class="form-control" type="text" value="{{ old('disediakan_oleh', $inden->disediakan_oleh ?? Auth::user()->name ?? '') }}" placeholder="Nama pegawai yang diberi kuasa memesan" readonly></div>
-              <div class="col-md-6"><label class="form-label">Jawatan / Cop</label><input class="form-control" type="text" value="{{ old('jawatan_cop', $inden->jawatan_cop ?? ($userPositionName ? $userPositionName . ' Gred ' . $userGrade : '')) }}" readonly></div>
               <div class="col-md-6">
-                <label class="form-label">Nama Wakil Pembekal <span class="text-danger">*</span></label>
-                <input class="form-control" name="wakil_pembekal" type="text" value="{{ old('wakil_pembekal', $inden->wakil_pembekal ?? $inden->nama_pembekal ?? '') }}" placeholder="Akan diisi automatik" readonly>
+                <div class="field-auto-badge"><i class="bi bi-lock-fill"></i> Diisi automatik</div>
+                <div class="field-auto-wrap">
+                  <label class="form-label">Disediakan Oleh</label>
+                  <input class="form-control" type="text" value="{{ old('disediakan_oleh', $inden->disediakan_oleh ?? Auth::user()->name ?? '') }}" placeholder="Nama pegawai yang diberi kuasa memesan" readonly>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="field-auto-badge"><i class="bi bi-lock-fill"></i> Diisi automatik</div>
+                <div class="field-auto-wrap">
+                  <label class="form-label">Jawatan / Cop</label>
+                  <input class="form-control" type="text" value="{{ old('jawatan_cop', $inden->jawatan_cop ?? ($userPositionName ? $userPositionName . ' Gred ' . $userGrade : '')) }}" readonly>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="field-auto-badge"><i class="bi bi-lock-fill"></i> Diisi automatik</div>
+                <div class="field-auto-wrap">
+                  <label class="form-label">Nama Wakil Pembekal <span class="text-danger">*</span></label>
+                  <input class="form-control" name="wakil_pembekal" type="text" value="{{ old('wakil_pembekal', $inden->wakil_pembekal ?? $inden->nama_pembekal ?? '') }}" placeholder="Akan diisi automatik" readonly>
+                </div>
               </div>
               <div class="col-md-6">
                 <label class="form-label">Tarikh Pembekal</label>
@@ -549,7 +675,7 @@
           <div class="row g-3">
             <div class="col-6">
               <label class="form-label">Kuantiti <span class="text-danger">*</span></label>
-              <input class="form-control" id="itemModalQty" type="number" min="0" step="0.01" value="0">
+              <input class="form-control" id="itemModalQty" type="number" min="0" step="1" value="0">
             </div>
             <div class="col-6">
               <label class="form-label">Unit <span class="text-danger">*</span></label>
@@ -558,7 +684,7 @@
           </div>
           <div class="mb-3">
             <label class="form-label">Harga Seunit (RM)</label>
-            <input class="form-control" id="itemModalPrice" type="number" min="0" step="0.01" value="0">
+              <input class="form-control" id="itemModalPrice" type="number" min="0" step="1" value="0">
           </div>
         </div>
         <div class="modal-footer border-0">
@@ -590,12 +716,12 @@
 
 <template id="itemTemplate">
   <tr class="item-card">
-    <td data-order="0"><span class="item-index"></span></td>
+    <td><span class="item-index"></span></td>
     <td data-order=""><input class="form-control item-name" type="text" readonly>
       <input class="item-contract-id" type="hidden" name="items[0][contract_item_id]">
       <input type="hidden" class="item-name-hidden" name="items[0][name]">
     </td>
-    <td data-order="0"><input class="form-control item-order-qty item-calc" type="number" min="0" step="0.01" value="0" required></td>
+    <td data-order="0"><input class="form-control item-order-qty item-calc" type="number" min="0" step="1" value="0" required></td>
     <td data-order=""><input class="form-control item-unit" type="text" readonly>
       <input type="hidden" class="item-unit-hidden" name="items[0][unit]">
     </td>
@@ -603,7 +729,7 @@
       <input type="hidden" class="item-unit-price-hidden" name="items[0][unitPrice]">
     </td>
     <td data-order="0"><input class="form-control item-total" type="text" value="RM 0.00" readonly></td>
-    <td data-order=""><div class="d-flex flex-wrap gap-1">
+    <td><div class="d-flex flex-wrap gap-1">
         <button class="btn btn-sm btn-outline-info edit-item" type="button" title="Edit"><i class="bi bi-pencil"></i></button>
         <button class="btn btn-sm btn-outline-danger remove-item" type="button" title="Padam"><i class="bi bi-trash"></i></button>
       </div></td>
@@ -670,24 +796,24 @@
           supplierSelect.addEventListener('change', fillSupplierAddress);
         }
 
-        // Auto-generate No. Pesanan & load contracts
+        // Auto-generate No. Pesanan & load contracts (auto-gen commented out — user enters manually)
         const instIdInput = document.getElementById('institutionIdHidden');
         const contractSelect = document.getElementById('contractSelect');
         const noPesananInput = document.getElementById('noPesanan');
 
         function getInstId() { return instIdInput?.value || ''; }
 
-        function generateOrderNo() {
-          const instId = getInstId();
-          if (!instId) {
-            noPesananInput.value = '';
-            return;
-          }
-          fetch('{{ route("borang.inden.generate") }}?institution_id=' + instId)
-            .then(r => r.json())
-            .then(d => { if (d.success) noPesananInput.value = d.order_no; })
-            .catch(() => {});
-        }
+        // function generateOrderNo() {
+        //   const instId = getInstId();
+        //   if (!instId) {
+        //     noPesananInput.value = '';
+        //     return;
+        //   }
+        //   fetch('{{ route("borang.inden.generate") }}?institution_id=' + instId)
+        //     .then(r => r.json())
+        //     .then(d => { if (d.success) noPesananInput.value = d.order_no; })
+        //     .catch(() => {});
+        // }
 
         function loadContracts() {
           const instId = getInstId();
@@ -764,7 +890,7 @@
             loadContractItems(this.value);
           });
         }
-        if (!noPesananInput.value) generateOrderNo();
+        // if (!noPesananInput.value) generateOrderNo(); // commented out — user enters manually
         @if(!($savedDraft ?? null))
         loadContracts();
         @endif
@@ -974,8 +1100,6 @@
           orderQtyTotal += orderQty;
           grandTotal += lineTotal;
           card.querySelector('.item-total').value = formatCurrency(lineTotal);
-          var tdTotal = card.cells[5];
-          if (tdTotal) tdTotal.setAttribute('data-order', lineTotal);
         });
         document.getElementById('summaryItemCount').textContent = cards.length;
         document.getElementById('summaryOrderQty').textContent = formatNumber(orderQtyTotal);
@@ -993,7 +1117,6 @@
           pagingType: 'full_numbers',
           pageLength: 5,
           lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'Semua']],
-          ordering: true,
           language: {
             url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/ms.json',
             emptyTable: 'Tiada item pesanan.',
@@ -1062,14 +1185,6 @@
         card.querySelector('.item-order-qty').value = defaults.orderQty ?? 0;
         card.querySelector('.item-unit-price').value = formatCurrency(defaults.unitPrice ?? 0);
         card.querySelector('.item-unit-price-hidden').value = defaults.unitPrice ?? 0;
-        // Set data-order attributes for sorting
-        var cells = card.querySelectorAll('td');
-        if (cells.length >= 5) {
-          cells[1].setAttribute('data-order', defaults.name || '');
-          cells[2].setAttribute('data-order', defaults.orderQty ?? 0);
-          cells[3].setAttribute('data-order', defaults.unit || '');
-          cells[4].setAttribute('data-order', defaults.unitPrice ?? 0);
-        }
         if (itemDataTable) {
           itemDataTable.row.add(card).draw(false);
         } else {
@@ -1224,10 +1339,13 @@
           const requiredInputs = form.querySelectorAll('input[required]:not(.item-calc):not(.item-name):not(.item-unit), textarea[required]');
           requiredInputs.forEach(input => {
             const labelText = input.previousElementSibling ? input.previousElementSibling.textContent.replace(' *', '').trim() : input.name;
+            const page = input.closest('[data-borang-page]');
+            const pageName = page ? page.dataset.borangPage : '';
+            const sectionPrefix = pageName === 'maklumat' ? '[Maklumat Pesanan] ' : pageName === 'perakuan' ? '[Perakuan Pembekal] ' : '';
             if (!input.value.trim()) {
               input.classList.add('is-invalid');
               isValid = false;
-              errors.push(`${labelText} wajib diisi.`);
+              errors.push(`${sectionPrefix}${labelText} wajib diisi.`);
             } else {
               input.classList.remove('is-invalid');
             }
@@ -1235,6 +1353,9 @@
 
           form.querySelectorAll('.date-input').forEach(input => {
             const labelText = input.previousElementSibling ? input.previousElementSibling.textContent.replace(' *', '').trim() : input.name;
+            const page = input.closest('[data-borang-page]');
+            const pageName = page ? page.dataset.borangPage : '';
+            const sectionPrefix = pageName === 'maklumat' ? '[Maklumat Pesanan] ' : pageName === 'perakuan' ? '[Perakuan Pembekal] ' : '';
             let parsedDate = null;
             if (input.type === 'date') {
               const val = input.value.trim();
@@ -1247,12 +1368,12 @@
               input.classList.add('is-invalid');
               input.setCustomValidity('Sila masukkan tarikh yang sah.');
               isValid = false;
-              errors.push(`${labelText} mesti diisi dengan tarikh yang sah.`);
+              errors.push(`${sectionPrefix}${labelText} mesti diisi dengan tarikh yang sah.`);
             } else if (parsedDate < today) {
               input.classList.add('is-invalid');
               input.setCustomValidity('Tarikh tidak boleh sebelum hari ini.');
               isValid = false;
-              errors.push(`${labelText} tidak boleh sebelum hari ini.`);
+              errors.push(`${sectionPrefix}${labelText} tidak boleh sebelum hari ini.`);
             } else {
               input.classList.remove('is-invalid');
             }
@@ -1264,7 +1385,7 @@
             if (countWords(textarea.value) > maxWords) {
               textarea.classList.add('is-invalid');
               isValid = false;
-              errors.push('Ulasan / Catatan tidak boleh melebihi 250 patah perkataan.');
+              errors.push('[Perakuan Pembekal] Ulasan / Catatan tidak boleh melebihi 250 patah perkataan.');
             } else {
               textarea.classList.remove('is-invalid');
             }
@@ -1277,7 +1398,7 @@
             if (input.value.trim() === '' || isNaN(val) || val < 0 || !Number.isInteger(val)) {
               input.classList.add('is-invalid');
               isValid = false;
-              errors.push(`${labelText} mestilah nombor bulat yang sah (0 atau lebih).`);
+              errors.push(`[Ringkasan Muster] ${labelText} mestilah nombor bulat yang sah (0 atau lebih).`);
             } else {
               input.classList.remove('is-invalid');
             }
@@ -1287,7 +1408,7 @@
           const itemCards = getItemRows();
           if (itemCards.length === 0) {
             isValid = false;
-            errors.push('Sila tambah sekurang-kurangnya satu item pesanan.');
+            errors.push('[Senarai Barang] Sila tambah sekurang-kurangnya satu item pesanan.');
           } else {
             let hasItemError = false;
             itemCards.forEach((card) => {
@@ -1304,7 +1425,7 @@
             });
             
             if (hasItemError) {
-              errors.push('Sila pastikan kuantiti pesanan untuk semua item diisi dengan betul.');
+              errors.push('[Senarai Barang] Sila pastikan kuantiti pesanan untuk semua item diisi dengan betul.');
             }
           }
           
@@ -1318,7 +1439,7 @@
             // Build error list
             errors.forEach(err => {
               const li = document.createElement('li');
-              li.textContent = err;
+              li.innerHTML = err.replace(/^\[([^\]]+)\]\s*/, '<strong class="text-decoration-underline">[$1]</strong> ');
               clientErrorList.appendChild(li);
             });
             
@@ -1353,10 +1474,11 @@
 
       function collectFormData() {
         return {
+          no_pesanan: document.getElementById('noPesanan')?.value || '',
           contract_id: document.getElementById('contractSelect')?.value || '',
           tarikh_pesanan: document.querySelector('input[name="tarikh_pesanan"]')?.value || '',
           masa: document.querySelector('input[name="masa"]')?.value || '',
-          sesi_kod: document.querySelector('input[name="sesi_kod"]')?.value || '',
+          sesi_kod: document.querySelector('[name="sesi_kod"]')?.value || '',
           institution_id: document.getElementById('institutionIdHidden')?.value || '',
           supplier_id: document.getElementById('supplierSelect')?.value || '',
           wakil_pembekal: document.querySelector('input[name="wakil_pembekal"]')?.value || '',
@@ -1480,6 +1602,10 @@
         }
         setField('masa', data.masa);
         setField('sesi_kod', data.sesi_kod);
+        if (data.no_pesanan) {
+          var npInput = document.getElementById('noPesanan');
+          if (npInput) npInput.value = data.no_pesanan;
+        }
         setField('wakil_pembekal', data.wakil_pembekal);
         setField('alamat_pembekal', data.alamat_pembekal);
         setField('muster_khas_daging', data.muster_khas_daging);
@@ -1588,5 +1714,39 @@
     <script src="{{ asset('js/table-download.js') }}"></script>
     <script src="{{ asset('js/session-timeout.js') }}"></script>
   <script src="{{ asset('js/user-theme.js') }}"></script>
+
+  <!-- Logout confirmation modal -->
+  <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="logoutConfirmModalLabel"><i class="bi bi-box-arrow-right me-2"></i>Log Keluar</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0">Adakah anda pasti ingin log keluar dari sistem?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-cancel btn-sm px-3" data-bs-dismiss="modal">Batal</button>
+          <form action="{{ route('logout') }}" method="POST" id="logoutForm" class="d-inline">
+            @csrf
+            <button type="submit" class="btn btn-danger btn-sm px-3"><i class="bi bi-box-arrow-right me-1"></i>Log Keluar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var logoutModal = new bootstrap.Modal(document.getElementById('logoutConfirmModal'));
+      var desktopBtn = document.getElementById('desktopLogoutBtn');
+      var navBtn = document.getElementById('navLogoutBtn');
+      var logoBtn = document.getElementById('logoLogoutTrigger');
+      if (desktopBtn) desktopBtn.addEventListener('click', function () { logoutModal.show(); });
+      if (navBtn) navBtn.addEventListener('click', function (e) { e.preventDefault(); logoutModal.show(); });
+      if (logoBtn) logoBtn.addEventListener('click', function (e) { e.preventDefault(); logoutModal.show(); });
+    })();
+  </script>
 </body>
 </html>

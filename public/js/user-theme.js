@@ -15,5 +15,6 @@
   toggle.addEventListener('click', function () {
     var cur = document.documentElement.getAttribute('data-bs-theme') || 'light';
     applyTheme(cur === 'dark' ? 'light' : 'dark');
+    location.reload();
   });
 })();

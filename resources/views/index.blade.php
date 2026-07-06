@@ -155,6 +155,48 @@
     font-size: 0.9rem !important;
     padding: 10px 20px !important;
   }
+
+  #recaptchaModal .modal-content {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  }
+
+  #recaptchaModal .modal-header {
+    background: linear-gradient(135deg, #1565c0 0%, #1976d2 50%, #42a5f5 100%);
+    color: #fff;
+    border: none;
+    padding: 24px 24px 20px;
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #recaptchaModal .modal-header .btn-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    filter: brightness(0) invert(1);
+  }
+
+  #recaptchaModal .modal-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  #recaptchaModal .modal-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin: 0;
+    font-weight: 400;
+  }
+
+  #recaptchaModal .modal-body {
+    padding: 30px 24px 20px;
+    background: #fff;
+  }
 </style>
 </head>
 
@@ -207,10 +249,10 @@
 
               <div class="hero-btns" data-aos="fade-up" data-aos-delay="300">
                 <a href="{{ route('borang.inden') }}" class="btn btn-primary">Borang Inden</a>
-                <a href="{{ route('sejarah') }}" class="btn btn-outline glightbox" target="_blank">
+                {{-- <a href="{{ route('sejarah') }}" class="btn btn-outline glightbox" target="_blank">
                   <i class="bi bi-play-circle"></i> 
                   Ketahui Lebih Lanjut
-                </a>
+                </a> --}}
               </div>
             </div>
           </div>
@@ -367,16 +409,13 @@
                 <div class="modal-dialog modal-dialog-centered">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title" id="recaptchaModalLabel">Pengesahan</h5>
+                      <h5 class="modal-title" id="recaptchaModalLabel">Sahkan Captcha</h5>
+                      <p class="modal-subtitle">Sila lengkapkan captcha untuk menghantar mesej anda</p>
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                      <p class="mb-3">Sila klik kotak di bawah untuk teruskan.</p>
                       <div id="recaptchaContainer" class="d-flex justify-content-center"></div>
                       <div id="recaptchaError" class="text-danger mt-3" style="display: none;"></div>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     </div>
                   </div>
                 </div>
@@ -431,7 +470,7 @@
       </div><br>
       <p>
         <span>Hak Cipta Terpelihara</span> ©<strong class="px-1 sitename">2026 MySIPMa</strong> 
-        <span>Kolaborasi Bersama <a href="https://pmj.mypolycc.edu.my" target="_blank">Politeknik Mersing</a></span>
+        <span>Kolaborasi Bersama <a href="https://pmj.mypolycc.edu.my" target="_blank">Politeknik Mersing, Johor</a></span>
       </p>
     </div>
   </footer>

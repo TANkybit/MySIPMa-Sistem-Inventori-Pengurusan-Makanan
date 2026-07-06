@@ -20,27 +20,14 @@ class ContactMail extends Mailable
         $this->data = $data;
     }
 
-    public function build()
-    {
-        return $this
-            ->subject($this->data['subject'] ?? 'Contact Message')
-            ->replyTo($this->data['email'], $this->data['name'])
-            ->markdown('emails.contact');
-    }
-
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Contact Mail',
+            subject: $this->data['subject'] ?? 'Contact Message',
+            replyTo: [$this->data['email']],
         );
     }
 
-    /**
-     * Get the message content definition.
-     */
     public function content(): Content
     {
         return new Content(
@@ -48,11 +35,6 @@ class ContactMail extends Mailable
         );
     }
 
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
     public function attachments(): array
     {
         return [];
