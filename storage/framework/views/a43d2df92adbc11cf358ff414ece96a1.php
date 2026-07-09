@@ -75,8 +75,8 @@
         
         <div class="credentials">
             <h3 style="margin-top: 0; color: #1e3a8a;">Maklumat Akaun</h3>
-            <p><strong>Nama Pengguna (Username):</strong> {{ $email }}</p>
-            <p><strong>Kata Laluan Baharu:</strong> {{ $password }}</p>
+            <p><strong>Nama Pengguna (Username):</strong> <?php echo e($email); ?></p>
+            <p><strong>Kata Laluan Baharu:</strong> <?php echo e($password); ?></p>
         </div>
         
         <div class="warning">
@@ -104,3 +104,4 @@
     </div>
 </body>
 </html>
+<?php /**PATH C:\laragon\www\MySIPMA_2\resources\views/emails/reset_password.blade.php ENDPATH**/ ?>

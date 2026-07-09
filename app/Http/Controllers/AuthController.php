@@ -6,19 +6,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use App\Models\User;
-use App\Mail\ResetPasswordMail;
+use App\Services\GmailService;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP as PhpMailerSmtp;
+use PHPMailer\PHPMailer\Exception as PhpMailerException;
+
+require_once base_path('vendor/phpmailer/phpmailer/src/PHPMailer.php');
+require_once base_path('vendor/phpmailer/phpmailer/src/SMTP.php');
+require_once base_path('vendor/phpmailer/phpmailer/src/Exception.php');
 
 class AuthController extends Controller
 {
     const MAX_ATTEMPTS = 4;
     const BASE_COOLDOWN = 30;
 
-    /**
-     * Handle an authentication attempt.
-     */
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -34,7 +38,6 @@ class AuthController extends Controller
         $cacheKey = 'login_attempts_' . md5($email);
         $levelKey = $cacheKey . '_level';
 
-        // Check cooldown
         $cooldownUntil = Cache::get($cacheKey . '_cooldown');
         if ($cooldownUntil) {
             $remaining = $cooldownUntil - now()->timestamp;
@@ -67,14 +70,12 @@ class AuthController extends Controller
             ]);
         }
 
-        // Failed login
         $attempts = (int) Cache::get($cacheKey, 0) + 1;
         Cache::put($cacheKey, $attempts, now()->addMinutes(5));
 
         $remaining = self::MAX_ATTEMPTS - $attempts;
 
         if ($remaining <= 0) {
-            // Escalating cooldown: each round doubles
             $level = (int) Cache::get($levelKey, 0);
             $cooldown = self::BASE_COOLDOWN * pow(2, $level);
             Cache::put($levelKey, $level + 1, now()->addHours(1));
@@ -105,9 +106,6 @@ class AuthController extends Controller
         ], 401);
     }
 
-    /**
-     * Log the user out of the application.
-     */
     public function logout(Request $request)
     {
         Auth::logout();
@@ -118,9 +116,6 @@ class AuthController extends Controller
         return redirect()->route('index');
     }
 
-    /**
-     * Check if email exists for forgot password.
-     */
     public function checkEmail(Request $request)
     {
         $request->validate([
@@ -133,33 +128,72 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if ($user) {
-            // Generate a random 10-character password
             $newPassword = Str::random(10);
-            
-            // Update the user's password in the database
+
             $user->password = Hash::make($newPassword);
             $user->updated_at = now();
             $user->save();
 
-            // Send the email with the new password
+            $mailSent = false;
+
             try {
-                Mail::to($user->email)->send(new ResetPasswordMail($user->email, $newPassword));
+                $htmlBody = view('emails.reset_password', ['email' => $user->email, 'password' => $newPassword])->render();
+
+                $gmailApi = new GmailService();
+
+                if ($gmailApi->isConfigured()) {
+                    $gmailApi->sendEmail($user->email, 'Maklumat Akaun Pengguna - Sistem MySIPMa', $htmlBody);
+                    $mailSent = true;
+                } else {
+                    $mail = new PHPMailer(true);
+                    $mail->isSMTP();
+                    $mail->Host       = env('MAIL_HOST', 'smtp.gmail.com');
+                    $mail->SMTPAuth   = true;
+                    $mail->Username   = env('MAIL_USERNAME', 'mysipma@gmail.com');
+                    $mail->Password   = env('MAIL_PASSWORD');
+                    $mail->SMTPSecure = env('MAIL_ENCRYPTION', 'tls');
+                    $mail->Port       = env('MAIL_PORT', 587);
+                    $mail->CharSet    = 'UTF-8';
+
+                    $mail->setFrom(env('MAIL_FROM_ADDRESS', 'mysipma@gmail.com'), env('MAIL_FROM_NAME', 'Sistem MySIPMa'));
+                    $mail->addAddress($user->email);
+                    $mail->isHTML(true);
+                    $mail->Subject = 'Maklumat Akaun Pengguna - Sistem MySIPMa';
+                    $mail->Body    = $htmlBody;
+
+                    $mail->send();
+                    $mailSent = true;
+                }
             } catch (\Exception $e) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Ralat menghantar emel: ' . $e->getMessage()
-                ], 500);
+                \Log::error('Email failed: ' . $e->getMessage());
+
+                try {
+                    $mail = new PHPMailer(true);
+                    $mail->isMail();
+                    $mail->CharSet = 'UTF-8';
+                    $mail->setFrom('noreply@mysipma.com', 'Sistem MySIPMa');
+                    $mail->addAddress($user->email);
+                    $mail->isHTML(true);
+                    $mail->Subject = 'Maklumat Akaun Pengguna - Sistem MySIPMa';
+                    $mail->Body    = $htmlBody;
+                    $mail->send();
+                    $mailSent = true;
+                } catch (\Exception $e2) {
+                    \Log::error('Fallback mail() also failed: ' . $e2->getMessage());
+                }
             }
 
             return response()->json([
-                'success' => true,
-                'message' => 'Kata laluan baharu telah berjaya dihantar ke: ' . $request->email
+                'success' => $mailSent,
+                'message' => $mailSent
+                    ? 'Kata laluan baharu telah berjaya dihantar ke ' . $request->email
+                    : 'Gagal menghantar emel. Sila cuba sebentar lagi.',
             ]);
         }
 
         return response()->json([
             'success' => false,
-            'message' => 'Emel belum didaftarkan'
+            'message' => 'Emel belum didaftarkan.',
         ], 404);
     }
 }

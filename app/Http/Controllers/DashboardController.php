@@ -32,6 +32,9 @@ class DashboardController extends Controller
         $pendingApprovals = $this->pendingApprovalCount($instId);
         $pendingPenerimaan = (int) ($statusCounts['In Progress'] ?? 0);
 
+        $contractData = $this->getContractLimitData();
+        $contractTrend = $this->getContractMonthlyTrend();
+
         return view('user_dashboard', [
             'totalOrders' => (int) ($statusCounts['Pending'] ?? 0)
                 + (int) ($statusCounts['In Progress'] ?? 0)
@@ -43,6 +46,8 @@ class DashboardController extends Controller
             'pendingPenerimaan' => $pendingPenerimaan,
             'inProgressOrders' => $pendingPenerimaan,
             'completedOrders' => (int) ($statusCounts['Completed'] ?? 0),
+            'contractData' => $contractData,
+            'contractTrend' => $contractTrend,
         ]);
     }
 
@@ -1730,6 +1735,94 @@ class DashboardController extends Controller
         return $stock > 0 ? $stock : 1;
     }
 
+    private function getContractLimitData()
+    {
+        $instId = Auth::user()->institution_id;
+
+        $contracts = DB::table('ceiling_limits')
+            ->join('contracts', 'ceiling_limits.contract_id', '=', 'contracts.id')
+            ->join('suppliers', 'contracts.supplier_id', '=', 'suppliers.id')
+            ->where('ceiling_limits.institution_id', $instId)
+            ->where('contracts.status', 'Active')
+            ->select(
+                'ceiling_limits.id',
+                'ceiling_limits.contract_limit',
+                'ceiling_limits.used_quantity',
+                'contracts.id as contract_id',
+                'contracts.contract_no',
+                'contracts.supplier_id',
+                'contracts.start_date',
+                'contracts.end_date',
+                'suppliers.company_name as supplier_name'
+            )
+            ->get()
+            ->map(function ($item) {
+                $limit = (float) ($item->contract_limit ?? 0);
+
+                $actualUsed = (float) DB::table('orders')
+                    ->where('contract_id', $item->contract_id)
+                    ->whereNotIn('status', ['Cancelled', 'Rejected', 'Draft'])
+                    ->sum('total_amount');
+
+                $used = $actualUsed > 0 ? $actualUsed : (float) ($item->used_quantity ?? 0);
+                $percentage = $limit > 0 ? round(($used / $limit) * 100, 1) : 0;
+
+                if ($percentage > 100) {
+                    $status = 'over';
+                    $statusText = 'Melebihi Had';
+                    $statusClass = 'danger';
+                } elseif ($percentage == 100) {
+                    $status = 'hit';
+                    $statusText = 'Mencapai Had';
+                    $statusClass = 'danger';
+                } elseif ($percentage >= 80) {
+                    $status = 'near';
+                    $statusText = 'Hampir Had';
+                    $statusClass = 'warning';
+                } else {
+                    $status = 'safe';
+                    $statusText = 'Selamat';
+                    $statusClass = 'success';
+                }
+
+                $remaining = $limit - $used;
+
+                return [
+                    'id' => $item->id,
+                    'contract_no' => $item->contract_no,
+                    'supplier' => $item->supplier_name,
+                    'limit' => $limit,
+                    'used' => $used,
+                    'remaining' => $remaining > 0 ? $remaining : 0,
+                    'percentage' => min($percentage, 100),
+                    'raw_percentage' => $percentage,
+                    'status' => $status,
+                    'statusText' => $statusText,
+                    'statusClass' => $statusClass,
+                    'start_date' => $item->start_date,
+                    'end_date' => $item->end_date,
+                ];
+            })
+            ->sortByDesc('raw_percentage')
+            ->values();
+
+        $total = $contracts->count();
+        $safe = $contracts->where('status', 'safe')->count();
+        $near = $contracts->where('status', 'near')->count();
+        $over = $contracts->where('status', 'over')->count() + $contracts->where('status', 'hit')->count();
+
+        return [
+            'contracts' => $contracts,
+            'summary' => [
+                'total' => $total,
+                'safe' => $safe,
+                'near' => $near,
+                'over' => $over,
+            ],
+            'hasCritical' => $near > 0 || $over > 0,
+        ];
+    }
+
     private function configuredMinimumStock(object $item): ?float
     {
         $monthlyLimit = (float) ($item->monthly_limit ?? 0);
@@ -1826,5 +1919,53 @@ class DashboardController extends Controller
     {
         BorangIndenDraft::where('user_id', Auth::id())->delete();
         return response()->json(['success' => true]);
+    }
+
+    private function getContractMonthlyTrend()
+    {
+        $instId = Auth::user()->institution_id;
+
+        $contracts = DB::table('ceiling_limits')
+            ->join('contracts', 'ceiling_limits.contract_id', '=', 'contracts.id')
+            ->where('ceiling_limits.institution_id', $instId)
+            ->where('contracts.status', 'Active')
+            ->select('contracts.id', 'contracts.contract_no', 'ceiling_limits.contract_limit')
+            ->get();
+
+        $months = collect();
+        for ($i = 5; $i >= 0; $i--) {
+            $months->push(now()->subMonths($i)->format('Y-m'));
+        }
+
+        $datasets = [];
+        foreach ($contracts as $c) {
+            $monthlyData = [];
+            $runningTotal = 0;
+
+            foreach ($months as $m) {
+                $monthTotal = (float) DB::table('orders')
+                    ->where('contract_id', $c->id)
+                    ->whereNotIn('status', ['Cancelled', 'Rejected', 'Draft'])
+                    ->whereYear('order_date', substr($m, 0, 4))
+                    ->whereMonth('order_date', substr($m, 5, 2))
+                    ->sum('total_amount');
+
+                $runningTotal += $monthTotal;
+                $monthlyData[] = $runningTotal;
+            }
+
+            $datasets[] = [
+                'label' => $c->contract_no,
+                'data' => $monthlyData,
+                'limit' => (float) $c->contract_limit,
+                'fill' => false,
+                'tension' => 0.3,
+            ];
+        }
+
+        return [
+            'labels' => $months->map(fn($m) => \Carbon\Carbon::createFromFormat('Y-m', $m)->format('M Y'))->values(),
+            'datasets' => $datasets,
+        ];
     }
 }

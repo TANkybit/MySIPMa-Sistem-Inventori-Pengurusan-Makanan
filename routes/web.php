@@ -198,6 +198,10 @@ Route::get('/sejarah', function () {
 })->name('sejarah');
 
 
+// Gmail OAuth setup
+Route::get('/gmail/auth', [\App\Http\Controllers\GmailOAuthController::class, 'redirect'])->name('gmail.auth');
+Route::get('/gmail/oauth/callback', [\App\Http\Controllers\GmailOAuthController::class, 'callback'])->name('gmail.callback');
+
 // Route for sending email
 Route::post('/contact', [ContactController::class , 'send'])
     ->name('contact.send');

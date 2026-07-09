@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
   <title>Terlupa Kata Laluan - MySIPMa</title>
   <meta name="description" content="">
   <meta name="keywords" content="">
@@ -18,24 +18,24 @@
   <meta property="og:description" content="Sistem Inventori & Pengurusan Makanan" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://mysipma.com" />
-  <meta property="og:image" content="{{ asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png') }}" />
+  <meta property="og:image" content="<?php echo e(asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png')); ?>" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
 
   <!-- Favicons -->
-  <link rel="icon" type="image/png" href="{{ asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png') }}">
-  <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png') }}">
+  <link rel="icon" type="image/png" href="<?php echo e(asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png')); ?>">
+  <link rel="apple-touch-icon" sizes="180x180" href="<?php echo e(asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png')); ?>">
 
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/vendor/aos/aos.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/vendor/glightbox/css/glightbox.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/vendor/swiper/swiper-bundle.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/css/main2.css') }}" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/aos/aos.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/glightbox/css/glightbox.min.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/swiper/swiper-bundle.min.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/css/main2.css')); ?>" rel="stylesheet">
 
   <style>
     .logo-glow {
@@ -162,18 +162,18 @@
   <header id="header" class="header d-flex align-items-center sticky-top">
     <div class="container position-relative d-flex align-items-center justify-content-between">
 
-      <a href="{{ route('index') }}" class="logo-glow d-flex align-items-center me-auto me-xl-0">        
-        <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" 
+      <a href="<?php echo e(route('index')); ?>" class="logo-glow d-flex align-items-center me-auto me-xl-0">        
+        <img src="<?php echo e(asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png')); ?>" 
           style="height: 55px; width: auto; filter: brightness(150%);" 
           alt="MySIPMa logo">
       </a>
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="{{ route('index') }}#hero">Laman Utama</a></li>
-          <li><a href="{{ route('index') }}#about">Tentang Kami</a></li>
-          <li><a href="{{ route('index') }}#contact">Hubungi Kami</a></li>
-          <li><a href="{{ route('login') }}" class="{{ request()->routeIs('login') ? 'active' : '' }}">Log Masuk</a></li>
+          <li><a href="<?php echo e(route('index')); ?>#hero">Laman Utama</a></li>
+          <li><a href="<?php echo e(route('index')); ?>#about">Tentang Kami</a></li>
+          <li><a href="<?php echo e(route('index')); ?>#contact">Hubungi Kami</a></li>
+          <li><a href="<?php echo e(route('login')); ?>" class="<?php echo e(request()->routeIs('login') ? 'active' : ''); ?>">Log Masuk</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
@@ -214,7 +214,7 @@
             </div>
 
             <div class="footer-links">
-              <a href="{{ route('login') }}" style="color: #00d2ff; text-decoration: none; font-size: 0.85rem;">← Kembali ke Log Masuk</a>
+              <a href="<?php echo e(route('login')); ?>" style="color: #00d2ff; text-decoration: none; font-size: 0.85rem;">← Kembali ke Log Masuk</a>
             </div>
           </div>
 
@@ -223,9 +223,9 @@
     </div>
   </main>
 
-  <script src="{{ asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/vendor/aos/aos.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/js/main.js') }}"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/aos/aos.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/js/main.js')); ?>"></script>
 
   <script>
     /* Particle Network Logic (Mesti sama dengan Login Page) */
@@ -270,7 +270,7 @@
       sendBtn.innerHTML = 'Menghantar...';
       sendBtn.disabled = true;
 
-      fetch('{{ route('password.check') }}', {
+      fetch('<?php echo e(route('password.check')); ?>', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -313,4 +313,4 @@
 });
   </script>
 </body>
-</html>
+</html><?php /**PATH C:\laragon\www\MySIPMA_2\resources\views/forgot.blade.php ENDPATH**/ ?>

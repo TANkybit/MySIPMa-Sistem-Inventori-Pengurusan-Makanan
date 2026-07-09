@@ -7,8 +7,8 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Papan Pemuka Pengguna - MySIPMa</title>
 
-  <link rel="icon" type="image/png" href="{{ asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png') }}">
-  <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png') }}">
+  <link rel="icon" type="image/png" href="<?php echo e(asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png')); ?>">
+  <link rel="apple-touch-icon" sizes="180x180" href="<?php echo e(asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png')); ?>">
 
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
@@ -16,10 +16,10 @@
     href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Montserrat:wght@300;400;500;600;700;800;900&display=swap"
     rel="stylesheet">
 
-  <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/css/main2.css') }}" rel="stylesheet">
-  <link href="{{ asset('css/user-theme.css') }}" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/css/main2.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('css/user-theme.css')); ?>" rel="stylesheet">
 
   <style>
     :root {
@@ -369,61 +369,63 @@
     style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
     <div class="container position-relative d-flex align-items-center justify-content-between">
       <a href="#" class="logo-glow d-flex align-items-center me-auto me-xl-0" id="logoLogoutTrigger">
-        <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" style="height: 55px; width: auto;"
+        <img src="<?php echo e(asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png')); ?>" style="height: 55px; width: auto;"
           alt="MySIPMa logo">
       </a>
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="{{ route('user.dashboard') }}"
-              class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Dashboard</a></li>
-          <li><a href="{{ route('user.senarai.inden') }}"
-              class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
-          @if(Auth::user()->hasPermission('pengesahan_inden'))
-          <li><a href="{{ route('user.pengesahan.inden') }}"
-              class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
-          @endif
-          @if(Auth::user()->hasPermission('borang_inden'))
-          <li><a href="{{ route('borang.inden') }}"
-               class="{{ request()->routeIs('borang.inden*') ? 'active' : '' }}">Borang Inden</a></li>
-          @endif
-          @if(Auth::user()->hasPermission('penerimaan_inden'))
-          <li><a href="{{ route('borang.penerimaan') }}" class="{{ request()->routeIs('borang.penerimaan') ? 'active' : '' }}">Penerimaan</a></li>
-          @endif
-          <li class="d-xl-none"><a href="{{ route('profile') }}" class="{{ request()->routeIs('profile') ? 'active' : '' }}">Profil</a></li>
+          <li><a href="<?php echo e(route('user.dashboard')); ?>"
+              class="<?php echo e(request()->routeIs('user.dashboard') ? 'active' : ''); ?>">Dashboard</a></li>
+          <li><a href="<?php echo e(route('user.senarai.inden')); ?>"
+              class="<?php echo e(request()->routeIs('user.senarai.inden') ? 'active' : ''); ?>">Senarai Inden</a></li>
+          <?php if(Auth::user()->hasPermission('pengesahan_inden')): ?>
+          <li><a href="<?php echo e(route('user.pengesahan.inden')); ?>"
+              class="<?php echo e(request()->routeIs('user.pengesahan.inden') ? 'active' : ''); ?>">Pengesahan Inden</a></li>
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('borang_inden')): ?>
+          <li><a href="<?php echo e(route('borang.inden')); ?>"
+               class="<?php echo e(request()->routeIs('borang.inden*') ? 'active' : ''); ?>">Borang Inden</a></li>
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('penerimaan_inden')): ?>
+          <li><a href="<?php echo e(route('borang.penerimaan')); ?>" class="<?php echo e(request()->routeIs('borang.penerimaan') ? 'active' : ''); ?>">Penerimaan</a></li>
+          <?php endif; ?>
+          <li class="d-xl-none"><a href="<?php echo e(route('profile')); ?>" class="<?php echo e(request()->routeIs('profile') ? 'active' : ''); ?>">Profil</a></li>
           <li class="d-xl-none"><a href="#" id="navLogoutBtn" class="text-danger">Log Keluar</a></li>
           </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
       <div class="d-none d-xl-flex align-items-center gap-3">
-        @if(Auth::user()->hasPermission('pengesahan_inden'))
-        <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3"
+        <?php if(Auth::user()->hasPermission('pengesahan_inden')): ?>
+        <a href="<?php echo e(route('user.pengesahan.inden')); ?>" class="position-relative text-white fs-5 me-3"
           style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'"
           onmouseout="this.style.color=''">
           <i class="bi bi-bell-fill"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
             style="font-size: 0.65rem;">
-            {{ $pendingApprovals ?? 0 }}
+            <?php echo e($pendingApprovals ?? 0); ?>
+
             <span class="visually-hidden">Inden belum disah</span>
           </span>
         </a>
-        @endif
-        @if(Auth::user()->hasPermission('penerimaan_inden'))
-        <a href="{{ route('borang.penerimaan') }}" class="position-relative text-white fs-5 me-3"
+        <?php endif; ?>
+        <?php if(Auth::user()->hasPermission('penerimaan_inden')): ?>
+        <a href="<?php echo e(route('borang.penerimaan')); ?>" class="position-relative text-white fs-5 me-3"
           style="transition: color 0.3s;" onmouseover="this.style.color='#f59e0b'"
           onmouseout="this.style.color=''">
           <i class="bi bi-truck"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
             style="font-size: 0.65rem;">
-            {{ $pendingPenerimaan ?? 0 }}
+            <?php echo e($pendingPenerimaan ?? 0); ?>
+
             <span class="visually-hidden">Penerimaan belum diproses</span>
           </span>
         </a>
-        @endif
+        <?php endif; ?>
         <button class="btn btn-icon" id="themeToggle" style="background:none;border:none;color:var(--text);font-size:1.2rem;padding:4px 8px"><i class="bi bi-moon-fill"></i></button>
-        <a href="{{ route('profile') }}" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''"><i
-            class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}</a>
+        <a href="<?php echo e(route('profile')); ?>" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''"><i
+            class="bi bi-person-circle me-2"></i><?php echo e(Auth::user()->name ?? 'Pengguna'); ?></a>
         <button type="button" class="btn btn-custom btn-logout btn-sm px-3 py-2" id="desktopLogoutBtn"><i
               class="bi bi-box-arrow-right me-2"></i>Log Keluar</button>
       </div>
@@ -435,7 +437,7 @@
 
       <div class="dashboard-header text-center">
         <h1>Papan Pemuka</h1>
-        <p class="muted">Selamat datang, {{ Auth::user()->name ?? 'Pengguna' }}. Pantau statistik dan status inden anda
+        <p class="muted">Selamat datang, <?php echo e(Auth::user()->name ?? 'Pengguna'); ?>. Pantau statistik dan status inden anda
           di sini.</p>
       </div>
 
@@ -448,7 +450,7 @@
               <i class="bi bi-file-earmark-text"></i>
             </div>
             <h3 class="stat-title">Jumlah Inden</h3>
-            <p class="stat-value" data-count="{{ $totalOrders ?? 0 }}">{{ $totalOrders ?? 0 }}</p>
+            <p class="stat-value" data-count="<?php echo e($totalOrders ?? 0); ?>"><?php echo e($totalOrders ?? 0); ?></p>
           </div>
         </div>
 
@@ -460,7 +462,7 @@
               <i class="bi bi-hourglass-split"></i>
             </div>
             <h3 class="stat-title">Menunggu</h3>
-            <p class="stat-value" data-count="{{ $pendingApprovals ?? 0 }}">{{ $pendingApprovals ?? 0 }}</p>
+            <p class="stat-value" data-count="<?php echo e($pendingApprovals ?? 0); ?>"><?php echo e($pendingApprovals ?? 0); ?></p>
             <p class="text-white-50 small mb-0 mt-2">Menunggu kelulusan</p>
           </div>
         </div>
@@ -473,12 +475,12 @@
               <i class="bi bi-truck"></i>
             </div>
             <h3 class="stat-title">Dalam Proses</h3>
-            <p class="stat-value" data-count="{{ $inProgressOrders ?? 0 }}">{{ $inProgressOrders ?? 0 }}</p>
+            <p class="stat-value" data-count="<?php echo e($inProgressOrders ?? 0); ?>"><?php echo e($inProgressOrders ?? 0); ?></p>
             <p class="text-white-50 small mb-0 mt-2">Diluluskan dan sedang diproses / dihantar</p>
           </div>
         </div>
 
-        @if(Auth::user()->hasPermission('penerimaan_inden'))
+        <?php if(Auth::user()->hasPermission('penerimaan_inden')): ?>
         <!-- Stat Card Penerimaan -->
         <div class="col-md-6 col-lg-3">
           <div class="stat-card text-center">
@@ -487,11 +489,11 @@
               <i class="bi bi-box-seam"></i>
             </div>
             <h3 class="stat-title">Penerimaan</h3>
-            <p class="stat-value" data-count="{{ $pendingPenerimaan ?? 0 }}">{{ $pendingPenerimaan ?? 0 }}</p>
+            <p class="stat-value" data-count="<?php echo e($pendingPenerimaan ?? 0); ?>"><?php echo e($pendingPenerimaan ?? 0); ?></p>
             <p class="text-white-50 small mb-0 mt-2">Belum diterima</p>
           </div>
         </div>
-        @endif
+        <?php endif; ?>
 
         <!-- Stat Card 4 -->
         <div class="col-md-6 col-lg-3">
@@ -501,13 +503,13 @@
               <i class="bi bi-check2-circle"></i>
             </div>
             <h3 class="stat-title">Selesai</h3>
-            <p class="stat-value" data-count="{{ $completedOrders ?? 0 }}">{{ $completedOrders ?? 0 }}</p>
+            <p class="stat-value" data-count="<?php echo e($completedOrders ?? 0); ?>"><?php echo e($completedOrders ?? 0); ?></p>
           </div>
         </div>
       </div>
 
-      {{-- Contract Limit Monitoring --}}
-      @if(isset($contractData) && $contractData['summary']['total'] > 0)
+      
+      <?php if(isset($contractData) && $contractData['summary']['total'] > 0): ?>
       <div class="row mt-5">
         <div class="col-12">
           <div class="d-flex align-items-center gap-2 mb-4">
@@ -515,47 +517,47 @@
             <h3 class="mb-0" style="font-weight:700;">Pemantauan Had Kontrak</h3>
           </div>
 
-          @if($contractData['hasCritical'])
+          <?php if($contractData['hasCritical']): ?>
           <div class="alert alert-warning d-flex align-items-center gap-3 mb-4"
             style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:16px;color:var(--text);"
             role="alert">
             <i class="bi bi-exclamation-triangle-fill fs-4" style="color:#f59e0b;"></i>
             <div>
               <strong>Perhatian!</strong>
-              Terdapat <strong>{{ $contractData['summary']['near'] }}</strong> kontrak hampir mencapai had
-              dan <strong>{{ $contractData['summary']['over'] }}</strong> kontrak telah melebihi had.
+              Terdapat <strong><?php echo e($contractData['summary']['near']); ?></strong> kontrak hampir mencapai had
+              dan <strong><?php echo e($contractData['summary']['over']); ?></strong> kontrak telah melebihi had.
               Sila ambil tindakan sewajarnya.
             </div>
           </div>
-          @endif
+          <?php endif; ?>
 
           <div class="row g-3 mb-4">
             <div class="col-6 col-md-3">
               <div class="card h-100 text-center p-3"
                 style="background:var(--surface);border:1px solid var(--border);border-radius:16px;">
                 <div class="text-white-50 small">Jumlah Kontrak</div>
-                <div class="fs-3 fw-bold">{{ $contractData['summary']['total'] }}</div>
+                <div class="fs-3 fw-bold"><?php echo e($contractData['summary']['total']); ?></div>
               </div>
             </div>
             <div class="col-6 col-md-3">
               <div class="card h-100 text-center p-3"
                 style="background:var(--surface);border:1px solid var(--border);border-radius:16px;">
                 <div class="text-white-50 small">Selamat</div>
-                <div class="fs-3 fw-bold" style="color:#22c55e;">{{ $contractData['summary']['safe'] }}</div>
+                <div class="fs-3 fw-bold" style="color:#22c55e;"><?php echo e($contractData['summary']['safe']); ?></div>
               </div>
             </div>
             <div class="col-6 col-md-3">
               <div class="card h-100 text-center p-3"
                 style="background:var(--surface);border:1px solid var(--border);border-radius:16px;">
                 <div class="text-white-50 small">Hampir Had</div>
-                <div class="fs-3 fw-bold" style="color:#f59e0b;">{{ $contractData['summary']['near'] }}</div>
+                <div class="fs-3 fw-bold" style="color:#f59e0b;"><?php echo e($contractData['summary']['near']); ?></div>
               </div>
             </div>
             <div class="col-6 col-md-3">
               <div class="card h-100 text-center p-3"
                 style="background:var(--surface);border:1px solid var(--border);border-radius:16px;">
                 <div class="text-white-50 small">Melebihi Had</div>
-                <div class="fs-3 fw-bold" style="color:#ef4444;">{{ $contractData['summary']['over'] }}</div>
+                <div class="fs-3 fw-bold" style="color:#ef4444;"><?php echo e($contractData['summary']['over']); ?></div>
               </div>
             </div>
           </div>
@@ -576,40 +578,41 @@
                   </tr>
                 </thead>
                 <tbody>
-                  @foreach($contractData['contracts'] as $c)
-                  @php
+                  <?php $__currentLoopData = $contractData['contracts']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $c): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                  <?php
                   $barColor = match($c['status']) {
                   'over' => '#ef4444',
                   'hit' => '#ef4444',
                   'near' => '#f59e0b',
                   default => '#22c55e'
                   };
-                  @endphp
+                  ?>
                   <tr style="border-bottom:1px solid var(--border);">
-                    <td class="ps-4 py-3 fw-medium">{{ $c['contract_no'] }}</td>
-                    <td class="py-3">{{ $c['supplier'] }}</td>
-                    <td class="py-3">{{ number_format($c['limit'], 2) }}</td>
-                    <td class="py-3">{{ number_format($c['used'], 2) }}</td>
-                    <td class="py-3">{{ number_format($c['remaining'], 2) }}</td>
+                    <td class="ps-4 py-3 fw-medium"><?php echo e($c['contract_no']); ?></td>
+                    <td class="py-3"><?php echo e($c['supplier']); ?></td>
+                    <td class="py-3"><?php echo e(number_format($c['limit'], 2)); ?></td>
+                    <td class="py-3"><?php echo e(number_format($c['used'], 2)); ?></td>
+                    <td class="py-3"><?php echo e(number_format($c['remaining'], 2)); ?></td>
                     <td class="py-3" style="min-width:180px;">
                       <div class="d-flex align-items-center gap-2">
                         <div class="progress flex-grow-1" style="height:8px;background:rgba(255,255,255,.1);border-radius:4px;">
                           <div class="progress-bar" role="progressbar"
-                            style="width:{{ $c['percentage'] }}%;background:{{ $barColor }};border-radius:4px;transition:width 0.6s ease;"
-                            aria-valuenow="{{ $c['percentage'] }}" aria-valuemin="0" aria-valuemax="100">
+                            style="width:<?php echo e($c['percentage']); ?>%;background:<?php echo e($barColor); ?>;border-radius:4px;transition:width 0.6s ease;"
+                            aria-valuenow="<?php echo e($c['percentage']); ?>" aria-valuemin="0" aria-valuemax="100">
                           </div>
                         </div>
-                        <span class="small text-white-50" style="min-width:45px;">{{ $c['percentage'] }}%</span>
+                        <span class="small text-white-50" style="min-width:45px;"><?php echo e($c['percentage']); ?>%</span>
                       </div>
                     </td>
                     <td class="text-center py-3">
                       <span class="badge rounded-pill px-3 py-2 fs-6"
-                        style="background:{{ $barColor }}20;color:{{ $barColor }};border:1px solid {{ $barColor }}50;">
-                        {{ $c['statusText'] }}
+                        style="background:<?php echo e($barColor); ?>20;color:<?php echo e($barColor); ?>;border:1px solid <?php echo e($barColor); ?>50;">
+                        <?php echo e($c['statusText']); ?>
+
                       </span>
                     </td>
                   </tr>
-                  @endforeach
+                  <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
               </table>
             </div>
@@ -617,8 +620,8 @@
         </div>
       </div>
 
-      {{-- Contract Usage Trend Chart --}}
-      @if(isset($contractTrend) && count($contractTrend['datasets']) > 0)
+      
+      <?php if(isset($contractTrend) && count($contractTrend['datasets']) > 0): ?>
       <div class="row mt-4">
         <div class="col-12">
           <div class="card chart-card"
@@ -633,41 +636,41 @@
           </div>
         </div>
       </div>
-      @endif
-      @endif
+      <?php endif; ?>
+      <?php endif; ?>
 
       <div class="row justify-content-center">
         <div class="col-md-10 col-lg-8">
-          @if(Auth::user()->hasPermission('borang_inden'))
+          <?php if(Auth::user()->hasPermission('borang_inden')): ?>
           <div class="action-card">
             <div>
               <h4 class="mb-1">Cipta Inden Baru</h4>
               <p class="muted mb-0">Isi borang inden digital untuk membuat permohonan baru.</p>
             </div>
-            <a href="{{ route('borang.inden') }}" class="btn btn-custom">Borang Inden <i
+            <a href="<?php echo e(route('borang.inden')); ?>" class="btn btn-custom">Borang Inden <i
                 class="bi bi-arrow-right-short fs-5 align-middle"></i></a>
           </div>
-          @endif
-          @if(Auth::user()->hasPermission('penerimaan_inden'))
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('penerimaan_inden')): ?>
           <div class="action-card">
             <div>
               <h4 class="mb-1">Penerimaan Barang</h4>
               <p class="muted mb-0">Rekod penerimaan barang daripada pembekal berdasarkan pesanan inden.</p>
             </div>
-            <a href="{{ route('borang.penerimaan') }}" class="btn btn-custom">Penerimaan <i
+            <a href="<?php echo e(route('borang.penerimaan')); ?>" class="btn btn-custom">Penerimaan <i
                 class="bi bi-arrow-right-short fs-5 align-middle"></i></a>
           </div>
-          @endif
-          @if(Auth::user()->hasPermission('pengesahan_inden'))
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('pengesahan_inden')): ?>
           <div class="action-card">
             <div>
               <h4 class="mb-1">Pengesahan Inden</h4>
               <p class="muted mb-0">Sahkan dan luluskan permohonan inden yang menunggu kelulusan.</p>
             </div>
-            <a href="{{ route('user.pengesahan.inden') }}" class="btn btn-custom">Pengesahan <i
+            <a href="<?php echo e(route('user.pengesahan.inden')); ?>" class="btn btn-custom">Pengesahan <i
                 class="bi bi-arrow-right-short fs-5 align-middle"></i></a>
           </div>
-          @endif
+          <?php endif; ?>
         </div>
       </div>
 
@@ -679,10 +682,10 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="{{ asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/js/mobile-nav.js') }}"></script>
-    <script src="{{ asset('js/session-timeout.js') }}"></script>
-  <script src="{{ asset('js/user-theme.js') }}"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/js/mobile-nav.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/session-timeout.js')); ?>"></script>
+  <script src="<?php echo e(asset('js/user-theme.js')); ?>"></script>
 
   <script>
     (function () {
@@ -730,7 +733,7 @@
       var gridColor = isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)';
       var textColor = isLight ? '#6b7280' : '#94a3b8';
 
-      var chartData = @json($contractTrend ?? []);
+      var chartData = <?php echo json_encode($contractTrend ?? [], 15, 512) ?>;
 
       var datasets = chartData.datasets.map(function(ds) {
         var limitLine = {
@@ -844,8 +847,8 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-cancel btn-sm px-3" data-bs-dismiss="modal">Batal</button>
-          <form action="{{ route('logout') }}" method="POST" id="logoutForm" class="d-inline">
-            @csrf
+          <form action="<?php echo e(route('logout')); ?>" method="POST" id="logoutForm" class="d-inline">
+            <?php echo csrf_field(); ?>
             <button type="submit" class="btn btn-danger btn-sm px-3"><i class="bi bi-box-arrow-right me-1"></i>Log Keluar</button>
           </form>
         </div>
@@ -867,3 +870,4 @@
 </body>
 
 </html>
+<?php /**PATH C:\laragon\www\MySIPMA_2\resources\views/user_dashboard.blade.php ENDPATH**/ ?>
