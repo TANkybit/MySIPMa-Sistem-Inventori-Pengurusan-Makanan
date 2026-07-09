@@ -204,9 +204,10 @@ class DashboardController extends Controller
         ];
 
         // Top 5 Items Ordered
-        $topItemsQuery = OrderItem::select('items.name', DB::raw('SUM(ordered_quantity) as total_quantity'))
+        $topItemsQuery = OrderItem::select('items.name', 'uom.code as uom_code', DB::raw('SUM(ordered_quantity) as total_quantity'))
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->join('items', 'order_items.item_id', '=', 'items.id')
+            ->leftJoin('uom', 'items.uom_id', '=', 'uom.id')
             ->where('orders.institution_id', $selectedInstitutionId);
 
         if ($request->filled('year')) {
@@ -221,7 +222,7 @@ class DashboardController extends Controller
             }
         }
 
-        $topItems = $topItemsQuery->groupBy('items.id', 'items.name')
+        $topItems = $topItemsQuery->groupBy('items.id', 'items.name', 'uom.code')
             ->orderByDesc('total_quantity')
             ->limit(5)
             ->get();
@@ -229,6 +230,7 @@ class DashboardController extends Controller
         $dashboardData['top_items'] = [
             'labels' => $topItems->pluck('name')->toArray(),
             'data' => $topItems->pluck('total_quantity')->toArray(),
+            'uoms' => $topItems->pluck('uom_code')->toArray(),
         ];
 
         return response()->json(['success' => true, 'data' => $dashboardData]);
@@ -429,11 +431,12 @@ class DashboardController extends Controller
                 ];
 
                 // 2. Top 5 Items Ordered (Highest Quantity)
-                $topItems = OrderItem::select('items.name', DB::raw('SUM(ordered_quantity) as total_quantity'))
+                $topItems = OrderItem::select('items.name', 'uom.code as uom_code', DB::raw('SUM(ordered_quantity) as total_quantity'))
                     ->join('orders', 'order_items.order_id', '=', 'orders.id')
                     ->join('items', 'order_items.item_id', '=', 'items.id')
+                    ->leftJoin('uom', 'items.uom_id', '=', 'uom.id')
                     ->where('orders.institution_id', $selectedInstitution->id)
-                    ->groupBy('items.id', 'items.name')
+                    ->groupBy('items.id', 'items.name', 'uom.code')
                     ->orderByDesc('total_quantity')
                     ->limit(5)
                     ->get();
@@ -441,6 +444,7 @@ class DashboardController extends Controller
                 $dashboardData['top_items'] = [
                     'labels' => $topItems->pluck('name')->toArray(),
                     'data' => $topItems->pluck('total_quantity')->toArray(),
+                    'uoms' => $topItems->pluck('uom_code')->toArray(),
                 ];
             }
         }
@@ -577,11 +581,12 @@ class DashboardController extends Controller
                 ];
 
                 // 2. Top 5 Items Ordered (Highest Quantity)
-                $topItems = OrderItem::select('items.name', DB::raw('SUM(ordered_quantity) as total_quantity'))
+                $topItems = OrderItem::select('items.name', 'uom.code as uom_code', DB::raw('SUM(ordered_quantity) as total_quantity'))
                     ->join('orders', 'order_items.order_id', '=', 'orders.id')
                     ->join('items', 'order_items.item_id', '=', 'items.id')
+                    ->leftJoin('uom', 'items.uom_id', '=', 'uom.id')
                     ->whereIn('orders.institution_id', $institutionIds)
-                    ->groupBy('items.id', 'items.name')
+                    ->groupBy('items.id', 'items.name', 'uom.code')
                     ->orderByDesc('total_quantity')
                     ->limit(5)
                     ->get();
@@ -589,6 +594,7 @@ class DashboardController extends Controller
                 $dashboardData['top_items'] = [
                     'labels' => $topItems->pluck('name')->toArray(),
                     'data' => $topItems->pluck('total_quantity')->toArray(),
+                    'uoms' => $topItems->pluck('uom_code')->toArray(),
                 ];
             }
         }
