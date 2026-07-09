@@ -141,7 +141,7 @@
                             <div class="card">
                                 <div class="card-body">
                                     <form method="GET" action="{{ route($currentRoute) }}" class="row g-3 align-items-end">
-                                        <div class="col-lg-6 col-md-8">
+                                        <div class="col-lg-4 col-md-12">
                                             <label for="institution_id" class="form-label">Pilih Institusi</label>
                                             <select id="institution_id" name="institution_id" class="form-select">
                                                 <option value="">Semua Institusi ({{ optional($selectedState)->name }})</option>
@@ -150,7 +150,25 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                        <div class="col-lg-2 col-md-4">
+                                        <div class="col-lg-3 col-md-6">
+                                            <label for="year" class="form-label">Tahun</label>
+                                            <select id="year" name="year" class="form-select">
+                                                <option value="">Semua</option>
+                                                @for($y = now()->year; $y >= now()->year - 4; $y--)
+                                                    <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}</option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-3 col-md-6">
+                                            <label for="month" class="form-label">Bulan</label>
+                                            <select id="month" name="month" class="form-select">
+                                                <option value="">Semua</option>
+                                                @foreach([1=>'Januari',2=>'Februari',3=>'Mac',4=>'April',5=>'Mei',6=>'Jun',7=>'Julai',8=>'Ogos',9=>'September',10=>'Oktober',11=>'November',12=>'Disember'] as $m => $label)
+                                                    <option value="{{ $m }}" {{ request('month') == $m ? 'selected' : '' }}>{{ $label }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-2 col-md-12">
                                             <button type="submit" class="btn btn-primary w-100">Tapis</button>
                                         </div>
                                     </form>
@@ -915,12 +933,14 @@
                 if (tbody && dashData.top_items && dashData.top_items.labels.length > 0) {
                     let html = '';
                     dashData.top_items.labels.forEach((label, i) => {
+                        const uom = (dashData.top_items.uoms && dashData.top_items.uoms[i]) ? dashData.top_items.uoms[i] : '';
                         html += `
                             <tr>
                                 <td class="ps-4 text-muted">${i + 1}</td>
                                 <td class="fw-medium text-dark">${label}</td>
                                 <td class="text-end pe-4">
                                     <span class="badge bg-primary rounded-pill px-3 py-2 fs-6">${dashData.top_items.data[i]}</span>
+                                    <span class="ms-1 text-muted small">${uom}</span>
                                 </td>
                             </tr>
                         `;

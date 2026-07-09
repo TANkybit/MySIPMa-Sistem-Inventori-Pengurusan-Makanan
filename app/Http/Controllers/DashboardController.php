@@ -517,11 +517,23 @@ class DashboardController extends Controller
                 $institutionIds = $institutions->pluck('id');
             }
 
+            $hasYear = $request->filled('year');
+            $year = $hasYear ? intval($request->input('year')) : null;
+            $hasMonth = $request->filled('month');
+            $month = $hasMonth ? intval($request->input('month')) : null;
+
             if (in_array($activePage, ['dashboard', 'ringkasan'])) {
-                $orders = Order::with(['institution', 'supplier'])
-                    ->whereIn('institution_id', $institutionIds)
-                    ->orderBy('created_at', 'desc')
-                    ->get();
+                $ordersQuery = Order::with(['institution', 'supplier'])
+                    ->whereIn('institution_id', $institutionIds);
+                    
+                if ($hasYear) {
+                    $ordersQuery->whereYear('order_date', $year);
+                }
+                if ($hasMonth && $month >= 1 && $month <= 12) {
+                    $ordersQuery->whereMonth('order_date', $month);
+                }
+                
+                $orders = $ordersQuery->orderBy('created_at', 'desc')->get();
             }
 
             if (in_array($activePage, ['dashboard', 'inventori', 'ringkasan'])) {
@@ -530,15 +542,11 @@ class DashboardController extends Controller
                     ->whereIn('orders.institution_id', $institutionIds);
 
                 // Apply optional year/month filters from query string
-                if ($request->filled('year')) {
-                    $year = intval($request->input('year'));
+                if ($hasYear) {
                     $inventoryQuery->whereYear('orders.order_date', $year);
                 }
-                if ($request->filled('month')) {
-                    $month = intval($request->input('month'));
-                    if ($month >= 1 && $month <= 12) {
-                        $inventoryQuery->whereMonth('orders.order_date', $month);
-                    }
+                if ($hasMonth && $month >= 1 && $month <= 12) {
+                    $inventoryQuery->whereMonth('orders.order_date', $month);
                 }
 
                 $inventoryItems = $inventoryQuery->groupBy('item_id')
@@ -568,8 +576,11 @@ class DashboardController extends Controller
 
             if ($activePage === 'dashboard') {
                 // 1. Order Status Breakdown
-                $statusCounts = Order::whereIn('institution_id', $institutionIds)
-                    ->select('status', DB::raw('count(*) as count'))
+                $statusQuery = Order::whereIn('institution_id', $institutionIds);
+                if ($hasYear) $statusQuery->whereYear('order_date', $year);
+                if ($hasMonth && $month >= 1 && $month <= 12) $statusQuery->whereMonth('order_date', $month);
+                
+                $statusCounts = $statusQuery->select('status', DB::raw('count(*) as count'))
                     ->groupBy('status')
                     ->pluck('count', 'status')->toArray();
                 
@@ -581,12 +592,16 @@ class DashboardController extends Controller
                 ];
 
                 // 2. Top 5 Items Ordered (Highest Quantity)
-                $topItems = OrderItem::select('items.name', 'uom.code as uom_code', DB::raw('SUM(ordered_quantity) as total_quantity'))
+                $topItemsQuery = OrderItem::select('items.name', 'uom.code as uom_code', DB::raw('SUM(ordered_quantity) as total_quantity'))
                     ->join('orders', 'order_items.order_id', '=', 'orders.id')
                     ->join('items', 'order_items.item_id', '=', 'items.id')
                     ->leftJoin('uom', 'items.uom_id', '=', 'uom.id')
-                    ->whereIn('orders.institution_id', $institutionIds)
-                    ->groupBy('items.id', 'items.name', 'uom.code')
+                    ->whereIn('orders.institution_id', $institutionIds);
+                    
+                if ($hasYear) $topItemsQuery->whereYear('orders.order_date', $year);
+                if ($hasMonth && $month >= 1 && $month <= 12) $topItemsQuery->whereMonth('orders.order_date', $month);
+                
+                $topItems = $topItemsQuery->groupBy('items.id', 'items.name', 'uom.code')
                     ->orderByDesc('total_quantity')
                     ->limit(5)
                     ->get();
