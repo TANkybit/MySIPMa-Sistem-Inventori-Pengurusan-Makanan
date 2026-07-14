@@ -133,6 +133,57 @@
     opacity: 0.9;
 }
 
+/* ========== SIDEBAR DARK MODE - Force visible text ========== */
+/* The sidebar is ALWAYS dark, so sidebar text must ALWAYS be white/light.
+   --white is remapped to #121212 in dark mode, so we pin these explicitly. */
+
+/* Logo: "MySIPMA" title */
+[data-bs-theme="dark"] .logo-text span:first-child {
+    color: #ffffff !important;
+}
+
+/* Logo: "Pengarah Institusi" subtitle under MySIPMA */
+[data-bs-theme="dark"] .logo-text small {
+    color: rgba(255, 255, 255, 0.75) !important;
+    opacity: 1 !important;
+}
+
+/* Sidebar nav section labels: UTAMA, PENGURUSAN DATA, LAPORAN */
+[data-bs-theme="dark"] .nav-title {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Sidebar nav links text */
+[data-bs-theme="dark"] .nav-link {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+[data-bs-theme="dark"] .nav-link:hover,
+[data-bs-theme="dark"] .nav-link.active {
+    color: #ffffff !important;
+}
+
+/* Sidebar footer: user name */
+[data-bs-theme="dark"] .user-info h6 {
+    color: #ffffff !important;
+}
+
+/* Sidebar footer: "Pengarah Institusi" role label */
+[data-bs-theme="dark"] .user-info small {
+    color: rgba(255, 255, 255, 0.65) !important;
+    opacity: 1 !important;
+}
+
+/* Sidebar footer logout button */
+[data-bs-theme="dark"] .btn-icon.text-danger {
+    color: #ff6b6b !important;
+}
+
+/* Sidebar toggle icon */
+[data-bs-theme="dark"] .sidebar-toggle {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
 /* ========== BASE STYLES ========== */
 * {
     margin: 0;
@@ -1586,4 +1637,379 @@ h1, h2, h3, h4, h5, h6 {
 .search-result-content small { font-size: 0.75rem; color: var(--text-color); opacity: 0.7; }
 .search-empty { padding: 20px; text-align: center; color: var(--text-color); opacity: 0.6; }
 .search-loading { display: flex; justify-content: center; padding: 20px; color: var(--primary-color); }
+
+/* ========== DARK MODE FIXES - Pengarah Institusi Dashboard ========== */
+
+/* Table headers: ensure they use dark bg in dark mode */
+[data-bs-theme="dark"] .table thead th {
+    background: #212529;
+    color: #e9ecef;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Bootstrap table-light class forces light bg — override in dark mode */
+[data-bs-theme="dark"] .table-light,
+[data-bs-theme="dark"] .table-light th,
+[data-bs-theme="dark"] .table-light td {
+    background-color: #212529 !important;
+    color: #e9ecef !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Table body rows */
+[data-bs-theme="dark"] .table tbody td {
+    color: #e9ecef;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Table hover in dark mode */
+[data-bs-theme="dark"] .table-hover tbody tr:hover td {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: #f1f3f5;
+}
+
+/* Bootstrap bg-white fix in dark mode */
+[data-bs-theme="dark"] .bg-white {
+    background-color: #1a1a1a !important;
+    color: #e9ecef !important;
+}
+
+/* Bootstrap bg-light fix in dark mode */
+[data-bs-theme="dark"] .bg-light {
+    background-color: #2a2a2a !important;
+    color: #e9ecef !important;
+}
+
+/* Badge bg-light in dark mode (e.g., in critical stock list) */
+[data-bs-theme="dark"] .badge.bg-light {
+    background-color: #3a3a3a !important;
+    color: #e9ecef !important;
+}
+
+/* badge bg-secondary in dark mode */
+[data-bs-theme="dark"] .badge.bg-secondary {
+    background: rgba(108, 117, 125, 0.25) !important;
+    color: #adb5bd !important;
+}
+
+/* List group items in dark mode */
+[data-bs-theme="dark"] .list-group-item {
+    background-color: #1e1e1e;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #e9ecef;
+}
+
+[data-bs-theme="dark"] .list-group-item:hover {
+    background-color: #252525;
+}
+
+[data-bs-theme="dark"] .list-group-item .fw-medium {
+    color: #f1f3f5;
+}
+
+/* Form selects and inputs in dark mode */
+[data-bs-theme="dark"] .form-select,
+[data-bs-theme="dark"] .form-control {
+    background-color: #1e1e1e;
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #e9ecef;
+}
+
+[data-bs-theme="dark"] .form-select:focus,
+[data-bs-theme="dark"] .form-control:focus {
+    background-color: #252525;
+    color: #e9ecef;
+    border-color: var(--primary-light);
+}
+
+/* Card header in dark mode */
+[data-bs-theme="dark"] .card-header {
+    background-color: #1a1a1a;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Card title text in dark mode */
+[data-bs-theme="dark"] .card-title {
+    color: #f1f3f5;
+}
+
+/* Breadcrumb in dark mode */
+[data-bs-theme="dark"] .breadcrumb-item a {
+    color: #adb5bd;
+}
+
+[data-bs-theme="dark"] .breadcrumb-item.active {
+    color: #10b981;
+}
+
+[data-bs-theme="dark"] .breadcrumb-item + .breadcrumb-item::before {
+    color: #6c757d;
+}
+
+/* Page title h1 in header (dark mode) */
+[data-bs-theme="dark"] .page-title h1 {
+    color: #f1f3f5;
+}
+
+/* Alert warning in dark mode — ensure readable text */
+[data-bs-theme="dark"] .alert-warning {
+    background-color: rgba(255, 193, 7, 0.12);
+    border-color: rgba(255, 193, 7, 0.3);
+    color: #ffe08a;
+}
+
+[data-bs-theme="dark"] .alert-warning .badge.text-bg-light {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    color: #f8f9fa !important;
+}
+
+/* Card summary boxes (Institusi Terpilih, Jumlah Pesanan, etc.) */
+[data-bs-theme="dark"] .card h3,
+[data-bs-theme="dark"] .card h4 {
+    color: #f1f3f5;
+}
+
+[data-bs-theme="dark"] .card h6.text-uppercase {
+    color: #9ba3af;
+}
+
+/* Stat/summary strong values inside cards */
+[data-bs-theme="dark"] .card .small strong {
+    color: #e9ecef;
+}
+
+/* btn-outline-primary in dark mode */
+[data-bs-theme="dark"] .btn-outline-primary {
+    color: #10b981;
+    border-color: #10b981;
+}
+
+[data-bs-theme="dark"] .btn-outline-primary:hover {
+    background-color: #10b981;
+    color: #0a0a0a;
+}
+
+/* btn-outline-warning in dark mode */
+[data-bs-theme="dark"] .btn-outline-warning {
+    color: #ffc107;
+    border-color: #ffc107;
+}
+
+[data-bs-theme="dark"] .btn-outline-warning:hover {
+    background-color: #ffc107;
+    color: #0a0a0a;
+}
+
+/* Search box input in header dark mode */
+[data-bs-theme="dark"] .search-box input {
+    background-color: #1e1e1e;
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #e9ecef;
+}
+
+[data-bs-theme="dark"] .search-box input::placeholder {
+    color: #6c757d;
+}
+
+/* Modal in dark mode */
+[data-bs-theme="dark"] .modal-content {
+    background-color: #1a1a1a;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-bs-theme="dark"] .modal-header {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-bs-theme="dark"] .modal-footer {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-bs-theme="dark"] .modal-title {
+    color: #f1f3f5;
+}
+
+[data-bs-theme="dark"] .modal-body {
+    color: #e9ecef;
+}
+
+[data-bs-theme="dark"] .modal-body table th {
+    color: #adb5bd;
+}
+
+[data-bs-theme="dark"] .modal-body table td {
+    color: #e9ecef;
+}
+
+/* btn-close in dark mode */
+[data-bs-theme="dark"] .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Footer dark mode */
+[data-bs-theme="dark"] .footer {
+    background-color: #111111;
+    border-color: rgba(255, 255, 255, 0.08);
+    color: #9ba3af;
+}
+
+/* DataTables dark mode */
+[data-bs-theme="dark"] .dataTables_wrapper .dataTables_filter input,
+[data-bs-theme="dark"] .dataTables_wrapper .dataTables_length select {
+    background-color: #1e1e1e;
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #e9ecef;
+}
+
+[data-bs-theme="dark"] .dataTables_wrapper .dataTables_info,
+[data-bs-theme="dark"] .dataTables_wrapper .dataTables_filter label,
+[data-bs-theme="dark"] .dataTables_wrapper .dataTables_length label {
+    color: #9ba3af;
+}
+
+[data-bs-theme="dark"] .dataTables_wrapper .dataTables_paginate .paginate_button {
+    color: #adb5bd !important;
+}
+
+[data-bs-theme="dark"] .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+[data-bs-theme="dark"] .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: #fff !important;
+}
+
+[data-bs-theme="dark"] .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: transparent !important;
+    color: #e9ecef !important;
+}
+
+/* text-muted override in dark mode */
+[data-bs-theme="dark"] .text-muted {
+    color: #9ba3af !important;
+}
+
+/* user-info in sidebar footer - already handled above in sidebar section */
+
+/* Muted label for year/month filter selects */
+[data-bs-theme="dark"] label.small.text-muted,
+[data-bs-theme="dark"] small.text-muted {
+    color: #9ba3af !important;
+}
+
+/* ========== GLOBAL TEXT VISIBILITY BOOST (Dark Mode) ========== */
+
+/* General body text */
+[data-bs-theme="dark"] body {
+    color: #e9ecef;
+}
+
+/* Paragraph text inside cards and content areas */
+[data-bs-theme="dark"] p,
+[data-bs-theme="dark"] .card p,
+[data-bs-theme="dark"] .card-body p {
+    color: #d1d5db;
+}
+
+/* Small text elements */
+[data-bs-theme="dark"] small,
+[data-bs-theme="dark"] .small {
+    color: #9ba3af;
+}
+
+/* Strong / bold text */
+[data-bs-theme="dark"] strong,
+[data-bs-theme="dark"] .fw-bold,
+[data-bs-theme="dark"] .fw-semibold,
+[data-bs-theme="dark"] .fw-medium {
+    color: #f3f4f6;
+}
+
+/* Table: override Bootstrap's --bs-table-color which may be unset */
+[data-bs-theme="dark"] .table {
+    color: #e9ecef;
+    --bs-table-color: #e9ecef;
+    --bs-table-striped-color: #e9ecef;
+    --bs-table-hover-color: #f3f4f6;
+}
+
+/* Ensure table cells are always light-colored */
+[data-bs-theme="dark"] .table td,
+[data-bs-theme="dark"] .table th {
+    color: #e9ecef;
+}
+
+/* Header area text */
+[data-bs-theme="dark"] .header {
+    color: #e9ecef;
+}
+
+/* Span text inside cards */
+[data-bs-theme="dark"] .card span {
+    color: inherit;
+}
+
+/* List items in general */
+[data-bs-theme="dark"] li {
+    color: #e9ecef;
+}
+
+/* Input placeholder text */
+[data-bs-theme="dark"] input::placeholder,
+[data-bs-theme="dark"] textarea::placeholder {
+    color: #6b7280 !important;
+}
+
+/* Section headings inside page content */
+[data-bs-theme="dark"] .content-body h1,
+[data-bs-theme="dark"] .content-body h2,
+[data-bs-theme="dark"] .content-body h3,
+[data-bs-theme="dark"] .content-body h4,
+[data-bs-theme="dark"] .content-body h5,
+[data-bs-theme="dark"] .content-body h6 {
+    color: #f3f4f6;
+}
+
+/* Card stat value numbers */
+[data-bs-theme="dark"] .card h3.mb-0,
+[data-bs-theme="dark"] .card h4.mb-0 {
+    color: #ffffff;
+}
+
+/* Card subtitle labels */
+[data-bs-theme="dark"] .card h6.text-muted,
+[data-bs-theme="dark"] .card h6.text-uppercase.text-muted {
+    color: #9ba3af !important;
+}
+
+/* Inventory / ringkasan page text */
+[data-bs-theme="dark"] .card-body .text-muted.small,
+[data-bs-theme="dark"] .card-body small.text-muted {
+    color: #9ba3af !important;
+}
+
+/* Form labels */
+[data-bs-theme="dark"] .form-label {
+    color: #d1d5db;
+}
+
+/* Alert text */
+[data-bs-theme="dark"] .alert {
+    color: #e9ecef;
+}
+
+/* Dropdown inside Bootstrap */
+[data-bs-theme="dark"] .dropdown-menu {
+    background-color: #1e1e1e;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-bs-theme="dark"] .dropdown-item {
+    color: #e9ecef;
+}
+
+[data-bs-theme="dark"] .dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.07);
+    color: #ffffff;
+}
 

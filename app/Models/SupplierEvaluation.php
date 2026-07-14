@@ -26,6 +26,8 @@ class SupplierEvaluation extends Model
         'percentage',
         'performance_rating',
         'remarks',
+        'status',
+        'is_verified',
         'created_by',
         'updated_by',
     ];
@@ -33,6 +35,7 @@ class SupplierEvaluation extends Model
     protected $casts = [
         'evaluation_date' => 'date',
         'percentage' => 'decimal:2',
+        'is_verified' => 'boolean',
     ];
 
     public function order()

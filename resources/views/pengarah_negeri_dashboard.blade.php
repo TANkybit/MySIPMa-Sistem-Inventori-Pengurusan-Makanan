@@ -4,12 +4,14 @@
         'dashboard' => 'Papan Pemuka',
         'inventori' => 'Inventori',
         'ringkasan' => 'Ringkasan Pesanan',
+        'laporan-prestasi' => 'Penilaian Prestasi Pembekal',
         'profil' => 'Profil Saya',
     ];
     $pageRoutes = [
         'dashboard' => 'pengarah.negeri.dashboard',
         'inventori' => 'pengarah.negeri.inventori',
         'ringkasan' => 'pengarah.negeri.ringkasan',
+        'laporan-prestasi' => 'pengarah.negeri.laporan_prestasi',
         'profil' => 'pengarah.negeri.profil',
     ];
     $pageTitle = $pageTitles[$activePage] ?? 'Papan Pemuka';
@@ -78,6 +80,12 @@
 
                     <li class="nav-title mt-4">LAPORAN</li>
                     <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('pengarah.negeri.laporan_prestasi') ? 'active' : '' }}" href="{{ route('pengarah.negeri.laporan_prestasi') }}">
+                            <i class="fas fa-star"></i>
+                            <span>Penilaian Prestasi</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('pengarah.negeri.profil') ? 'active' : '' }}" href="{{ route('pengarah.negeri.profil') }}">
                             <i class="fas fa-user"></i>
                             <span>Profil Saya</span>
@@ -134,7 +142,7 @@
             <div class="content-body">
                 <div class="container-fluid py-4">
                     
-                    @if($activePage !== 'profil')
+                    @if(!in_array($activePage, ['profil', 'laporan-prestasi']))
                     <!-- Always show filter on non-profile pages -->
                     <div class="row mb-4">
                         <div class="col-12">
@@ -618,6 +626,104 @@
                                 </div>
                             </div>
                         </div>
+                    @elseif($activePage === 'laporan-prestasi')
+                        <div class="row">
+                            <div class="col-12">
+
+                                <!-- Info banner: read-only view -->
+                                <div class="alert alert-info d-flex align-items-center gap-3 mb-4 border-0 shadow-sm">
+                                    <i class="fas fa-info-circle fa-2x"></i>
+                                    <div>
+                                        <strong>Paparan Baca Sahaja</strong> — Halaman ini memaparkan penilaian prestasi pembekal yang telah <strong>disahkan</strong> oleh Pengarah Institusi sahaja.
+                                    </div>
+                                </div>
+
+                                <!-- Monthly Trend Table -->
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="card-title mb-0 fw-bold text-body">Jadual Prestasi Bulanan Pembekal (Disahkan)</h5>
+                                            <p class="text-muted small mb-0">Analisis purata pemarkahan (%) bulanan semua pembekal yang telah disahkan</p>
+                                        </div>
+                                        <div>
+                                            <select class="form-select" id="negeriMonthlyYearSelect" style="width: 120px;">
+                                                @for($y = date('Y'); $y >= date('Y') - 5; $y--)
+                                                    <option value="{{ $y }}">{{ $y }}</option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-hover align-middle text-center text-body" id="negeri-monthly-stats-table">
+                                                <thead class="bg-light text-body">
+                                                    <tr>
+                                                        <th class="text-start">Pembekal</th>
+                                                        <th>Purata Tahunan</th>
+                                                        <th>Rating Tahunan</th>
+                                                        <th>Jan</th>
+                                                        <th>Feb</th>
+                                                        <th>Mac</th>
+                                                        <th>Apr</th>
+                                                        <th>Mei</th>
+                                                        <th>Jun</th>
+                                                        <th>Jul</th>
+                                                        <th>Ogos</th>
+                                                        <th>Sept</th>
+                                                        <th>Okt</th>
+                                                        <th>Nov</th>
+                                                        <th>Dis</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="negeriMonthlyStatsTableBody" class="text-body">
+                                                    <tr>
+                                                        <td colspan="15" class="py-4 text-muted">
+                                                            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                                            Memuat data bulanan...
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- All Verified Evaluations Table -->
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-white py-3">
+                                        <h5 class="card-title mb-0 fw-bold text-body">Senarai Penilaian Prestasi (Disahkan)</h5>
+                                        <p class="text-muted small mb-0">Rekod penilaian yang telah disahkan oleh Pengarah Institusi</p>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover align-middle border-top text-body" id="negeri-evaluations-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Tarikh</th>
+                                                        <th>No. Inden</th>
+                                                        <th>Pembekal</th>
+                                                        <th>Institusi</th>
+                                                        <th>Penilai</th>
+                                                        <th class="text-center">Skor (%)</th>
+                                                        <th class="text-center">Rating</th>
+                                                        <th class="text-center">Tindakan</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="negeriHistoryTableBody" class="text-body">
+                                                    <tr>
+                                                        <td colspan="8" class="text-center py-4 text-muted">
+                                                            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                                            Memuat data penilaian...
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
                     @endif
 
                 </div>
@@ -684,11 +790,93 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     
     <script>
+        @if($activePage === 'laporan-prestasi')
+        // Load monthly stats (verified only — Negeri/HQ view)
+        async function loadNegeriMonthlyStats(year) {
+            const tableBody = document.getElementById('negeriMonthlyStatsTableBody');
+            tableBody.innerHTML = '<tr><td colspan="15" class="py-4 text-muted"><div class="spinner-border spinner-border-sm me-2" role="status"></div>Memproses analisis bulanan...</td></tr>';
+            try {
+                const res = await fetch(`/evaluations/monthly?year=${year}`);
+                const json = await res.json();
+                if (json.success && json.data.length > 0) {
+                    let html = '';
+                    json.data.forEach(item => {
+                        let ratingBadge = '-';
+                        if (item.rating === 'Cemerlang') ratingBadge = '<span class="badge bg-success">Cemerlang</span>';
+                        else if (item.rating === 'Sederhana') ratingBadge = '<span class="badge bg-warning text-dark">Sederhana</span>';
+                        else if (item.rating === 'Lemah') ratingBadge = '<span class="badge bg-danger">Lemah</span>';
+                        html += `<tr><td class="text-start fw-bold">${item.supplier_name}</td><td class="fw-bold">${item.average !== null ? item.average + '%' : '-'}</td><td>${ratingBadge}</td>`;
+                        for (let m = 1; m <= 12; m++) {
+                            const val = item.monthly[m];
+                            if (val !== null) {
+                                let cls = val >= 81 ? 'text-success fw-bold' : val >= 51 ? 'text-warning fw-bold' : 'text-danger fw-bold';
+                                html += `<td class="${cls}">${val}%</td>`;
+                            } else { html += '<td>-</td>'; }
+                        }
+                        html += '</tr>';
+                    });
+                    tableBody.innerHTML = html;
+                } else {
+                    tableBody.innerHTML = `<tr><td colspan="15" class="py-4 text-muted">Tiada rekod data penilaian yang disahkan bagi tahun ${year}.</td></tr>`;
+                }
+            } catch (err) {
+                tableBody.innerHTML = '<tr><td colspan="15" class="py-4 text-danger">Gagal memuatkan rekod data bulanan.</td></tr>';
+            }
+        }
+
+        async function loadNegeriEvaluationsHistory() {
+            const tableBody = document.getElementById('negeriHistoryTableBody');
+            try {
+                const res = await fetch('/evaluations');
+                const json = await res.json();
+                if (json.success && json.data.length > 0) {
+                    let html = '';
+                    json.data.forEach(ev => {
+                        const evalDate = new Date(ev.evaluation_date).toLocaleDateString('ms-MY', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                        let ratingBadge = ev.performance_rating === 'Cemerlang'
+                            ? '<span class="badge bg-success">Cemerlang</span>'
+                            : ev.performance_rating === 'Sederhana'
+                                ? '<span class="badge bg-warning text-dark">Sederhana</span>'
+                                : '<span class="badge bg-danger">Lemah</span>';
+                        html += `<tr>
+                            <td>${evalDate}</td>
+                            <td class="fw-bold">${ev.order ? ev.order.order_number : '-'}</td>
+                            <td>${ev.supplier ? ev.supplier.company_name : '-'}</td>
+                            <td>${ev.institution ? ev.institution.name : '-'}</td>
+                            <td>${ev.evaluator_name}</td>
+                            <td class="text-center fw-bold">${ev.percentage}%</td>
+                            <td class="text-center">${ratingBadge}</td>
+                            <td class="text-center"><span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Disahkan</span></td>
+                        </tr>`;
+                    });
+                    tableBody.innerHTML = html;
+                    if ($.fn.DataTable.isDataTable('#negeri-evaluations-table')) { $('#negeri-evaluations-table').DataTable().destroy(); }
+                    setTimeout(() => { $('#negeri-evaluations-table').DataTable({ responsive: true, order: [[0, 'desc']] }); }, 100);
+                } else {
+                    tableBody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">Tiada rekod penilaian prestasi yang telah disahkan ditemui.</td></tr>';
+                }
+            } catch (err) {
+                tableBody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-danger">Gagal memuatkan rekod sejarah penilaian.</td></tr>';
+            }
+        }
+        @endif
+
         document.addEventListener('DOMContentLoaded', function () {
             // Register chart datalabels plugin
             if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
                 try { Chart.register(ChartDataLabels); } catch(e) { console.warn('ChartDataLabels register failed', e); }
             }
+
+            @if($activePage === 'laporan-prestasi')
+            const negeriYearSelect = document.getElementById('negeriMonthlyYearSelect');
+            if (negeriYearSelect) {
+                loadNegeriMonthlyStats(negeriYearSelect.value);
+                loadNegeriEvaluationsHistory();
+                negeriYearSelect.addEventListener('change', function() {
+                    loadNegeriMonthlyStats(this.value);
+                });
+            }
+            @endif
 
             // Initialize DataTables if elements exist
             if ($.fn.DataTable) {

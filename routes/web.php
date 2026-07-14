@@ -95,6 +95,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/pengarah-institusi/pembekal', [DashboardController::class, 'pengarahInstitusiPembekal'])->name('pengarah.institusi.pembekal');
     Route::get('/pengarah-institusi/senarai-user', [DashboardController::class, 'pengarahInstitusiSenaraiUser'])->name('pengarah.institusi.senarai_pengguna');
     Route::get('/pengarah-institusi/profil', [DashboardController::class, 'pengarahInstitusiProfil'])->name('pengarah.institusi.profil');
+    Route::get('/pengarah-institusi/laporan-prestasi', [DashboardController::class, 'pengarahInstitusiLaporanPrestasi'])->name('pengarah.institusi.laporan_prestasi');
     // API: Dashboard data for Pengarah Institusi (filter by year/month)
     Route::middleware('auth')->get('/api/dashboard/pengarah-institusi', [DashboardController::class, 'apiPengarahInstitusiDashboard'])->name('api.pengarah.institusi.dashboard');
     Route::middleware('auth')->get('/api/pengarah-institusi/recent-orders', [DashboardController::class, 'apiPengarahInstitusiRecentOrders'])->name('api.pengarah.institusi.recent_orders');
@@ -102,6 +103,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/pengarah-negeri/ringkasan', [DashboardController::class, 'pengarahNegeriRingkasanPesanan'])->name('pengarah.negeri.ringkasan');
     Route::get('/pengarah-negeri/inventori', [DashboardController::class, 'pengarahNegeriInventori'])->name('pengarah.negeri.inventori');
     Route::get('/pengarah-negeri/profil', [DashboardController::class, 'pengarahNegeriProfil'])->name('pengarah.negeri.profil');
+    Route::get('/pengarah-negeri/laporan-prestasi', [DashboardController::class, 'pengarahNegeriLaporanPrestasi'])->name('pengarah.negeri.laporan_prestasi');
 
     Route::get('/admin-institusi', [DashboardController::class, 'adminInstitusiDashboard'])->name('admin.institusi.dashboard');
     Route::get('/admin-institusi/ringkasan', [DashboardController::class, 'adminInstitusiRingkasanPesanan'])->name('admin.institusi.ringkasan');
@@ -143,12 +145,14 @@ Route::middleware('auth')->group(function () {
     Route::put('/uoms/{uom}', [\App\Http\Controllers\UomController::class, 'update'])->name('uoms.update');
     Route::delete('/uoms/{uom}', [\App\Http\Controllers\UomController::class, 'destroy'])->name('uoms.destroy');
 
-    // --- Supplier Performance Evaluation Routes (Restricted to Admin HQ) ---
+    // --- Supplier Performance Evaluation Routes ---
     Route::middleware('permission:penilaian_prestasi')->group(function () {
         Route::get('/evaluations', [\App\Http\Controllers\SupplierEvaluationController::class, 'index'])->name('evaluations.index');
         Route::get('/evaluations/orders', [\App\Http\Controllers\SupplierEvaluationController::class, 'getOrders'])->name('evaluations.orders');
         Route::post('/evaluations', [\App\Http\Controllers\SupplierEvaluationController::class, 'store'])->name('evaluations.store');
         Route::get('/evaluations/stats', [\App\Http\Controllers\SupplierEvaluationController::class, 'getStats'])->name('evaluations.stats');
+        Route::get('/evaluations/monthly', [\App\Http\Controllers\SupplierEvaluationController::class, 'getMonthlyData'])->name('evaluations.monthly');
+        Route::post('/evaluations/{id}/verify', [\App\Http\Controllers\SupplierEvaluationController::class, 'verify'])->name('evaluations.verify');
         Route::get('/evaluations/{id}', [\App\Http\Controllers\SupplierEvaluationController::class, 'show'])->name('evaluations.show');
     });
 

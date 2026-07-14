@@ -6,6 +6,7 @@
         'institusi' => 'Inventori',
         'pembekal' => 'Pembekal',
         'senarai_user' => 'Senarai Pengguna',
+        'laporan-prestasi' => 'Penilaian Prestasi Pembekal',
         'profil' => 'Profil Saya',
     ];
     $pageRoutes = [
@@ -14,6 +15,7 @@
         'institusi' => 'pengarah.institusi.institusi',
         'pembekal' => 'pengarah.institusi.pembekal',
         'senarai_user' => 'pengarah.institusi.senarai_pengguna',
+        'laporan-prestasi' => 'pengarah.institusi.laporan_prestasi',
         'profil' => 'pengarah.institusi.profil',
     ];
     $pageTitle = $pageTitles[$activePage] ?? 'Papan Pemuka';
@@ -94,6 +96,12 @@
 
                     <li class="nav-title mt-4">LAPORAN</li>
                     <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.laporan_prestasi') ? 'active' : '' }}" href="{{ route('pengarah.institusi.laporan_prestasi') }}">
+                            <i class="fas fa-star"></i>
+                            <span>Penilaian Prestasi</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('pengarah.institusi.profil') ? 'active' : '' }}" href="{{ route('pengarah.institusi.profil') }}">
                             <i class="fas fa-user"></i>
                             <span>Profil Saya</span>
@@ -137,6 +145,43 @@
                     </div>
                 </div>
                 <div class="header-right">
+                    <!-- Notifications -->
+                    <div class="dropdown notifications me-3">
+                        <button class="btn btn-icon icon-bell position-relative" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-bell text-body"></i>
+                            @if(isset($pendingEvaluations) && $pendingEvaluations->count() > 0)
+                                <span class="badge-notification bg-danger rounded-circle position-absolute" style="top: 2px; right: 2px; width: 18px; height: 18px; font-size: 10px; display: flex; align-items: center; justify-content: center; color: white;">{{ $pendingEvaluations->count() }}</span>
+                            @endif
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end shadow border-0" style="width: 320px;">
+                            <div class="dropdown-header d-flex justify-content-between align-items-center py-2 px-3 border-bottom">
+                                <h6 class="mb-0 fw-bold">Pemberitahuan</h6>
+                                <span class="text-muted small">{{ isset($pendingEvaluations) ? $pendingEvaluations->count() : 0 }} tugasan</span>
+                            </div>
+                            <div class="dropdown-body py-0" style="max-height: 250px; overflow-y: auto;">
+                                @if(isset($pendingEvaluations) && $pendingEvaluations->count() > 0)
+                                    @foreach($pendingEvaluations as $pendingEval)
+                                        <a href="{{ route('pengarah.institusi.laporan_prestasi') }}#pending-section" class="dropdown-item py-2 px-3 border-bottom d-flex align-items-start gap-2 text-wrap">
+                                            <div class="notification-icon bg-warning text-white rounded-circle p-1 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                                                <i class="fas fa-file-signature" style="font-size: 13px;"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <p class="mb-0 small text-body text-truncate" style="max-width: 240px;">
+                                                    Penilaian bagi pembekal <strong>{{ $pendingEval->supplier?->company_name }}</strong> (No. Inden: {{ $pendingEval->order?->order_number }}) memerlukan pengesahan anda.
+                                                </p>
+                                                <small class="text-muted" style="font-size: 10px;">{{ $pendingEval->created_at->diffForHumans() }}</small>
+                                            </div>
+                                        </a>
+                                    @endforeach
+                                @else
+                                    <div class="p-3 text-center text-muted small">
+                                        <i class="fas fa-check-circle text-success mb-2 d-block" style="font-size: 24px;"></i>
+                                        Tiada pengesahan penilaian yang belum selesai.
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
                     <div class="search-box me-3 position-relative">
                         <input type="text" id="globalSearchInput" data-context="institusi" data-filter-id="{{ optional($selectedInstitution)->id }}" class="form-control" placeholder="Cari Maklumat...">
                         <i class="fas fa-search"></i>
@@ -257,7 +302,7 @@
                             <!-- Order Status Chart -->
                             <div class="col-lg-6 mb-4">
                                 <div class="card h-100">
-                                    <div class="card-header bg-white border-0 pt-4 pb-0">
+                                    <div class="card-header border-0 pt-4 pb-0">
                                         <h5 class="card-title fw-bold mb-0">Status Pesanan Keseluruhan</h5>
                                     </div>
                                     <div class="card-body">
@@ -275,7 +320,7 @@
                                     <div class="card-body p-0">
                                         <div class="table-responsive">
                                             <table class="table table-hover align-middle mb-0" id="topItemsTable">
-                                                <thead class="table-light">
+                                                <thead>
                                                     <tr>
                                                         <th class="ps-4">No.</th>
                                                         <th>Nama Item</th>
@@ -300,7 +345,7 @@
                                     <div class="card-body p-0">
                                         <div class="table-responsive">
                                             <table class="table table-hover align-middle mb-0" id="recentOrdersTable">
-                                                <thead class="table-light">
+                                                <thead>
                                                     <tr>
                                                         <th class="ps-4">No.</th>
                                                         <th>No. Pesanan</th>
@@ -699,6 +744,166 @@
                                 </div>
                             </div>
                         </div>
+                    @elseif($activePage === 'laporan-prestasi')
+                        <div class="row">
+                            <div class="col-12">
+                                <!-- Section 1: Pending Evaluations for Verification -->
+                                <div class="card border-0 shadow-sm mb-4" id="pending-section">
+                                    <div class="card-header bg-warning text-dark py-3 d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="card-title mb-0 fw-bold"><i class="fas fa-exclamation-circle me-1"></i>Penilaian Menunggu Pengesahan</h5>
+                                            <p class="mb-0 small text-dark opacity-100 fw-medium">Sila semak dan sahkan penilaian berikut untuk dipaparkan kepada Pengarah HQ & Negeri.</p>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover align-middle border-top" id="pending-evaluations-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Tarikh</th>
+                                                        <th>No. Inden</th>
+                                                        <th>Pembekal</th>
+                                                        <th>Penilai</th>
+                                                        <th class="text-center">Skor (%)</th>
+                                                        <th class="text-center">Rating</th>
+                                                        <th class="text-center">Tindakan</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @if(isset($pendingEvaluations) && $pendingEvaluations->count() > 0)
+                                                        @foreach($pendingEvaluations as $pendingEval)
+                                                            <tr>
+                                                                <td>{{ $pendingEval->evaluation_date->format('d/m/Y') }}</td>
+                                                                <td>{{ $pendingEval->order?->order_number }}</td>
+                                                                <td>{{ $pendingEval->supplier?->company_name }}</td>
+                                                                <td>{{ $pendingEval->evaluator_name }}</td>
+                                                                <td class="text-center fw-bold">{{ round($pendingEval->percentage, 1) }}%</td>
+                                                                <td class="text-center">
+                                                                    @if($pendingEval->performance_rating === 'Cemerlang')
+                                                                        <span class="badge bg-success">Cemerlang</span>
+                                                                    @elseif($pendingEval->performance_rating === 'Sederhana')
+                                                                        <span class="badge bg-warning text-dark">Sederhana</span>
+                                                                    @else
+                                                                        <span class="badge bg-danger">Lemah</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <div class="d-flex justify-content-center gap-2">
+                                                                        <button class="btn btn-sm btn-info text-white view-eval-btn" data-id="{{ $pendingEval->id }}">
+                                                                            <i class="fas fa-eye"></i> Semak
+                                                                        </button>
+                                                                        <button class="btn btn-sm btn-success verify-eval-btn" data-id="{{ $pendingEval->id }}">
+                                                                            <i class="fas fa-check"></i> Sahkan
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    @else
+                                                        <tr>
+                                                            <td colspan="7" class="text-center py-4 text-muted">
+                                                                Tiada rekod penilaian menunggu pengesahan.
+                                                            </td>
+                                                        </tr>
+                                                    @endif
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Section 2: Monthly performance data table view for trend analysis -->
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="card-title mb-0 fw-bold text-body">Jadual Prestasi Bulanan Pembekal</h5>
+                                            <p class="text-muted small mb-0">Analisis purata pemarkahan (%) bulanan pembekal bagi tahun terpilih</p>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2 text-body">
+                                            <select class="form-select text-semibold" id="monthlyYearSelect" style="width: 120px;">
+                                                @for($y = date('Y'); $y >= date('Y') - 5; $y--)
+                                                    <option value="{{ $y }}">{{ $y }}</option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-hover align-middle text-center text-body" id="monthly-stats-table">
+                                                <thead class="bg-light text-body">
+                                                    <tr>
+                                                        <th class="text-start">Pembekal</th>
+                                                        <th>Purata Tahunan</th>
+                                                        <th>Rating Tahunan</th>
+                                                        <th>Jan</th>
+                                                        <th>Feb</th>
+                                                        <th>Mac</th>
+                                                        <th>Apr</th>
+                                                        <th>Mei</th>
+                                                        <th>Jun</th>
+                                                        <th>Jul</th>
+                                                        <th>Ogos</th>
+                                                        <th>Sept</th>
+                                                        <th>Okt</th>
+                                                        <th>Nov</th>
+                                                        <th>Dis</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="monthlyStatsTableBody" class="text-body">
+                                                    <tr>
+                                                        <td colspan="15" class="py-4 text-muted">
+                                                            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                                            Memuat data bulanan...
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Section 3: Performance Evaluations List -->
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="card-title mb-0 fw-bold text-body">Sejarah Penilaian Prestasi</h5>
+                                            <p class="text-muted small mb-0">Semua rekod penilaian prestasi bagi institusi anda</p>
+                                        </div>
+                                        <div>
+                                            <button class="btn btn-primary btn-sm shadow-sm" id="btnTambahPenilaian">
+                                                <i class="fas fa-plus me-1"></i>Tambah Penilaian
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover align-middle border-top text-body" id="evaluations-history-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Tarikh</th>
+                                                        <th>No. Inden</th>
+                                                        <th>Pembekal</th>
+                                                        <th>Penilai</th>
+                                                        <th class="text-center">Skor (%)</th>
+                                                        <th class="text-center">Rating</th>
+                                                        <th class="text-center">Status</th>
+                                                        <th class="text-center">Tindakan</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="historyTableBody" class="text-body">
+                                                    <tr>
+                                                        <td colspan="8" class="text-center py-4 text-muted">
+                                                            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                                            Memuat data sejarah penilaian...
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     @endif
                 </div>
             </div>
@@ -816,6 +1021,332 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script>
+        @if($activePage === 'laporan-prestasi')
+        // Sliders score color scaling and calculation
+        function initEvaluationSliders() {
+            const sliders = document.querySelectorAll('#addEvaluationModal .slider-score');
+            sliders.forEach(slider => {
+                slider.addEventListener('input', () => {
+                    const display = slider.nextElementSibling;
+                    display.textContent = slider.value;
+                    
+                    if (slider.value >= 6) display.className = 'fw-bold score-display text-success fs-5';
+                    else if (slider.value >= 4) display.className = 'fw-bold score-display text-warning fs-5';
+                    else display.className = 'fw-bold score-display text-danger fs-5';
+                    
+                    calculateScore();
+                });
+            });
+        }
+
+        function calculateScore() {
+            const qtyInputs = document.querySelectorAll('input[name="criteria_quantity"]');
+            const delInputs = document.querySelectorAll('input[name="criteria_delivery"]');
+            const priInputs = document.querySelectorAll('input[name="criteria_price"]');
+            const qltyInputs = document.querySelectorAll('input[name="criteria_quality"]');
+            const coopInputs = document.querySelectorAll('input[name="criteria_cooperation"]');
+            
+            if (!qtyInputs.length) return;
+            const qty = parseInt(qtyInputs[0].value);
+            const del = parseInt(delInputs[0].value);
+            const pri = parseInt(priInputs[0].value);
+            const qlty = parseInt(qltyInputs[0].value);
+            const coop = parseInt(coopInputs[0].value);
+            
+            const total = qty + del + pri + qlty + coop;
+            const percentage = ((total / 35) * 100).toFixed(1);
+            
+            document.getElementById('evalTotalScore').textContent = `${total} / 35`;
+            document.getElementById('evalPercentage').textContent = `${percentage}%`;
+            
+            const badge = document.getElementById('evalRatingBadge');
+            if (percentage >= 81) {
+                badge.textContent = 'CEMERLANG';
+                badge.style.backgroundColor = '#1a5632';
+                badge.style.color = '#fff';
+            } else if (percentage >= 51) {
+                badge.textContent = 'SEDERHANA';
+                badge.style.backgroundColor = '#ffc107';
+                badge.style.color = '#000';
+            } else {
+                badge.textContent = 'LEMAH';
+                badge.style.backgroundColor = '#dc3545';
+                badge.style.color = '#fff';
+            }
+        }
+
+        // Load orders for selection in Add Evaluation modal
+        async function loadOrdersForEvaluation() {
+            try {
+                const res = await fetch('/evaluations/orders');
+                const json = await res.json();
+                if (json.success) {
+                    const select = document.getElementById('evalOrderId');
+                    select.innerHTML = '<option value="">Pilih Pesanan</option>';
+                    
+                    window.evaluationOrders = json.data;
+                    
+                    json.data.forEach(order => {
+                        const opt = document.createElement('option');
+                        opt.value = order.id;
+                        opt.textContent = `${order.order_number} (${order.order_date})`;
+                        select.appendChild(opt);
+                    });
+                }
+            } catch (err) {
+                console.error('Error loading orders:', err);
+            }
+        }
+
+        // Load monthly stats trend table
+        async function loadMonthlyStats(year) {
+            const tableBody = document.getElementById('monthlyStatsTableBody');
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="15" class="py-4 text-muted">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                        Memproses analisis bulanan...
+                    </td>
+                </tr>
+            `;
+            
+            try {
+                const res = await fetch(`/evaluations/monthly?year=${year}`);
+                const json = await res.json();
+                
+                if (json.success && json.data.length > 0) {
+                    let html = '';
+                    json.data.forEach(item => {
+                        let ratingBadge = '-';
+                        if (item.rating === 'Cemerlang') {
+                            ratingBadge = '<span class="badge bg-success">Cemerlang</span>';
+                        } else if (item.rating === 'Sederhana') {
+                            ratingBadge = '<span class="badge bg-warning text-dark">Sederhana</span>';
+                        } else if (item.rating === 'Lemah') {
+                            ratingBadge = '<span class="badge bg-danger">Lemah</span>';
+                        }
+                        
+                        html += `<tr>
+                            <td class="text-start fw-bold">${item.supplier_name}</td>
+                            <td class="fw-bold">${item.average !== null ? item.average + '%' : '-'}</td>
+                            <td>${ratingBadge}</td>
+                        `;
+                        
+                        for (let m = 1; m <= 12; m++) {
+                            const val = item.monthly[m];
+                            if (val !== null) {
+                                let textClass = 'text-muted';
+                                if (val >= 81) textClass = 'text-success fw-bold';
+                                else if (val >= 51) textClass = 'text-warning fw-bold';
+                                else textClass = 'text-danger fw-bold';
+                                
+                                html += `<td class="${textClass}">${val}%</td>`;
+                            } else {
+                                html += `<td>-</td>`;
+                            }
+                        }
+                        html += '</tr>';
+                    });
+                    tableBody.innerHTML = html;
+                } else {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="15" class="py-4 text-muted">
+                                Tiada rekod data penilaian bagi tahun ${year}.
+                            </td>
+                        </tr>
+                    `;
+                }
+            } catch (err) {
+                console.error('Error loading monthly stats:', err);
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="15" class="py-4 text-danger">
+                            Gagal memuatkan rekod data bulanan.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Load History Table
+        async function loadEvaluationsHistory() {
+            const tableBody = document.getElementById('historyTableBody');
+            try {
+                const res = await fetch('/evaluations');
+                const json = await res.json();
+                
+                if (json.success && json.data.length > 0) {
+                    let html = '';
+                    json.data.forEach(eval => {
+                        const evalDate = new Date(eval.evaluation_date).toLocaleDateString('ms-MY', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                        });
+                        
+                        let ratingBadge = '';
+                        if (eval.performance_rating === 'Cemerlang') {
+                            ratingBadge = '<span class="badge bg-success">Cemerlang</span>';
+                        } else if (eval.performance_rating === 'Sederhana') {
+                            ratingBadge = '<span class="badge bg-warning text-dark">Sederhana</span>';
+                        } else {
+                            ratingBadge = '<span class="badge bg-danger">Lemah</span>';
+                        }
+                        
+                        let statusBadge = '';
+                        if (eval.status === 'Verified') {
+                            statusBadge = '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Disahkan</span>';
+                        } else {
+                            statusBadge = '<span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>Menunggu</span>';
+                        }
+                        
+                        html += `
+                            <tr>
+                                <td>${evalDate}</td>
+                                <td class="fw-bold">${eval.order ? eval.order.order_number : '-'}</td>
+                                <td>${eval.supplier ? eval.supplier.company_name : '-'}</td>
+                                <td>${eval.evaluator_name}</td>
+                                <td class="text-center fw-bold">${eval.percentage}%</td>
+                                <td class="text-center">${ratingBadge}</td>
+                                <td class="text-center">${statusBadge}</td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <button class="btn btn-sm btn-info text-white view-eval-btn" data-id="${eval.id}">
+                                            <i class="fas fa-eye"></i> Papar
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    tableBody.innerHTML = html;
+                    
+                    if ($.fn.DataTable.isDataTable('#evaluations-history-table')) {
+                        $('#evaluations-history-table').DataTable().destroy();
+                    }
+                    setTimeout(() => {
+                        $('#evaluations-history-table').DataTable({
+                            responsive: true,
+                            order: [[0, 'desc']]
+                        });
+                    }, 100);
+                } else {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-muted">
+                                Tiada rekod penilaian prestasi ditemui.
+                            </td>
+                        </tr>
+                    `;
+                }
+            } catch (err) {
+                console.error('Error loading evaluations:', err);
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-danger">
+                            Gagal memuatkan rekod sejarah penilaian.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Setup verification action
+        async function verifyEvaluation(id) {
+            if (!confirm('Adakah anda bersetuju untuk mengesahkan penilaian prestasi pembekal ini? Sila pastikan maklumat penilaian adalah betul.')) {
+                return;
+            }
+            
+            try {
+                const res = await fetch(`/evaluations/${id}/verify`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    }
+                });
+                const json = await res.json();
+                if (json.success) {
+                    alert(json.message || 'Penilaian berjaya disahkan.');
+                    window.location.reload();
+                } else {
+                    alert(json.message || 'Gagal mengesahkan penilaian.');
+                }
+            } catch (err) {
+                console.error('Error verifying evaluation:', err);
+                alert('Ralat sistem berlaku ketika melakukan pengesahan.');
+            }
+        }
+
+        // Setup view details popup
+        async function viewEvaluation(id) {
+            try {
+                const res = await fetch(`/evaluations/${id}`);
+                const json = await res.json();
+                
+                if (json.success) {
+                    const evalData = json.data;
+                    document.getElementById('viewEvalOrderNo').textContent = evalData.order ? evalData.order.order_number : '-';
+                    
+                    const evalDateStr = new Date(evalData.evaluation_date).toLocaleDateString('ms-MY', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+                    document.getElementById('viewEvalDate').textContent = evalDateStr;
+                    document.getElementById('viewEvalSupplierName').textContent = evalData.supplier ? evalData.supplier.company_name : '-';
+                    document.getElementById('viewEvalInstitutionName').textContent = evalData.institution ? evalData.institution.name : '-';
+                    document.getElementById('viewEvalEvaluator').textContent = evalData.evaluator_name;
+                    
+                    document.getElementById('viewEvalQty').textContent = evalData.criteria_quantity + ' / 7';
+                    document.getElementById('viewEvalDelivery').textContent = evalData.criteria_delivery + ' / 7';
+                    document.getElementById('viewEvalPrice').textContent = evalData.criteria_price + ' / 7';
+                    document.getElementById('viewEvalQuality').textContent = evalData.criteria_quality + ' / 7';
+                    document.getElementById('viewEvalCoop').textContent = evalData.criteria_cooperation + ' / 7';
+                    
+                    document.getElementById('viewEvalTotalScore').textContent = `${evalData.total_score} / 35`;
+                    document.getElementById('viewEvalPercentage').textContent = `${evalData.percentage}%`;
+                    
+                    const badge = document.getElementById('viewEvalRatingBadge');
+                    badge.textContent = evalData.performance_rating.toUpperCase();
+                    if (evalData.performance_rating === 'Cemerlang') {
+                        badge.className = 'badge rounded-pill px-4 py-2 fs-6 shadow-sm bg-success text-white';
+                    } else if (evalData.performance_rating === 'Sederhana') {
+                        badge.className = 'badge rounded-pill px-4 py-2 fs-6 shadow-sm bg-warning text-dark';
+                    } else {
+                        badge.className = 'badge rounded-pill px-4 py-2 fs-6 shadow-sm bg-danger text-white';
+                    }
+                    
+                    const statusDiv = document.getElementById('viewEvalStatus');
+                    if (evalData.status === 'Verified') {
+                        statusDiv.textContent = 'DISAHKAN';
+                        statusDiv.className = 'form-control mb-3 bg-success text-white fw-bold';
+                        document.getElementById('viewEvalVerifyBtn').classList.add('d-none');
+                    } else {
+                        statusDiv.textContent = 'MENUNGGU PENGESAHAN';
+                        statusDiv.className = 'form-control mb-3 bg-warning text-dark fw-bold';
+                        
+                        const verifyBtn = document.getElementById('viewEvalVerifyBtn');
+                        verifyBtn.classList.remove('d-none');
+                        verifyBtn.onclick = () => {
+                            bootstrap.Modal.getInstance(document.getElementById('viewEvaluationModal')).hide();
+                            verifyEvaluation(evalData.id);
+                        };
+                    }
+                    
+                    document.getElementById('viewEvalRemarks').textContent = evalData.remarks || 'Tiada catatan.';
+                    
+                    const viewModal = new bootstrap.Modal(document.getElementById('viewEvaluationModal'));
+                    viewModal.show();
+                }
+            } catch (err) {
+                console.error('Error fetching evaluation details:', err);
+                alert('Gagal memuat butiran penilaian.');
+            }
+        }
+        @endif
+
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
             try { Chart.register(ChartDataLabels); } catch(e) { console.warn('ChartDataLabels register failed', e); }
         }
@@ -877,6 +1408,98 @@
 
             handleSidebarToggle();
             handleThemeToggle();
+
+            @if($activePage === 'laporan-prestasi')
+            // Initialization for Laporan Prestasi page
+            initEvaluationSliders();
+            loadOrdersForEvaluation();
+            
+            const initialYear = document.getElementById('monthlyYearSelect').value;
+            loadMonthlyStats(initialYear);
+            loadEvaluationsHistory();
+            
+            document.getElementById('monthlyYearSelect').addEventListener('change', function() {
+                loadMonthlyStats(this.value);
+            });
+            
+            document.getElementById('btnTambahPenilaian').addEventListener('click', function() {
+                const addModal = new bootstrap.Modal(document.getElementById('addEvaluationModal'));
+                addModal.show();
+            });
+            
+            document.getElementById('evalOrderId').addEventListener('change', function() {
+                const orderId = this.value;
+                if (!orderId) {
+                    document.getElementById('evalSupplierInfo').classList.add('d-none');
+                    return;
+                }
+                const order = (window.evaluationOrders || []).find(o => o.id == orderId);
+                if (order) {
+                    document.getElementById('evalSupplierName').textContent = order.supplier ? order.supplier.company_name : '-';
+                    document.getElementById('evalSupplierId').value = order.supplier_id || '';
+                    document.getElementById('evalInstitutionName').textContent = order.institution ? order.institution.name : '-';
+                    document.getElementById('evalInstitutionId').value = order.institution_id || '';
+                    document.getElementById('evalSupplierInfo').classList.remove('d-none');
+                } else {
+                    document.getElementById('evalSupplierInfo').classList.add('d-none');
+                }
+            });
+            
+            document.getElementById('saveEvaluationBtn').addEventListener('click', async function() {
+                const form = document.getElementById('evaluationForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+                
+                const formData = new FormData(form);
+                const originalContent = this.innerHTML;
+                this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
+                this.disabled = true;
+                
+                try {
+                    const response = await fetch('/evaluations', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json'
+                        },
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    if (result.success) {
+                        alert(result.message || 'Penilaian berjaya disimpan.');
+                        bootstrap.Modal.getInstance(document.getElementById('addEvaluationModal')).hide();
+                        form.reset();
+                        window.location.reload();
+                    } else {
+                        const errorMsg = result.errors ? Object.values(result.errors).flat().join('\n') : (result.message || 'Ralat menyimpan.');
+                        alert(errorMsg);
+                    }
+                } catch (error) {
+                    console.error('Error saving evaluation:', error);
+                    alert('Ralat sistem ketika menyimpan penilaian.');
+                } finally {
+                    this.innerHTML = originalContent;
+                    this.disabled = false;
+                }
+            });
+            
+            document.addEventListener('click', function(e) {
+                const viewBtn = e.target.closest('.view-eval-btn');
+                if (viewBtn) {
+                    const id = viewBtn.getAttribute('data-id');
+                    viewEvaluation(id);
+                }
+                
+                const verifyBtn = e.target.closest('.verify-eval-btn');
+                if (verifyBtn) {
+                    const id = verifyBtn.getAttribute('data-id');
+                    verifyEvaluation(id);
+                }
+            });
+            @endif
             // Load critical stock count for Pengarah Institusi
             (function loadCriticalStock(){
                 const countEl = document.getElementById('criticalStockCount');
@@ -1021,7 +1644,7 @@
                             topItemsTableBody.innerHTML = labels.map((label, idx) => `
                                 <tr>
                                     <td class="ps-4 text-muted">${idx + 1}</td>
-                                    <td class="fw-medium text-dark">${label}</td>
+                                    <td class="fw-medium">${label}</td>
                                     <td class="text-end pe-4">
                                         <span class="badge bg-success rounded-pill px-3 py-2 fs-6">${data[idx] ?? 0}</span>
                                         <span class="ms-1 text-muted small">${uoms[idx] || ''}</span>
@@ -1290,7 +1913,7 @@
                                     itemUrl = `/pengarah-institusi/senarai-user?search=${encodeURIComponent(item.search_term)}`; 
                                 }
                                 html += `
-                                    <a href="${itemUrl}" class="search-result-item text-decoration-none text-dark d-block">
+                                    <a href="${itemUrl}" class="search-result-item text-decoration-none d-block">
                                         <div class="d-flex w-100 align-items-center">
                                             <div class="search-result-icon"><i class="fas ${config.icon}"></i></div>
                                             <div class="search-result-content">

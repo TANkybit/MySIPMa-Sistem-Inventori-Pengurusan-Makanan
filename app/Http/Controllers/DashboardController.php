@@ -309,6 +309,11 @@ class DashboardController extends Controller
         return $this->pengarahInstitusiView($request, 'profil');
     }
 
+    public function pengarahInstitusiLaporanPrestasi(Request $request)
+    {
+        return $this->pengarahInstitusiView($request, 'laporan-prestasi');
+    }
+
     public function adminInstitusiDashboard(Request $request)
     {
         return $this->pengarahInstitusiView($request, 'dashboard', 'admin_institusi_dashboard');
@@ -440,13 +445,19 @@ class DashboardController extends Controller
                     ->orderByDesc('total_quantity')
                     ->limit(5)
                     ->get();
-                
                 $dashboardData['top_items'] = [
                     'labels' => $topItems->pluck('name')->toArray(),
                     'data' => $topItems->pluck('total_quantity')->toArray(),
                     'uoms' => $topItems->pluck('uom_code')->toArray(),
                 ];
             }
+        }
+        $pendingEvaluations = collect();
+        if ($selectedInstitution) {
+            $pendingEvaluations = \App\Models\SupplierEvaluation::with(['supplier', 'order'])
+                ->where('institution_id', $selectedInstitution->id)
+                ->where('status', 'Pending')
+                ->get();
         }
 
         return view($viewName, [
@@ -459,6 +470,7 @@ class DashboardController extends Controller
             'users' => $users,
             'roles' => $roles,
             'positions' => $positions,
+            'pendingEvaluations' => $pendingEvaluations,
             'dashboardData' => json_encode($dashboardData),
             'lowStockItems' => $this->lowStockItems(),
             'inventoryTotals' => [
@@ -481,6 +493,11 @@ class DashboardController extends Controller
     public function pengarahNegeriProfil(Request $request)
     {
         return $this->pengarahNegeriView($request, 'profil');
+    }
+
+    public function pengarahNegeriLaporanPrestasi(Request $request)
+    {
+        return $this->pengarahNegeriView($request, 'laporan-prestasi');
     }
 
     public function pengarahNegeriRingkasanPesanan(Request $request)
