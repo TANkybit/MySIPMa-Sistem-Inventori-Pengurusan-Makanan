@@ -6,15 +6,15 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Borang Inden - MySIPMa</title>
-  <link rel="icon" type="image/png" href="{{ asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png') }}">
-  <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png') }}">
+  <link rel="icon" type="image/png" href="<?php echo e(asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png')); ?>">
+  <link rel="apple-touch-icon" sizes="180x180" href="<?php echo e(asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png')); ?>">
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/css/main2.css') }}" rel="stylesheet">
-  <link href="{{ asset('css/user-theme.css') }}" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/css/main2.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('css/user-theme.css')); ?>" rel="stylesheet">
   <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -229,7 +229,7 @@
   </style>
 </head>
 <body>
-  @php
+  <?php
     $inden = optional($indenHeader ?? null);
     $isReadOnly = $readOnly ?? false;
     $isAdminHQ = Auth::user()->role_id == 1 || Auth::user()->role?->role_name === 'admin hq';
@@ -243,76 +243,78 @@
         return $value;
       }
     };
-  @endphp
+  ?>
 
   <header id="header" class="header d-flex align-items-center sticky-top" style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
     <div class="container d-flex align-items-center">
       <a href="#" class="logo-glow d-flex align-items-center" id="logoLogoutTrigger">
-        <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" style="height: 55px; width: auto;"
+        <img src="<?php echo e(asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png')); ?>" style="height: 55px; width: auto;"
           alt="MySIPMa logo">
       </a>
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          @if($isAdminHQ)
-          <li><a href="{{ route('admin.dashboard') }}"
-              class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a></li>
-          @else
-          <li><a href="{{ route('user.dashboard') }}"
-              class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Papan Pemuka</a></li>
-          <li><a href="{{ route('user.senarai.inden') }}"
-              class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
-          <li><a href="{{ route('user.inventori') }}"
-              class="{{ request()->routeIs('user.inventori') ? 'active' : '' }}">Inventori</a></li>
-          @endif
-          @if(Auth::user()->hasPermission('pengesahan_inden'))
-          <li><a href="{{ route('user.pengesahan.inden') }}"
-              class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
-          @endif
-          @if(Auth::user()->hasPermission('borang_inden'))
-          <li><a href="{{ route('borang.inden') }}"
-              class="{{ request()->routeIs('borang.inden*') ? 'active' : '' }}">Borang Inden</a></li>
-          @endif
-          @if(Auth::user()->hasPermission('penerimaan_inden'))
-          <li><a href="{{ route('borang.penerimaan') }}"
-              class="{{ request()->routeIs('borang.penerimaan') ? 'active' : '' }}">Penerimaan</a></li>
-          @endif
-          <li class="d-xl-none"><a href="{{ route('profile') }}"
-              class="{{ request()->routeIs('profile') ? 'active' : '' }}">Profil</a></li>
+          <?php if($isAdminHQ): ?>
+          <li><a href="<?php echo e(route('admin.dashboard')); ?>"
+              class="<?php echo e(request()->routeIs('admin.dashboard') ? 'active' : ''); ?>">Dashboard</a></li>
+          <?php else: ?>
+          <li><a href="<?php echo e(route('user.dashboard')); ?>"
+              class="<?php echo e(request()->routeIs('user.dashboard') ? 'active' : ''); ?>">Papan Pemuka</a></li>
+          <li><a href="<?php echo e(route('user.senarai.inden')); ?>"
+              class="<?php echo e(request()->routeIs('user.senarai.inden') ? 'active' : ''); ?>">Senarai Inden</a></li>
+          <li><a href="<?php echo e(route('user.inventori')); ?>"
+              class="<?php echo e(request()->routeIs('user.inventori') ? 'active' : ''); ?>">Inventori</a></li>
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('pengesahan_inden')): ?>
+          <li><a href="<?php echo e(route('user.pengesahan.inden')); ?>"
+              class="<?php echo e(request()->routeIs('user.pengesahan.inden') ? 'active' : ''); ?>">Pengesahan Inden</a></li>
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('borang_inden')): ?>
+          <li><a href="<?php echo e(route('borang.inden')); ?>"
+              class="<?php echo e(request()->routeIs('borang.inden*') ? 'active' : ''); ?>">Borang Inden</a></li>
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('penerimaan_inden')): ?>
+          <li><a href="<?php echo e(route('borang.penerimaan')); ?>"
+              class="<?php echo e(request()->routeIs('borang.penerimaan') ? 'active' : ''); ?>">Penerimaan</a></li>
+          <?php endif; ?>
+          <li class="d-xl-none"><a href="<?php echo e(route('profile')); ?>"
+              class="<?php echo e(request()->routeIs('profile') ? 'active' : ''); ?>">Profil</a></li>
           <li class="d-xl-none"><a href="#" id="navLogoutBtn" class="text-danger">Log Keluar</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
       <div class="d-none d-xl-flex align-items-center gap-3">
-        @if(Auth::user()->hasPermission('pengesahan_inden'))
-        <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3"
+        <?php if(Auth::user()->hasPermission('pengesahan_inden')): ?>
+        <a href="<?php echo e(route('user.pengesahan.inden')); ?>" class="position-relative text-white fs-5 me-3"
           style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'"
           onmouseout="this.style.color=''">
           <i class="bi bi-bell-fill"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
             style="font-size: 0.65rem;">
-            {{ $pendingApprovals ?? 0 }}
+            <?php echo e($pendingApprovals ?? 0); ?>
+
             <span class="visually-hidden">Inden belum disah</span>
           </span>
         </a>
-        @endif
-        @if(Auth::user()->hasPermission('penerimaan_inden'))
-        <a href="{{ route('borang.penerimaan') }}" class="position-relative text-white fs-5 me-3"
+        <?php endif; ?>
+        <?php if(Auth::user()->hasPermission('penerimaan_inden')): ?>
+        <a href="<?php echo e(route('borang.penerimaan')); ?>" class="position-relative text-white fs-5 me-3"
           style="transition: color 0.3s;" onmouseover="this.style.color='#f59e0b'"
           onmouseout="this.style.color=''">
           <i class="bi bi-truck"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
             style="font-size: 0.65rem;">
-            {{ $pendingPenerimaan ?? 0 }}
+            <?php echo e($pendingPenerimaan ?? 0); ?>
+
             <span class="visually-hidden">Penerimaan belum diproses</span>
           </span>
         </a>
-        @endif
+        <?php endif; ?>
         <button class="btn btn-icon" id="themeToggle" style="background:none;border:none;color:var(--text);font-size:1.2rem;padding:4px 8px"><i class="bi bi-moon-fill"></i></button>
-        <a href="{{ route('profile') }}" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'"
+        <a href="<?php echo e(route('profile')); ?>" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'"
           onmouseout="this.style.color=''"><i
-            class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}</a>
+            class="bi bi-person-circle me-2"></i><?php echo e(Auth::user()->name ?? 'Pengguna'); ?></a>
         <button type="button" class="btn btn-custom btn-logout btn-sm px-3 py-2" id="desktopLogoutBtn"><i
               class="bi bi-box-arrow-right me-2"></i>Log Keluar</button>
       </div>
@@ -321,26 +323,27 @@
   <main class="main">
   <div class="container page-shell">
     <div class="card-box hero">
-      <h1 class="hero-title">{{ $isReadOnly ? 'Lihat Borang Inden' : 'Borang Inden Digital' }}</h1>
-      <p class="muted mb-0">{{ $isReadOnly ? 'Paparan ini adalah mod lihat sahaja. Data dipaparkan terus daripada rekod inden yang dipilih.' : 'Halaman ini memaparkan data borang inden berdasarkan rekod pangkalan data.' }}</p>
+      <h1 class="hero-title"><?php echo e($isReadOnly ? 'Lihat Borang Inden' : 'Borang Inden Digital'); ?></h1>
+      <p class="muted mb-0"><?php echo e($isReadOnly ? 'Paparan ini adalah mod lihat sahaja. Data dipaparkan terus daripada rekod inden yang dipilih.' : 'Halaman ini memaparkan data borang inden berdasarkan rekod pangkalan data.'); ?></p>
     </div>
 
-    @if (session('success'))
+    <?php if(session('success')): ?>
       <div class="alert alert-success border-0 rounded-4 mb-4">
-        {{ session('success') }}
-      </div>
-    @endif
+        <?php echo e(session('success')); ?>
 
-    @if ($errors->any())
+      </div>
+    <?php endif; ?>
+
+    <?php if($errors->any()): ?>
       <div class="alert alert-danger border-0 rounded-4 mb-4">
         <h5 class="alert-heading fw-bold mb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>Sila semak semula maklumat borang sebelum dihantar:</h5>
         <ul class="mb-0 ps-3">
-          @foreach ($errors->all() as $error)
-            <li>{!! preg_replace('/^\[([^\]]+)\]\s*/', '<strong class="text-decoration-underline">[$1]</strong> ', e($error)) !!}</li>
-          @endforeach
+          <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <li><?php echo preg_replace('/^\[([^\]]+)\]\s*/', '<strong class="text-decoration-underline">[$1]</strong> ', e($error)); ?></li>
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </ul>
       </div>
-    @endif
+    <?php endif; ?>
 
     <!-- Client-side Error Alert Container (hidden by default) -->
     <div id="clientErrorAlert" class="alert alert-danger border-0 rounded-4 mb-4 d-none">
@@ -348,8 +351,8 @@
       <ul id="clientErrorList" class="mb-0 ps-3"></ul>
     </div>
 
-    <form id="borangIndenForm" method="POST" action="{{ route('borang.inden.store') }}">
-      @csrf
+    <form id="borangIndenForm" method="POST" action="<?php echo e(route('borang.inden.store')); ?>">
+      <?php echo csrf_field(); ?>
       <div class="borang-menu" role="tablist" aria-label="Navigasi Borang Inden">
         <button class="active" type="button" data-borang-target="maklumat" role="tab" aria-selected="true">
           <span class="menu-step">Bahagian 1</span>
@@ -383,93 +386,191 @@
         <div class="row g-4">
           <div class="col-md-4">
             <label class="form-label">No. Pesanan <span class="text-danger">*</span></label>
-            <input class="form-control @error('no_pesanan') is-invalid @enderror" id="noPesanan" name="no_pesanan" type="text" value="{{ old('no_pesanan', $inden->no_pesanan ?? '') }}" placeholder="Cth: SKPJ/PJ/BK/26/07/001" {{ $fieldState }} required>
-            @error('no_pesanan')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            <input class="form-control <?php $__errorArgs = ['no_pesanan'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="noPesanan" name="no_pesanan" type="text" value="<?php echo e(old('no_pesanan', $inden->no_pesanan ?? '')); ?>" placeholder="Cth: SKPJ/PJ/BK/26/07/001" <?php echo e($fieldState); ?> required>
+            <?php $__errorArgs = ['no_pesanan'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+              <div class="invalid-feedback"><?php echo e($message); ?></div>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
           </div>
           <div class="col-md-4">
             <label class="form-label">Pembekal <span class="text-danger">*</span></label>
-            @if($isReadOnly)
-              <input class="form-control" type="text" value="{{ $inden->nama_pembekal ?? '' }}" readonly>
-              <input type="hidden" name="supplier_id" value="{{ $inden->supplier_id ?? '' }}">
-            @else
-            <select class="form-select @error('supplier_id') is-invalid @enderror" name="supplier_id" id="supplierSelect" required>
+            <?php if($isReadOnly): ?>
+              <input class="form-control" type="text" value="<?php echo e($inden->nama_pembekal ?? ''); ?>" readonly>
+              <input type="hidden" name="supplier_id" value="<?php echo e($inden->supplier_id ?? ''); ?>">
+            <?php else: ?>
+            <select class="form-select <?php $__errorArgs = ['supplier_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" name="supplier_id" id="supplierSelect" required>
               <option value="">-- Pilih Pembekal --</option>
-              @foreach($suppliers as $sup)
-                <option value="{{ $sup->id }}" data-address="{{ $sup->address }}" data-postcode="{{ $sup->postcode }}" data-contact="{{ $sup->contact_person ?? $sup->company_name }}" {{ old('supplier_id', $inden->supplier_id ?? '') == $sup->id ? 'selected' : '' }}>{{ $sup->company_name }}</option>
-              @endforeach
+              <?php $__currentLoopData = $suppliers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sup): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <option value="<?php echo e($sup->id); ?>" data-address="<?php echo e($sup->address); ?>" data-postcode="<?php echo e($sup->postcode); ?>" data-contact="<?php echo e($sup->contact_person ?? $sup->company_name); ?>" <?php echo e(old('supplier_id', $inden->supplier_id ?? '') == $sup->id ? 'selected' : ''); ?>><?php echo e($sup->company_name); ?></option>
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </select>
-            @endif
-            @error('supplier_id')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            <?php endif; ?>
+            <?php $__errorArgs = ['supplier_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+              <div class="invalid-feedback"><?php echo e($message); ?></div>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
           </div>
           <div class="col-md-4">
             <label class="form-label">Tarikh Pesanan <span class="text-danger">*</span></label>
             <div class="d-flex align-items-center gap-2">
-              <input class="form-control date-input flex-grow-1 @error('tarikh_pesanan') is-invalid @enderror" name="tarikh_pesanan" type="text" inputmode="numeric" value="{{ $formatTarikh(old('tarikh_pesanan', $inden->tarikh_pesanan ?? now()->format('d/m/Y'))) }}" placeholder="dd/mm/yyyy" required>
+              <input class="form-control date-input flex-grow-1 <?php $__errorArgs = ['tarikh_pesanan'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" name="tarikh_pesanan" type="text" inputmode="numeric" value="<?php echo e($formatTarikh(old('tarikh_pesanan', $inden->tarikh_pesanan ?? now()->format('d/m/Y')))); ?>" placeholder="dd/mm/yyyy" required>
               <span id="tarikhDayName" class="badge bg-accent text-dark fs-6 px-3 py-2" style="background:#10b981; white-space:nowrap;">--</span>
             </div>
             <div class="date-format-hint">Format: dd/mm/yyyy</div>
-            @error('tarikh_pesanan')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            <?php $__errorArgs = ['tarikh_pesanan'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+              <div class="invalid-feedback"><?php echo e($message); ?></div>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
           </div>
           <div class="col-md-4">
             <label class="form-label">Masa <span class="text-danger">*</span></label>
-            <input class="form-control @error('masa') is-invalid @enderror" name="masa" type="time" value="{{ old('masa', $inden->masa ?? '') }}" {{ $fieldState }} required>
-            @error('masa')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            <input class="form-control <?php $__errorArgs = ['masa'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" name="masa" type="time" value="<?php echo e(old('masa', $inden->masa ?? '')); ?>" <?php echo e($fieldState); ?> required>
+            <?php $__errorArgs = ['masa'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+              <div class="invalid-feedback"><?php echo e($message); ?></div>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
           </div>
           <div class="col-md-4">
             <label class="form-label">Sesi / Kod <span class="text-danger">*</span></label>
-            <select class="form-select @error('sesi_kod') is-invalid @enderror" name="sesi_kod" {{ $fieldState }} required>
+            <select class="form-select <?php $__errorArgs = ['sesi_kod'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" name="sesi_kod" <?php echo e($fieldState); ?> required>
               <option value="">-- Pilih Sesi --</option>
-              <option value="M1" {{ old('sesi_kod', $inden->sesi_kod ?? '') === 'M1' ? 'selected' : '' }}>M1 - Sarapan Pagi</option>
-              <option value="M2" {{ old('sesi_kod', $inden->sesi_kod ?? '') === 'M2' ? 'selected' : '' }}>M2 - Makan Tengah Hari</option>
-              <option value="M3" {{ old('sesi_kod', $inden->sesi_kod ?? '') === 'M3' ? 'selected' : '' }}>M3 - Minum Petang</option>
-              <option value="M4" {{ old('sesi_kod', $inden->sesi_kod ?? '') === 'M4' ? 'selected' : '' }}>M4 - Makan Malam / Lain-lain</option>
+              <option value="M1" <?php echo e(old('sesi_kod', $inden->sesi_kod ?? '') === 'M1' ? 'selected' : ''); ?>>M1 - Sarapan Pagi</option>
+              <option value="M2" <?php echo e(old('sesi_kod', $inden->sesi_kod ?? '') === 'M2' ? 'selected' : ''); ?>>M2 - Makan Tengah Hari</option>
+              <option value="M3" <?php echo e(old('sesi_kod', $inden->sesi_kod ?? '') === 'M3' ? 'selected' : ''); ?>>M3 - Minum Petang</option>
+              <option value="M4" <?php echo e(old('sesi_kod', $inden->sesi_kod ?? '') === 'M4' ? 'selected' : ''); ?>>M4 - Makan Malam / Lain-lain</option>
             </select>
-            @error('sesi_kod')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            <?php $__errorArgs = ['sesi_kod'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+              <div class="invalid-feedback"><?php echo e($message); ?></div>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
           </div>
           <div class="col-md-6">
             <div class="field-auto-badge"><i class="bi bi-lock-fill"></i> Diisi automatik</div>
             <div class="field-auto-wrap">
               <label class="form-label">Kepada (Institusi) <span class="text-danger">*</span></label>
-              @php
+              <?php
                 $selectedInst = $institutions->firstWhere('id', old('institution_id', $inden->institution_id ?? $userInstitutionId));
-              @endphp
-              <input class="form-control" type="text" value="{{ $selectedInst->name ?? 'N/A' }}" readonly>
-              <input type="hidden" name="institution_id" value="{{ old('institution_id', $inden->institution_id ?? $userInstitutionId) }}" id="institutionIdHidden" required>
-              <input type="hidden" id="institutionCode" value="{{ $selectedInst->code ?? '' }}">
-              <input type="hidden" id="institutionLocation" value="{{ $selectedInst->location_code ?? '' }}">
+              ?>
+              <input class="form-control" type="text" value="<?php echo e($selectedInst->name ?? 'N/A'); ?>" readonly>
+              <input type="hidden" name="institution_id" value="<?php echo e(old('institution_id', $inden->institution_id ?? $userInstitutionId)); ?>" id="institutionIdHidden" required>
+              <input type="hidden" id="institutionCode" value="<?php echo e($selectedInst->code ?? ''); ?>">
+              <input type="hidden" id="institutionLocation" value="<?php echo e($selectedInst->location_code ?? ''); ?>">
             </div>
           </div>
           <div class="col-md-6">
             <label class="form-label">No. Kontrak <span class="text-danger">*</span></label>
-            @if($isReadOnly)
-              <input class="form-control" type="text" value="{{ $inden->no_kontrak ?? '' }}" readonly>
-              <input type="hidden" name="contract_id" value="{{ $inden->contract_id ?? '' }}">
-            @else
-            <select class="form-select @error('contract_id') is-invalid @enderror" name="contract_id" id="contractSelect" required>
+            <?php if($isReadOnly): ?>
+              <input class="form-control" type="text" value="<?php echo e($inden->no_kontrak ?? ''); ?>" readonly>
+              <input type="hidden" name="contract_id" value="<?php echo e($inden->contract_id ?? ''); ?>">
+            <?php else: ?>
+            <select class="form-select <?php $__errorArgs = ['contract_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" name="contract_id" id="contractSelect" required>
               <option value="">-- Pilih Kontrak --</option>
             </select>
             <div id="contractError" class="d-none" style="color:#f87171;font-size:.82rem;margin-top:4px;font-weight:500;"><i class="bi bi-exclamation-circle-fill me-1"></i><span id="contractErrorText"></span></div>
-            @endif
-            @error('contract_id')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            <?php endif; ?>
+            <?php $__errorArgs = ['contract_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+              <div class="invalid-feedback"><?php echo e($message); ?></div>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
           </div>
           <div class="col-12">
             <label class="form-label">Alamat Pembekal <span class="text-danger">*</span></label>
-            <textarea class="form-control @error('alamat_pembekal') is-invalid @enderror" name="alamat_pembekal" placeholder="Masukkan alamat pembekal" {{ $fieldState }} required>{{ old('alamat_pembekal', trim(($inden->alamat_pembekal ?? '') . ' ' . ($inden->poskod_pembekal ?? ''))) }}</textarea>
-            @error('alamat_pembekal')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            <textarea class="form-control <?php $__errorArgs = ['alamat_pembekal'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" name="alamat_pembekal" placeholder="Masukkan alamat pembekal" <?php echo e($fieldState); ?> required><?php echo e(old('alamat_pembekal', trim(($inden->alamat_pembekal ?? '') . ' ' . ($inden->poskod_pembekal ?? '')))); ?></textarea>
+            <?php $__errorArgs = ['alamat_pembekal'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+              <div class="invalid-feedback"><?php echo e($message); ?></div>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
           </div>
         </div>
       </div>
@@ -493,31 +594,87 @@
         <div class="row g-4">
           <div class="col-md-3">
             <label class="form-label">Muster Penuh <span class="text-danger">*</span></label>
-            <input class="form-control muster-input @error('muster_penuh') is-invalid @enderror" id="musterPenuh" name="muster_penuh" type="number" min="0" step="1" value="{{ old('muster_penuh', $inden->muster_penuh ?? 0) }}" {{ $fieldState }} required>
-            @error('muster_penuh')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            <input class="form-control muster-input <?php $__errorArgs = ['muster_penuh'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="musterPenuh" name="muster_penuh" type="number" min="0" step="1" value="<?php echo e(old('muster_penuh', $inden->muster_penuh ?? 0)); ?>" <?php echo e($fieldState); ?> required>
+            <?php $__errorArgs = ['muster_penuh'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+              <div class="invalid-feedback"><?php echo e($message); ?></div>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
           </div>
           <div class="col-md-3">
             <label class="form-label">Parol <span class="text-danger">*</span></label>
-            <input class="form-control muster-input @error('parol') is-invalid @enderror" id="parol" name="parol" type="number" min="0" step="1" value="{{ old('parol', $inden->parol ?? 0) }}" {{ $fieldState }} required>
-            @error('parol')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            <input class="form-control muster-input <?php $__errorArgs = ['parol'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="parol" name="parol" type="number" min="0" step="1" value="<?php echo e(old('parol', $inden->parol ?? 0)); ?>" <?php echo e($fieldState); ?> required>
+            <?php $__errorArgs = ['parol'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+              <div class="invalid-feedback"><?php echo e($message); ?></div>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
           </div>
           <div class="col-md-3">
             <label class="form-label">Muster Ditolak Parol <span class="text-danger">*</span></label>
-            <input class="form-control muster-input @error('muster_ditolak_parol') is-invalid @enderror" id="musterTolakParol" name="muster_ditolak_parol" type="number" min="0" step="1" value="{{ old('muster_ditolak_parol', $inden->muster_ditolak_parol ?? 0) }}" {{ $fieldState }} required>
-            @error('muster_ditolak_parol')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            <input class="form-control muster-input <?php $__errorArgs = ['muster_ditolak_parol'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="musterTolakParol" name="muster_ditolak_parol" type="number" min="0" step="1" value="<?php echo e(old('muster_ditolak_parol', $inden->muster_ditolak_parol ?? 0)); ?>" <?php echo e($fieldState); ?> required>
+            <?php $__errorArgs = ['muster_ditolak_parol'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+              <div class="invalid-feedback"><?php echo e($message); ?></div>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
           </div>
           <div class="col-md-3">
             <label class="form-label">Muster Khas (Daging) <span class="text-danger">*</span></label>
-            <input class="form-control muster-input @error('muster_khas_daging') is-invalid @enderror" id="musterKhas" name="muster_khas_daging" type="number" min="0" step="1" value="{{ old('muster_khas_daging', $inden->muster_khas_daging ?? 0) }}" {{ $fieldState }} required>
-            @error('muster_khas_daging')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            <input class="form-control muster-input <?php $__errorArgs = ['muster_khas_daging'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" id="musterKhas" name="muster_khas_daging" type="number" min="0" step="1" value="<?php echo e(old('muster_khas_daging', $inden->muster_khas_daging ?? 0)); ?>" <?php echo e($fieldState); ?> required>
+            <?php $__errorArgs = ['muster_khas_daging'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+              <div class="invalid-feedback"><?php echo e($message); ?></div>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
           </div>
           <input id="musterExclusion" type="hidden" value="0">
           <div class="col-12">
@@ -557,9 +714,9 @@
               <h3 class="h5 mb-1">Item Pesanan</h3>
               <p class="muted mb-0">Contoh barang daripada PDF: ikan basah, daging lembu, kobis, bawang, halia, kacang merah dan ubi kentang.</p>
             </div>
-            @unless ($isReadOnly)
+            <?php if (! ($isReadOnly)): ?>
             <button class="btn btn-round btn-add" type="button" id="tambahItemBtn"><i class="bi bi-plus-lg me-1"></i>Tambah Item</button>
-            @endunless
+            <?php endif; ?>
           </div>
           <div id="itemErrorAlert" class="alert alert-warning border-0 rounded-3 mb-0 mx-3 mt-3 d-none" style="font-size:.85rem;">
             <i class="bi bi-exclamation-triangle-fill me-1"></i><span id="itemErrorText"></span>
@@ -612,30 +769,44 @@
                 <div class="field-auto-badge"><i class="bi bi-lock-fill"></i> Diisi automatik</div>
                 <div class="field-auto-wrap">
                   <label class="form-label">Disediakan Oleh</label>
-                  <input class="form-control" type="text" value="{{ old('disediakan_oleh', $inden->disediakan_oleh ?? Auth::user()->name ?? '') }}" placeholder="Nama pegawai yang diberi kuasa memesan" readonly>
+                  <input class="form-control" type="text" value="<?php echo e(old('disediakan_oleh', $inden->disediakan_oleh ?? Auth::user()->name ?? '')); ?>" placeholder="Nama pegawai yang diberi kuasa memesan" readonly>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="field-auto-badge"><i class="bi bi-lock-fill"></i> Diisi automatik</div>
                 <div class="field-auto-wrap">
                   <label class="form-label">Jawatan / Cop</label>
-                  <input class="form-control" type="text" value="{{ old('jawatan_cop', $inden->jawatan_cop ?? ($userPositionName ? $userPositionName . ' Gred ' . $userGrade : '')) }}" readonly>
+                  <input class="form-control" type="text" value="<?php echo e(old('jawatan_cop', $inden->jawatan_cop ?? ($userPositionName ? $userPositionName . ' Gred ' . $userGrade : ''))); ?>" readonly>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="field-auto-badge"><i class="bi bi-lock-fill"></i> Diisi automatik</div>
                 <div class="field-auto-wrap">
                   <label class="form-label">Nama Wakil Pembekal <span class="text-danger">*</span></label>
-                  <input class="form-control" name="wakil_pembekal" type="text" value="{{ old('wakil_pembekal', $inden->wakil_pembekal ?? $inden->nama_pembekal ?? '') }}" placeholder="Akan diisi automatik" readonly required>
+                  <input class="form-control" name="wakil_pembekal" type="text" value="<?php echo e(old('wakil_pembekal', $inden->wakil_pembekal ?? $inden->nama_pembekal ?? '')); ?>" placeholder="Akan diisi automatik" readonly required>
                 </div>
               </div>
               <div class="col-md-6">
                 <label class="form-label">Tarikh Pembekal</label>
-                <input class="form-control date-input @error('tarikh_pembekal') is-invalid @enderror" name="tarikh_pembekal" type="text" inputmode="numeric" pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$" value="{{ $formatTarikh(old('tarikh_pembekal', $inden->tarikh_pembekal ?? now()->format('d/m/Y'))) }}" placeholder="dd/mm/yyyy" {{ $fieldState }} required>
+                <input class="form-control date-input <?php $__errorArgs = ['tarikh_pembekal'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" name="tarikh_pembekal" type="text" inputmode="numeric" pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$" value="<?php echo e($formatTarikh(old('tarikh_pembekal', $inden->tarikh_pembekal ?? now()->format('d/m/Y')))); ?>" placeholder="dd/mm/yyyy" <?php echo e($fieldState); ?> required>
                 <div class="date-format-hint">Format: dd/mm/yyyy</div>
-                @error('tarikh_pembekal')
-                  <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
+                <?php $__errorArgs = ['tarikh_pembekal'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                  <div class="invalid-feedback"><?php echo e($message); ?></div>
+                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
               </div>
               <div class="col-md-6 d-none"><label class="form-label">Nama Saksi</label><input class="form-control" type="text" placeholder="Nama saksi"></div>
               <div class="col-md-6 d-none"><label class="form-label">Nama Penerima</label><input class="form-control" type="text" placeholder="Nama penerima"></div>
@@ -645,11 +816,25 @@
               <div class="col-md-6 d-none"><label class="form-label">Tarikh Penerima</label><input class="form-control" type="text" inputmode="numeric" placeholder="dd/mm/yyyy"></div>
               <div class="col-12">
                 <label class="form-label">Ulasan / Catatan Umum</label>
-                <textarea class="form-control ulasan-field @error('catatan_inden') is-invalid @enderror" name="catatan_inden" placeholder="Masukkan catatan tambahan jika perlu" data-max-words="250" {{ $fieldState }}>{{ old('catatan_inden', $inden->catatan_inden ?? '') }}</textarea>
+                <textarea class="form-control ulasan-field <?php $__errorArgs = ['catatan_inden'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" name="catatan_inden" placeholder="Masukkan catatan tambahan jika perlu" data-max-words="250" <?php echo e($fieldState); ?>><?php echo e(old('catatan_inden', $inden->catatan_inden ?? '')); ?></textarea>
                 <div class="word-helper"><span class="word-count">0</span>/250 patah perkataan</div>
-                @error('catatan_inden')
-                  <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
+                <?php $__errorArgs = ['catatan_inden'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                  <div class="invalid-feedback"><?php echo e($message); ?></div>
+                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
               </div>
             </div>
           </div>
@@ -658,24 +843,24 @@
 
       <div class="action-row">
         <div class="d-flex align-items-center gap-3">
-          <a href="{{ $isAdminHQ ? route('admin.dashboard') : route('user.dashboard') }}" class="btn btn-round btn-soft">Kembali ke Dashboard</a>
+          <a href="<?php echo e($isAdminHQ ? route('admin.dashboard') : route('user.dashboard')); ?>" class="btn btn-round btn-soft">Kembali ke Dashboard</a>
           <span id="draftStatus" class="small" style="color:var(--muted);"></span>
           <span id="draftSavedIndicator" class="small d-none" style="color:var(--accent);"><i class="bi bi-check-circle-fill me-1"></i>Draf disimpan</span>
         </div>
         <div class="d-flex flex-wrap gap-2 align-items-center">
-          @if($inden->inden_id)
-          <button class="btn btn-round btn-soft" type="button" onclick="window.open('{{ route('borang.inden.cetak', ['order' => $inden->inden_id]) }}', '_blank')">Cetak Ringkasan</button>
-          @endif
-          @unless ($isReadOnly)
+          <?php if($inden->inden_id): ?>
+          <button class="btn btn-round btn-soft" type="button" onclick="window.open('<?php echo e(route('borang.inden.cetak', ['order' => $inden->inden_id])); ?>', '_blank')">Cetak Ringkasan</button>
+          <?php endif; ?>
+          <?php if (! ($isReadOnly)): ?>
             <button class="btn btn-round btn-add" type="submit">Hantar</button>
-          @endunless
+          <?php endif; ?>
         </div>
       </div>
       </div>
     </form>
   </div>
 
-  {{-- Item Modal (Add / Edit) --}}
+  
   <div class="modal fade" id="itemModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content" style="background:#11151f; border:1px solid rgba(255,255,255,.08); color:#e2e8f0;">
@@ -712,7 +897,7 @@
     </div>
   </div>
 
-  {{-- Delete Confirmation Modal --}}
+  
   <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm">
       <div class="modal-content" style="background:#11151f; border:1px solid rgba(255,255,255,.08); color:#e2e8f0;">
@@ -754,8 +939,8 @@
 </template>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="{{ asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/js/mobile-nav.js') }}"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/js/mobile-nav.js')); ?>"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -767,8 +952,8 @@
       const itemTemplate = document.getElementById('itemTemplate');
       const musterInputs = document.querySelectorAll('.muster-input');
       const form = document.getElementById('borangIndenForm');
-      const databaseItems = @json(old('items', $indenItems ?? []));
-      const isReadOnly = @json($isReadOnly);
+      const databaseItems = <?php echo json_encode(old('items', $indenItems ?? []), 512) ?>;
+      const isReadOnly = <?php echo json_encode($isReadOnly, 15, 512) ?>;
       let itemDataTable = null;
       let isRestoringDraft = false;
       let hasUnsavedChanges = false;
@@ -827,7 +1012,7 @@
         //     noPesananInput.value = '';
         //     return;
         //   }
-        //   fetch('{{ route("borang.inden.generate") }}?institution_id=' + instId)
+        //   fetch('<?php echo e(route("borang.inden.generate")); ?>?institution_id=' + instId)
         //     .then(r => r.json())
         //     .then(d => { if (d.success) noPesananInput.value = d.order_no; })
         //     .catch(() => {});
@@ -842,7 +1027,7 @@
           const contractErrText = document.getElementById('contractErrorText');
           if (contractErr) contractErr.classList.add('d-none');
           if (!instId || !supId) return;
-          fetch('{{ route("borang.inden.contracts") }}?institution_id=' + instId + '&supplier_id=' + supId)
+          fetch('<?php echo e(route("borang.inden.contracts")); ?>?institution_id=' + instId + '&supplier_id=' + supId)
             .then(r => r.json())
             .then(contracts => {
               if (!contracts || contracts.length === 0) {
@@ -859,15 +1044,15 @@
                 opt.dataset.supplierId = c.supplier_id;
                 contractSelect.appendChild(opt);
               });
-              @if(!empty($inden) && $inden->contract_id)
-                contractSelect.value = '{{ $inden->contract_id }}';
+              <?php if(!empty($inden) && $inden->contract_id): ?>
+                contractSelect.value = '<?php echo e($inden->contract_id); ?>';
                 contractSelect.dispatchEvent(new Event('change'));
-              @else
+              <?php else: ?>
                 if (contracts.length > 0) {
                   contractSelect.value = contracts[0].id;
                   contractSelect.dispatchEvent(new Event('change'));
                 }
-              @endif
+              <?php endif; ?>
             })
             .catch(() => {
               if (contractErr && contractErrText) {
@@ -882,7 +1067,7 @@
           const itemErr = document.getElementById('itemErrorAlert');
           const itemErrText = document.getElementById('itemErrorText');
           if (itemErr) itemErr.classList.add('d-none');
-          fetch('{{ url("borang-inden/contract-items") }}/' + contractId)
+          fetch('<?php echo e(url("borang-inden/contract-items")); ?>/' + contractId)
             .then(r => r.json())
             .then(items => {
               if (itemDataTable) {
@@ -946,9 +1131,9 @@
           });
         }
         // if (!noPesananInput.value) generateOrderNo(); // commented out — user enters manually
-        @if(!($savedDraft ?? null))
+        <?php if(!($savedDraft ?? null)): ?>
         loadContracts();
-        @endif
+        <?php endif; ?>
         // Fill supplier address on load if pre-selected (edit mode)
         if (typeof fillSupplierAddress === 'function') fillSupplierAddress();
 
@@ -1640,7 +1825,7 @@
       updateSummary();
 
       // ── Draft Save Feature ──────────────────────────────────────────────
-      const savedDraft = @json($savedDraft ?? null);
+      const savedDraft = <?php echo json_encode($savedDraft ?? null, 15, 512) ?>;
 
       function collectFormData() {
         return {
@@ -1692,9 +1877,9 @@
 
       function saveDraft() {
         var data = collectFormData();
-        fetch('{{ route("borang.inden.draft.save") }}', {
+        fetch('<?php echo e(route("borang.inden.draft.save")); ?>', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>' },
           body: JSON.stringify(data),
         })
         .then(function (r) { return r.json(); })
@@ -1733,7 +1918,7 @@
         contractSelect.innerHTML = '<option value="">-- Pilih Kontrak --</option>';
         if (!instId || !supId) { isRestoringDraft = false; return; }
 
-        var url = '{{ route("borang.inden.contracts") }}?institution_id=' + encodeURIComponent(instId)
+        var url = '<?php echo e(route("borang.inden.contracts")); ?>?institution_id=' + encodeURIComponent(instId)
                 + '&supplier_id=' + encodeURIComponent(supId);
 
         fetch(url)
@@ -1850,9 +2035,9 @@
       function saveDraftOnLeave() {
         if (hasUnsavedChanges) {
           var data = collectFormData();
-          fetch('{{ route("borang.inden.draft.save") }}', {
+          fetch('<?php echo e(route("borang.inden.draft.save")); ?>', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>' },
             body: JSON.stringify(data),
             keepalive: true,
           }).catch(function () {});
@@ -1879,18 +2064,18 @@
         form.addEventListener('submit', function () {
           if (!formSubmitAllowed) return;
           // Clear draft from server after submission
-          fetch('{{ route("borang.inden.draft.delete") }}', {
+          fetch('<?php echo e(route("borang.inden.draft.delete")); ?>', {
             method: 'DELETE',
-            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            headers: { 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>' },
           }).catch(function () {});
           if (autoSaveTimer) clearInterval(autoSaveTimer);
         });
       }
     })();
   </script>
-    <script src="{{ asset('js/table-download.js') }}"></script>
-    <script src="{{ asset('js/session-timeout.js') }}"></script>
-  <script src="{{ asset('js/user-theme.js') }}"></script>
+    <script src="<?php echo e(asset('js/table-download.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/session-timeout.js')); ?>"></script>
+  <script src="<?php echo e(asset('js/user-theme.js')); ?>"></script>
 
   <!-- Logout confirmation modal -->
   <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel" aria-hidden="true">
@@ -1905,8 +2090,8 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-cancel btn-sm px-3" data-bs-dismiss="modal">Batal</button>
-          <form action="{{ route('logout') }}" method="POST" id="logoutForm" class="d-inline">
-            @csrf
+          <form action="<?php echo e(route('logout')); ?>" method="POST" id="logoutForm" class="d-inline">
+            <?php echo csrf_field(); ?>
             <button type="submit" class="btn btn-danger btn-sm px-3"><i class="bi bi-box-arrow-right me-1"></i>Log Keluar</button>
           </form>
         </div>
@@ -1927,3 +2112,4 @@
   </script>
 </body>
 </html>
+<?php /**PATH C:\laragon\www\MySIPMA_2\resources\views/borang_inden.blade.php ENDPATH**/ ?>

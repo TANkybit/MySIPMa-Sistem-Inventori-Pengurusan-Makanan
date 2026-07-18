@@ -34,6 +34,7 @@ class DashboardController extends Controller
 
         $contractData = $this->getContractLimitData();
         $contractTrend = $this->getContractMonthlyTrend();
+        $predictions = $this->getItemPredictions($instId);
 
         return view('user_dashboard', [
             'totalOrders' => (int) ($statusCounts['Pending'] ?? 0)
@@ -48,6 +49,7 @@ class DashboardController extends Controller
             'completedOrders' => (int) ($statusCounts['Completed'] ?? 0),
             'contractData' => $contractData,
             'contractTrend' => $contractTrend,
+            'predictions' => $predictions,
         ]);
     }
 
@@ -2005,5 +2007,267 @@ class DashboardController extends Controller
             'labels' => $months->map(fn($m) => \Carbon\Carbon::createFromFormat('Y-m', $m)->format('M Y'))->values(),
             'datasets' => $datasets,
         ];
+    }
+
+    private function getItemPredictions($instId)
+    {
+        $items = DB::table('items as i')
+            ->leftJoin('uom as u', 'i.uom_id', '=', 'u.id')
+            ->select('i.id', 'i.name', 'i.current_quantity', 'u.code as uom_code')
+            ->where(function ($q) use ($instId) {
+                $q->whereExists(function ($sub) use ($instId) {
+                    $sub->select(DB::raw(1))
+                        ->from('contract_items')
+                        ->join('contracts', 'contract_items.contract_id', '=', 'contracts.id')
+                        ->whereColumn('contract_items.item_id', 'i.id')
+                        ->where('contracts.institution_id', $instId)
+                        ->where('contracts.status', 'Active');
+                })->orWhereExists(function ($sub) use ($instId) {
+                    $sub->select(DB::raw(1))
+                        ->from('order_items')
+                        ->join('orders', 'order_items.order_id', '=', 'orders.id')
+                        ->whereColumn('order_items.item_id', 'i.id')
+                        ->where('orders.institution_id', $instId);
+                });
+            })
+            ->orderBy('i.name')
+            ->get();
+
+        $sixMonthsAgo = now()->subMonths(6)->startOfMonth();
+        $usageRaw = DB::table('order_items as oi')
+            ->join('orders as o', 'oi.order_id', '=', 'o.id')
+            ->where('o.institution_id', $instId)
+            ->whereNotIn('o.status', ['Cancelled', 'Rejected', 'Draft'])
+            ->where('o.order_date', '>=', $sixMonthsAgo)
+            ->select(
+                'oi.item_id',
+                DB::raw('YEAR(o.order_date) as yr'),
+                DB::raw('MONTH(o.order_date) as mo'),
+                DB::raw('SUM(oi.ordered_quantity) as total')
+            )
+            ->groupBy('oi.item_id', 'yr', 'mo')
+            ->get();
+
+        $usageByItem = [];
+        foreach ($usageRaw as $u) {
+            $key = $u->item_id . '_' . $u->yr . '-' . str_pad($u->mo, 2, '0', STR_PAD_LEFT);
+            $usageByItem[$key] = (float) $u->total;
+        }
+
+        $monthLabels = [];
+        $monthIndex = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $m = now()->subMonths($i);
+            $monthLabels[] = $m->format('M Y');
+            $monthIndex[] = $m->format('Y-m');
+        }
+
+        $predictions = [];
+        foreach ($items as $item) {
+            $monthlyData = [];
+            foreach ($monthIndex as $mi) {
+                $key = $item->id . '_' . $mi;
+                $monthlyData[] = $usageByItem[$key] ?? 0;
+            }
+
+            $avgMonthly = array_sum($monthlyData) / max(count($monthlyData), 1);
+            $stock = (float) ($item->current_quantity ?? 0);
+
+            $n = count($monthlyData);
+            if ($n > 1 && array_sum($monthlyData) > 0) {
+                $x = range(1, $n);
+                $sumX = array_sum($x);
+                $sumY = array_sum($monthlyData);
+                $sumXY = 0;
+                $sumX2 = 0;
+                for ($i = 0; $i < $n; $i++) {
+                    $sumXY += $x[$i] * $monthlyData[$i];
+                    $sumX2 += $x[$i] * $x[$i];
+                }
+                $denom = ($n * $sumX2 - $sumX * $sumX);
+                if ($denom != 0) {
+                    $slope = ($n * $sumXY - $sumX * $sumY) / $denom;
+                    $intercept = ($sumY - $slope * $sumX) / $n;
+                } else {
+                    $slope = 0;
+                    $intercept = $avgMonthly;
+                }
+            } else {
+                $slope = 0;
+                $intercept = $avgMonthly;
+            }
+
+            $forecast = [];
+            for ($i = 1; $i <= 3; $i++) {
+                $val = max(0, $slope * ($n + $i) + $intercept);
+                $forecast[] = round($val, 1);
+            }
+
+            $predictedMonthly = max($avgMonthly, 0.001);
+            $monthsUntilEmpty = $stock / $predictedMonthly;
+
+            $willLastYear = $monthsUntilEmpty >= 12;
+            if ($monthsUntilEmpty <= 1) {
+                $status = 'critical';
+                $statusText = 'Kritikal';
+            } elseif ($monthsUntilEmpty <= 3) {
+                $status = 'warning';
+                $statusText = 'Akan Habis';
+            } elseif ($monthsUntilEmpty <= 6) {
+                $status = 'attention';
+                $statusText = 'Perhatian';
+            } elseif ($monthsUntilEmpty <= 12) {
+                $status = 'watch';
+                $statusText = 'Dipantau';
+            } else {
+                $status = 'safe';
+                $statusText = 'Selamat';
+            }
+
+            $predictions[] = [
+                'id' => $item->id,
+                'name' => $item->name,
+                'uom' => $item->uom_code ?? 'Unit',
+                'stock' => $stock,
+                'avgMonthly' => round($avgMonthly, 1),
+                'monthsUntilEmpty' => round($monthsUntilEmpty, 1),
+                'willLastYear' => $willLastYear,
+                'status' => $status,
+                'statusText' => $statusText,
+                'forecast' => $forecast,
+                'slope' => round($slope, 2),
+                'history' => $monthlyData,
+            ];
+        }
+
+        usort($predictions, fn($a, $b) => $a['monthsUntilEmpty'] <=> $b['monthsUntilEmpty']);
+
+        $top5 = array_slice($predictions, 0, 5);
+        $bottom5 = array_filter($predictions, fn($p) => $p['avgMonthly'] > 0);
+        usort($bottom5, fn($a, $b) => $b['monthsUntilEmpty'] <=> $a['monthsUntilEmpty']);
+        $bottom5 = array_slice($bottom5, 0, 5);
+
+        $summary = [
+            'total' => count($predictions),
+            'critical' => count(array_filter($predictions, fn($p) => $p['status'] === 'critical')),
+            'warning' => count(array_filter($predictions, fn($p) => $p['status'] === 'warning')),
+            'attention' => count(array_filter($predictions, fn($p) => $p['status'] === 'attention')),
+            'safe' => count(array_filter($predictions, fn($p) => $p['status'] === 'safe')),
+            'willRunOut' => count(array_filter($predictions, fn($p) => !$p['willLastYear'])),
+            'willLast' => count(array_filter($predictions, fn($p) => $p['willLastYear'])),
+        ];
+
+        return [
+            'top5' => $top5,
+            'bottom5' => $bottom5,
+            'summary' => $summary,
+            'forecastLabels' => ['Bulan 1', 'Bulan 2', 'Bulan 3'],
+        ];
+    }
+
+    public function userInventori()
+    {
+        $instId = Auth::user()->institution_id;
+
+        $items = DB::table('items as i')
+            ->leftJoin('uom as u', 'i.uom_id', '=', 'u.id')
+            ->leftJoin('categories as cat', 'i.category_id', '=', 'cat.id')
+            ->select(
+                'i.id',
+                'i.name',
+                'i.current_quantity',
+                'u.code as uom_code'
+            )
+            ->where(function ($q) use ($instId) {
+                $q->whereExists(function ($sub) use ($instId) {
+                    $sub->select(DB::raw(1))
+                        ->from('contract_items')
+                        ->join('contracts', 'contract_items.contract_id', '=', 'contracts.id')
+                        ->whereColumn('contract_items.item_id', 'i.id')
+                        ->where('contracts.institution_id', $instId)
+                        ->where('contracts.status', 'Active');
+                })->orWhereExists(function ($sub) use ($instId) {
+                    $sub->select(DB::raw(1))
+                        ->from('order_items')
+                        ->join('orders', 'order_items.order_id', '=', 'orders.id')
+                        ->whereColumn('order_items.item_id', 'i.id')
+                        ->where('orders.institution_id', $instId);
+                });
+            })
+            ->orderBy('i.name')
+            ->get();
+
+        $contractData = DB::table('contract_items as ci')
+            ->join('contracts as c', 'ci.contract_id', '=', 'c.id')
+            ->where('c.institution_id', $instId)
+            ->where('c.status', 'Active')
+            ->select(
+                'ci.item_id',
+                'c.contract_no',
+                'ci.estimated_quantity',
+                'ci.unit_price'
+            )
+            ->get()
+            ->keyBy('item_id');
+
+        $usageData = DB::table('order_items as oi')
+            ->join('orders as o', 'oi.order_id', '=', 'o.id')
+            ->where('o.institution_id', $instId)
+            ->whereNotIn('o.status', ['Cancelled', 'Rejected', 'Draft'])
+            ->select(
+                'oi.item_id',
+                DB::raw('SUM(oi.ordered_quantity) as total_ordered')
+            )
+            ->groupBy('oi.item_id')
+            ->get()
+            ->keyBy('item_id');
+
+        $hampirHabis = 0;
+        $sederhana = 0;
+        $banyakLagi = 0;
+
+        foreach ($items as $item) {
+            $contract = $contractData->get($item->id);
+            $usage = $usageData->get($item->id);
+
+            $item->contract_no = $contract ? $contract->contract_no : '-';
+            $item->siling_kuantiti = $contract ? number_format($contract->estimated_quantity, 0) : '-';
+            $item->jumlah_guna = $usage ? (float) $usage->total_ordered : 0;
+
+            if ($contract && $contract->estimated_quantity > 0) {
+                $peratus = ($item->jumlah_guna / $contract->estimated_quantity) * 100;
+                $item->peratus_guna = round($peratus, 1);
+                $item->baki = max(0, $contract->estimated_quantity - $item->jumlah_guna);
+
+                if ($peratus >= 80) {
+                    $item->warna_status = '#ef4444';
+                    $item->status = 'Hampir Habis';
+                    $hampirHabis++;
+                } elseif ($peratus >= 50) {
+                    $item->warna_status = '#f59e0b';
+                    $item->status = 'Sederhana';
+                    $sederhana++;
+                } else {
+                    $item->warna_status = '#22c55e';
+                    $item->status = 'Banyak Lagi';
+                    $banyakLagi++;
+                }
+            } else {
+                $item->peratus_guna = 0;
+                $item->baki = $item->current_quantity;
+                $item->warna_status = '#6b7280';
+                $item->status = 'Tiada Kontrak';
+                $banyakLagi++;
+            }
+        }
+
+        $totalItems = $items->count();
+        $pendingApprovals = $this->pendingApprovalCount($instId);
+        $pendingPenerimaan = Order::where('status', 'In Progress')->where('institution_id', $instId)->count();
+
+        return view('user_inventori', compact(
+            'items', 'totalItems', 'hampirHabis', 'sederhana', 'banyakLagi',
+            'pendingApprovals', 'pendingPenerimaan'
+        ));
     }
 }

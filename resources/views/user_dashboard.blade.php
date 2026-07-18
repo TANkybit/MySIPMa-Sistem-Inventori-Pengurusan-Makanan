@@ -84,9 +84,9 @@
       }
 
       .header .navmenu {
-        left: 50%;
-        position: absolute;
-        transform: translateX(-50%);
+        position: relative;
+        flex: 1;
+        text-align: center;
       }
 
       .navmenu a { color: #ffffff !important; }
@@ -360,6 +360,13 @@
     [data-bs-theme="light"] .table-dark td { color:#111827 !important; }
     [data-bs-theme="light"] .alert-warning { background:rgba(245,158,11,.08) !important; border-color:rgba(245,158,11,.2) !important; color:#92400e !important; }
     [data-bs-theme="light"] .chart-card { background:#fff; border-color:#e5e7eb !important; }
+
+    /* ── Colored stat card backgrounds ── */
+    #statsRow1 > .col-md-3:nth-child(1) .stat-card { background: #172554; }
+    #statsRow1 > .col-md-3:nth-child(2) .stat-card { background: #451a03; }
+    #statsRow1 > .col-md-3:nth-child(3) .stat-card { background: #164e63; }
+    #statsRow1 > .col-md-3:nth-child(4) .stat-card { background: #052e16; }
+    #statsRow1 > .col-md-3:nth-child(5) .stat-card { background: #1e1b4b; }
   </style>
 </head>
 
@@ -367,8 +374,8 @@
 
   <header id="header" class="header d-flex align-items-center sticky-top"
     style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
-    <div class="container position-relative d-flex align-items-center justify-content-between">
-      <a href="#" class="logo-glow d-flex align-items-center me-auto me-xl-0" id="logoLogoutTrigger">
+    <div class="container d-flex align-items-center">
+      <a href="#" class="logo-glow d-flex align-items-center" id="logoLogoutTrigger">
         <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" style="height: 55px; width: auto;"
           alt="MySIPMa logo">
       </a>
@@ -376,9 +383,11 @@
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="{{ route('user.dashboard') }}"
-              class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Dashboard</a></li>
+              class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Papan Pemuka</a></li>
           <li><a href="{{ route('user.senarai.inden') }}"
               class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
+          <li><a href="{{ route('user.inventori') }}"
+              class="{{ request()->routeIs('user.inventori') ? 'active' : '' }}">Inventori</a></li>
           @if(Auth::user()->hasPermission('pengesahan_inden'))
           <li><a href="{{ route('user.pengesahan.inden') }}"
               class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
@@ -439,7 +448,7 @@
           di sini.</p>
       </div>
 
-      <div class="row g-4 justify-content-center">
+      <div class="row g-4 justify-content-center" id="statsRow1">
         <!-- Stat Card 1 -->
         <div class="col-md-6 col-lg-3">
           <div class="stat-card text-center">
@@ -505,6 +514,168 @@
           </div>
         </div>
       </div>
+
+      {{-- Item Usage Predictions --}}
+      @if(isset($predictions) && $predictions['summary']['total'] > 0)
+      <div class="row mt-5">
+        <div class="col-12">
+          <div class="d-flex align-items-center gap-2 mb-4">
+            <i class="bi bi-graph-up-arrow" style="font-size:1.5rem;color:var(--accent);"></i>
+            <h3 class="mb-0" style="font-weight:700;">Ramalan Penggunaan Item</h3>
+            <span class="badge rounded-pill px-3 py-2 ms-2" style="background:rgba(16,185,129,.15);color:#10b981;font-weight:600;font-size:0.75rem;">Linear Regression</span>
+          </div>
+
+          <div class="row g-4 justify-content-center mb-4" id="statsRow2">
+            <div class="col-md-6 col-lg-3">
+              <div class="stat-card text-center">
+                <div class="glow-ring"></div>
+                <div class="stat-icon" style="color: var(--accent); background: rgba(16,185,129,.1);">
+                  <i class="bi bi-boxes"></i>
+                </div>
+                <h3 class="stat-title">Jumlah Item</h3>
+                <p class="stat-value">{{ $predictions['summary']['total'] }}</p>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+              <div class="stat-card text-center">
+                <div class="glow-ring"></div>
+                <div class="stat-icon" style="color: #ef4444; background: rgba(239,68,68,.1);">
+                  <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <h3 class="stat-title">Akan Habis</h3>
+                <p class="stat-value" style="color:#ef4444;">{{ $predictions['summary']['willRunOut'] }}</p>
+                <p class="text-muted small mb-0 mt-2">< 12 bulan</p>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+              <div class="stat-card text-center">
+                <div class="glow-ring"></div>
+                <div class="stat-icon" style="color: #f59e0b; background: rgba(245,158,11,.1);">
+                  <i class="bi bi-hourglass-split"></i>
+                </div>
+                <h3 class="stat-title">Kritikal</h3>
+                <p class="stat-value" style="color:#f59e0b;">{{ $predictions['summary']['critical'] }}</p>
+                <p class="text-muted small mb-0 mt-2">< 1 bulan</p>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+              <div class="stat-card text-center">
+                <div class="glow-ring"></div>
+                <div class="stat-icon" style="color: #22c55e; background: rgba(34,197,94,.1);">
+                  <i class="bi bi-check2-circle"></i>
+                </div>
+                <h3 class="stat-title">Selamat</h3>
+                <p class="stat-value" style="color:#22c55e;">{{ $predictions['summary']['safe'] }}</p>
+                <p class="text-muted small mb-0 mt-2">> 12 bulan</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-4 mb-4">
+            {{-- Top 5 Paling Cepat Habis --}}
+            <div class="col-md-6">
+              <div class="card h-100" style="background:var(--surface);border:1px solid var(--border);border-left:4px solid #ef4444;border-radius:16px;overflow:hidden;">
+                <div class="card-header d-flex align-items-center gap-2" style="background:transparent;border-bottom:1px solid var(--border);padding:16px 20px;">
+                  <i class="bi bi-exclamation-triangle-fill" style="color:#ef4444;"></i>
+                  <h6 class="mb-0 fw-bold">5 Item Paling Cepat Habis</h6>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-dark table-borderless mb-0" style="background:transparent;">
+                    <thead>
+                      <tr style="border-bottom:1px solid var(--border);">
+                        <th class="text-muted small fw-semibold ps-4 py-3">Item</th>
+                        <th class="text-muted small fw-semibold py-3">Stok</th>
+                        <th class="text-muted small fw-semibold py-3">Guna/Bln</th>
+                        <th class="text-muted small fw-semibold py-3">Bulan Lagi</th>
+                        <th class="text-muted small fw-semibold text-center py-3">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @foreach($predictions['top5'] as $p)
+                      @php
+                      $barColor = match($p['status']) { 'critical' => '#ef4444', 'warning' => '#f59e0b', 'attention' => '#38bdf8', default => '#22c55e' };
+                      @endphp
+                      <tr style="border-bottom:1px solid var(--border);">
+                        <td class="ps-4 py-3 fw-medium">{{ $p['name'] }}</td>
+                        <td class="py-3">{{ number_format($p['stock']) }} {{ $p['uom'] }}</td>
+                        <td class="py-3">{{ number_format($p['avgMonthly'], 1) }} {{ $p['uom'] }}</td>
+                        <td class="py-3 fw-semibold">{{ fmtBulan($p['monthsUntilEmpty']) }}</td>
+                        <td class="text-center py-3">
+                          <span class="badge rounded-pill px-3 py-2" style="background:{{ $barColor }}20;color:{{ $barColor }};border:1px solid {{ $barColor }}50;">
+                            {{ $p['statusText'] }}
+                          </span>
+                        </td>
+                      </tr>
+                      @endforeach
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {{-- Bottom 5 Paling Lambat Habis --}}
+            <div class="col-md-6">
+              <div class="card h-100" style="background:var(--surface);border:1px solid var(--border);border-left:4px solid #22c55e;border-radius:16px;overflow:hidden;">
+                <div class="card-header d-flex align-items-center gap-2" style="background:transparent;border-bottom:1px solid var(--border);padding:16px 20px;">
+                  <i class="bi bi-check2-circle" style="color:#22c55e;"></i>
+                  <h6 class="mb-0 fw-bold">5 Item Paling Lambat Habis</h6>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-dark table-borderless mb-0" style="background:transparent;">
+                    <thead>
+                      <tr style="border-bottom:1px solid var(--border);">
+                        <th class="text-muted small fw-semibold ps-4 py-3">Item</th>
+                        <th class="text-muted small fw-semibold py-3">Stok</th>
+                        <th class="text-muted small fw-semibold py-3">Guna/Bln</th>
+                        <th class="text-muted small fw-semibold py-3">Bulan Lagi</th>
+                        <th class="text-muted small fw-semibold text-center py-3">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @forelse($predictions['bottom5'] as $p)
+                      @php
+                      $barColor = match($p['status']) { 'critical' => '#ef4444', 'warning' => '#f59e0b', 'attention' => '#38bdf8', default => '#22c55e' };
+                      @endphp
+                      <tr style="border-bottom:1px solid var(--border);">
+                        <td class="ps-4 py-3 fw-medium">{{ $p['name'] }}</td>
+                        <td class="py-3">{{ number_format($p['stock']) }} {{ $p['uom'] }}</td>
+                        <td class="py-3">{{ number_format($p['avgMonthly'], 1) }} {{ $p['uom'] }}</td>
+                        <td class="py-3 fw-semibold">{{ fmtBulan($p['monthsUntilEmpty']) }}</td>
+                        <td class="text-center py-3">
+                          <span class="badge rounded-pill px-3 py-2" style="background:{{ $barColor }}20;color:{{ $barColor }};border:1px solid {{ $barColor }}50;">
+                            {{ $p['statusText'] }}
+                          </span>
+                        </td>
+                      </tr>
+                      @empty
+                      <tr><td colspan="5" class="text-center text-muted py-4">Tiada data penggunaan.</td></tr>
+                      @endforelse
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {{-- 3-Month Forecast Chart --}}
+          @if(count($predictions['top5']) > 0)
+          <div class="row">
+            <div class="col-12">
+              <div class="card" style="background:var(--surface);border:1px solid var(--border);border-top:3px solid #38bdf8;border-radius:16px;padding:24px;">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                  <i class="bi bi-bar-chart-line" style="font-size:1.3rem;color:var(--accent);"></i>
+                  <h5 class="mb-0" style="font-weight:600;">Ramalan 3 Bulan (5 Item Paling Cepat Habis)</h5>
+                </div>
+                <div style="position:relative;height:260px;">
+                  <canvas id="forecastChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          @endif
+        </div>
+      </div>
+      @endif
 
       {{-- Contract Limit Monitoring --}}
       @if(isset($contractData) && $contractData['summary']['total'] > 0)
@@ -625,7 +796,7 @@
             style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;">
             <div class="d-flex align-items-center gap-2 mb-3">
               <i class="bi bi-graph-up" style="font-size:1.3rem;color:var(--accent);"></i>
-              <h5 class="mb-0" style="font-weight:600;">Trend Penggunaan Kontrak (6 Bulan)</h5>
+              <h5 class="mb-0" style="font-weight:600;">Aliran Penggunaan Kontrak (6 Bulan)</h5>
             </div>
             <div style="position:relative;height:260px;">
               <canvas id="contractTrendChart"></canvas>
@@ -823,6 +994,74 @@
                 font: { size: 11 },
                 callback: function(val) { return 'RM ' + val.toFixed(0); },
               },
+              grid: { color: gridColor },
+            },
+          },
+        },
+      });
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var fCtx = document.getElementById('forecastChart');
+      if (!fCtx) return;
+
+      var isLight = document.documentElement.getAttribute('data-bs-theme') === 'light';
+      var gridColor = isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)';
+      var textColor = isLight ? '#6b7280' : '#94a3b8';
+
+      var predictions = @json($predictions ?? []);
+      var top5 = predictions.top5 || [];
+      if (top5.length === 0) return;
+
+      var labels = predictions.forecastLabels || ['Bulan 1', 'Bulan 2', 'Bulan 3'];
+      var chartColors = ['#10b981', '#38bdf8', '#f59e0b', '#8b5cf6', '#f472b6'];
+
+      var datasets = top5.map(function(item, i) {
+        return {
+          label: item.name,
+          data: item.forecast,
+          borderColor: chartColors[i % chartColors.length],
+          backgroundColor: chartColors[i % chartColors.length] + '20',
+          fill: false,
+          tension: 0.3,
+          borderWidth: 2.5,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+        };
+      });
+
+      new Chart(fCtx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: datasets,
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { color: textColor, usePointStyle: true, padding: 16, font: { size: 11 } },
+            },
+            tooltip: {
+              callbacks: {
+                label: function(ctx) {
+                  return ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) + ' unit';
+                },
+              },
+            },
+          },
+          scales: {
+            x: {
+              ticks: { color: textColor, font: { size: 11 } },
+              grid: { color: gridColor },
+            },
+            y: {
+              beginAtZero: true,
+              ticks: { color: textColor, font: { size: 11 } },
               grid: { color: gridColor },
             },
           },

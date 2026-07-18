@@ -43,9 +43,9 @@
       }
 
       .header .navmenu {
-        left: 50%;
-        position: absolute;
-        transform: translateX(-50%);
+        position: relative;
+        flex: 1;
+        text-align: center;
       }
 
       .navmenu a { color: #ffffff !important; }
@@ -94,18 +94,30 @@
       overflow-x: hidden;
     }
 
-    /* Background Particle Layer */
-    #particle-canvas {
+    /* Mesh gradient background (distinct from profile) */
+    body::before {
+      content: '';
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at 15% 30%, rgba(99,102,241,.13) 0%, transparent 50%),
+        radial-gradient(ellipse at 85% 70%, rgba(168,85,247,.10) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(99,102,241,.05) 0%, transparent 50%);
       pointer-events: none;
     }
 
-    /* Foreground Content Layer */
+    /* Particle Layer */
+    #particle-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.25;
+    }
+
     body > .container {
       position: relative;
       z-index: 2;
@@ -117,68 +129,89 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       min-height: calc(100vh - 80px);
-      padding: 10px;
+      padding: 24px 10px;
     }
 
-    .profile-view-container > h1 {
-      color: #ffffff;
-      margin-bottom: 30px;
-      font-weight: 700;
-      text-align: center;
-    }
-
-    /* Glassmorphism Card */
+    /* ── Settings Card ── */
     .profile-card {
-      background: rgba(255, 255, 255, 0.2) !important;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 16px;
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-      padding: 16px 20px;
-      color: #ffffff;
+      background: var(--surface) !important;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 20px;
+      box-shadow: 0 30px 80px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05);
+      padding: 0;
+      color: #fff;
       width: 100%;
       max-width: 640px;
+      overflow: hidden;
+      position: relative;
     }
 
-    /* Tab Navigation */
+    .profile-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #6366f1, #a855f7, #6366f1);
+      background-size: 200% 100%;
+      animation: shimmerBar 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmerBar {
+      0% { background-position: 0% 0; }
+      50% { background-position: 100% 0; }
+      100% { background-position: 0% 0; }
+    }
+
+    /* ── Pill Tabs ── */
     .tab-nav {
       display: flex;
-      gap: 12px;
-      margin-bottom: 12px;
-      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-      padding-bottom: 8px;
+      gap: 6px;
+      margin: 20px 24px 0;
+      padding: 4px;
+      background: rgba(255,255,255,.05);
+      border-radius: 12px;
     }
 
     .tab-button {
+      flex: 1;
       background: none;
       border: none;
-      color: rgba(255, 255, 255, 0.6);
-      padding: 0 4px;
+      color: rgba(255,255,255,.55);
+      padding: 10px 16px;
       cursor: pointer;
       font-weight: 600;
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: 0.3s;
-      border-bottom: 2px solid transparent;
-      position: relative;
-      bottom: -10px;
+      font-size: 13px;
+      border-radius: 10px;
+      transition: all .25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: .3px;
+    }
+
+    .tab-button i {
+      font-size: 15px;
     }
 
     .tab-button:hover {
-      color: rgba(255, 255, 255, 0.9);
+      color: rgba(255,255,255,.8);
+      background: rgba(255,255,255,.04);
     }
 
     .tab-button.active {
-      color: #62e2ff;
-      border-bottom-color: #62e2ff;
+      color: #fff;
+      background: rgba(99,102,241,.35);
+      box-shadow: 0 2px 8px rgba(99,102,241,.2);
     }
 
     .tab-panel {
       display: none;
+      padding: 16px 24px 20px;
     }
 
     .tab-panel.active {
@@ -186,105 +219,134 @@
     }
 
     .tab-panel > h3 {
-      color: #10b981 !important;
-      margin-bottom: 10px;
-      text-align: center;
+      color: #a5b4fc !important;
+      font-size: 16px;
+      margin: 0 0 16px;
+      text-align: left;
       font-weight: 700;
-    }
-
-    /* Profile Layout for Forms */
-    .profile-layout {
+      letter-spacing: -.2px;
       display: flex;
-      gap: 12px;
-      margin-bottom: 10px;
-      align-items: flex-start;
-    }
-
-    .profile-left {
-      flex: 0 0 70px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
       align-items: center;
+      gap: 8px;
+    }
+
+    .tab-panel > h3 i {
+      color: #818cf8;
+      font-size: 18px;
+    }
+
+    /* ── Form Sections ── */
+    .form-section {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 12px;
+    }
+
+    /* Avatar section */
+    .avatar-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
     }
 
     #avatarPreviu {
-      width: 70px;
-      height: 70px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 2px dashed rgba(98, 226, 255, 0.5);
+      width: 76px;
+      height: 76px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.06);
+      border: 2px dashed rgba(129,140,248,.4);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 9px;
+      color: rgba(255,255,255,.45);
+      font-size: 10px;
       overflow: hidden;
       text-align: center;
       padding: 4px;
-      min-height: 70px;
+      flex-shrink: 0;
+      transition: border-color .2s;
     }
 
     #avatarPreviu img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      border-radius: 12px;
+    }
+
+    .avatar-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
     .custom-file-label {
-      background: linear-gradient(135deg, #00b894, #00d2a3);
-      color: white;
-      padding: 5px 10px;
-      border-radius: 6px;
+      background: rgba(99,102,241,.2);
+      color: #c7d2fe;
+      padding: 7px 18px;
+      border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
-      transition: 0.3s;
-      display: block;
+      transition: all .25s;
+      display: inline-block;
       text-align: center;
-      font-size: 12px;
-      width: 100%;
+      font-size: 13px;
+      border: 1px solid rgba(99,102,241,.25);
     }
 
     .custom-file-label:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0, 184, 148, 0.3);
+      background: rgba(99,102,241,.3);
+      transform: translateY(-1px);
     }
 
     #avatarInput {
       display: none;
     }
 
-    .profile-right {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+    .avatar-hint {
+      color: rgba(255,255,255,.35);
+      font-size: 11px;
+      margin: 0;
+    }
+
+    /* Form rows */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 14px;
+    }
+
+    .form-row.single {
+      grid-template-columns: 1fr;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
     }
 
     .form-group label {
-      color: rgba(255, 255, 255, 0.8);
-      font-size: 12px;
+      color: rgba(255,255,255,.65);
+      font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: .4px;
     }
 
     .form-group input,
     .form-group textarea,
     .form-group select {
-      background: rgba(255, 255, 255, 0.95) !important;
-      border: none;
-      border-radius: 6px;
-      padding: 5px 10px;
-      color: #1a1a1a;
+      background: rgba(255,255,255,.9) !important;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 8px;
+      padding: 7px 12px;
+      color: #111827;
       font-size: 14px;
-      transition: 0.3s;
+      transition: all .2s;
       font-family: 'Montserrat', sans-serif;
     }
 
@@ -292,17 +354,25 @@
     .form-group textarea:focus,
     .form-group select:focus {
       outline: none;
-      box-shadow: 0 0 0 3px rgba(98, 226, 255, 0.2);
-      background: rgba(255, 255, 255, 1) !important;
+      border-color: #818cf8;
+      box-shadow: 0 0 0 3px rgba(99,102,241,.15);
+      background: rgba(255,255,255,1) !important;
     }
 
     .form-group input:read-only {
-      background: rgba(255, 255, 255, 0.6) !important;
-      color: rgba(26, 26, 26, 0.6);
+      background: rgba(255,255,255,.5) !important;
+      color: rgba(17,24,39,.5);
       cursor: not-allowed;
+      border-color: transparent;
     }
 
-    /* Password Input Wrapper */
+    /* ── Password Section ── */
+    .password-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
     .password-input-wrapper {
       position: relative;
       display: flex;
@@ -311,96 +381,130 @@
 
     .password-input-wrapper input {
       width: 100%;
-      padding-right: 30px;
+      padding-right: 36px;
     }
 
     .password-toggle-btn {
       position: absolute;
-      right: 8px;
+      right: 10px;
       background: none;
       border: none;
-      color: #999;
+      color: rgba(255,255,255,.4);
       cursor: pointer;
-      font-size: 0.8rem;
-      padding: 0.15rem 0.3rem;
-      transition: color 0.3s ease;
+      font-size: 15px;
+      padding: 4px;
+      transition: color .2s;
     }
 
     .password-toggle-btn:hover {
-      color: #00b894;
+      color: #818cf8;
     }
 
     .strength-indicator {
-      font-size: 10px;
-      padding: 2px 0;
+      font-size: 12px;
       font-weight: 600;
-    }
-
-    .strength-indicator.weak {
-      color: #ff6b6b;
-    }
-
-    .strength-indicator.medium {
-      color: #ffa502;
-    }
-
-    .strength-indicator.strong {
-      color: #62e2ff;
-    }
-
-    .strength-indicator.very-strong {
-      color: #00b894;
-    }
-
-    .button-container {
+      margin-top: 2px;
       display: flex;
-      justify-content: center;
+      align-items: center;
       gap: 8px;
-      margin-top: 8px;
-      width: 100%;
     }
 
-    .button-container button,
-    .tab-panel > button {
-      background: linear-gradient(135deg, #00b894, #00d2a3) !important;
-      color: white;
-      padding: 8px 28px !important;
+    .strength-bar {
+      flex: 1;
+      height: 4px;
+      border-radius: 4px;
+      background: rgba(255,255,255,.1);
+      overflow: hidden;
+    }
+
+    .strength-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      width: 0%;
+      transition: width .3s, background .3s;
+    }
+
+    .strength-text {
+      font-size: 11px;
+      min-width: 50px;
+      text-align: right;
+    }
+
+    .strength-text.weak { color: #f87171; }
+    .strength-text.medium { color: #fbbf24; }
+    .strength-text.strong { color: #6ee7b7; }
+    .strength-text.very-strong { color: #818cf8; }
+
+    /* ── Submit Buttons ── */
+    .submit-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+      color: #fff;
+      padding: 10px 32px !important;
       border: none;
-      border-radius: 6px;
+      border-radius: 10px;
       font-weight: 600;
       font-size: 14px;
-      transition: 0.3s;
+      transition: all .3s ease;
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(0, 184, 148, 0.3);
+      box-shadow: 0 6px 20px rgba(99,102,241,.25);
+      letter-spacing: .3px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .button-container button:hover,
-    .tab-panel > button:hover {
+    .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(0, 184, 148, 0.5);
+      box-shadow: 0 10px 30px rgba(99,102,241,.35);
     }
 
+    .btn-secondary {
+      background: rgba(255,255,255,.08);
+      color: rgba(255,255,255,.7);
+      padding: 10px 24px !important;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all .25s;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,.12);
+      color: #fff;
+    }
+
+    /* ── Notifications ── */
     #statusMsg {
-      margin-top: 15px;
-      padding: 12px 20px;
-      border-radius: 8px;
+      margin: 0 24px 16px;
+      padding: 10px 16px;
+      border-radius: 10px;
       text-align: center;
       font-weight: 600;
+      font-size: 13px;
       display: none;
     }
 
     #statusMsg.success {
       display: block;
-      background: rgba(0, 184, 148, 0.2);
-      border: 1px solid #00b894;
-      color: #00d2a3;
+      background: rgba(99,102,241,.12);
+      border: 1px solid rgba(99,102,241,.25);
+      color: #c7d2fe;
     }
 
     #statusMsg.error {
       display: block;
-      background: rgba(255, 71, 87, 0.2);
-      border: 1px solid #ff4757;
-      color: #ff6b7a;
+      background: rgba(239,68,68,.12);
+      border: 1px solid rgba(239,68,68,.25);
+      color: #fca5a5;
     }
 
 /* Footer Styling */
@@ -515,24 +619,36 @@
       }
     }
 
-    [data-bs-theme="light"] body { background: #f8f9fa; color: #212529; }
+    [data-bs-theme="light"] body { background: var(--bg); color: var(--text); }
     [data-bs-theme="light"] .header { background: rgba(255,255,255,0.95) !important; }
     [data-bs-theme="light"] h1, [data-bs-theme="light"] h2, [data-bs-theme="light"] h3, [data-bs-theme="light"] h4 { color: #111827; }
-    [data-bs-theme="light"] .profile-view-container > h1 { color: #111827 !important; }
-    [data-bs-theme="light"] .profile-card { background: #ffffff !important; color: #212529 !important; backdrop-filter: none !important; border-color: #dee2e6 !important; }
-    [data-bs-theme="light"] .tab-button { color: #6c757d !important; }
-    [data-bs-theme="light"] .tab-button:hover { color: #111827 !important; }
-    [data-bs-theme="light"] .tab-button.active { color: #10b981 !important; border-bottom-color: #10b981 !important; }
-    [data-bs-theme="light"] .tab-nav { border-bottom-color: #dee2e6 !important; }
-    [data-bs-theme="light"] .form-group label { color: #374151 !important; }
-    [data-bs-theme="light"] .form-control, [data-bs-theme="light"] .form-select { background: #ffffff; border-color: #d1d5db; color: #111827; }
+    [data-bs-theme="light"] body::before { opacity: 0.7; }
+    [data-bs-theme="light"] #particle-canvas { display: none !important; }
+    [data-bs-theme="light"] .profile-card { background: #1e1b4b !important; color: #fff !important; backdrop-filter: blur(20px) !important; border-color: rgba(255,255,255,.1) !important; box-shadow: 0 20px 60px rgba(0,0,0,.3) !important; }
+    [data-bs-theme="light"] .tab-nav { background: rgba(255,255,255,.08) !important; }
+    [data-bs-theme="light"] .tab-button { color: rgba(255,255,255,.5) !important; }
+    [data-bs-theme="light"] .tab-button:hover { color: rgba(255,255,255,.8) !important; background: rgba(255,255,255,.06) !important; }
+    [data-bs-theme="light"] .tab-button.active { color: #fff !important; background: #6366f1 !important; box-shadow: 0 2px 8px rgba(99,102,241,.5) !important; }
+    [data-bs-theme="light"] .tab-panel > h3 { color: #c4b5fd !important; }
+    [data-bs-theme="light"] .tab-panel > h3 i { color: #a5b4fc !important; }
+    [data-bs-theme="light"] .form-section { background: #2e2a5c !important; border-color: rgba(255,255,255,.08) !important; }
+    [data-bs-theme="light"] #avatarPreviu { background: rgba(255,255,255,.06) !important; border-color: rgba(99,102,241,.4) !important; color: rgba(255,255,255,.5) !important; }
+    [data-bs-theme="light"] .custom-file-label { background: rgba(99,102,241,.2) !important; color: #a5b4fc !important; border-color: rgba(99,102,241,.3) !important; }
+    [data-bs-theme="light"] .custom-file-label:hover { background: rgba(99,102,241,.28) !important; }
+    [data-bs-theme="light"] .form-group label { color: rgba(255,255,255,.6) !important; }
+    [data-bs-theme="light"] .form-group input, [data-bs-theme="light"] .form-group select { background: #fff !important; border-color: #d1d5db !important; color: #111827 !important; }
+    [data-bs-theme="light"] .form-group input:read-only { background: #f3f4f6 !important; color: #9ca3af !important; }
+    [data-bs-theme="light"] .password-toggle-btn { color: rgba(255,255,255,.5) !important; }
+    [data-bs-theme="light"] .password-toggle-btn:hover { color: #a5b4fc !important; }
+    [data-bs-theme="light"] .btn-secondary { background: rgba(255,255,255,.1) !important; color: rgba(255,255,255,.7) !important; border-color: rgba(255,255,255,.15) !important; }
+    [data-bs-theme="light"] .btn-secondary:hover { background: rgba(255,255,255,.16) !important; color: #fff !important; }
     [data-bs-theme="light"] .btn-logout { color: #374151 !important; border-color: rgba(0,0,0,.2) !important; }
-    [data-bs-theme="light"] .btn-logout:hover { background: rgba(0,0,0,.05) !important; }
-    [data-bs-theme="light"] .text-white-50 { color: #6c757d !important; }
-    [data-bs-theme="light"] #footer { background: #f1f3f5 !important; border-top-color: #dee2e6 !important; }
-    [data-bs-theme="light"] #footer h4 { color: #111827 !important; }
-    [data-bs-theme="light"] #footer p, [data-bs-theme="light"] #footer .copyright { color: #6c757d !important; }
-    [data-bs-theme="light"] #footer .social-links a { background: rgba(16,185,129,.1); border-color: rgba(16,185,129,.3); color: #10b981; }
+    [data-bs-theme="light"] .btn-logout:hover { background: #e5e7eb !important; color: #111827 !important; }
+    [data-bs-theme="light"] .text-white-50 { color: rgba(255,255,255,.5) !important; }
+    [data-bs-theme="light"] #footer { background: #1a1735 !important; border-top-color: rgba(255,255,255,.08) !important; }
+    [data-bs-theme="light"] #footer h4 { color: #c4b5fd !important; }
+    [data-bs-theme="light"] #footer p, [data-bs-theme="light"] #footer .copyright { color: rgba(255,255,255,.5) !important; }
+    [data-bs-theme="light"] #footer .social-links a { background: rgba(99,102,241,.2); border-color: rgba(99,102,241,.3); color: #a5b4fc; }
     [data-bs-theme="light"] #particle-canvas { display: none !important; }
     @keyframes logoPulse { 0% { filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0,0,0,.8)) drop-shadow(1px 1px 0 rgba(0,0,0,.5)) drop-shadow(0 0 8px rgba(16,185,129,.3)); transform: scale(1); } 50% { filter: brightness(210%) drop-shadow(2px 3px 0 rgba(0,0,0,.9)) drop-shadow(1px 1px 0 rgba(0,0,0,.6)) drop-shadow(0 0 16px rgba(16,185,129,.6)) drop-shadow(0 0 30px rgba(16,185,129,.2)); transform: scale(1.03); } 100% { filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0,0,0,.8)) drop-shadow(1px 1px 0 rgba(0,0,0,.5)) drop-shadow(0 0 8px rgba(16,185,129,.3)); transform: scale(1); } }
     @keyframes logoShine { 0% { filter: brightness(150%) drop-shadow(0 0 0 transparent); } 50% { filter: brightness(200%) drop-shadow(0 0 8px rgba(16,185,129,.5)); } 100% { filter: brightness(150%) drop-shadow(0 0 0 transparent); } }
@@ -551,7 +667,8 @@
     /* Mobile nav links */
     .navmenu ul li a.text-danger { color:#f87171 !important; }
     .navmenu ul li a.text-danger:hover { color:#ef4444 !important; }
-    [data-bs-theme="light"] .navmenu ul li a.text-danger { color:#dc2626 !important; }
+    [data-bs-theme="light"] .navmenu ul li a.text-danger { color:#000 !important; }
+    [data-bs-theme="light"] .navmenu ul li a.text-danger:hover { color:#dc2626 !important; }
 
     /* Logout confirmation modal */
     #logoutConfirmModal .modal-content { background:var(--surface); border:1px solid var(--border); border-radius:20px; color:var(--text); }
@@ -570,8 +687,8 @@
 
   <header id="header" class="header d-flex align-items-center sticky-top"
     style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
-    <div class="container position-relative d-flex align-items-center justify-content-between">
-      <a href="#" class="logo-glow d-flex align-items-center me-auto me-xl-0" id="logoLogoutTrigger">
+    <div class="container d-flex align-items-center">
+      <a href="#" class="logo-glow d-flex align-items-center" id="logoLogoutTrigger">
         <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" style="height: 55px; width: auto;"
           alt="MySIPMa logo">
       </a>
@@ -580,13 +697,15 @@
         <ul>
           @if(Auth::user()->role?->role_name === 'admin hq')
           <li><a href="{{ route('admin.dashboard') }}"
-              class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a></li>
+              class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Papan Pemuka</a></li>
           @else
           <li><a href="{{ route('user.dashboard') }}"
-              class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Dashboard</a></li>
+              class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Papan Pemuka</a></li>
           @endif
           <li><a href="{{ route('user.senarai.inden') }}"
               class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
+          <li><a href="{{ route('user.inventori') }}"
+              class="{{ request()->routeIs('user.inventori') ? 'active' : '' }}">Inventori</a></li>
           @if(Auth::user()->hasPermission('pengesahan_inden'))
           <li><a href="{{ route('user.pengesahan.inden') }}"
               class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
@@ -641,109 +760,117 @@
     <div id="particle-canvas"></div>
     <div class="container profile-view-container">
 
-        <div class="profile-card">
-            <!-- Navigasi Tab -->
-            <div class="tab-nav">
-            <button class="tab-button active" onclick="switchTab('profil', this)">Profil</button>
-            <button class="tab-button" onclick="switchTab('laluan', this)">Kata Laluan</button>
-            </div>
+      <div class="profile-card">
 
-            <!-- PANEL PROFIL -->
-            <div id="panel-profil" class="tab-panel active">
-            <h3>Kemaskini Profil</h3>
-            
-            <div class="profile-layout">
-                <!-- Bahagian Kiri -->
-                <div class="profile-left">
-                <div id="avatarPreviu">(Tiada gambar dipilih)</div>
-                <label for="avatarInput" class="custom-file-label">Pilih Gambar</label>
-                <input type="file" id="avatarInput" accept="image/*" onchange="previewAvatar(event)">
-                </div>
-
-                <!-- Bahagian Kanan -->
-                <div class="profile-right">
-                <div class="form-group">
-                    <label>Nama:</label>
-                    <input type="text" id="namaInput" placeholder="Masukkan nama anda">
-                </div>
-
-                <div class="form-group">
-                    <label>Emel:</label>
-                    <input type="email" id="emailInput" placeholder="Masukkan emel anda" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label>Institusi:</label>
-                    <select id="institusiInput" required>
-                        <option value="">-- Pilih Institusi --</option>
-                        @foreach($institutions as $inst)
-                            <option value="{{ $inst->id }}">{{ $inst->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Jawatan:</label>
-                    <input type="text" id="jawatanInput" readonly>
-                </div>
-                
-                <div class="form-group">
-                    <label>Peranan:</label>
-                    <input type="text" id="perananInput" placeholder="Masukkan peranan anda" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label>Telefon:</label>
-                    <input type="tel" id="telefonInput" placeholder="Masukkan no. telefon anda">
-                </div>
-
-                <div class="form-group">
-                    <label>Alamat:</label>
-                    <input type="text" id="alamatInput" readonly>
-                </div>
-                </div>
-            </div>
-
-                <div class="button-container">
-                    <button onclick="handleUpdateProfile()">Kemaskini</button>
-                </div>
-                </div>
-
-            <!-- PANEL KATA LALUAN -->
-            <div id="panel-laluan" class="tab-panel">
-            <h3>Tukar Kata Laluan</h3>
-            
-            <div class="form-group">
-                <label>Kata Laluan Asal:</label>
-                <div class="password-input-wrapper">
-                  <input type="password" id="oldPass" placeholder="Masukkan kata laluan asal">
-                  <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('oldPass')"><i class="fas fa-eye"></i></button>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Kata Laluan Baru:</label>
-                <div class="password-input-wrapper">
-                  <input type="password" id="newPass" oninput="checkStrength(this.value)" placeholder="Masukkan kata laluan baru">
-                  <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('newPass')"><i class="fas fa-eye"></i></button>
-                </div>
-                <div id="strengthText" class="strength-indicator">Kekuatan: -</div>
-            </div>
-
-            <div class="form-group">
-                <label>Sahkan Kata Laluan:</label>
-                <div class="password-input-wrapper">
-                  <input type="password" id="confirmPass" placeholder="Sahkan kata laluan baru">
-                  <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('confirmPass')"><i class="fas fa-eye"></i></button>
-                </div>
-            </div>
-
-            <button onclick="handleSetPassword()" style="width: 100%; margin-top: 8px; padding: 8px 28px; font-size: 14px; border-radius: 6px;">Tetapkan</button>
-            </div>
-
-            <!-- Notifikasi -->
-            <div id="statusMsg"></div>
+        <div class="tab-nav">
+          <button class="tab-button active" onclick="switchTab('profil', this)"><i class="fas fa-user"></i> Profil</button>
+          <button class="tab-button" onclick="switchTab('laluan', this)"><i class="fas fa-lock"></i> Kata Laluan</button>
         </div>
+
+        <div id="panel-profil" class="tab-panel active">
+          <h3><i class="fas fa-pen"></i> Kemaskini Profil</h3>
+
+          <div class="form-section">
+            <div class="avatar-section">
+              <div id="avatarPreviu">(Tiada gambar dipilih)</div>
+              <div class="avatar-actions">
+                <label for="avatarInput" class="custom-file-label"><i class="fas fa-camera me-1"></i>Pilih Gambar</label>
+                <p class="avatar-hint">Format: JPG, PNG. Saiz maks: 2MB</p>
+              </div>
+              <input type="file" id="avatarInput" accept="image/*" onchange="previewAvatar(event)">
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Nama</label>
+                <input type="text" id="namaInput" placeholder="cth: Ahmad bin Ali">
+              </div>
+              <div class="form-group">
+                <label>Emel</label>
+                <input type="email" id="emailInput" placeholder="emel@contoh.com" readonly>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Institusi</label>
+                <select id="institusiInput" required>
+                  <option value="">-- Pilih Institusi --</option>
+                  @foreach($institutions as $inst)
+                    <option value="{{ $inst->id }}">{{ $inst->name }}</option>
+                  @endforeach
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Jawatan</label>
+                <input type="text" id="jawatanInput" readonly>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Peranan</label>
+                <input type="text" id="perananInput" readonly>
+              </div>
+              <div class="form-group">
+                <label>Telefon</label>
+                <input type="tel" id="telefonInput" placeholder="cth: 0123456789">
+              </div>
+            </div>
+            <div class="form-row single">
+              <div class="form-group">
+                <label>Alamat</label>
+                <input type="text" id="alamatInput" readonly>
+              </div>
+            </div>
+          </div>
+
+          <div class="submit-row">
+            <button class="btn-primary" onclick="handleUpdateProfile()"><i class="fas fa-check"></i> Simpan</button>
+          </div>
+        </div>
+
+        <div id="panel-laluan" class="tab-panel">
+          <h3><i class="fas fa-key"></i> Tukar Kata Laluan</h3>
+
+          <div class="form-section password-section">
+            <div class="form-group">
+              <label>Kata Laluan Asal</label>
+              <div class="password-input-wrapper">
+                <input type="password" id="oldPass" placeholder="Masukkan kata laluan semasa">
+                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('oldPass')"><i class="fas fa-eye"></i></button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Kata Laluan Baru</label>
+              <div class="password-input-wrapper">
+                <input type="password" id="newPass" oninput="checkStrength(this.value)" placeholder="Minimum 8 aksara">
+                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('newPass')"><i class="fas fa-eye"></i></button>
+              </div>
+              <div class="strength-indicator">
+                <div class="strength-bar"><div id="strengthBarFill" class="strength-bar-fill"></div></div>
+                <span id="strengthText" class="strength-text">-</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Sahkan Kata Laluan</label>
+              <div class="password-input-wrapper">
+                <input type="password" id="confirmPass" placeholder="Taip semula kata laluan baru">
+                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('confirmPass')"><i class="fas fa-eye"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="submit-row">
+            <button class="btn-primary" onclick="handleSetPassword()"><i class="fas fa-save"></i> Tetapkan</button>
+          </div>
+        </div>
+
+        <div id="statusMsg"></div>
+
+      </div>
     </div>
 
   <script>
@@ -900,25 +1027,33 @@
 }
 
     function checkStrength(val) {
-      const strengthDiv = document.getElementById('strengthText');
+      const strengthText = document.getElementById('strengthText');
+      const barFill = document.getElementById('strengthBarFill');
       let strength = 'Lemah';
-      let className = 'weak';
+      let cls = 'weak';
+      let pct = 15;
 
       if (val.length >= 8) {
         strength = 'Sederhana';
-        className = 'medium';
+        cls = 'medium';
+        pct = 45;
       }
       if (val.length >= 10 && /[0-9]/.test(val) && /[A-Z]/.test(val) && /[a-z]/.test(val)) {
         strength = 'Kuat';
-        className = 'strong';
+        cls = 'strong';
+        pct = 75;
       }
       if (/[!@#$%^&*]/.test(val) && /[0-9]/.test(val) && /[A-Z]/.test(val) && /[a-z]/.test(val)) {
         strength = 'Sangat Kuat';
-        className = 'very-strong';
+        cls = 'very-strong';
+        pct = 100;
       }
 
-      strengthDiv.textContent = 'Kekuatan: ' + strength;
-      strengthDiv.className = 'strength-indicator ' + className;
+      strengthText.textContent = strength;
+      strengthText.className = 'strength-text ' + cls;
+      barFill.style.width = pct + '%';
+      const colors = { weak: '#f87171', medium: '#fbbf24', strong: '#6ee7b7', 'very-strong': '#818cf8' };
+      barFill.style.background = colors[cls] || '#f87171';
     }
 
     function handleUpdateProfile() {
@@ -1095,15 +1230,15 @@
         <div class="col-lg-3 col-md-6 d-flex">
           <i class="bi bi-geo-alt icon"></i>
           <div class="address">
-            <h4>Address</h4>
+            <h4>Alamat</h4>
             <p>Ibu Pejabat Penjara Malaysia<br>Kajang–Semenyih<br>By Pass 43000 Kajang, Selangor</p>
           </div>
         </div>
         <div class="col-lg-3 col-md-6 d-flex">
           <i class="bi bi-telephone icon"></i>
           <div>
-            <h4>Contact</h4>
-            <p><strong>Phone:</strong> 03-8732 8000<br><strong>Email:</strong> admin@mysipma.com</p>
+            <h4>Hubungi</h4>
+            <p><strong>Telefon:</strong> 03-8732 8000<br><strong>Emel:</strong> admin@mysipma.com</p>
           </div>
         </div>
         <div class="col-lg-3 col-md-6 d-flex">
@@ -1114,7 +1249,7 @@
           </div>
         </div>
         <div class="col-lg-3 col-md-6">
-          <h4>Follow Us</h4>
+          <h4>Ikuti Kami</h4>
           <div class="social-links d-flex">
             <a href="https://x.com/penjaramalaysia" target="_blank"><i class="bi bi-twitter-x"></i></a>
             <a href="https://www.facebook.com/jabatanpenjaramalaysia/" target="_blank"><i class="bi bi-facebook"></i></a>

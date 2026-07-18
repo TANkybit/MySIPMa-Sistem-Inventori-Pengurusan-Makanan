@@ -158,6 +158,7 @@ Route::middleware('auth')->group(function () {
 
     // --- User routes (per-position access) ---
     Route::middleware('permission:dashboard')->get('/user/dashboard', [DashboardController::class, 'userDashboard'])->name('user.dashboard');
+    Route::get('/user/inventori', [DashboardController::class, 'userInventori'])->name('user.inventori');
 
     Route::get('/borang-inden/{order}/cetak-pdf', [DashboardController::class, 'cetakIndenPdf'])->name('borang.inden.cetak')->where('order', '[0-9]+');
     Route::get('/borang-penerimaan/{order}/cetak-pdf', [DashboardController::class, 'cetakPenerimaanPdf'])->name('borang.penerimaan.cetak')->where('order', '[0-9]+');

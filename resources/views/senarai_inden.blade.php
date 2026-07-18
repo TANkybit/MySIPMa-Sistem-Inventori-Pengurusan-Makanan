@@ -82,9 +82,9 @@
       }
 
       .header .navmenu {
-        left: 50%;
-        position: absolute;
-        transform: translateX(-50%);
+        position: relative;
+        flex: 1;
+        text-align: center;
       }
 
       .navmenu a { color: #ffffff !important; }
@@ -140,9 +140,9 @@
         border-color: var(--border) !important;
     }
     .table-dark-custom th {
-        background-color: var(--surface-soft) !important;
-        color: #fff !important;
-        border-bottom: 2px solid var(--border) !important;
+      background: linear-gradient(135deg, #065f46, #047857) !important;
+      color: #fff !important;
+      border-bottom: 2px solid var(--border) !important;
     }
     .table-dark-custom td {
         background-color: transparent !important;
@@ -219,14 +219,15 @@
 
   <header id="header" class="header d-flex align-items-center sticky-top" style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
     <div class="container position-relative d-flex align-items-center justify-content-between">
-      <a href="#" class="logo-glow d-flex align-items-center me-auto me-xl-0" id="logoLogoutTrigger">
+      <a href="#" class="logo-glow d-flex align-items-center" id="logoLogoutTrigger">
         <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" style="height: 55px; width: auto;" alt="MySIPMa logo">
       </a>
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="{{ route('user.dashboard') }}" class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Dashboard</a></li>
+          <li><a href="{{ route('user.dashboard') }}" class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Papan Pemuka</a></li>
           <li><a href="{{ route('user.senarai.inden') }}" class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
+          <li><a href="{{ route('user.inventori') }}" class="{{ request()->routeIs('user.inventori') ? 'active' : '' }}">Inventori</a></li>
           @if(Auth::user()->hasPermission('pengesahan_inden'))
           <li><a href="{{ route('user.pengesahan.inden') }}" class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
           @endif
@@ -384,6 +385,7 @@
     });
   </script>
     <script src="{{ asset('js/table-download.js') }}"></script>
+    <script src="{{ asset('js/table-download-pdf.js') }}"></script>
     <script src="{{ asset('js/session-timeout.js') }}"></script>
   <script src="{{ asset('js/user-theme.js') }}"></script>
 

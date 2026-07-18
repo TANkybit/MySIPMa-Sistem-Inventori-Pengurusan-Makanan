@@ -41,9 +41,9 @@
       }
 
       .header .navmenu {
-        left: 50%;
-        position: absolute;
-        transform: translateX(-50%);
+        position: relative;
+        flex: 1;
+        text-align: center;
       }
 
       .navmenu a { color: #ffffff !important; }
@@ -92,18 +92,29 @@
       overflow-x: hidden;
     }
 
-    /* Background Particle Layer */
-    #particle-canvas {
+    /* Animated Gradient Background (instead of particles dark) */
+    body::before {
+      content: '';
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      background: radial-gradient(ellipse at 20% 50%, rgba(16,185,129,.12) 0%, transparent 50%),
+                  radial-gradient(ellipse at 80% 20%, rgba(98,226,255,.08) 0%, transparent 50%),
+                  radial-gradient(ellipse at 50% 80%, rgba(16,185,129,.06) 0%, transparent 50%);
       pointer-events: none;
     }
 
-    /* Foreground Content Layer */
+    /* Particle Layer */
+    #particle-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.35;
+    }
+
     body > .container {
       position: relative;
       z-index: 2;
@@ -117,150 +128,202 @@
       align-items: center;
       justify-content: center;
       min-height: calc(100vh - 80px);
-      padding: 10px;
+      padding: 20px;
     }
 
-    .profile-view-container > h1 {
-      color: #ffffff;
-      margin-bottom: 30px;
-      font-weight: 700;
-      text-align: center;
-    }
-
-    /* Glassmorphism Card */
+    /* ── Profile Card: Premium Identity Card ── */
     .profile-card {
-      background: rgba(255, 255, 255, 0.2) !important;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 16px;
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-      padding: 20px 24px;
-      color: #ffffff;
+      background: var(--surface) !important;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 24px;
+      box-shadow: 0 30px 80px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.06);
+      padding: 0;
+      color: #fff;
       width: 100%;
-      max-width: 600px;
-    }
-
-    .profile-display-section {
-      width: 100%;
-    }
-
-    .profile-display-section h3 {
-      color: #10b981 !important;
-      margin-bottom: 12px;
-      text-align: center;
-      font-weight: 700;
-    }
-
-    .profile-display-layout {
-      display: flex;
-      gap: 24px;
-      align-items: flex-start;
-    }
-
-    .profile-display-left {
-      flex: 0 0 100px;
-      display: flex;
-      justify-content: center;
-    }
-
-    .avatar-display {
-      width: 100px;
-      height: 100px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 2px solid rgba(98, 226, 255, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 12px;
+      max-width: 560px;
       overflow: hidden;
+      position: relative;
     }
 
-    .avatar-display img {
+    .profile-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #10b981, #62e2ff, #10b981);
+      background-size: 200% 100%;
+      animation: shimmerBar 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmerBar {
+      0% { background-position: 0% 0; }
+      50% { background-position: 100% 0; }
+      100% { background-position: 0% 0; }
+    }
+
+    /* ── Card Header / Cover ── */
+    .profile-card-cover {
+      background: linear-gradient(135deg, rgba(16,185,129,.25), rgba(98,226,255,.10));
+      padding: 36px 28px 20px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      position: relative;
+    }
+
+    .profile-card-cover .avatar-ring {
+      width: 104px;
+      height: 104px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      padding: 4px;
+      background: linear-gradient(135deg, #10b981, #62e2ff);
+      box-shadow: 0 0 30px rgba(16,185,129,.3);
+      transition: transform .4s ease;
+    }
+
+    .profile-card-cover .avatar-ring:hover {
+      transform: scale(1.06);
+    }
+
+    .profile-card-cover .avatar-ring .avatar-img {
       width: 100%;
       height: 100%;
+      border-radius: 50%;
       object-fit: cover;
+      background: #0f172a;
+      border: 2px solid #0f172a;
     }
 
-    .profile-display-right {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+    .profile-card-cover .profile-name {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -.3px;
+      color: #fff;
     }
 
-    .info-item {
+    .profile-card-cover .profile-role-badge {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 4px 16px;
+      border-radius: 999px;
+      background: rgba(16,185,129,.18);
+      border: 1px solid rgba(16,185,129,.3);
+      color: #6ee7b7;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .4px;
+      text-transform: uppercase;
+    }
+
+    /* ── Card Body ── */
+    .profile-card-body {
+      padding: 20px 28px 24px;
+    }
+
+    .profile-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 16px;
+    }
+
+    .profile-info-item {
       display: flex;
       flex-direction: column;
       gap: 2px;
+      padding: 8px 12px;
+      background: var(--surface-soft);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      transition: background .2s, border-color .2s;
     }
 
-    .info-item label {
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 12px;
+    .profile-info-item:hover {
+      background: rgba(255,255,255,.07);
+      border-color: rgba(16,185,129,.15);
+    }
+
+    .profile-info-item.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .profile-info-item .info-icon {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: rgba(255,255,255,.45);
+      font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: .4px;
     }
 
-    .info-item p {
-      color: #ffffff;
+    .profile-info-item .info-icon i {
+      font-size: 13px;
+      color: #10b981;
+    }
+
+    .profile-info-item .info-value {
+      color: #fff;
       font-size: 14px;
+      font-weight: 500;
       margin: 0;
-      padding: 4px 8px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 4px;
-      border-left: 3px solid #62e2ff;
+      padding-left: 20px;
     }
 
-    .button-container {
-      display: flex;
-      justify-content: center;
-      margin-top: 12px;
-      width: 100%;
+    /* ── Card Footer / Action ── */
+    .profile-card-action {
+      padding: 0 28px 24px;
+      text-align: center;
     }
 
-    .button-container button {
-      background: linear-gradient(145deg, #00b894, #008870) !important;
-      color: white;
-      padding: 8px 24px !important;
+    .profile-card-action button {
+      background: linear-gradient(135deg, #10b981, #059669) !important;
+      color: #fff;
+      padding: 10px 32px !important;
       border: none;
-      border-radius: 6px;
+      border-radius: 999px;
       font-weight: 600;
       font-size: 14px;
-      transition: 0.3s;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
+      transition: all .3s ease;
+      box-shadow: 0 6px 20px rgba(16,185,129,.25);
+      letter-spacing: .3px;
     }
 
-    .button-container button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(0, 184, 148, 0.4);
+    .profile-card-action button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(16,185,129,.35);
+    }
+
+    .profile-card-action button i {
+      margin-right: 6px;
     }
 
     #statusMsg {
-      margin-top: 15px;
-      padding: 12px 20px;
-      border-radius: 8px;
+      margin: 0 28px 20px;
+      padding: 10px 16px;
+      border-radius: 10px;
       text-align: center;
       font-weight: 600;
+      font-size: 13px;
       display: none;
     }
 
     #statusMsg.success {
       display: block;
-      background: rgba(0, 184, 148, 0.2);
-      border: 1px solid #00b894;
-      color: #00d2a3;
+      background: rgba(16,185,129,.15);
+      border: 1px solid rgba(16,185,129,.3);
+      color: #6ee7b7;
     }
 
     #statusMsg.error {
       display: block;
-      background: rgba(255, 71, 87, 0.2);
-      border: 1px solid #ff4757;
-      color: #ff6b7a;
+      background: rgba(239,68,68,.15);
+      border: 1px solid rgba(239,68,68,.3);
+      color: #fca5a5;
     }
 
     /* Footer Styling */
@@ -366,18 +429,22 @@
         padding: 16px;
       }
     }
-    [data-bs-theme="light"] body { background: #f8f9fa; color: #212529; }
+    [data-bs-theme="light"] body { background: var(--bg); color: var(--text); }
     [data-bs-theme="light"] .header { background: rgba(255,255,255,0.95) !important; }
     [data-bs-theme="light"] h1, [data-bs-theme="light"] h2, [data-bs-theme="light"] h3, [data-bs-theme="light"] h4 { color: #111827; }
-    [data-bs-theme="light"] .profile-view-container > h1 { color: #111827 !important; }
-    [data-bs-theme="light"] .profile-card { background: #ffffff !important; color: #212529 !important; backdrop-filter: none !important; border-color: #dee2e6 !important; }
-    [data-bs-theme="light"] .profile-display-section h3 { color: #059669 !important; }
-    [data-bs-theme="light"] .avatar-display { background: #f1f3f5 !important; border-color: #d1d5db !important; color: #6c757d !important; }
-    [data-bs-theme="light"] .info-item label { color: #6c757d !important; }
-    [data-bs-theme="light"] .info-item p { color: #212529 !important; background: #f8f9fa !important; border-left-color: #10b981 !important; }
+    [data-bs-theme="light"] body::before { opacity: 0.6; }
+    [data-bs-theme="light"] #particle-canvas { display: none !important; }
+    [data-bs-theme="light"] .profile-card { background: #0f2d22 !important; color: #fff !important; backdrop-filter: blur(16px) !important; border-color: rgba(255,255,255,.1) !important; box-shadow: 0 20px 60px rgba(0,0,0,.3) !important; }
+    [data-bs-theme="light"] .profile-card-cover { background: linear-gradient(135deg, rgba(16,185,129,.2), rgba(98,226,255,.1)) !important; border-bottom-color: rgba(255,255,255,.06) !important; }
+    [data-bs-theme="light"] .profile-card-cover .profile-name { color: #fff !important; }
+    [data-bs-theme="light"] .profile-card-cover .profile-role-badge { background: rgba(16,185,129,.25) !important; border-color: rgba(16,185,129,.4) !important; color: #6ee7b7 !important; }
+    [data-bs-theme="light"] .profile-info-item { background: #1b3d30 !important; border-color: rgba(255,255,255,.08) !important; }
+    [data-bs-theme="light"] .profile-info-item:hover { background: #234a3a !important; border-color: rgba(16,185,129,.4) !important; }
+    [data-bs-theme="light"] .profile-info-item .info-icon { color: rgba(255,255,255,.5) !important; }
+    [data-bs-theme="light"] .profile-info-item .info-value { color: #fff !important; }
     [data-bs-theme="light"] .btn-logout { color: #374151 !important; border-color: rgba(0,0,0,.2) !important; }
-    [data-bs-theme="light"] .btn-logout:hover { background: rgba(0,0,0,.05) !important; }
-    [data-bs-theme="light"] .text-white-50 { color: #6c757d !important; }
+    [data-bs-theme="light"] .btn-logout:hover { background: #e5e7eb !important; color: #111827 !important; }
+    [data-bs-theme="light"] .text-white-50 { color: rgba(255,255,255,.5) !important; }
     [data-bs-theme="light"] #footer { background: #f1f3f5 !important; border-top-color: #dee2e6 !important; }
     [data-bs-theme="light"] #footer h4 { color: #111827 !important; }
     [data-bs-theme="light"] #footer p, [data-bs-theme="light"] #footer .copyright { color: #6c757d !important; }
@@ -400,7 +467,8 @@
     /* Mobile nav links */
     .navmenu ul li a.text-danger { color:#f87171 !important; }
     .navmenu ul li a.text-danger:hover { color:#ef4444 !important; }
-    [data-bs-theme="light"] .navmenu ul li a.text-danger { color:#dc2626 !important; }
+    [data-bs-theme="light"] .navmenu ul li a.text-danger { color:#000 !important; }
+    [data-bs-theme="light"] .navmenu ul li a.text-danger:hover { color:#dc2626 !important; }
 
     /* Logout confirmation modal */
     #logoutConfirmModal .modal-content { background:var(--surface); border:1px solid var(--border); border-radius:20px; color:var(--text); }
@@ -419,8 +487,8 @@
 
   <header id="header" class="header d-flex align-items-center sticky-top"
     style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
-    <div class="container position-relative d-flex align-items-center justify-content-between">
-      <a href="#" class="logo-glow d-flex align-items-center me-auto me-xl-0" id="logoLogoutTrigger">
+    <div class="container d-flex align-items-center">
+      <a href="#" class="logo-glow d-flex align-items-center" id="logoLogoutTrigger">
         <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" style="height: 55px; width: auto;"
           alt="MySIPMa logo">
       </a>
@@ -429,13 +497,15 @@
         <ul>
           @if(Auth::user()->role?->role_name === 'admin hq')
           <li><a href="{{ route('admin.dashboard') }}"
-              class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a></li>
+              class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Papan Pemuka</a></li>
           @else
           <li><a href="{{ route('user.dashboard') }}"
-              class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Dashboard</a></li>
+              class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Papan Pemuka</a></li>
           @endif
           <li><a href="{{ route('user.senarai.inden') }}"
               class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
+          <li><a href="{{ route('user.inventori') }}"
+              class="{{ request()->routeIs('user.inventori') ? 'active' : '' }}">Inventori</a></li>
           @if(Auth::user()->hasPermission('pengesahan_inden'))
           <li><a href="{{ route('user.pengesahan.inden') }}"
               class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
@@ -493,57 +563,63 @@
     <div id="particle-canvas"></div>
     <div class="container profile-view-container">
 
-        <div class="profile-card">
-            <div class="profile-display-section">
-                <h3>Profil Anda</h3>
-                <div class="profile-display-layout">
-                    <!-- Avatar Display -->
-                    <div class="profile-display-left">
-                        <div id="avatarDisplay" class="avatar-display">
-                            <img src="{{ $avatarUrl }}" alt="Avatar Image">
-                        </div>
-                    </div>
-                    <!-- Info Display -->
-                    <div class="profile-display-right">
-                        <div class="info-item">
-                            <label>Nama:</label>
-                            <p id="displayNama">{{ Auth::user()->name }}</p>
-                        </div>
-                        <div class="info-item">
-                            <label>Emel:</label>
-                            <p id="displayEmail">{{ Auth::user()->email }}</p>
-                        </div>
-                        <div class="info-item">
-                            <label>Institusi:</label>
-                            <p id="displayInstitusi">{{ $institutionName }}</p>
-                        </div>
-                        <div class="info-item">
-                            <label>Jawatan:</label>
-                            <p id="displayJawatan">{{ $positionName }}</p>
-                        </div>
-                        <div class="info-item">
-                            <label>Peranan:</label>
-                            <p id="displayPeranan">{{ $roleName }}</p>
-                        </div>
-                        <div class="info-item">
-                            <label>Telefon:</label>
-                            <p id="displayTelefon">{{ Auth::user()->phone_number ?? '-' }}</p>
-                        </div>
-                        <div class="info-item">
-                            <label>Alamat:</label>
-                            <p id="displayAlamat">{{ $fullAddress ?: '-' }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <div class="profile-card">
 
-            <div class="button-container">
-                <button onclick="goBackToForm()">Kemaskini Profil</button>
-            </div>
-
-            <!-- Notification -->
-            <div id="statusMsg"></div>
+        <!-- Header / Cover -->
+        <div class="profile-card-cover">
+          <div class="avatar-ring">
+            <img src="{{ $avatarUrl }}" alt="Avatar" class="avatar-img">
+          </div>
+          <h2 class="profile-name">{{ Auth::user()->name }}</h2>
+          <span class="profile-role-badge">{{ $roleName }}</span>
         </div>
+
+        <!-- Body -->
+        <div class="profile-card-body">
+          <div class="profile-info-grid">
+
+            <div class="profile-info-item">
+              <span class="info-icon"><i class="bi bi-envelope-fill"></i> Emel</span>
+              <p class="info-value" id="displayEmail">{{ Auth::user()->email }}</p>
+            </div>
+
+            <div class="profile-info-item">
+              <span class="info-icon"><i class="bi bi-building"></i> Institusi</span>
+              <p class="info-value" id="displayInstitusi">{{ $institutionName }}</p>
+            </div>
+
+            <div class="profile-info-item">
+              <span class="info-icon"><i class="bi bi-briefcase-fill"></i> Jawatan</span>
+              <p class="info-value" id="displayJawatan">{{ $positionName }}</p>
+            </div>
+
+            <div class="profile-info-item">
+              <span class="info-icon"><i class="bi bi-shield-fill-check"></i> Peranan</span>
+              <p class="info-value" id="displayPeranan">{{ $roleName }}</p>
+            </div>
+
+            <div class="profile-info-item">
+              <span class="info-icon"><i class="bi bi-telephone-fill"></i> Telefon</span>
+              <p class="info-value" id="displayTelefon">{{ Auth::user()->phone_number ?? '-' }}</p>
+            </div>
+
+            <div class="profile-info-item">
+              <span class="info-icon"><i class="bi bi-geo-alt-fill"></i> Alamat</span>
+              <p class="info-value" id="displayAlamat">{{ $fullAddress ?: '-' }}</p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Action -->
+        <div class="profile-card-action">
+          <button onclick="goBackToForm()"><i class="bi bi-pencil-square"></i> Kemaskini Profil</button>
+        </div>
+
+        <!-- Notification -->
+        <div id="statusMsg"></div>
+
+      </div>
     </div>
 
   <script>
@@ -597,15 +673,15 @@
         <div class="col-lg-3 col-md-6 d-flex">
           <i class="bi bi-geo-alt icon"></i>
           <div class="address">
-            <h4>Address</h4>
+            <h4>Alamat</h4>
             <p>Ibu Pejabat Penjara Malaysia<br>Kajangâ€“Semenyih<br>By Pass 43000 Kajang, Selangor</p>
           </div>
         </div>
         <div class="col-lg-3 col-md-6 d-flex">
           <i class="bi bi-telephone icon"></i>
           <div>
-            <h4>Contact</h4>
-            <p><strong>Phone:</strong> 03-8732 8000<br><strong>Email:</strong> admin@mysipma.com</p>
+            <h4>Hubungi</h4>
+            <p><strong>Telefon:</strong> 03-8732 8000<br><strong>Emel:</strong> admin@mysipma.com</p>
           </div>
         </div>
         <div class="col-lg-3 col-md-6 d-flex">
@@ -616,7 +692,7 @@
           </div>
         </div>
         <div class="col-lg-3 col-md-6">
-          <h4>Follow Us</h4>
+          <h4>Ikuti Kami</h4>
           <div class="social-links d-flex">
             <a href="https://x.com/penjaramalaysia" target="_blank"><i class="bi bi-twitter-x"></i></a>
             <a href="https://www.facebook.com/jabatanpenjaramalaysia/" target="_blank"><i class="bi bi-facebook"></i></a>

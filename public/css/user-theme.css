@@ -1,5 +1,17 @@
 :root { --theme-toggle-display: inline-flex; }
 
+[data-bs-theme="dark"] {
+  --bg: #0b1120;
+  --surface: #1e293b;
+  --surface-soft: #334155;
+  --surface-strong: #182235;
+  --border: #334155;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --accent: #10b981;
+  --accent-soft: rgba(16,185,129,.16);
+}
+
 [data-bs-theme="dark"] .navmenu a {
   color: #ffffff !important;
 }
@@ -31,6 +43,13 @@
     -webkit-text-fill-color: #ef4444 !important;
     background-color: rgba(248, 113, 113, 0.1) !important;
   }
+}
+
+[data-bs-theme="light"] .navmenu ul li a.text-danger {
+  color: #000 !important;
+}
+[data-bs-theme="light"] .navmenu ul li a.text-danger:hover {
+  color: #dc2626 !important;
 }
 
 @keyframes logoPulse {
@@ -75,8 +94,8 @@
 }
 
 :root[data-bs-theme="light"] {
-  --bg: #f8f9fa;
-  --surface: #ffffff;
+  --bg: #f1f5f9;
+  --surface: #e2e8f0;
   --surface-soft: #f1f3f5;
   --surface-strong: #e9ecef;
   --border: #dee2e6;
@@ -87,7 +106,7 @@
 }
 
 [data-bs-theme="light"] body {
-  background: #f8f9fa;
+  background: #f1f5f9;
 }
 
 [data-bs-theme="light"] h1,
@@ -117,6 +136,11 @@
 
 [data-bs-theme="light"] .stat-card {
   background: var(--surface);
+}
+
+[data-bs-theme="light"] .hero,
+[data-bs-theme="light"] .section-card {
+  background: var(--surface);
   border-color: var(--border);
 }
 
@@ -143,16 +167,16 @@
 }
 
 [data-bs-theme="light"] .item-card {
-  background: #f8f9fa;
+  background: var(--surface);
 }
 
 [data-bs-theme="light"] .items-toolbar {
-  background: #f1f3f5;
-  border-color: #dee2e6;
+  background: var(--surface);
+  border-color: var(--border);
 }
 
 [data-bs-theme="light"] .totals-box {
-  background: linear-gradient(180deg,#f1f3f5 0%,#e9ecef 100%);
+  background: var(--surface);
 }
 [data-bs-theme="light"] .totals-box p { color: #6c757d; }
 
@@ -165,6 +189,10 @@
 [data-bs-theme="light"] .btn-logout {
   color: #374151;
   border-color: rgba(0,0,0,.2);
+}
+[data-bs-theme="light"] .btn-logout:hover {
+  background: #e5e7eb;
+  color: #111827;
 }
 
 [data-bs-theme="light"] .text-white {
@@ -186,8 +214,8 @@
 }
 
 [data-bs-theme="light"] .table-dark-custom th {
-  background: #e9ecef !important;
-  color: #111827 !important;
+  background: linear-gradient(135deg, #059669, #6366f1) !important;
+  color: #fff !important;
 }
 [data-bs-theme="light"] .table-dark-custom td {
   color: #212529 !important;
@@ -410,7 +438,3 @@
 [data-bs-theme="light"] .select2-container--default .select2-selection--single .select2-selection__placeholder {
   color: #adb5bd !important;
 }
-
-
-
-

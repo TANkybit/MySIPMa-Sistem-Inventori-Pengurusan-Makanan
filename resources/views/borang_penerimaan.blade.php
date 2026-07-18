@@ -27,7 +27,11 @@
     .logo-glow:hover { filter: brightness(170%); transform: scale(1.02); }
     .page-shell { padding: 32px 0 56px; }
     .card-box { background: var(--surface); border:1px solid var(--border); border-radius:24px; box-shadow:0 18px 48px rgba(0,0,0,.55); }
-    @media (min-width: 1200px) { .header .container > .logo-glow, .header .container > .d-xl-flex { position: relative; z-index: 2; } .header .navmenu { left: 50%; position: absolute; transform: translateX(-50%); } }
+    @media (min-width: 1200px) { .header .container > .logo-glow, .header .container > .d-xl-flex { position: relative; z-index: 2; }       .header .navmenu {
+        position: relative;
+        flex: 1;
+        text-align: center;
+      } }
     .navmenu a { color: #ffffff !important; }
     .navmenu a:hover,
     .navmenu a.active { color: #10b981 !important; }
@@ -53,7 +57,7 @@
     table.dataTable > thead > tr > th { border-bottom:1px solid rgba(255,255,255,.12) !important; }
     table.dataTable > tbody > tr { background:transparent !important; }
     .table-dark-custom { color:var(--text) !important; border-color:var(--border) !important; }
-    .table-dark-custom th { background:var(--surface-soft) !important; color:#fff !important; }
+    .table-dark-custom th { background:linear-gradient(135deg,#065f46,#047857) !important; color:#fff !important; }
     .table-dark-custom td { background:transparent !important; border-bottom:1px solid rgba(255,255,255,.08) !important; color:#fff !important; vertical-align:middle; }
     .totals-box { background: linear-gradient(180deg,#111827 0%,#0b1020 100%); border-radius:20px; color:#fff; padding:24px; }
     .items-wrap { border:1px solid rgba(255,255,255,.08); border-radius:20px; overflow:hidden; }
@@ -74,6 +78,18 @@
     .date-input { background:#111827;border:1px solid rgba(255,255,255,.08);border-radius:14px;color:var(--text);min-height:48px;padding:12px 14px; }
     .date-input:focus { border-color:rgba(16,185,129,.45);box-shadow:0 0 0 .2rem rgba(16,185,129,.16);background:#111827;color:var(--text); }
     @media (max-width: 767.98px) { .hero,.section-card { padding:22px; } }
+
+    /* Replacement unit label */
+    .replace-unit-label { font-size:.9rem; font-weight:500; }
+    [data-bs-theme="light"] .replace-unit-label { border-color:rgba(0,0,0,.2) !important; color:#6b7280 !important; }
+
+    /* ── Colored section accents ── */
+    .order-info-grid { border-left:4px solid #38bdf8; }
+    .section-card { border-left:4px solid #f59e0b; }
+
+    [data-bs-theme="light"] .order-info-grid { border-left-color:#0284c7; }
+    [data-bs-theme="light"] .section-card { border-left-color:#d97706; }
+
     @keyframes logoPulse { 0% { filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0,0,0,.8)) drop-shadow(1px 1px 0 rgba(0,0,0,.5)) drop-shadow(0 0 8px rgba(16,185,129,.3)); transform: scale(1); } 50% { filter: brightness(210%) drop-shadow(2px 3px 0 rgba(0,0,0,.9)) drop-shadow(1px 1px 0 rgba(0,0,0,.6)) drop-shadow(0 0 16px rgba(16,185,129,.6)) drop-shadow(0 0 30px rgba(16,185,129,.2)); transform: scale(1.03); } 100% { filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0,0,0,.8)) drop-shadow(1px 1px 0 rgba(0,0,0,.5)) drop-shadow(0 0 8px rgba(16,185,129,.3)); transform: scale(1); } }
     @keyframes logoShine { 0% { filter: brightness(150%) drop-shadow(0 0 0 transparent); } 50% { filter: brightness(200%) drop-shadow(0 0 8px rgba(16,185,129,.5)); } 100% { filter: brightness(150%) drop-shadow(0 0 0 transparent); } }
     [data-bs-theme="light"] .logo-glow img { filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0,0,0,.8)) drop-shadow(1px 1px 0 rgba(0,0,0,.5)) drop-shadow(-1px -1px 0 rgba(255,255,255,.4)) !important; animation: logoPulse 3s ease-in-out infinite; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -97,7 +113,7 @@
     [data-bs-theme="light"] .select2-results__option--highlighted { background:#10b981 !important; color:#fff !important; }
     [data-bs-theme="light"] .select2-search__field { background:#fff; border-color:#d1d5db !important; color:#111827; }
     [data-bs-theme="light"] .table-dark-custom { color:#111827 !important; border-color:#e5e7eb !important; }
-    [data-bs-theme="light"] .table-dark-custom th { background:#f3f4f6 !important; color:#111827 !important; border-color:#e5e7eb !important; }
+    [data-bs-theme="light"] .table-dark-custom th { background:linear-gradient(135deg,#059669,#6366f1) !important; color:#fff !important; border-color:var(--border) !important; }
     [data-bs-theme="light"] .table-dark-custom td { background:#fff !important; color:#111827 !important; border-color:#e5e7eb !important; }
     [data-bs-theme="light"] table.dataTable > thead > tr > th { border-color:#e5e7eb !important; }
     [data-bs-theme="light"] .totals-box { background:linear-gradient(180deg,#fff 0%,#f9fafb 100%); color:#111827; }
@@ -134,13 +150,14 @@
 <body>
   <header id="header" class="header d-flex align-items-center sticky-top" style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
     <div class="container position-relative d-flex align-items-center justify-content-between">
-      <a href="#" class="logo-glow d-flex align-items-center me-auto me-xl-0" id="logoLogoutTrigger">
+      <a href="#" class="logo-glow d-flex align-items-center" id="logoLogoutTrigger">
         <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" style="height: 55px; width: auto;" alt="MySIPMa logo">
       </a>
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="{{ route('user.dashboard') }}" class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Dashboard</a></li>
+          <li><a href="{{ route('user.dashboard') }}" class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Papan Pemuka</a></li>
           <li><a href="{{ route('user.senarai.inden') }}" class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
+          <li><a href="{{ route('user.inventori') }}" class="{{ request()->routeIs('user.inventori') ? 'active' : '' }}">Inventori</a></li>
           @if(Auth::user()->hasPermission('pengesahan_inden'))
           <li><a href="{{ route('user.pengesahan.inden') }}" class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
           @endif
@@ -367,18 +384,19 @@
             if (data.items && data.items.length > 0) {
               data.items.forEach(function(item, idx) {
                 html += `
-                    <div class="item-card" data-item-id="${item.id}">
+                    <div class="item-card" data-item-id="${item.id}" data-category-id="${item.category_id}">
                     <div class="row align-items-center g-2">
                       <div class="col-1"><span class="item-index">${idx + 1}</span></div>
                       <div class="col-3"><strong>${item.name}</strong></div>
-                      <div class="col-2">${item.unit || 'Unit'}</div>
-                      <div class="col-2">${item.ordered_qty}</div>
+                      <div class="col-1">${item.unit || 'Unit'}</div>
+                      <div class="col-1">${item.ordered_qty}</div>
                       <div class="col-2">
-                        <input type="number" name="items[${item.id}][received_qty]" class="form-control" value="${item.received_qty || 0}" min="0" step="1" style="min-height:38px;">
+                        <input type="number" name="items[${item.id}][received_qty]" class="form-control received-qty" value="${item.received_qty || 0}" min="0" step="1" style="min-height:38px;" data-ordered="${item.ordered_qty}">
                         <input type="hidden" name="items[${item.id}][item_id]" value="${item.item_id}">
                         <input type="hidden" name="items[${item.id}][ordered_qty]" value="${item.ordered_qty}">
+                        <div class="qty-alert text-danger small mt-1" style="display:none;"></div>
                       </div>
-                      <div class="col-1">
+                      <div class="col-3">
                         <input type="text" name="items[${item.id}][remarks]" class="form-control" placeholder="Catatan" style="min-height:38px;">
                       </div>
                       <div class="col-1 text-center">
@@ -388,16 +406,14 @@
                       </div>
                     </div>
                     <div class="row g-2 mt-2 wrong-replacement" style="display:none;">
-                      <div class="col-md-4">
+                      <div class="col-md-5">
                         <select name="items[${item.id}][replace_name]" class="form-select replace-item-select" data-placeholder="Cari nama barang gantian" style="min-height:38px;">
                           <option value=""></option>
                         </select>
                       </div>
-                      <div class="col-md-3">
-                        <select name="items[${item.id}][replace_unit]" class="form-select replace-unit-select" style="min-height:38px;">
-                          <option value="">-- Pilih Unit --</option>
-                          ${uomList.map(u => `<option value="${u.code}">${u.code}</option>`).join('')}
-                        </select>
+                      <div class="col-md-2">
+                        <span class="replace-unit-label d-flex align-items-center" style="min-height:38px;border:1px dashed rgba(255,255,255,.2);border-radius:8px;padding:0 12px;color:var(--muted);">Unit</span>
+                        <input type="hidden" name="items[${item.id}][replace_unit]" class="replace-unit-hidden">
                       </div>
                       <div class="col-md-3">
                         <input type="number" name="items[${item.id}][replace_qty]" class="form-control" placeholder="Kuantiti" min="0" step="1" style="min-height:38px;">
@@ -425,6 +441,7 @@
       $(document).on('change', '.wrong-toggle', function() {
         const $card = $(this).closest('.item-card');
         const $panel = $card.find('.wrong-replacement');
+        const categoryId = $card.attr('data-category-id');
         $panel.toggle(this.checked);
         if (this.checked) {
           $card.find('.replace-item-select').each(function() {
@@ -434,7 +451,7 @@
                   url: itemSearchUrl,
                   dataType: 'json',
                   delay: 250,
-                  data: params => ({ q: params.term || '' }),
+                  data: params => ({ q: params.term || '', category_id: categoryId }),
                   processResults: data => data
                 },
                 dropdownParent: $card,
@@ -444,13 +461,34 @@
               });
               $(this).on('select2:select', function(e) {
                 const selected = e.params.data;
-                const unitSelect = $card.find('.replace-unit-select');
-                if (selected.uom && unitSelect.find(`option[value="${selected.uom}"]`).length) {
-                  unitSelect.val(selected.uom);
-                }
+                $card.find('.replace-unit-label').text(selected.uom || 'Unit');
+                $card.find('.replace-unit-hidden').val(selected.uom || '');
               });
             }
           });
+        }
+      });
+
+      // Real-time quantity validation
+      $(document).on('input', '.received-qty', function() {
+        const $input = $(this);
+        const ordered = parseFloat($input.data('ordered')) || 0;
+        const received = parseFloat($input.val()) || 0;
+        const $alert = $input.closest('.col-2').find('.qty-alert');
+
+        if (received < ordered) {
+          const diff = ordered - received;
+          $alert.text('⚠ Kuantiti diterima kurang ' + diff + ' daripada dipesan (' + ordered + '). Isu: Terkurang.').show();
+        } else if (received > ordered) {
+          const diff = received - ordered;
+          const pct = ordered > 0 ? (diff / ordered) * 100 : 0;
+          if (pct > 5) {
+            $alert.text('⚠ Kuantiti diterima terlebih ' + diff + ' (' + pct.toFixed(1) + '% melebihi). Isu: Terlalu lebih.').show();
+          } else {
+            $alert.hide();
+          }
+        } else {
+          $alert.hide();
         }
       });
 
@@ -477,6 +515,7 @@
     });
   </script>
     <script src="{{ asset('js/table-download.js') }}"></script>
+    <script src="{{ asset('js/table-download-pdf.js') }}"></script>
     <script src="{{ asset('js/session-timeout.js') }}"></script>
   <script src="{{ asset('frontend/Nexa/assets/js/mobile-nav.js') }}"></script>
   <script src="{{ asset('js/user-theme.js') }}"></script>
