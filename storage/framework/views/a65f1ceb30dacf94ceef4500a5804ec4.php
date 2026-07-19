@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ms" data-bs-theme="light">
+
+<head>
+  <script>document.documentElement.setAttribute('data-bs-theme',localStorage.getItem('theme')||'light')</script>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Borang Penerimaan - MySIPMa</title>
+  <link rel="icon" type="image/png" href="<?php echo e(asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png')); ?>">
+  <link rel="apple-touch-icon" sizes="180x180" href="<?php echo e(asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png')); ?>">
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/css/main2.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('css/user-theme.css')); ?>" rel="stylesheet">
+  <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+  <style>
+    :root { --bg:#020204; --surface:#11151f; --surface-soft:#161a26; --surface-strong:#0c1119; --border:#2c333f; --text:#e2e8f0; --muted:#94a3b8; --accent:#10b981; --accent-soft:rgba(16,185,129,.16); }
+    body { background: radial-gradient(circle at top, rgba(255,255,255,.05) 0%, transparent 40%), linear-gradient(180deg,#020204 0%,#07090f 40%,#0b1018 100%); color: var(--text); font-family: "Roboto", sans-serif; }
+    h1,h2,h3,h4 { font-family: "Montserrat", sans-serif; color: #fff; }
+    .logo-glow { width: auto; height: auto; filter: brightness(150%); transition: all 0.3s ease; }
+    .logo-glow:hover { filter: brightness(170%); transform: scale(1.02); }
+    .page-shell { padding: 32px 0 56px; }
+    .card-box { background: var(--surface); border:1px solid var(--border); border-radius:24px; box-shadow:0 18px 48px rgba(0,0,0,.55); }
+    @media (min-width: 1200px) { .header .container > .logo-glow, .header .container > .d-xl-flex { position: relative; z-index: 2; }       .header .navmenu {
+        position: relative;
+        flex: 1;
+        text-align: center;
+      } }
+    .navmenu a { color: #ffffff !important; }
+    .navmenu a:hover,
+    .navmenu a.active { color: #10b981 !important; }
+    .text-white-50:hover { color: #10b981 !important; }
+    .hero, .section-card { padding:28px; }
+    .hero-title { font-size: clamp(2rem,4vw,3rem); font-weight:800; line-height:1.05; margin:10px 0 14px; }
+    .muted { color: var(--muted); line-height:1.7; }
+    .form-label { color:#cbd5e1; font-size:.92rem; font-weight:700; margin-bottom:8px; }
+    .form-control,.form-select { background: #111827; border:1px solid rgba(255,255,255,.08); border-radius:14px; color: var(--text); min-height:48px; padding:12px 14px; }
+    .form-control::placeholder { color: rgba(255,255,255,.35); opacity: 1; }
+    .form-control:focus,.form-select:focus { border-color: rgba(16,185,129,.45); box-shadow:0 0 0 .2rem rgba(16,185,129,.16); background: #111827; color: var(--text); }
+    .btn-custom { background: var(--accent); color:#0f172a; border:0; border-radius:999px; padding:12px 24px; font-weight:700; text-decoration:none; transition:all .3s; }
+    .btn-custom:hover { background:#0ea5e9; color:#fff; transform:scale(1.05); }
+    .btn-logout { background:transparent; border:1px solid rgba(255,255,255,.2); color:#fff; }
+    .btn-logout:hover { background:rgba(255,255,255,.1); border-color:#fff; }
+    .select2-container { width:100% !important; }
+    .select2-container--default .select2-selection--single { background:#111827; border:1px solid rgba(255,255,255,.08); border-radius:14px; color:var(--text); min-height:48px; padding:9px 12px; }
+    .select2-container--default .select2-selection--single .select2-selection__rendered { color:var(--text); line-height:28px; padding-left:0; }
+    .select2-container--default .select2-selection--single .select2-selection__arrow { height:46px; }
+    .select2-dropdown { background:#111827; border:1px solid rgba(255,255,255,.12); color:var(--text); }
+    .select2-search__field { background:#0b1020; border:1px solid rgba(255,255,255,.12) !important; color:var(--text); }
+    .select2-results__option--highlighted { background:var(--accent) !important; color:#0f172a !important; }
+    table.dataTable > thead > tr > th { border-bottom:1px solid rgba(255,255,255,.12) !important; }
+    table.dataTable > tbody > tr { background:transparent !important; }
+    .table-dark-custom { color:var(--text) !important; border-color:var(--border) !important; }
+    .table-dark-custom th { background:linear-gradient(135deg,#065f46,#047857) !important; color:#fff !important; }
+    .table-dark-custom td { background:transparent !important; border-bottom:1px solid rgba(255,255,255,.08) !important; color:#fff !important; vertical-align:middle; }
+    .totals-box { background: linear-gradient(180deg,#111827 0%,#0b1020 100%); border-radius:20px; color:#fff; padding:24px; }
+    .items-wrap { border:1px solid rgba(255,255,255,.08); border-radius:20px; overflow:hidden; }
+    .item-card { border-bottom:1px solid rgba(255,255,255,.08); padding:20px; background: var(--surface-soft); }
+    .item-card:last-child { border-bottom:0; }
+    .section-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+    .order-info-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:24px; padding:20px; background: var(--surface-strong); border-radius:16px; border:1px solid rgba(255,255,255,.06); }
+    .order-info-item label { color:var(--muted); font-size:.8rem; text-transform:uppercase; letter-spacing:.5px; font-weight:700; }
+    .order-info-item p { color:#fff; font-size:1rem; font-weight:600; margin:4px 0 0; }
+    .item-index { align-items:center; background: var(--accent); border-radius:999px; color:#0f172a; display:inline-flex; font-size:.8rem; font-weight:700; height:34px; justify-content:center; width:34px; }
+    .invalid-feedback { color: #f87171; font-size: 0.85rem; margin-top: 6px; font-weight: 500; display: none; }
+    .is-invalid + .invalid-feedback, .is-invalid ~ .invalid-feedback { display: block; }
+    .form-control.is-invalid, .form-select.is-invalid { border-color: #f87171 !important; }
+    .action-row { display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; align-items:center; margin-top:24px; }
+    .word-counter { color: rgba(255,255,255,.55); font-size: .85rem; }
+    .wrong-toggle { width:22px;height:22px;border-radius:6px;border:2px solid rgba(255,255,255,.2);background:transparent;cursor:pointer; }
+    .wrong-toggle:checked { background-color:var(--accent);border-color:var(--accent); }
+    .date-input { background:#111827;border:1px solid rgba(255,255,255,.08);border-radius:14px;color:var(--text);min-height:48px;padding:12px 14px; }
+    .date-input:focus { border-color:rgba(16,185,129,.45);box-shadow:0 0 0 .2rem rgba(16,185,129,.16);background:#111827;color:var(--text); }
+    @media (max-width: 767.98px) { .hero,.section-card { padding:22px; } }
+
+    /* Replacement unit label */
+    .replace-unit-label { font-size:.9rem; font-weight:500; }
+    [data-bs-theme="light"] .replace-unit-label { border-color:rgba(0,0,0,.2) !important; color:#6b7280 !important; }
+
+    /* ── Colored section accents ── */
+    .order-info-grid { border-left:4px solid #38bdf8; }
+    .section-card { border-left:4px solid #f59e0b; }
+
+    [data-bs-theme="light"] .order-info-grid { border-left-color:#0284c7; }
+    [data-bs-theme="light"] .section-card { border-left-color:#d97706; }
+
+    @keyframes logoPulse { 0% { filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0,0,0,.8)) drop-shadow(1px 1px 0 rgba(0,0,0,.5)) drop-shadow(0 0 8px rgba(16,185,129,.3)); transform: scale(1); } 50% { filter: brightness(210%) drop-shadow(2px 3px 0 rgba(0,0,0,.9)) drop-shadow(1px 1px 0 rgba(0,0,0,.6)) drop-shadow(0 0 16px rgba(16,185,129,.6)) drop-shadow(0 0 30px rgba(16,185,129,.2)); transform: scale(1.03); } 100% { filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0,0,0,.8)) drop-shadow(1px 1px 0 rgba(0,0,0,.5)) drop-shadow(0 0 8px rgba(16,185,129,.3)); transform: scale(1); } }
+    @keyframes logoShine { 0% { filter: brightness(150%) drop-shadow(0 0 0 transparent); } 50% { filter: brightness(200%) drop-shadow(0 0 8px rgba(16,185,129,.5)); } 100% { filter: brightness(150%) drop-shadow(0 0 0 transparent); } }
+    [data-bs-theme="light"] .logo-glow img { filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0,0,0,.8)) drop-shadow(1px 1px 0 rgba(0,0,0,.5)) drop-shadow(-1px -1px 0 rgba(255,255,255,.4)) !important; animation: logoPulse 3s ease-in-out infinite; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    [data-bs-theme="light"] .logo-glow:hover img { filter: brightness(250%) drop-shadow(3px 4px 0 rgba(0,0,0,.9)) drop-shadow(2px 2px 0 rgba(0,0,0,.6)) drop-shadow(0 0 20px rgba(16,185,129,.6)) drop-shadow(0 0 40px rgba(16,185,129,.3)) !important; transform: scale(1.08) !important; animation: logoShine 1s ease-in-out infinite; }
+    [data-bs-theme="light"] .logo-glow { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    [data-bs-theme="light"] .logo-glow:hover { transform: scale(1.08) !important; }
+    .mobile-nav-toggle { font-size:24px; cursor:pointer; }
+    .mobile-nav-toggle.bi::before { color:#fff; }
+    [data-bs-theme="light"] .mobile-nav-toggle.bi::before { color:#111827; }
+    [data-bs-theme="light"] body { background:#f8f9fa; color:#111827; }
+    [data-bs-theme="light"] h1,[data-bs-theme="light"] h2,[data-bs-theme="light"] h3,[data-bs-theme="light"] h4 { color:#111827; }
+    [data-bs-theme="light"] .card-box { background:#fff; border-color:#e5e7eb; box-shadow:0 4px 12px rgba(0,0,0,.08); }
+    [data-bs-theme="light"] .form-control,[data-bs-theme="light"] .form-select { background:#fff; border-color:#d1d5db; color:#111827; }
+    [data-bs-theme="light"] .form-control::placeholder,[data-bs-theme="light"] .form-select option { color:#9ca3af; }
+    [data-bs-theme="light"] .form-control:focus,[data-bs-theme="light"] .form-select:focus { background:#fff; color:#111827; border-color:#10b981; }
+    [data-bs-theme="light"] .form-select option { color:#111827; background:#fff; }
+    [data-bs-theme="light"] .select2-container--default .select2-selection--single { background:#fff; border-color:#d1d5db; color:#111827; }
+    [data-bs-theme="light"] .select2-container--default .select2-selection--single .select2-selection__rendered { color:#111827; }
+    [data-bs-theme="light"] .select2-dropdown { background:#fff; border-color:#d1d5db; color:#111827; }
+    [data-bs-theme="light"] .select2-results__option { color:#111827; }
+    [data-bs-theme="light"] .select2-results__option--highlighted { background:#10b981 !important; color:#fff !important; }
+    [data-bs-theme="light"] .select2-search__field { background:#fff; border-color:#d1d5db !important; color:#111827; }
+    [data-bs-theme="light"] .table-dark-custom { color:#111827 !important; border-color:#e5e7eb !important; }
+    [data-bs-theme="light"] .table-dark-custom th { background:linear-gradient(135deg,#059669,#6366f1) !important; color:#fff !important; border-color:var(--border) !important; }
+    [data-bs-theme="light"] .table-dark-custom td { background:#fff !important; color:#111827 !important; border-color:#e5e7eb !important; }
+    [data-bs-theme="light"] table.dataTable > thead > tr > th { border-color:#e5e7eb !important; }
+    [data-bs-theme="light"] .totals-box { background:linear-gradient(180deg,#fff 0%,#f9fafb 100%); color:#111827; }
+    [data-bs-theme="light"] .item-card { background:#fff; border-color:#e5e7eb; }
+    [data-bs-theme="light"] .order-info-grid { background:#f3f4f6; border-color:#e5e7eb; }
+    [data-bs-theme="light"] .order-info-item label { color:#6b7280; }
+    [data-bs-theme="light"] .order-info-item p { color:#111827; }
+    [data-bs-theme="light"] .date-input { background:#fff; border-color:#d1d5db; color:#111827; }
+    [data-bs-theme="light"] .date-input:focus { background:#fff; color:#111827; border-color:#10b981; }
+    [data-bs-theme="light"] .wrong-toggle { border-color:#d1d5db; }
+    [data-bs-theme="light"] #header { background:rgba(255,255,255,.8) !important; border-bottom:1px solid #e5e7eb !important; }
+    [data-bs-theme="light"] .dropdown-menu { background:#fff; border-color:#e5e7eb; color:#111827; }
+    [data-bs-theme="light"] .dropdown-item { color:#374151; }
+    [data-bs-theme="light"] .dropdown-item:hover,[data-bs-theme="light"] .dropdown-item:focus { background:#f3f4f6; color:#111827; }
+    [data-bs-theme="light"] select option { color:#111827; background:#fff; }
+
+    /* Mobile nav links */
+    .navmenu ul li a.text-danger { color:#f87171 !important; }
+    .navmenu ul li a.text-danger:hover { color:#ef4444 !important; }
+    [data-bs-theme="light"] .navmenu ul li a.text-danger { color:#dc2626 !important; }
+
+    /* Logout confirmation modal */
+    #logoutConfirmModal .modal-content { background:var(--surface); border:1px solid var(--border); border-radius:20px; color:var(--text); }
+    [data-bs-theme="light"] #logoutConfirmModal .modal-content { background:#fff; border-color:#e5e7eb; color:#111827; }
+    #logoutConfirmModal .modal-header { border-bottom:1px solid var(--border); }
+    [data-bs-theme="light"] #logoutConfirmModal .modal-header { border-bottom-color:#e5e7eb; }
+    #logoutConfirmModal .modal-title { font-weight:700; }
+    #logoutConfirmModal .btn-cancel { background:rgba(255,255,255,.08); border:1px solid var(--border); color:var(--text); }
+    #logoutConfirmModal .btn-cancel:hover { background:rgba(255,255,255,.15); }
+    [data-bs-theme="light"] #logoutConfirmModal .btn-cancel { background:#f3f4f6; border-color:#d1d5db; color:#374151; }
+    [data-bs-theme="light"] #logoutConfirmModal .btn-cancel:hover { background:#e5e7eb; }
+  </style>
+</head>
+<body>
+  <header id="header" class="header d-flex align-items-center sticky-top" style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
+    <div class="container position-relative d-flex align-items-center justify-content-between">
+      <a href="#" class="logo-glow d-flex align-items-center" id="logoLogoutTrigger">
+        <img src="<?php echo e(asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png')); ?>" style="height: 55px; width: auto;" alt="MySIPMa logo">
+      </a>
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="<?php echo e(route('user.dashboard')); ?>" class="<?php echo e(request()->routeIs('user.dashboard') ? 'active' : ''); ?>">Papan Pemuka</a></li>
+          <li><a href="<?php echo e(route('user.senarai.inden')); ?>" class="<?php echo e(request()->routeIs('user.senarai.inden') ? 'active' : ''); ?>">Senarai Inden</a></li>
+          <li><a href="<?php echo e(route('user.inventori')); ?>" class="<?php echo e(request()->routeIs('user.inventori') ? 'active' : ''); ?>">Inventori</a></li>
+          <?php if(Auth::user()->hasPermission('pengesahan_inden')): ?>
+          <li><a href="<?php echo e(route('user.pengesahan.inden')); ?>" class="<?php echo e(request()->routeIs('user.pengesahan.inden') ? 'active' : ''); ?>">Pengesahan Inden</a></li>
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('borang_inden')): ?>
+          <li><a href="<?php echo e(route('borang.inden')); ?>" class="<?php echo e(request()->routeIs('borang.inden*') ? 'active' : ''); ?>">Borang Inden</a></li>
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('penerimaan_inden')): ?>
+          <li><a href="<?php echo e(route('borang.penerimaan')); ?>" class="<?php echo e(request()->routeIs('borang.penerimaan') ? 'active' : ''); ?>">Penerimaan</a></li>
+          <?php endif; ?>
+          <li class="d-xl-none"><a href="<?php echo e(route('profile')); ?>" class="<?php echo e(request()->routeIs('profile') ? 'active' : ''); ?>">Profil</a></li>
+          <li class="d-xl-none"><a href="#" id="navLogoutBtn" class="text-danger">Log Keluar</a></li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+      <div class="d-none d-xl-flex align-items-center gap-3">
+        <?php if(Auth::user()->hasPermission('pengesahan_inden')): ?>
+        <a href="<?php echo e(route('user.pengesahan.inden')); ?>" class="position-relative text-white fs-5 me-3" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''">
+          <i class="bi bi-bell-fill"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+            <?php echo e($pendingApprovals ?? 0); ?>
+
+            <span class="visually-hidden">Inden belum disah</span>
+          </span>
+        </a>
+        <?php endif; ?>
+        <?php if(Auth::user()->hasPermission('penerimaan_inden')): ?>
+        <a href="<?php echo e(route('borang.penerimaan')); ?>" class="position-relative text-white fs-5 me-3" style="transition: color 0.3s;" onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color=''">
+          <i class="bi bi-truck"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+            <?php echo e($pendingPenerimaan ?? 0); ?>
+
+            <span class="visually-hidden">Penerimaan belum diproses</span>
+          </span>
+        </a>
+        <?php endif; ?>
+        <button class="btn btn-icon" id="themeToggle" style="background:none;border:none;color:var(--text);font-size:1.2rem;padding:4px 8px"><i class="bi bi-moon-fill"></i></button>
+        <a href="<?php echo e(route('profile')); ?>" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''"><i class="bi bi-person-circle me-2"></i><?php echo e(Auth::user()->name ?? 'Pengguna'); ?></a>
+        <button type="button" class="btn btn-custom btn-logout btn-sm px-3 py-2" id="desktopLogoutBtn"><i class="bi bi-box-arrow-right me-2"></i>Log Keluar</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+  <div class="container page-shell">
+    <div class="card-box hero">
+      <h1 class="hero-title">Borang Penerimaan Barang</h1>
+      <p class="muted mb-0">Rekod penerimaan barang daripada pembekal berdasarkan pesanan inden.</p>
+    </div>
+
+    <?php if(session('success')): ?>
+      <div class="alert alert-success border-0 rounded-4 mb-4"><?php echo e(session('success')); ?></div>
+    <?php endif; ?>
+    <?php if($errors->any()): ?>
+      <div class="alert alert-danger border-0 rounded-4 mb-4">
+        <ul class="mb-0 ps-3">
+          <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <li><?php echo e($error); ?></li>
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </ul>
+      </div>
+    <?php endif; ?>
+
+    <form method="POST" action="<?php echo e(route('borang.penerimaan.store')); ?>">
+      <?php echo csrf_field(); ?>
+
+      <!-- Pilih Pesanan -->
+      <div class="card-box section-card mb-4">
+        <div class="section-head">
+          <h4 class="mb-0">Pilih Pesanan Inden</h4>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">No. Pesanan Inden</label>
+          <select class="form-select" name="order_id" id="orderSelect" required>
+            <option value="">-- Pilih No. Inden --</option>
+            <?php $__currentLoopData = $orders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+              <option value="<?php echo e($order->id); ?>" data-supplier="<?php echo e($order->supplier_name ?? '-'); ?>" data-date="<?php echo e($order->formatted_date ?? $order->order_date ?? '-'); ?>" data-institution="<?php echo e($order->institution_name ?? '-'); ?>" <?php echo e((request('order_id') == $order->id) ? 'selected' : ''); ?>><?php echo e($order->order_no); ?> - <?php echo e($order->supplier_name ?? '-'); ?> (<?php echo e($order->formatted_date ?? $order->order_date ?? '-'); ?>)</option>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+          </select>
+        </div>
+      </div>
+
+      <!-- Maklumat Pesanan -->
+      <div id="orderInfoPanel" class="card-box section-card mb-4" style="display:none;">
+        <h4 class="mb-3">Maklumat Pesanan</h4>
+        <div class="order-info-grid">
+          <div class="order-info-item">
+            <label>No. Pesanan</label>
+            <p id="infoOrderNo">-</p>
+          </div>
+          <div class="order-info-item">
+            <label>Tarikh Pesanan</label>
+            <p id="infoOrderDate">-</p>
+          </div>
+          <div class="order-info-item">
+            <label>Pembekal</label>
+            <p id="infoSupplier">-</p>
+          </div>
+          <div class="order-info-item">
+            <label>Institusi</label>
+            <p id="infoInstitution">-</p>
+          </div>
+          <div class="order-info-item">
+            <label>No. Kontrak</label>
+            <p id="infoContractNo">-</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Penerimaan -->
+      <div id="receiptPanel" class="card-box section-card" style="display:none;">
+        <div class="section-head">
+          <h4 class="mb-0">Butir Penerimaan Barang</h4>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-md-4">
+            <label class="form-label">Tarikh Terima</label>
+            <input class="form-control date-input" name="received_date" type="text" inputmode="numeric" value="<?php echo e(date('d/m/Y')); ?>" placeholder="dd/mm/yyyy">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Diterima Oleh</label>
+            <input type="text" class="form-control" name="received_by" value="<?php echo e(Auth::user()->name); ?>" readonly>
+          </div>
+        </div>
+
+        <div class="items-wrap">
+          <div class="p-3" style="background:var(--surface-strong);">
+            <div class="row fw-bold text-uppercase small" style="color:var(--muted);">
+              <div class="col-1">#</div>
+              <div class="col-3">Nama Barang</div>
+              <div class="col-2">Unit</div>
+              <div class="col-2">Kuantiti Dipesan</div>
+              <div class="col-2">Kuantiti Diterima</div>
+              <div class="col-1">Catatan</div>
+              <div class="col-1 text-center">Salah</div>
+            </div>
+          </div>
+          <div id="itemsContainer">
+            <!-- Populated via JS after selecting order -->
+          </div>
+        </div>
+
+        <div class="row mt-4">
+          <div class="col-md-6">
+            <label class="form-label">Catatan Penerimaan</label>
+            <textarea class="form-control" name="remarks" id="remarksTextarea" rows="3" placeholder="Sebarang catatan mengenai penerimaan..." maxlength="1250"></textarea>
+            <div class="d-flex justify-content-between mt-1">
+              <small class="word-counter" id="wordCount">0 / 250 patah perkataan</small>
+              <small id="wordWarning" class="text-danger" style="display:none;">Had 250 patah perkataan telah dicapai!</small>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Status Penerimaan</label>
+            <select class="form-select" name="status">
+              <option value="Lengkap">Lengkap</option>
+              <option value="Sebahagian">Sebahagian</option>
+              <option value="Berlebih">Berlebih</option>
+              <option value="Rosak">Rosak / Tidak Lengkap</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <a href="<?php echo e(route('borang.penerimaan')); ?>" class="btn btn-outline-secondary">Set Semula</a>
+          <button type="submit" class="btn btn-custom" id="submitBtn">Simpan Penerimaan</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ms.js"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js')); ?>"></script>
+
+  <script>
+    const uomList = <?php echo json_encode($uoms, 15, 512) ?>;
+    const itemSearchUrl = "<?php echo e(route('items.search')); ?>";
+
+    $(document).ready(function() {
+      if (typeof flatpickr !== 'undefined') {
+        document.querySelectorAll('.date-input').forEach(function(el) {
+          flatpickr(el, {
+            dateFormat: 'd/m/Y',
+            allowInput: true,
+            locale: 'ms',
+          });
+        });
+      }
+
+      $('#orderSelect').select2({
+        placeholder: '-- Pilih No. Inden --',
+        allowClear: true,
+        width: '100%'
+      });
+
+      $('#orderSelect').on('change', function() {
+        const orderId = $(this).val();
+        if (!orderId) {
+          $('#orderInfoPanel, #receiptPanel').hide();
+          $('#itemsContainer').empty();
+          return;
+        }
+        loadOrderDetails(orderId);
+      });
+
+      function loadOrderDetails(orderId) {
+        $.ajax({
+          url: '/borang-penerimaan/' + orderId + '/items',
+          method: 'GET',
+          success: function(res) {
+            if (!res.success) return;
+            const data = res.data;
+            $('#infoOrderNo').text(data.order_no);
+            $('#infoOrderDate').text(data.formatted_date || data.order_date);
+            $('#infoSupplier').text(data.supplier_name);
+            $('#infoInstitution').text(data.institution_name);
+            $('#infoContractNo').text(data.contract_no || '-');
+            $('#orderInfoPanel').show();
+
+            let html = '';
+            if (data.items && data.items.length > 0) {
+              data.items.forEach(function(item, idx) {
+                html += `
+                    <div class="item-card" data-item-id="${item.id}" data-category-id="${item.category_id}">
+                    <div class="row align-items-center g-2">
+                      <div class="col-1"><span class="item-index">${idx + 1}</span></div>
+                      <div class="col-3"><strong>${item.name}</strong></div>
+                      <div class="col-1">${item.unit || 'Unit'}</div>
+                      <div class="col-1">${item.ordered_qty}</div>
+                      <div class="col-2">
+                        <input type="number" name="items[${item.id}][received_qty]" class="form-control received-qty" value="${item.received_qty || 0}" min="0" step="1" style="min-height:38px;" data-ordered="${item.ordered_qty}">
+                        <input type="hidden" name="items[${item.id}][item_id]" value="${item.item_id}">
+                        <input type="hidden" name="items[${item.id}][ordered_qty]" value="${item.ordered_qty}">
+                        <div class="qty-alert text-danger small mt-1" style="display:none;"></div>
+                      </div>
+                      <div class="col-3">
+                        <input type="text" name="items[${item.id}][remarks]" class="form-control" placeholder="Catatan" style="min-height:38px;">
+                      </div>
+                      <div class="col-1 text-center">
+                        <div class="form-check d-flex justify-content-center">
+                          <input class="form-check-input wrong-toggle" type="checkbox" name="items[${item.id}][is_wrong]" value="1">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row g-2 mt-2 wrong-replacement" style="display:none;">
+                      <div class="col-md-5">
+                        <select name="items[${item.id}][replace_name]" class="form-select replace-item-select" data-placeholder="Cari nama barang gantian" style="min-height:38px;">
+                          <option value=""></option>
+                        </select>
+                      </div>
+                      <div class="col-md-2">
+                        <span class="replace-unit-label d-flex align-items-center" style="min-height:38px;border:1px dashed rgba(255,255,255,.2);border-radius:8px;padding:0 12px;color:var(--muted);">Unit</span>
+                        <input type="hidden" name="items[${item.id}][replace_unit]" class="replace-unit-hidden">
+                      </div>
+                      <div class="col-md-3">
+                        <input type="number" name="items[${item.id}][replace_qty]" class="form-control" placeholder="Kuantiti" min="0" step="1" style="min-height:38px;">
+                      </div>
+                      <div class="col-md-2 d-flex align-items-center">
+                        <small class="text-warning">Barang gantian</small>
+                      </div>
+                    </div>
+                  </div>
+                `;
+              });
+            } else {
+              html = '<div class="p-4 text-center text-muted">Tiada item ditemui untuk pesanan ini.</div>';
+            }
+            $('#itemsContainer').html(html);
+            $('#receiptPanel').show();
+          },
+          error: function() {
+            alert('Gagal memuatkan data pesanan.');
+          }
+        });
+      }
+
+      // Toggle wrong-item replacement fields
+      $(document).on('change', '.wrong-toggle', function() {
+        const $card = $(this).closest('.item-card');
+        const $panel = $card.find('.wrong-replacement');
+        const categoryId = $card.attr('data-category-id');
+        $panel.toggle(this.checked);
+        if (this.checked) {
+          $card.find('.replace-item-select').each(function() {
+            if (!$(this).data('select2')) {
+              $(this).select2({
+                ajax: {
+                  url: itemSearchUrl,
+                  dataType: 'json',
+                  delay: 250,
+                  data: params => ({ q: params.term || '', category_id: categoryId }),
+                  processResults: data => data
+                },
+                dropdownParent: $card,
+                minimumInputLength: 0,
+                placeholder: 'Cari nama barang gantian',
+                width: '100%'
+              });
+              $(this).on('select2:select', function(e) {
+                const selected = e.params.data;
+                $card.find('.replace-unit-label').text(selected.uom || 'Unit');
+                $card.find('.replace-unit-hidden').val(selected.uom || '');
+              });
+            }
+          });
+        }
+      });
+
+      // Real-time quantity validation
+      $(document).on('input', '.received-qty', function() {
+        const $input = $(this);
+        const ordered = parseFloat($input.data('ordered')) || 0;
+        const received = parseFloat($input.val()) || 0;
+        const $alert = $input.closest('.col-2').find('.qty-alert');
+
+        if (received < ordered) {
+          const diff = ordered - received;
+          $alert.text('⚠ Kuantiti diterima kurang ' + diff + ' daripada dipesan (' + ordered + '). Isu: Terkurang.').show();
+        } else if (received > ordered) {
+          const diff = received - ordered;
+          const pct = ordered > 0 ? (diff / ordered) * 100 : 0;
+          if (pct > 5) {
+            $alert.text('⚠ Kuantiti diterima terlebih ' + diff + ' (' + pct.toFixed(1) + '% melebihi). Isu: Terlalu lebih.').show();
+          } else {
+            $alert.hide();
+          }
+        } else {
+          $alert.hide();
+        }
+      });
+
+      // Word counter for remarks
+      $('#remarksTextarea').on('input', function() {
+        const text = $(this).val().trim();
+        const words = text ? text.split(/\s+/).filter(w => w.length > 0) : [];
+        const count = words.length;
+        $('#wordCount').text(count + ' / 250 patah perkataan');
+        if (count > 250) {
+          $('#wordWarning').show();
+          $('#wordCount').addClass('text-danger');
+        } else {
+          $('#wordWarning').hide();
+          $('#wordCount').removeClass('text-danger');
+        }
+      });
+
+      // Auto-load if preselected
+      const preselected = $('#orderSelect').val();
+      if (preselected) {
+        loadOrderDetails(preselected);
+      }
+    });
+  </script>
+    <script src="<?php echo e(asset('js/table-download.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/table-download-pdf.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/session-timeout.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/js/mobile-nav.js')); ?>"></script>
+  <script src="<?php echo e(asset('js/user-theme.js')); ?>"></script>
+
+  <!-- Logout confirmation modal -->
+  <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="logoutConfirmModalLabel"><i class="bi bi-box-arrow-right me-2"></i>Log Keluar</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0">Adakah anda pasti ingin log keluar dari sistem?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-cancel btn-sm px-3" data-bs-dismiss="modal">Batal</button>
+          <form action="<?php echo e(route('logout')); ?>" method="POST" id="logoutForm" class="d-inline">
+            <?php echo csrf_field(); ?>
+            <button type="submit" class="btn btn-danger btn-sm px-3"><i class="bi bi-box-arrow-right me-1"></i>Log Keluar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var logoutModal = new bootstrap.Modal(document.getElementById('logoutConfirmModal'));
+      var desktopBtn = document.getElementById('desktopLogoutBtn');
+      var navBtn = document.getElementById('navLogoutBtn');
+      var logoBtn = document.getElementById('logoLogoutTrigger');
+      if (desktopBtn) desktopBtn.addEventListener('click', function () { logoutModal.show(); });
+      if (navBtn) navBtn.addEventListener('click', function (e) { e.preventDefault(); logoutModal.show(); });
+      if (logoBtn) logoBtn.addEventListener('click', function (e) { e.preventDefault(); logoutModal.show(); });
+    })();
+  </script>
+</body>
+</html>
+<?php /**PATH C:\laragon\www\MySIPMA_2\resources\views/borang_penerimaan.blade.php ENDPATH**/ ?>
