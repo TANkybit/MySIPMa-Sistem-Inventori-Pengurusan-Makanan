@@ -432,6 +432,8 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    min-width: 0;
+    width: calc(100% - var(--sidebar-width));
 }
 
 /* Header */
@@ -1383,6 +1385,7 @@ h1, h2, h3, h4, h5, h6 {
     
     .main-content {
         margin-left: 0;
+        width: 100%;
     }
     
     .search-box {
@@ -1527,6 +1530,7 @@ h1, h2, h3, h4, h5, h6 {
     
     .main-content {
         margin-left: 0 !important;
+        width: 100% !important;
     }
     
     .card {
