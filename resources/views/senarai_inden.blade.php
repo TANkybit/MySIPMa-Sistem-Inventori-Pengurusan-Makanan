@@ -384,7 +384,6 @@
         @endif
     });
   </script>
-    <script src="{{ asset('js/table-download.js') }}"></script>
     <script src="{{ asset('js/table-download-pdf.js') }}"></script>
     <script src="{{ asset('js/session-timeout.js') }}"></script>
   <script src="{{ asset('js/user-theme.js') }}"></script>

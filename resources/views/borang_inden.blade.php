@@ -573,6 +573,8 @@
                   <th>Kuantiti Pesanan</th>
                   <th>Unit</th>
                   <th>Harga Seunit</th>
+                  <th>Had Siling (RM)</th>
+                  <th>Had Siling (Unit)</th>
                   <th>Jumlah Harga</th>
                   <th>Tindakan</th>
                 </tr>
@@ -588,6 +590,8 @@
           <div class="totals-row"><span>Jumlah Kuantiti Pesanan</span><strong id="summaryOrderQty">0</strong></div>
           <div class="totals-row d-none"><span>Jumlah Kuantiti Terima</span><strong id="summaryReceivedQty">0</strong></div>
           <div class="totals-row"><span>Jumlah Harga</span><strong id="summaryGrandTotal">RM 0.00</strong></div>
+          <div class="totals-row" id="ceilingRow" style="display:none;"><span>Baki Siling Kontrak</span><strong id="ceilingDisplay">--</strong></div>
+          <div id="ceilingAlert" class="alert alert-warning border-0 rounded-4 mb-1 py-2 small" style="display:none;background:rgba(251,191,36,.15);color:#fbbf24;"></div>
         </div>
       </div>
       <div class="borang-step-actions">
@@ -680,28 +684,31 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content" style="background:#11151f; border:1px solid rgba(255,255,255,.08); color:#e2e8f0;">
         <div class="modal-header border-0">
-          <h5 class="modal-title fw-bold" id="itemModalTitle">Tambah Item</h5>
+          <h5 class="modal-title fw-bold" id="itemModalTitle">Edit Item</h5>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
           <input type="hidden" id="editItemIndex" value="-1">
           <div class="mb-3">
             <label class="form-label">Nama Barang <span class="text-danger">*</span></label>
-            <input class="form-control" id="itemModalName" type="text" placeholder="Nama barang">
+            <select class="form-select" id="itemModalName">
+              <option value="">-- Pilih Barang --</option>
+            </select>
+            <div id="itemModalNameError" class="d-none" style="color:#f87171;font-size:.82rem;margin-top:4px;font-weight:500;"><i class="bi bi-exclamation-circle-fill me-1"></i><span></span></div>
           </div>
           <div class="row g-3">
             <div class="col-6">
               <label class="form-label">Kuantiti <span class="text-danger">*</span></label>
-              <input class="form-control" id="itemModalQty" type="number" min="0" step="1" value="0">
+              <input class="form-control" id="itemModalQty" type="number" min="1" step="1" value="1">
             </div>
             <div class="col-6">
-              <label class="form-label">Unit <span class="text-danger">*</span></label>
-              <input class="form-control" id="itemModalUnit" type="text" placeholder="e.g. KG">
+              <label class="form-label">Unit</label>
+              <input class="form-control" id="itemModalUnit" type="text" readonly placeholder="Auto isi dari item">
             </div>
           </div>
-          <div class="mb-3">
+          <div class="mb-3 mt-3">
             <label class="form-label">Harga Seunit (RM)</label>
-              <input class="form-control" id="itemModalPrice" type="number" min="0" step="1" value="0">
+            <input class="form-control" id="itemModalPrice" type="text" readonly placeholder="Auto isi dari item">
           </div>
         </div>
         <div class="modal-footer border-0">
@@ -734,16 +741,31 @@
 <template id="itemTemplate">
   <tr class="item-card">
     <td><span class="item-index"></span></td>
-    <td data-order=""><input class="form-control item-name" type="text" readonly>
+    <td data-order="">
+      <input class="form-control item-name" type="text" readonly placeholder="Klik Edit untuk pilih barang">
       <input class="item-contract-id" type="hidden" name="items[0][contract_item_id]">
       <input type="hidden" class="item-name-hidden" name="items[0][name]">
     </td>
-    <td data-order="0"><input class="form-control item-order-qty item-calc" type="number" min="0" step="1" value="0" required></td>
-    <td data-order=""><input class="form-control item-unit" type="text" readonly>
+    <td data-order="0"><input class="form-control item-order-qty item-calc" type="number" min="1" step="1" value="0" required></td>
+    <td data-order="">
+      <input class="form-control item-unit" type="text" readonly placeholder="-">
       <input type="hidden" class="item-unit-hidden" name="items[0][unit]">
     </td>
-    <td data-order="0"><input class="form-control item-unit-price" type="text" readonly>
+    <td data-order="0">
+      <input class="form-control item-unit-price" type="text" readonly placeholder="-">
       <input type="hidden" class="item-unit-price-hidden" name="items[0][unitPrice]">
+    </td>
+    <td data-order="0">
+      <input class="form-control item-ceiling" type="text" readonly value="--">
+      <div class="item-ceiling-warning small text-danger fw-semibold mt-1" style="display:none;">
+        <i class="bi bi-exclamation-triangle-fill me-1"></i>Melebihi had siling!
+      </div>
+    </td>
+    <td data-order="0">
+      <input class="form-control item-ceiling-unit" type="text" readonly value="--">
+      <div class="item-ceiling-unit-warning small text-danger fw-semibold mt-1" style="display:none;">
+        <i class="bi bi-exclamation-triangle-fill me-1"></i>Melebihi had siling!
+      </div>
     </td>
     <td data-order="0"><input class="form-control item-total" type="text" value="RM 0.00" readonly></td>
     <td><div class="d-flex flex-wrap gap-1">
@@ -774,6 +796,7 @@
       let hasUnsavedChanges = false;
       let autoSaveTimer = null;
       let formSubmitAllowed = false;
+      let contractItems = [];
       const AUTO_SAVE_MS = 60000;
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -877,37 +900,39 @@
             });
         }
 
+        let contractCeilingRemaining = null;
+
         function loadContractItems(contractId) {
-          if (!contractId) return;
+          if (!contractId) { contractItems = []; return; }
           const itemErr = document.getElementById('itemErrorAlert');
           const itemErrText = document.getElementById('itemErrorText');
           if (itemErr) itemErr.classList.add('d-none');
           fetch('{{ url("borang-inden/contract-items") }}/' + contractId)
             .then(r => r.json())
-            .then(items => {
-              if (itemDataTable) {
-                itemDataTable.clear().draw();
-              } else {
-                itemList.innerHTML = '';
-              }
-              if (!items || items.length === 0) {
+            .then(res => {
+              contractCeilingRemaining = res.ceiling_remaining;
+              contractItems = (res.items || []).map(ci => ({
+                id: ci.id,
+                item_name: ci.item_name,
+                uom_code: ci.uom_code,
+                unit_price: ci.unit_price,
+                estimated_quantity: ci.estimated_quantity,
+                ordered_quantity: ci.ordered_quantity,
+                ceiling_limit_id: ci.ceiling_limit_id,
+                ceiling_group_remaining: ci.ceiling_group_remaining,
+              }));
+              updateCeilingAlert();
+              if (!contractItems || contractItems.length === 0) {
                 if (itemErr && itemErrText) {
                   itemErrText.textContent = 'Tiada item ditemui untuk kontrak ini.';
                   itemErr.classList.remove('d-none');
                 }
-                return;
               }
-              items.forEach(ci => {
-                addItem({
-                  contract_item_id: ci.id,
-                  name: ci.item_name,
-                  unit: ci.uom_code || 'Unit',
-                  orderQty: 0,
-                  unitPrice: ci.unit_price,
-                });
-              });
             })
             .catch(() => {
+              contractItems = [];
+              contractCeilingRemaining = null;
+              updateCeilingAlert();
               if (itemErr && itemErrText) {
                 itemErrText.textContent = 'Gagal memuat senarai barang. Sila semak sambungan internet.';
                 itemErr.classList.remove('d-none');
@@ -915,19 +940,46 @@
             });
         }
 
+        function getTotalOrderValue() {
+          const rows = getItemRows();
+          let total = 0;
+          rows.forEach(card => {
+            const qty = parseFloat(card.querySelector('.item-order-qty').value) || 0;
+            const price = parseFloat(card.querySelector('.item-unit-price-hidden').value) || 0;
+            total += qty * price;
+          });
+          return total;
+        }
+
+        function updateCeilingAlert() {
+          const alertEl = document.getElementById('ceilingAlert');
+          const ceilingRow = document.getElementById('ceilingRow');
+          const ceilingDisplay = document.getElementById('ceilingDisplay');
+          if (!alertEl || !ceilingRow || !ceilingDisplay) return;
+          if (contractCeilingRemaining === null || contractCeilingRemaining === undefined) {
+            ceilingRow.style.display = 'none';
+            alertEl.style.display = 'none';
+            return;
+          }
+          const total = getTotalOrderValue();
+          ceilingRow.style.display = 'flex';
+          ceilingDisplay.textContent = formatCurrency(contractCeilingRemaining);
+          if (total > contractCeilingRemaining) {
+            const over = total - contractCeilingRemaining;
+            alertEl.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-1"></i> Jumlah nilai pesanan (RM ' + total.toFixed(2) + ') melebihi baki siling kontrak sebanyak RM ' + over.toFixed(2) + '.';
+            alertEl.style.display = 'block';
+          } else {
+            alertEl.style.display = 'none';
+          }
+        }
+
         // Supplier change → reload contracts
         if (supplierSelect) {
           supplierSelect.addEventListener('change', function() {
-            const hasItems = getItemRows().length > 0;
-            if (!isRestoringDraft && hasItems) {
-              if (!confirm('Menukar pembekal akan memadam semua item sedia ada dan memuat semula kontrak. Teruskan?')) {
-                this.value = this._prevValue || this.value;
-                return;
-              }
-            }
-            this._prevValue = this.value;
             loadContracts();
             if (typeof fillSupplierAddress === 'function') fillSupplierAddress();
+            contractCeilingRemaining = null;
+            updateCeilingAlert();
             if (!isRestoringDraft) {
               if (itemDataTable) {
                 itemDataTable.clear().draw();
@@ -942,8 +994,14 @@
         if (contractSelect) {
           contractSelect.addEventListener('change', function() {
             if (isRestoringDraft) return;
+            if (!this.value) {
+              contractCeilingRemaining = null;
+              updateCeilingAlert();
+              return;
+            }
             loadContractItems(this.value);
           });
+          contractSelect._prevValue = contractSelect.value;
         }
         // if (!noPesananInput.value) generateOrderNo(); // commented out — user enters manually
         @if(!($savedDraft ?? null))
@@ -1059,67 +1117,11 @@
       function validateVisiblePage(pageName) {
         const page = document.querySelector(`[data-borang-page="${pageName}"]`);
         if (!page) return true;
-        // Native HTML5 validation first
-        for (const field of page.querySelectorAll('input, textarea, select')) {
-          if (!field.checkValidity()) {
-            field.reportValidity();
+        for (const field of page.querySelectorAll('input[required], textarea[required], select[required]')) {
+          if (field.offsetParent === null) continue;
+          if (!field.value.trim()) {
+            field.focus();
             return false;
-          }
-        }
-        // Custom date validation
-        for (const input of page.querySelectorAll('.date-input')) {
-          const val = input.value.trim();
-          if (val) {
-            const parsed = parseDisplayDate(val);
-            if (!parsed || isNaN(parsed.getTime())) {
-              alert('Sila masukkan tarikh yang sah untuk ' + (input.name || 'tarikh') + '.');
-              input.focus();
-              return false;
-            }
-            if (parsed < today) {
-              alert('Tarikh tidak boleh sebelum hari ini untuk ' + (input.name || 'tarikh') + '.');
-              input.focus();
-              return false;
-            }
-          }
-        }
-        // Custom muster validation
-        if (pageName === 'muster') {
-          for (const input of page.querySelectorAll('.muster-input')) {
-            const val = Number(input.value);
-            if (input.value.trim() === '' || isNaN(val) || val < 0 || !Number.isInteger(val)) {
-              alert('Sila masukkan nombor bulat yang sah (0 atau lebih) untuk ' + (input.name || 'muster') + '.');
-              input.focus();
-              return false;
-            }
-          }
-        }
-        // Custom item validation (only on barang page)
-        if (pageName === 'barang') {
-          const items = getItemRows();
-          if (items.length === 0) {
-            alert('Sila tambah sekurang-kurangnya satu item pesanan.');
-            return false;
-          }
-          for (const card of items) {
-            const qtyInput = card.querySelector('.item-order-qty');
-            const qtyVal = Number(qtyInput.value);
-            if (qtyInput.value.trim() === '' || isNaN(qtyVal) || qtyVal <= 0) {
-              alert('Kuantiti pesanan mestilah lebih besar daripada 0 untuk semua item.');
-              qtyInput.focus();
-              return false;
-            }
-          }
-        }
-        // Custom word count validation (perakuan page)
-        if (pageName === 'perakuan') {
-          for (const textarea of page.querySelectorAll('.ulasan-field')) {
-            const maxWords = Number(textarea.dataset.maxWords || 250);
-            if (countWords(textarea.value) > maxWords) {
-              alert('Ulasan / Catatan tidak boleh melebihi ' + maxWords + ' patah perkataan.');
-              textarea.focus();
-              return false;
-            }
           }
         }
         return true;
@@ -1222,13 +1224,68 @@
           const orderQty = numberValue(card.querySelector('.item-order-qty'));
           const unitPrice = numberValue(card.querySelector('.item-unit-price-hidden'));
           const lineTotal = orderQty * unitPrice;
+          card._lineTotal = lineTotal;
+          card.querySelector('.item-total').value = formatCurrency(lineTotal);
           orderQtyTotal += orderQty;
           grandTotal += lineTotal;
-          card.querySelector('.item-total').value = formatCurrency(lineTotal);
+        });
+        var groups = {};
+        cards.forEach(function (card) {
+          var gid = card.dataset.ceilingGroupId;
+          if (gid && gid !== '') {
+            if (!groups[gid]) groups[gid] = [];
+            groups[gid].push(card);
+          }
+        });
+        cards.forEach(function (card) {
+          var gid = card.dataset.ceilingGroupId;
+          var groupRemaining = parseFloat(card.dataset.ceilingGroupRemaining) || 0;
+          var estQty = parseFloat(card.dataset.estimatedQuantity) || 0;
+          var orderedQty = parseFloat(card.dataset.orderedQuantity) || 0;
+          var ceilingInput = card.querySelector('.item-ceiling');
+          var ceilingWarning = card.querySelector('.item-ceiling-warning');
+          var ceilingUnitInput = card.querySelector('.item-ceiling-unit');
+          var ceilingUnitWarning = card.querySelector('.item-ceiling-unit-warning');
+          if (!ceilingInput) return;
+
+          // RM fair-share ceiling
+          var rmExceeded = false;
+          if (gid && gid !== '' && groupRemaining > 0) {
+            var othersTotal = 0;
+            (groups[gid] || []).forEach(function (other) {
+              if (other !== card) othersTotal += other._lineTotal || 0;
+            });
+            var rmRemaining = Math.max(0, groupRemaining - othersTotal);
+            ceilingInput.value = formatCurrency(rmRemaining);
+            rmExceeded = (card._lineTotal || 0) > rmRemaining;
+            ceilingInput.style.color = rmExceeded ? '#f87171' : '';
+            ceilingInput.style.borderColor = rmExceeded ? '#f87171' : '';
+            ceilingWarning.style.display = rmExceeded ? 'block' : 'none';
+          } else {
+            ceilingInput.value = '--';
+            ceilingWarning.style.display = 'none';
+          }
+
+          // Unit ceiling
+          if (ceilingUnitInput) {
+            if (estQty > 0) {
+              var unitRemaining = Math.max(0, estQty - orderedQty);
+              ceilingUnitInput.value = formatNumber(unitRemaining) + ' / ' + formatNumber(estQty);
+              var orderQtyVal = numberValue(card.querySelector('.item-order-qty'));
+              var unitExceeded = orderQtyVal > unitRemaining;
+              ceilingUnitInput.style.color = unitExceeded ? '#f87171' : '';
+              ceilingUnitInput.style.borderColor = unitExceeded ? '#f87171' : '';
+              ceilingUnitWarning.style.display = unitExceeded ? 'block' : 'none';
+            } else {
+              ceilingUnitInput.value = '--';
+              ceilingUnitWarning.style.display = 'none';
+            }
+          }
         });
         document.getElementById('summaryItemCount').textContent = cards.length;
         document.getElementById('summaryOrderQty').textContent = formatNumber(orderQtyTotal);
         document.getElementById('summaryGrandTotal').textContent = formatCurrency(grandTotal);
+        updateCeilingAlert();
       }
 
       function initItemDataTable() {
@@ -1271,7 +1328,9 @@
       let editTargetRow = null;
 
       function wireItemCard(card) {
-        card.querySelectorAll('.item-calc').forEach((input) => input.addEventListener('input', updateSummary));
+        card.querySelectorAll('.item-calc').forEach((input) => {
+          input.addEventListener('input', function() { updateSummary(); updateCeilingAlert(); });
+        });
 
         if (isReadOnly) {
           card.querySelectorAll('.edit-item, .remove-item').forEach((btn) => btn.classList.add('d-none'));
@@ -1281,20 +1340,35 @@
 
         card.querySelector('.edit-item').addEventListener('click', function () {
           editTargetRow = card;
-          const name = card.querySelector('.item-name').value;
+          const name = card.querySelector('.item-name-hidden').value || '';
           const qty = card.querySelector('.item-order-qty').value;
-          const unit = card.querySelector('.item-unit').value;
-          const price = card.querySelector('.item-unit-price-hidden').value;
           document.getElementById('itemModalTitle').textContent = 'Edit Item';
           document.getElementById('editItemIndex').value = Array.from(getItemRows()).indexOf(card);
-          document.getElementById('itemModalName').value = name;
-          document.getElementById('itemModalQty').value = qty;
-          document.getElementById('itemModalUnit').value = unit;
-          document.getElementById('itemModalPrice').value = price;
-          // Lock name/unit for contract items
-          const isContractItem = card.querySelector('.item-contract-id').value !== '0' && !!card.querySelector('.item-contract-id').value;
-          document.getElementById('itemModalName').readOnly = isContractItem;
-          document.getElementById('itemModalUnit').readOnly = isContractItem;
+
+          const select = document.getElementById('itemModalName');
+          select.innerHTML = '<option value="">-- Pilih Barang --</option>';
+          contractItems.forEach(function (ci) {
+            const opt = document.createElement('option');
+            opt.value = ci.id;
+            opt.textContent = ci.item_name;
+            opt.dataset.unit = ci.uom_code || 'Unit';
+            opt.dataset.price = ci.unit_price || 0;
+            if (ci.item_name === name) opt.selected = true;
+            select.appendChild(opt);
+          });
+
+          document.getElementById('itemModalQty').value = qty || 1;
+
+          const selectedOpt = select.options[select.selectedIndex];
+          if (selectedOpt && selectedOpt.value) {
+            document.getElementById('itemModalUnit').value = selectedOpt.dataset.unit || '';
+            document.getElementById('itemModalPrice').value = selectedOpt.dataset.price ? formatCurrency(selectedOpt.dataset.price) : '';
+          } else {
+            document.getElementById('itemModalUnit').value = '';
+            document.getElementById('itemModalPrice').value = '';
+          }
+
+          document.getElementById('itemModalNameError').classList.add('d-none');
           new bootstrap.Modal(document.getElementById('itemModal')).show();
         });
 
@@ -1314,6 +1388,13 @@
         card.querySelector('.item-order-qty').value = defaults.orderQty ?? 0;
         card.querySelector('.item-unit-price').value = formatCurrency(defaults.unitPrice ?? 0);
         card.querySelector('.item-unit-price-hidden').value = defaults.unitPrice ?? 0;
+        card.dataset.ceilingGroupId = defaults.ceiling_limit_id ?? '';
+        card.dataset.ceilingGroupRemaining = defaults.ceiling_group_remaining ?? '';
+        card.dataset.estimatedQuantity = defaults.estimated_quantity ?? '';
+        card.dataset.orderedQuantity = defaults.ordered_quantity ?? 0;
+        if (defaults.name) {
+          card.querySelector('.item-name').removeAttribute('placeholder');
+        }
         if (itemDataTable) {
           itemDataTable.row.add(card).draw(false);
         } else {
@@ -1328,56 +1409,76 @@
       wireUlasanCounter();
       initItemDataTable();
 
-      // Tambah Item button
+      // Tambah Item button — adds empty row
       const tambahBtn = document.getElementById('tambahItemBtn');
       if (tambahBtn) {
         tambahBtn.addEventListener('click', function () {
-          editTargetRow = null;
-          document.getElementById('itemModalTitle').textContent = 'Tambah Item';
-          document.getElementById('editItemIndex').value = -1;
-          document.getElementById('itemModalName').value = '';
-          document.getElementById('itemModalName').readOnly = false;
-          document.getElementById('itemModalQty').value = 0;
-          document.getElementById('itemModalUnit').value = '';
-          document.getElementById('itemModalUnit').readOnly = false;
-          document.getElementById('itemModalPrice').value = 0;
-          new bootstrap.Modal(document.getElementById('itemModal')).show();
+          addItem({});
+        });
+      }
+
+      // Item Modal — Nama Barang dropdown auto-fills Unit + Harga
+      const itemModalNameSelect = document.getElementById('itemModalName');
+      if (itemModalNameSelect) {
+        itemModalNameSelect.addEventListener('change', function () {
+          const opt = this.options[this.selectedIndex];
+          const errEl = document.getElementById('itemModalNameError');
+          if (opt && opt.value) {
+            document.getElementById('itemModalUnit').value = opt.dataset.unit || '';
+            document.getElementById('itemModalPrice').value = opt.dataset.price ? formatCurrency(opt.dataset.price) : '';
+            errEl.classList.add('d-none');
+          } else {
+            document.getElementById('itemModalUnit').value = '';
+            document.getElementById('itemModalPrice').value = '';
+          }
         });
       }
 
       // Item Modal Save
       document.getElementById('itemModalSave').addEventListener('click', function () {
         try {
-          const name = document.getElementById('itemModalName').value.trim();
+          const select = document.getElementById('itemModalName');
+          const selectedOpt = select.options[select.selectedIndex];
+          const name = selectedOpt ? selectedOpt.textContent.trim() : '';
+          const contractItemId = selectedOpt ? selectedOpt.value : '';
           const qty = parseFloat(document.getElementById('itemModalQty').value) || 0;
           const unit = document.getElementById('itemModalUnit').value.trim();
-          const price = parseFloat(document.getElementById('itemModalPrice').value) || 0;
-          if (!name) { alert('Sila isi nama barang.'); return; }
-          if (!unit) { alert('Sila isi unit.'); return; }
-          if (qty <= 0) { alert('Kuantiti mestilah lebih besar daripada 0.'); return; }
-          if (price <= 0) { if (!confirm('Harga seunit adalah RM 0.00. Adakah anda pasti?')) return; }
-          const editIdx = parseInt(document.getElementById('editItemIndex').value);
+          const priceStr = document.getElementById('itemModalPrice').value.replace(/[^0-9.]/g, '');
+          const price = parseFloat(priceStr) || 0;
+          const errEl = document.getElementById('itemModalNameError');
 
-          // Check duplicate name
-          const existingNames = getItemRows().map(function(r, i) {
-            return { name: (r.querySelector('.item-name-hidden')?.value || r.querySelector('.item-name')?.value || '').toLowerCase(), idx: i };
-          });
-          const dupIdx = existingNames.findIndex(function(n) { return n.name === name.toLowerCase() && n.idx !== editIdx; });
-          if (dupIdx >= 0) { alert('Terdapat item lain dengan nama yang sama. Sila gunakan nama yang berbeza.'); return; }
+          if (!contractItemId) {
+            errEl.querySelector('span').textContent = 'Sila pilih barang dari senarai.';
+            errEl.classList.remove('d-none');
+            select.focus();
+            return;
+          }
+          errEl.classList.add('d-none');
+          if (qty <= 0) { alert('Kuantiti mestilah lebih besar daripada 0.'); return; }
+
+          const editIdx = parseInt(document.getElementById('editItemIndex').value);
 
           if (editIdx >= 0) {
             const rows = getItemRows();
             const card = rows[editIdx];
             card.querySelector('.item-name').value = name;
             card.querySelector('.item-name-hidden').value = name;
+            card.querySelector('.item-contract-id').value = contractItemId;
             card.querySelector('.item-order-qty').value = qty;
             card.querySelector('.item-unit').value = unit;
             card.querySelector('.item-unit-hidden').value = unit;
             card.querySelector('.item-unit-price').value = formatCurrency(price);
             card.querySelector('.item-unit-price-hidden').value = price;
+            var ci = contractItems.find(function (c) { return String(c.id) === String(contractItemId); });
+            if (ci) {
+              card.dataset.ceilingGroupId = ci.ceiling_limit_id ?? '';
+              card.dataset.ceilingGroupRemaining = ci.ceiling_group_remaining ?? '';
+              card.dataset.estimatedQuantity = ci.estimated_quantity ?? '';
+              card.dataset.orderedQuantity = ci.ordered_quantity ?? 0;
+            }
             updateSummary();
           } else {
-            addItem({ contract_item_id: 0, name: name, unit: unit, orderQty: qty, unitPrice: price });
+            addItem({ contract_item_id: contractItemId, name: name, unit: unit, orderQty: qty, unitPrice: price });
           }
           bootstrap.Modal.getInstance(document.getElementById('itemModal')).hide();
         } catch (e) {
@@ -1402,26 +1503,12 @@
       });
 
       document.querySelectorAll('[data-borang-target]').forEach((button) => {
-        button.addEventListener('click', () => {
-          // Get current active page
-          const activePage = document.querySelector('[data-borang-page].active');
-          const currentPageName = activePage?.dataset?.borangPage;
-          const targetPageName = button.dataset.borangTarget;
-          // Don't validate if going back to same page or backwards
-          const pageOrder = ['maklumat', 'muster', 'barang', 'perakuan'];
-          const currentIdx = pageOrder.indexOf(currentPageName);
-          const targetIdx = pageOrder.indexOf(targetPageName);
-          if (targetIdx > currentIdx && currentPageName && !validateVisiblePage(currentPageName)) return;
-          showBorangPage(targetPageName);
-          window.scrollTo({ top: document.querySelector('.borang-menu').offsetTop - 90, behavior: 'smooth' });
-        });
+        button.addEventListener('click', () => showBorangPage(button.dataset.borangTarget));
       });
 
       document.querySelectorAll('[data-borang-next], [data-borang-prev]').forEach((button) => {
         button.addEventListener('click', () => {
-          const currentPage = button.closest('[data-borang-page]')?.dataset.borangPage;
           const targetPage = button.dataset.borangNext || button.dataset.borangPrev;
-          if (button.dataset.borangNext && !validateVisiblePage(currentPage)) return;
           showBorangPage(targetPage);
           window.scrollTo({ top: document.querySelector('.borang-menu').offsetTop - 90, behavior: 'smooth' });
         });
@@ -1565,8 +1652,10 @@
           } else {
             let hasItemError = false;
             let hasZeroPrice = false;
+            let hasEmptyName = false;
             const nameSet = new Set();
             let hasDuplicate = false;
+            let hasCeilingExceeded = false;
             itemCards.forEach((card) => {
               const qtyInput = card.querySelector('.item-order-qty');
               const qtyVal = Number(qtyInput.value);
@@ -1577,23 +1666,50 @@
               } else {
                 qtyInput.classList.remove('is-invalid');
               }
+              const itemName = (card.querySelector('.item-name-hidden')?.value || '').trim();
+              if (!itemName) hasEmptyName = true;
               const unitPrice = Number(card.querySelector('.item-unit-price-hidden')?.value) || 0;
               if (unitPrice <= 0 && qtyVal > 0) hasZeroPrice = true;
-              const itemName = (card.querySelector('.item-name-hidden')?.value || card.querySelector('.item-name')?.value || '').toLowerCase();
-              if (itemName) {
-                if (nameSet.has(itemName)) hasDuplicate = true;
-                nameSet.add(itemName);
+              const nameLower = itemName.toLowerCase();
+              if (nameLower) {
+                if (nameSet.has(nameLower)) hasDuplicate = true;
+                nameSet.add(nameLower);
+              }
+              // Check ceiling warnings
+              var ceilingWarn = card.querySelector('.item-ceiling-warning');
+              var ceilingUnitWarn = card.querySelector('.item-ceiling-unit-warning');
+              if ((ceilingWarn && ceilingWarn.style.display === 'block') ||
+                  (ceilingUnitWarn && ceilingUnitWarn.style.display === 'block')) {
+                hasCeilingExceeded = true;
               }
             });
             
             if (hasItemError) {
+              isValid = false;
               errors.push('[Senarai Barang] Kuantiti pesanan untuk semua item mestilah lebih besar daripada 0.');
             }
+            if (hasEmptyName) {
+              isValid = false;
+              errors.push('[Senarai Barang] Sila pilih nama barang untuk semua item melalui butang Edit.');
+            }
             if (hasZeroPrice) {
+              isValid = false;
               errors.push('[Senarai Barang] Terdapat item dengan harga seunit RM 0.00. Sila semak harga sebelum menghantar.');
             }
             if (hasDuplicate) {
+              isValid = false;
               errors.push('[Senarai Barang] Terdapat item dengan nama yang sama. Sila pastikan setiap item mempunyai nama yang berbeza.');
+            }
+            if (hasCeilingExceeded) {
+              isValid = false;
+              errors.push('[Senarai Barang] Terdapat item yang melebihi had siling (RM atau Unit). Sila kurangkan kuantiti atau harga sebelum menghantar.');
+            }
+
+            // Check contract-level ceiling
+            var contractAlert = document.getElementById('ceilingAlert');
+            if (contractAlert && contractAlert.style.display === 'block') {
+              isValid = false;
+              errors.push('[Had Siling] Jumlah pesanan melebihi baki had siling kontrak. Sila kurangkan kuantiti atau harga sebelum menghantar.');
             }
           }
           
@@ -1750,16 +1866,49 @@
             } else if (contracts.length > 0) {
               contractSelect.value = contracts[0].id;
             }
+            // Fetch ceiling for selected contract
+            var selId = contractSelect.value;
+            if (selId) {
+              fetch('{{ url("borang-inden/contract-items") }}/' + selId)
+                .then(function (r) { return r.json(); })
+                .then(function (res) {
+                  contractCeilingRemaining = res.ceiling_remaining;
+                  contractItems = (res.items || []).map(ci => ({
+                    id: ci.id,
+                    item_name: ci.item_name,
+                    uom_code: ci.uom_code,
+                    unit_price: ci.unit_price,
+                    estimated_quantity: ci.estimated_quantity,
+                    ordered_quantity: ci.ordered_quantity,
+                    ceiling_limit_id: ci.ceiling_limit_id,
+                    ceiling_group_remaining: ci.ceiling_group_remaining,
+                  }));
+                  updateCeilingAlert();
+                  if (res.items) {
+                    var rows = getItemRows();
+                    res.items.forEach(function (ci) {
+                      var row = rows.find(function (r) {
+                        return r.querySelector('.item-contract-id').value == ci.id;
+                      });
+                      if (row) {
+                        row.dataset.ceilingGroupId = ci.ceiling_limit_id ?? '';
+                        row.dataset.ceilingGroupRemaining = ci.ceiling_group_remaining ?? '';
+                        row.dataset.estimatedQuantity = ci.estimated_quantity ?? '';
+                        row.dataset.orderedQuantity = ci.ordered_quantity ?? 0;
+                      }
+                    });
+                    updateSummary();
+                  }
+                })
+                .catch(function () {});
+            }
             if (items) populateItemRows(items);
             isRestoringDraft = false;
             updateSummary();
             updateMusterSummary();
             wireUlasanCounter();
           })
-          .catch(function () {
-            isRestoringDraft = false;
-            setDraftStatusText('Gagal memulihkan draf dari pelayan.');
-          });
+          .catch(function () { isRestoringDraft = false; });
       }
 
       function restoreDraft(data) {
@@ -1888,7 +2037,7 @@
       }
     })();
   </script>
-    <script src="{{ asset('js/table-download.js') }}"></script>
+    <script src="{{ asset('js/table-download-pdf.js') }}"></script>
     <script src="{{ asset('js/session-timeout.js') }}"></script>
   <script src="{{ asset('js/user-theme.js') }}"></script>
 

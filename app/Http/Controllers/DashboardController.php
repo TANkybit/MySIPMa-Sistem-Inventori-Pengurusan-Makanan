@@ -736,20 +736,65 @@ class DashboardController extends Controller
 
     public function getContractItems($contractId)
     {
+        // Get ceiling for this contract
+        $ceiling = DB::table('ceiling_limits')
+            ->where('contract_id', $contractId)
+            ->selectRaw('contract_limit - used_quantity as remaining')
+            ->first();
+
         $items = DB::table('contract_items as ci')
             ->join('items as i', 'ci.item_id', '=', 'i.id')
             ->leftJoin('uom as u', 'ci.uom_id', '=', 'u.id')
+            ->leftJoin('ceiling_limits as cl', 'i.ceiling_limit_id', '=', 'cl.id')
             ->where('ci.contract_id', $contractId)
             ->select(
                 'ci.id',
                 'ci.item_id',
+                'i.ceiling_limit_id',
                 'i.name as item_name',
                 'u.code as uom_code',
                 'ci.unit_price',
-                'ci.estimated_quantity'
+                'ci.estimated_quantity',
+                'cl.contract_limit',
+                'cl.used_quantity'
             )
             ->get();
-        return response()->json($items);
+
+        $contractItemIds = $items->pluck('id')->toArray();
+        $orderedQty = collect();
+        if (!empty($contractItemIds)) {
+            $orderedQty = DB::table('order_items as oi')
+                ->join('orders as o', 'oi.order_id', '=', 'o.id')
+                ->whereIn('oi.contract_item_id', $contractItemIds)
+                ->whereNotIn('o.status', ['Cancelled', 'Rejected', 'Draft'])
+                ->select('oi.contract_item_id', DB::raw('SUM(oi.ordered_quantity) as total_ordered'))
+                ->groupBy('oi.contract_item_id')
+                ->get()
+                ->keyBy('contract_item_id');
+        }
+
+        $items = $items->map(function ($item) use ($orderedQty) {
+            $estQty = (float) ($item->estimated_quantity ?? 0);
+            $ordered = (float) ($orderedQty->get($item->id)->total_ordered ?? 0);
+            return [
+                'id' => $item->id,
+                'item_id' => $item->item_id,
+                'item_name' => $item->item_name,
+                'uom_code' => $item->uom_code,
+                'unit_price' => (float) ($item->unit_price ?? 0),
+                'estimated_quantity' => $estQty,
+                'ordered_quantity' => $ordered,
+                'ceiling_limit_id' => $item->ceiling_limit_id,
+                'ceiling_group_remaining' => $item->contract_limit !== null
+                    ? (float) max(0, $item->contract_limit - ($item->used_quantity ?? 0))
+                    : null,
+            ];
+        });
+
+        return response()->json([
+            'items' => $items,
+            'ceiling_remaining' => $ceiling ? (float) max(0, $ceiling->remaining) : null,
+        ]);
     }
 
     public function lihatBorangInden(Order $order)

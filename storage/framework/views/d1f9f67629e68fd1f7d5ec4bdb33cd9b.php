@@ -386,7 +386,6 @@
         <?php endif; ?>
     });
   </script>
-    <script src="<?php echo e(asset('js/table-download.js')); ?>"></script>
     <script src="<?php echo e(asset('js/table-download-pdf.js')); ?>"></script>
     <script src="<?php echo e(asset('js/session-timeout.js')); ?>"></script>
   <script src="<?php echo e(asset('js/user-theme.js')); ?>"></script>
