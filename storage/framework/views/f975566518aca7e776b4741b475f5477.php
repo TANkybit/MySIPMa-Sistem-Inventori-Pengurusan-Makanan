@@ -1,4 +1,4 @@
-﻿@php
+<?php
     $activePage = $activePage ?? 'dashboard';
     $pageTitles = [
         'dashboard' => 'Papan Pemuka',
@@ -21,32 +21,32 @@
     $pageTitle = $pageTitles[$activePage] ?? 'Papan Pemuka';
     $currentRoute = $pageRoutes[$activePage] ?? 'pengarah.institusi.dashboard';
     $institutionQuery = request()->only('institution_id');
-@endphp
+?>
 
 <!DOCTYPE html>
 <html lang="ms" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $pageTitle }} Pengarah Institusi</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="session-lifetime" content="{{ config('session.lifetime') }}">
-    <meta name="session-warning" content="{{ config('session-timeout.warning_time') }}">
-    <meta name="session-grace" content="{{ config('session-timeout.grace_period') }}">
+    <title><?php echo e($pageTitle); ?> Pengarah Institusi</title>
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <meta name="session-lifetime" content="<?php echo e(config('session.lifetime')); ?>">
+    <meta name="session-warning" content="<?php echo e(config('session-timeout.warning_time')); ?>">
+    <meta name="session-grace" content="<?php echo e(config('session-timeout.grace_period')); ?>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('style.css') }}">
+    <link rel="stylesheet" href="<?php echo e(asset('style.css')); ?>">
 </head>
 <body>
     <div class="wrapper">
         <aside id="sidebar" class="sidebar">
             <div class="sidebar-header">
-                <a href="{{ route('pengarah.institusi.dashboard') }}" class="logo">
+                <a href="<?php echo e(route('pengarah.institusi.dashboard')); ?>" class="logo">
                     <div class="logo-icon">
-                        <img src="{{ asset('MySIPMa_logo_wWalls.png') }}" alt="MySIPMa Logo" height="50" class="me-2">
+                        <img src="<?php echo e(asset('MySIPMa_logo_wWalls.png')); ?>" alt="MySIPMa Logo" height="50" class="me-2">
                     </div>
                     <div class="logo-text">
                         <span class="fw-bold">MySIPMA</span>
@@ -62,7 +62,7 @@
                 <ul class="nav flex-column">
                     <li class="nav-title">UTAMA</li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.dashboard') ? 'active' : '' }}" href="{{ route('pengarah.institusi.dashboard', $institutionQuery) }}">
+                        <a class="nav-link <?php echo e(request()->routeIs('pengarah.institusi.dashboard') ? 'active' : ''); ?>" href="<?php echo e(route('pengarah.institusi.dashboard', $institutionQuery)); ?>">
                             <i class="fas fa-home"></i>
                             <span>Papan Pemuka</span>
                         </a>
@@ -70,25 +70,25 @@
 
                     <li class="nav-title mt-4">PENGURUSAN DATA</li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.ringkasan') ? 'active' : '' }}" href="{{ route('pengarah.institusi.ringkasan') }}">
+                        <a class="nav-link <?php echo e(request()->routeIs('pengarah.institusi.ringkasan') ? 'active' : ''); ?>" href="<?php echo e(route('pengarah.institusi.ringkasan')); ?>">
                             <i class="fas fa-file-invoice"></i>
                             <span>Ringkasan Pesanan</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.institusi') ? 'active' : '' }}" href="{{ route('pengarah.institusi.institusi') }}">
+                        <a class="nav-link <?php echo e(request()->routeIs('pengarah.institusi.institusi') ? 'active' : ''); ?>" href="<?php echo e(route('pengarah.institusi.institusi')); ?>">
                             <i class="fas fa-boxes"></i>
                             <span>Inventori</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.pembekal') ? 'active' : '' }}" href="{{ route('pengarah.institusi.pembekal') }}">
+                        <a class="nav-link <?php echo e(request()->routeIs('pengarah.institusi.pembekal') ? 'active' : ''); ?>" href="<?php echo e(route('pengarah.institusi.pembekal')); ?>">
                             <i class="fas fa-truck"></i>
                             <span>Pembekal</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.senarai_pengguna') ? 'active' : '' }}" href="{{ route('pengarah.institusi.senarai_pengguna') }}">
+                        <a class="nav-link <?php echo e(request()->routeIs('pengarah.institusi.senarai_pengguna') ? 'active' : ''); ?>" href="<?php echo e(route('pengarah.institusi.senarai_pengguna')); ?>">
                             <i class="fas fa-users"></i>
                             <span>Senarai Pengguna</span>
                         </a>
@@ -96,13 +96,13 @@
 
                     <li class="nav-title mt-4">LAPORAN</li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.laporan_prestasi') ? 'active' : '' }}" href="{{ route('pengarah.institusi.laporan_prestasi') }}">
+                        <a class="nav-link <?php echo e(request()->routeIs('pengarah.institusi.laporan_prestasi') ? 'active' : ''); ?>" href="<?php echo e(route('pengarah.institusi.laporan_prestasi')); ?>">
                             <i class="fas fa-star"></i>
                             <span>Penilaian Prestasi</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.institusi.profil') ? 'active' : '' }}" href="{{ route('pengarah.institusi.profil') }}">
+                        <a class="nav-link <?php echo e(request()->routeIs('pengarah.institusi.profil') ? 'active' : ''); ?>" href="<?php echo e(route('pengarah.institusi.profil')); ?>">
                             <i class="fas fa-user"></i>
                             <span>Profil Saya</span>
                         </a>
@@ -112,13 +112,13 @@
 
             <div class="sidebar-footer">
                 <div class="user-profile">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()?->name ?? 'Pengarah Institusi') }}&background=1a5632&color=fff&size=80" alt="{{ auth()->user()?->name ?? 'Pengarah Institusi' }}" class="user-avatar">
+                    <img src="https://ui-avatars.com/api/?name=<?php echo e(urlencode(auth()->user()?->name ?? 'Pengarah Institusi')); ?>&background=1a5632&color=fff&size=80" alt="<?php echo e(auth()->user()?->name ?? 'Pengarah Institusi'); ?>" class="user-avatar">
                     <div class="user-info">
-                        <h6>{{ auth()->user()?->name ?? 'Pengarah Institusi' }}</h6>
+                        <h6><?php echo e(auth()->user()?->name ?? 'Pengarah Institusi'); ?></h6>
                         <small class="text-muted">Pengarah Institusi</small>
                     </div>
-                    <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                        @csrf
+                    <form action="<?php echo e(route('logout')); ?>" method="POST" class="d-inline">
+                        <?php echo csrf_field(); ?>
                         <button type="submit" class="btn btn-icon text-danger" title="Log Keluar">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
@@ -134,12 +134,12 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="page-title">
-                        <h1>{{ $pageTitle }}</h1>
+                        <h1><?php echo e($pageTitle); ?></h1>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('pengarah.institusi.dashboard') }}"><i class="fas fa-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="<?php echo e(route('pengarah.institusi.dashboard')); ?>"><i class="fas fa-home"></i></a></li>
                                 <li class="breadcrumb-item">Pengarah Institusi</li>
-                                <li class="breadcrumb-item active">{{ $pageTitle }}</li>
+                                <li class="breadcrumb-item active"><?php echo e($pageTitle); ?></li>
                             </ol>
                         </nav>
                     </div>
@@ -149,41 +149,41 @@
                     <div class="dropdown notifications me-3">
                         <button class="btn btn-icon icon-bell position-relative" type="button" data-bs-toggle="dropdown">
                             <i class="fas fa-bell text-body"></i>
-                            @if(isset($pendingEvaluations) && $pendingEvaluations->count() > 0)
-                                <span class="badge-notification bg-danger rounded-circle position-absolute" style="top: 2px; right: 2px; width: 18px; height: 18px; font-size: 10px; display: flex; align-items: center; justify-content: center; color: white;">{{ $pendingEvaluations->count() }}</span>
-                            @endif
+                            <?php if(isset($pendingEvaluations) && $pendingEvaluations->count() > 0): ?>
+                                <span class="badge-notification bg-danger rounded-circle position-absolute" style="top: 2px; right: 2px; width: 18px; height: 18px; font-size: 10px; display: flex; align-items: center; justify-content: center; color: white;"><?php echo e($pendingEvaluations->count()); ?></span>
+                            <?php endif; ?>
                         </button>
                         <div class="dropdown-menu dropdown-menu-end shadow border-0" style="width: 320px;">
                             <div class="dropdown-header d-flex justify-content-between align-items-center py-2 px-3 border-bottom">
                                 <h6 class="mb-0 fw-bold">Pemberitahuan</h6>
-                                <span class="text-muted small">{{ isset($pendingEvaluations) ? $pendingEvaluations->count() : 0 }} tugasan</span>
+                                <span class="text-muted small"><?php echo e(isset($pendingEvaluations) ? $pendingEvaluations->count() : 0); ?> tugasan</span>
                             </div>
                             <div class="dropdown-body py-0" style="max-height: 250px; overflow-y: auto;">
-                                @if(isset($pendingEvaluations) && $pendingEvaluations->count() > 0)
-                                    @foreach($pendingEvaluations as $pendingEval)
-                                        <a href="{{ route('pengarah.institusi.laporan_prestasi') }}#pending-section" class="dropdown-item py-2 px-3 border-bottom d-flex align-items-start gap-2 text-wrap">
+                                <?php if(isset($pendingEvaluations) && $pendingEvaluations->count() > 0): ?>
+                                    <?php $__currentLoopData = $pendingEvaluations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pendingEval): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <a href="<?php echo e(route('pengarah.institusi.laporan_prestasi')); ?>#pending-section" class="dropdown-item py-2 px-3 border-bottom d-flex align-items-start gap-2 text-wrap">
                                             <div class="notification-icon bg-warning text-white rounded-circle p-1 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
                                                 <i class="fas fa-file-signature" style="font-size: 13px;"></i>
                                             </div>
                                             <div class="flex-grow-1">
                                                 <p class="mb-0 small text-body text-truncate" style="max-width: 240px;">
-                                                    Penilaian prestasi bagi pembekal <strong>{{ $pendingEval->supplier?->company_name }}</strong> memerlukan pengesahan anda.
+                                                    Penilaian bagi pembekal <strong><?php echo e($pendingEval->supplier?->company_name); ?></strong> (No. Inden: <?php echo e($pendingEval->order?->order_number); ?>) memerlukan pengesahan anda.
                                                 </p>
-                                                <small class="text-muted" style="font-size: 10px;">{{ $pendingEval->created_at->diffForHumans() }}</small>
+                                                <small class="text-muted" style="font-size: 10px;"><?php echo e($pendingEval->created_at->diffForHumans()); ?></small>
                                             </div>
                                         </a>
-                                    @endforeach
-                                @else
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php else: ?>
                                     <div class="p-3 text-center text-muted small">
                                         <i class="fas fa-check-circle text-success mb-2 d-block" style="font-size: 24px;"></i>
                                         Tiada pengesahan penilaian yang belum selesai.
                                     </div>
-                                @endif
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
                     <div class="search-box me-3 position-relative">
-                        <input type="text" id="globalSearchInput" data-context="institusi" data-filter-id="{{ optional($selectedInstitution)->id }}" class="form-control" placeholder="Cari Maklumat...">
+                        <input type="text" id="globalSearchInput" data-context="institusi" data-filter-id="<?php echo e(optional($selectedInstitution)->id); ?>" class="form-control" placeholder="Cari Maklumat...">
                         <i class="fas fa-search"></i>
                         <div id="globalSearchResults" class="global-search-dropdown d-none"></div>
                     </div>
@@ -195,58 +195,33 @@
 
             <div class="content-body">
                 <div class="container-fluid py-4">
-                    @if($activePage === 'dashboard')
-                    {{-- Form Tapis disembunyikan dalam komen mengikut kehendak pengguna --}}
-                    {{--
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <form method="GET" action="{{ route($currentRoute) }}" class="row g-3 align-items-end">
-                                        <div class="col-lg-6 col-md-8">
-                                            <label for="institution_id" class="form-label">Pilih Institusi</label>
-                                            <select id="institution_id" name="institution_id" class="form-select">
-                                                <option value="">Pilih institusi</option>
-                                                @foreach($institutions as $institution)
-                                                    <option value="{{ $institution->id }}" {{ optional($selectedInstitution)->id == $institution->id ? 'selected' : '' }}>
-                                                        {{ $institution->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-2 col-md-4">
-                                            <button type="submit" class="btn btn-primary w-100">Tapis</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    --}}
+                    <?php if($activePage === 'dashboard'): ?>
+                    
+                    
 
-                    @include('partials.low_stock_notification', [
+                    <?php echo $__env->make('partials.low_stock_notification', [
                         'lowStockItems' => $lowStockItems ?? collect(),
                         'inventoryUrl' => route('pengarah.institusi.institusi'),
-                    ])
+                    ], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
                     <div class="row g-3 mb-4">
                         <div class="col-lg-4 col-md-6">
                             <div class="card p-4 h-100">
                                 <h6 class="text-uppercase text-muted mb-3">Institusi Terpilih</h6>
-                                <h3 class="mb-0">{{ optional($selectedInstitution)->name ?? 'Tiada institusi dipilih' }}</h3>
+                                <h3 class="mb-0"><?php echo e(optional($selectedInstitution)->name ?? 'Tiada institusi dipilih'); ?></h3>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
                             <div class="card p-4 h-100">
                                 <h6 class="text-uppercase text-muted mb-3">Jumlah Pesanan</h6>
-                                <h3 class="mb-0">{{ $orders->count() }}</h3>
-                                <div class="small text-muted mt-2">Jumlah Item: <strong>{{ number_format($inventoryTotals['total_quantity'] ?? 0, 2) }}</strong> &nbsp;â€¢&nbsp; Nilai: <strong>RM {{ number_format($inventoryTotals['total_value'] ?? 0, 2) }}</strong></div>
+                                <h3 class="mb-0"><?php echo e($orders->count()); ?></h3>
+                                <div class="small text-muted mt-2">Jumlah Item: <strong><?php echo e(number_format($inventoryTotals['total_quantity'] ?? 0, 2)); ?></strong> &nbsp;•&nbsp; Nilai: <strong>RM <?php echo e(number_format($inventoryTotals['total_value'] ?? 0, 2)); ?></strong></div>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
                             <div class="card p-4 h-100">
                                 <h6 class="text-uppercase text-muted mb-3">Jumlah Pembekal</h6>
-                                <h3 class="mb-0">{{ $suppliers->count() }}</h3>
+                                <h3 class="mb-0"><?php echo e($suppliers->count()); ?></h3>
                             </div>
                         </div>
                     </div>
@@ -257,7 +232,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="text-uppercase text-muted mb-1">Stok Kritikal</h6>
-                                        <h4 id="criticalStockCount" class="mb-0">â€”</h4>
+                                        <h4 id="criticalStockCount" class="mb-0">—</h4>
                                         <small class="text-muted">Item yang mencecah atau di bawah minimum</small>
                                     </div>
                                     <div>
@@ -267,9 +242,9 @@
                             </div>
                         </div>
                     </div>
-                    @endif
+                    <?php endif; ?>
 
-                    @if($activePage === 'dashboard')
+                    <?php if($activePage === 'dashboard'): ?>
                         <div class="row mb-2 align-items-center">
                             <div class="col-md-6">
                                 <div class="d-flex gap-2 align-items-center">
@@ -340,7 +315,7 @@
                                 <div class="card h-100 shadow-sm border-0">
                                     <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pb-2 pt-4 px-4">
                                         <h5 class="card-title fw-bold mb-0"><i class="fas fa-clock text-warning me-2"></i>5 Pesanan Terkini</h5>
-                                        <a href="{{ route('pengarah.institusi.ringkasan') }}" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
+                                        <a href="<?php echo e(route('pengarah.institusi.ringkasan')); ?>" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
                                     </div>
                                     <div class="card-body p-0">
                                         <div class="table-responsive">
@@ -366,9 +341,9 @@
                         </div>
 
                         <!-- Data carta dihantar terus ke JavaScript -->
-                        <script>window.dashboardChartData = {!! $dashboardData ?? '{}' !!};</script>
+                        <script>window.dashboardChartData = <?php echo $dashboardData ?? '{}'; ?>;</script>
 
-                    @elseif($activePage === 'ringkasan')
+                    <?php elseif($activePage === 'ringkasan'): ?>
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Ringkasan Pesanan</h5>
@@ -386,14 +361,14 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($orders as $order)
+                                            <?php $__currentLoopData = $orders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                 <tr>
-                                                    <td>{{ $order->id }}</td>
-                                                    <td>{{ $order->order_no }}</td>
-                                                    <td>{{ $order->order_date }}</td>
-                                                    <td>{{ number_format($order->total_amount, 2) }}</td>
+                                                    <td><?php echo e($order->id); ?></td>
+                                                    <td><?php echo e($order->order_no); ?></td>
+                                                    <td><?php echo e($order->order_date); ?></td>
+                                                    <td><?php echo e(number_format($order->total_amount, 2)); ?></td>
                                                     <td>
-                                                        @php
+                                                        <?php
                                                             $statusMalay = match($order->status) {
                                                                 'Pending' => 'Menunggu',
                                                                 'In Progress' => 'Dalam Proses',
@@ -401,20 +376,21 @@
                                                                 'Rejected' => 'Ditolak',
                                                                 default => $order->status
                                                             };
-                                                        @endphp
-                                                        <span class="badge {{ $order->status == 'Pending' ? 'bg-warning' : ($order->status == 'In Progress' ? 'bg-primary' : ($order->status == 'Completed' ? 'bg-success' : 'bg-danger')) }}">
-                                                            {{ $statusMalay }}
+                                                        ?>
+                                                        <span class="badge <?php echo e($order->status == 'Pending' ? 'bg-warning' : ($order->status == 'In Progress' ? 'bg-primary' : ($order->status == 'Completed' ? 'bg-success' : 'bg-danger'))); ?>">
+                                                            <?php echo e($statusMalay); ?>
+
                                                         </span>
                                                     </td>
-                                                    <td>{{ optional($order->supplier)->company_name }}</td>
+                                                    <td><?php echo e(optional($order->supplier)->company_name); ?></td>
                                                 </tr>
-                                            @endforeach
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
-                    @elseif($activePage === 'institusi')
+                    <?php elseif($activePage === 'institusi'): ?>
                         <div class="row g-3 mb-3">
                             <div class="col-md-8">
                                 <div class="card">
@@ -424,21 +400,21 @@
                                                 <h5 class="card-title mb-0">Inventori Pesanan</h5>
                                                 <p class="text-muted small mb-0">Lihat ringkasan item yang dipesan untuk institusi terpilih.</p>
                                             </div>
-                                            <form id="inventoryFilterForm" method="GET" action="{{ route('pengarah.institusi.institusi') }}" class="d-flex gap-2 align-items-center">
+                                            <form id="inventoryFilterForm" method="GET" action="<?php echo e(route('pengarah.institusi.institusi')); ?>" class="d-flex gap-2 align-items-center">
                                                 <label class="mb-0 small text-muted">Tahun:</label>
                                                 <select name="year" id="inventoryFilterYear" class="form-select form-select-sm" style="width:120px;">
                                                     <option value="">Semua</option>
-                                                    @for($y = now()->year; $y >= now()->year - 5; $y--)
-                                                        <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}</option>
-                                                    @endfor
+                                                    <?php for($y = now()->year; $y >= now()->year - 5; $y--): ?>
+                                                        <option value="<?php echo e($y); ?>" <?php echo e(request('year') == $y ? 'selected' : ''); ?>><?php echo e($y); ?></option>
+                                                    <?php endfor; ?>
                                                 </select>
 
                                                 <label class="mb-0 small text-muted ms-2">Bulan:</label>
                                                 <select name="month" id="inventoryFilterMonth" class="form-select form-select-sm" style="width:140px;">
                                                     <option value="">Semua</option>
-                                                    @foreach([1=>'Jan',2=>'Feb',3=>'Mac',4=>'Apr',5=>'Mei',6=>'Jun',7=>'Jul',8=>'Ogo',9=>'Sep',10=>'Okt',11=>'Nov',12=>'Dis'] as $m => $label)
-                                                        <option value="{{ $m }}" {{ request('month') == $m ? 'selected' : '' }}>{{ $label }}</option>
-                                                    @endforeach
+                                                    <?php $__currentLoopData = [1=>'Jan',2=>'Feb',3=>'Mac',4=>'Apr',5=>'Mei',6=>'Jun',7=>'Jul',8=>'Ogo',9=>'Sep',10=>'Okt',11=>'Nov',12=>'Dis']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $m => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <option value="<?php echo e($m); ?>" <?php echo e(request('month') == $m ? 'selected' : ''); ?>><?php echo e($label); ?></option>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 </select>
                                                 <input type="hidden" name="" />
                                             </form>
@@ -455,16 +431,16 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @forelse($inventoryItems as $item)
+                                                    <?php $__empty_1 = true; $__currentLoopData = $inventoryItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                                         <tr>
-                                                            <td>{{ $loop->iteration }}</td>
-                                                            <td>{{ optional($item->item)->name ?? 'Item tidak dijumpai' }}</td>
-                                                            <td>{{ number_format($item->total_ordered_quantity, 2) }}</td>
-                                                            <td>{{ number_format($item->total_ordered_price, 2) }}</td>
+                                                            <td><?php echo e($loop->iteration); ?></td>
+                                                            <td><?php echo e(optional($item->item)->name ?? 'Item tidak dijumpai'); ?></td>
+                                                            <td><?php echo e(number_format($item->total_ordered_quantity, 2)); ?></td>
+                                                            <td><?php echo e(number_format($item->total_ordered_price, 2)); ?></td>
                                                         </tr>
-                                                    @empty
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                                         <tr><td colspan="4" class="text-center text-muted py-4">Tiada data inventori untuk tempoh dipilih.</td></tr>
-                                                    @endforelse
+                                                    <?php endif; ?>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -478,20 +454,20 @@
                                         <h6 class="text-uppercase text-muted">Stok Kritikal</h6>
                                         <p class="small text-muted">5 item yang berada di bawah atau hampir minimum stok.</p>
                                         <div class="list-group list-group-flush small" id="institusi-critical-list">
-                                            @forelse($lowStockItems->take(5) as $l)
+                                            <?php $__empty_1 = true; $__currentLoopData = $lowStockItems->take(5); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $l): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                                 <div class="list-group-item d-flex justify-content-between align-items-start">
                                                     <div>
-                                                        <div class="fw-medium">{{ $l['name'] }}</div>
-                                                        <div class="text-muted small">{{ $l['category'] ?? '-' }}</div>
+                                                        <div class="fw-medium"><?php echo e($l['name']); ?></div>
+                                                        <div class="text-muted small"><?php echo e($l['category'] ?? '-'); ?></div>
                                                     </div>
                                                     <div class="text-end">
-                                                        <div class="fw-bold">{{ $l['stock'] }}</div>
-                                                        <div class="text-muted small">Min: {{ $l['minStock'] }}</div>
+                                                        <div class="fw-bold"><?php echo e($l['stock']); ?></div>
+                                                        <div class="text-muted small">Min: <?php echo e($l['minStock']); ?></div>
                                                     </div>
                                                 </div>
-                                            @empty
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                                 <div class="list-group-item text-center text-muted">Tiada item kritikal.</div>
-                                            @endforelse
+                                            <?php endif; ?>
                                         </div>
                                         <div class="mt-3 text-end">
                                             <button class="btn btn-sm btn-outline-warning" id="btnViewCriticalFromInstitusi"><i class="fas fa-eye me-1"></i>Lihat Semua</button>
@@ -500,7 +476,7 @@
                                 </div>
                             </div>
                         </div>
-                    @elseif($activePage === 'pembekal')
+                    <?php elseif($activePage === 'pembekal'): ?>
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Senarai Pembekal</h5>
@@ -518,40 +494,41 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($suppliers as $supplier)
+                                            <?php $__currentLoopData = $suppliers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $supplier): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                 <tr>
-                                                    <td>{{ $supplier->id }}</td>
+                                                    <td><?php echo e($supplier->id); ?></td>
                                                     <td>
                                                         <a href="javascript:void(0);" class="supplier-detail-btn fw-bold text-primary text-decoration-none" 
-                                                           data-company="{{ $supplier->company_name }}"
-                                                           data-contact="{{ $supplier->contact_person }}"
-                                                           data-email="{{ $supplier->email }}"
-                                                           data-phone="{{ $supplier->phone_number }}"
-                                                           data-address="{{ $supplier->address }}"
-                                                           data-postcode="{{ $supplier->postcode }}"
-                                                           data-state="{{ optional($supplier->state)->name }}"
-                                                           data-source="{{ $supplier->createdBy?->effectiveRoleName() === 'Admin' ? 'HQ' : 'Institusi' }}">
-                                                            <i class="fas fa-building me-1"></i> {{ $supplier->company_name }}
+                                                           data-company="<?php echo e($supplier->company_name); ?>"
+                                                           data-contact="<?php echo e($supplier->contact_person); ?>"
+                                                           data-email="<?php echo e($supplier->email); ?>"
+                                                           data-phone="<?php echo e($supplier->phone_number); ?>"
+                                                           data-address="<?php echo e($supplier->address); ?>"
+                                                           data-postcode="<?php echo e($supplier->postcode); ?>"
+                                                           data-state="<?php echo e(optional($supplier->state)->name); ?>"
+                                                           data-source="<?php echo e($supplier->createdBy?->effectiveRoleName() === 'Admin' ? 'HQ' : 'Institusi'); ?>">
+                                                            <i class="fas fa-building me-1"></i> <?php echo e($supplier->company_name); ?>
+
                                                         </a>
                                                     </td>
-                                                    <td>{{ $supplier->contact_person }}</td>
-                                                    <td>{{ $supplier->email }}</td>
-                                                    <td>{{ optional($supplier->state)->name }}</td>
+                                                    <td><?php echo e($supplier->contact_person); ?></td>
+                                                    <td><?php echo e($supplier->email); ?></td>
+                                                    <td><?php echo e(optional($supplier->state)->name); ?></td>
                                                     <td>
-                                                        @if($supplier->createdBy?->effectiveRoleName() === 'Admin')
+                                                        <?php if($supplier->createdBy?->effectiveRoleName() === 'Admin'): ?>
                                                             <span class="badge bg-primary">HQ</span>
-                                                        @else
+                                                        <?php else: ?>
                                                             <span class="badge bg-secondary">Institusi</span>
-                                                        @endif
+                                                        <?php endif; ?>
                                                     </td>
                                                 </tr>
-                                            @endforeach
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
-                    @elseif($activePage === 'senarai_user')
+                    <?php elseif($activePage === 'senarai_user'): ?>
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Senarai Pengguna</h5>
@@ -568,37 +545,37 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($users as $user)
+                                            <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                 <tr>
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $user->name }}</td>
-                                                    <td>{{ $user->email }}</td>
-                                                    <td>{{ $user->phone_number }}</td>
+                                                    <td><?php echo e($loop->iteration); ?></td>
+                                                    <td><?php echo e($user->name); ?></td>
+                                                    <td><?php echo e($user->email); ?></td>
+                                                    <td><?php echo e($user->phone_number); ?></td>
                                                     <td>
-                                                        {{ optional($user->position)->name ?? '-' }} 
+                                                        <?php echo e(optional($user->position)->name ?? '-'); ?> 
                                                         <br>
-                                                        <small class="text-muted">Peranan: {{ $user->effectiveRoleName() }}</small>
+                                                        <small class="text-muted">Peranan: <?php echo e($user->effectiveRoleName()); ?></small>
                                                     </td>
                                                 </tr>
-                                            @endforeach
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
-                    @elseif($activePage === 'profil')
+                    <?php elseif($activePage === 'profil'): ?>
                         <div class="row justify-content-center">
                             <div class="col-lg-5 mb-4">
                                 <div class="card text-center h-100">
                                     <div class="card-body">
                                         <div class="position-relative d-inline-block mb-3">
-                                            <img src="{{ auth()->user()?->image ? asset('storage/' . auth()->user()->image) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()?->name ?? 'Pengarah Institusi') . '&background=1a5632&color=fff&size=150' }}"
+                                            <img src="<?php echo e(auth()->user()?->image ? asset('storage/' . auth()->user()->image) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()?->name ?? 'Pengarah Institusi') . '&background=1a5632&color=fff&size=150'); ?>"
                                                 alt="Profile Picture"
                                                 class="rounded-circle img-thumbnail"
                                                 style="width: 150px; height: 150px; object-fit: cover;">
                                         </div>
-                                        <h4 class="mb-0">{{ auth()->user()?->name ?? 'Pengarah Institusi' }}</h4>
-                                        <p class="text-muted">{{ auth()->user()?->position?->name ?? 'Pengarah Institusi' }}</p>
+                                        <h4 class="mb-0"><?php echo e(auth()->user()?->name ?? 'Pengarah Institusi'); ?></h4>
+                                        <p class="text-muted"><?php echo e(auth()->user()?->position?->name ?? 'Pengarah Institusi'); ?></p>
                                         <div class="d-grid gap-2">
                                             <button class="btn btn-outline-primary" id="btnEditProfile">
                                                 <i class="fas fa-edit me-2"></i>Kemaskini Profil
@@ -611,11 +588,11 @@
                                     <div class="card-footer bg-transparent border-0 pb-4">
                                         <div class="row text-center mb-3">
                                             <div class="col-6 border-end">
-                                                <h5 class="mb-0">{{ auth()->user()?->status ? 'Aktif' : 'Tidak Aktif' }}</h5>
+                                                <h5 class="mb-0"><?php echo e(auth()->user()?->status ? 'Aktif' : 'Tidak Aktif'); ?></h5>
                                                 <small class="text-muted">Status</small>
                                             </div>
                                             <div class="col-6">
-                                                <h5 class="mb-0">{{ auth()->user()?->effectiveRoleName() }}</h5>
+                                                <h5 class="mb-0"><?php echo e(auth()->user()?->effectiveRoleName()); ?></h5>
                                                 <small class="text-muted">Peranan</small>
                                             </div>
                                         </div>
@@ -632,23 +609,23 @@
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
                                                 <span><i class="fas fa-envelope me-2 text-primary"></i>E-mel</span>
-                                                <span class="fw-medium">{{ auth()->user()?->email ?? '-' }}</span>
+                                                <span class="fw-medium"><?php echo e(auth()->user()?->email ?? '-'); ?></span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
                                                 <span><i class="fas fa-phone me-2 text-primary"></i>No. Telefon</span>
-                                                <span class="fw-medium">{{ auth()->user()?->phone_number ?? '-' }}</span>
+                                                <span class="fw-medium"><?php echo e(auth()->user()?->phone_number ?? '-'); ?></span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
                                                 <span><i class="fas fa-building me-2 text-primary"></i>Institusi</span>
-                                                <span class="fw-medium">{{ auth()->user()?->institution?->name ?? '-' }}</span>
+                                                <span class="fw-medium"><?php echo e(auth()->user()?->institution?->name ?? '-'); ?></span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
                                                 <span><i class="fas fa-briefcase me-2 text-primary"></i>Jawatan</span>
-                                                <span class="fw-medium">{{ auth()->user()?->position?->name ?? '-' }}</span>
+                                                <span class="fw-medium"><?php echo e(auth()->user()?->position?->name ?? '-'); ?></span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
                                                 <span><i class="fas fa-calendar-alt me-2 text-primary"></i>Tarikh Sertai</span>
-                                                <span class="fw-medium">{{ auth()->user()?->created_at ? \Carbon\Carbon::parse(auth()->user()->created_at)->format('d/m/Y') : '-' }}</span>
+                                                <span class="fw-medium"><?php echo e(auth()->user()?->created_at ? \Carbon\Carbon::parse(auth()->user()->created_at)->format('d/m/Y') : '-'); ?></span>
                                             </li>
                                         </ul>
                                     </div>
@@ -656,19 +633,19 @@
                             </div>
 
                             <div class="col-lg-10">
-                                @if(session('success'))
-                                    <div class="alert alert-success">{{ session('success') }}</div>
-                                @endif
+                                <?php if(session('success')): ?>
+                                    <div class="alert alert-success"><?php echo e(session('success')); ?></div>
+                                <?php endif; ?>
 
-                                @if($errors->any())
+                                <?php if($errors->any()): ?>
                                     <div class="alert alert-danger">
                                         <ul class="mb-0">
-                                            @foreach($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                            @endforeach
+                                            <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <li><?php echo e($error); ?></li>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </ul>
                                     </div>
-                                @endif
+                                <?php endif; ?>
 
                                 <div class="card mb-4" id="cardUpdateProfile" style="display: none;">
                                     <div class="card-header d-flex justify-content-between align-items-center">
@@ -676,32 +653,33 @@
                                         <button class="btn btn-sm btn-link text-decoration-none" id="btnCancelEdit">Batal</button>
                                     </div>
                                     <div class="card-body">
-                                        <form action="{{ route('profile.update') }}" method="POST">
-                                            @csrf
+                                        <form action="<?php echo e(route('profile.update')); ?>" method="POST">
+                                            <?php echo csrf_field(); ?>
                                             <div class="row mb-3">
                                                 <div class="col-md-6">
                                                     <label class="form-label">Nama Penuh</label>
-                                                    <input type="text" class="form-control" name="name" value="{{ auth()->user()?->name }}" required>
+                                                    <input type="text" class="form-control" name="name" value="<?php echo e(auth()->user()?->name); ?>" required>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class="form-label">E-mel</label>
-                                                    <input type="email" class="form-control" name="email" value="{{ auth()->user()?->email }}" required>
+                                                    <input type="email" class="form-control" name="email" value="<?php echo e(auth()->user()?->email); ?>" required>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-md-6">
                                                     <label class="form-label">No. Telefon</label>
-                                                    <input type="text" class="form-control" name="phone_number" value="{{ auth()->user()?->phone_number }}">
+                                                    <input type="text" class="form-control" name="phone_number" value="<?php echo e(auth()->user()?->phone_number); ?>">
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class="form-label">Institusi</label>
                                                     <select class="form-select" name="institution_id">
                                                         <option value="">Pilih Institusi</option>
-                                                        @foreach($institutions as $institution)
-                                                            <option value="{{ $institution->id }}" {{ auth()->user()?->institution_id == $institution->id ? 'selected' : '' }}>
-                                                                {{ $institution->name }}
+                                                        <?php $__currentLoopData = $institutions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $institution): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                            <option value="<?php echo e($institution->id); ?>" <?php echo e(auth()->user()?->institution_id == $institution->id ? 'selected' : ''); ?>>
+                                                                <?php echo e($institution->name); ?>
+
                                                             </option>
-                                                        @endforeach
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                     </select>
                                                 </div>
                                             </div>
@@ -720,8 +698,8 @@
                                         <button class="btn btn-sm btn-link text-decoration-none" id="btnCancelPassword">Batal</button>
                                     </div>
                                     <div class="card-body">
-                                        <form action="{{ route('profile.password') }}" method="POST">
-                                            @csrf
+                                        <form action="<?php echo e(route('profile.password')); ?>" method="POST">
+                                            <?php echo csrf_field(); ?>
                                             <div class="mb-3">
                                                 <label class="form-label">Kata Laluan Semasa</label>
                                                 <input type="password" class="form-control" name="current_password" required>
@@ -744,7 +722,7 @@
                                 </div>
                             </div>
                         </div>
-                    @elseif($activePage === 'laporan-prestasi')
+                    <?php elseif($activePage === 'laporan-prestasi'): ?>
                         <div class="row">
                             <div class="col-12">
                                 <!-- Section 1: Pending Evaluations for Verification -->
@@ -761,6 +739,7 @@
                                                 <thead>
                                                     <tr>
                                                         <th>Tarikh</th>
+                                                        <th>No. Inden</th>
                                                         <th>Pembekal</th>
                                                         <th>Penilai</th>
                                                         <th class="text-center">Skor (%)</th>
@@ -769,41 +748,42 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @if(isset($pendingEvaluations) && $pendingEvaluations->count() > 0)
-                                                        @foreach($pendingEvaluations as $pendingEval)
+                                                    <?php if(isset($pendingEvaluations) && $pendingEvaluations->count() > 0): ?>
+                                                        <?php $__currentLoopData = $pendingEvaluations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pendingEval): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                             <tr>
-                                                                <td>{{ $pendingEval->evaluation_date->format('d/m/Y') }}</td>
-                                                                <td>{{ $pendingEval->supplier?->company_name }}</td>
-                                                                <td>{{ $pendingEval->evaluator_name }}</td>
-                                                                <td class="text-center fw-bold">{{ round($pendingEval->percentage, 1) }}%</td>
+                                                                <td><?php echo e($pendingEval->evaluation_date->format('d/m/Y')); ?></td>
+                                                                <td><?php echo e($pendingEval->order?->order_number); ?></td>
+                                                                <td><?php echo e($pendingEval->supplier?->company_name); ?></td>
+                                                                <td><?php echo e($pendingEval->evaluator_name); ?></td>
+                                                                <td class="text-center fw-bold"><?php echo e(round($pendingEval->percentage, 1)); ?>%</td>
                                                                 <td class="text-center">
-                                                                    @if($pendingEval->performance_rating === 'Cemerlang')
+                                                                    <?php if($pendingEval->performance_rating === 'Cemerlang'): ?>
                                                                         <span class="badge bg-success">Cemerlang</span>
-                                                                    @elseif($pendingEval->performance_rating === 'Sederhana')
+                                                                    <?php elseif($pendingEval->performance_rating === 'Sederhana'): ?>
                                                                         <span class="badge bg-warning text-dark">Sederhana</span>
-                                                                    @else
+                                                                    <?php else: ?>
                                                                         <span class="badge bg-danger">Lemah</span>
-                                                                    @endif
+                                                                    <?php endif; ?>
                                                                 </td>
                                                                 <td class="text-center">
                                                                     <div class="d-flex justify-content-center gap-2">
-                                                                        <button class="btn btn-sm btn-info text-white view-eval-btn" data-id="{{ $pendingEval->id }}">
+                                                                        <button class="btn btn-sm btn-info text-white view-eval-btn" data-id="<?php echo e($pendingEval->id); ?>">
                                                                             <i class="fas fa-eye"></i> Semak
                                                                         </button>
-                                                                        <button class="btn btn-sm btn-success verify-eval-btn" data-id="{{ $pendingEval->id }}">
+                                                                        <button class="btn btn-sm btn-success verify-eval-btn" data-id="<?php echo e($pendingEval->id); ?>">
                                                                             <i class="fas fa-check"></i> Sahkan
                                                                         </button>
                                                                     </div>
                                                                 </td>
                                                             </tr>
-                                                        @endforeach
-                                                    @else
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                    <?php else: ?>
                                                         <tr>
-                                                            <td colspan="6" class="text-center py-4 text-muted">
+                                                            <td colspan="7" class="text-center py-4 text-muted">
                                                                 Tiada rekod penilaian menunggu pengesahan.
                                                             </td>
                                                         </tr>
-                                                    @endif
+                                                    <?php endif; ?>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -819,9 +799,9 @@
                                         </div>
                                         <div class="d-flex align-items-center gap-2 text-body">
                                             <select class="form-select text-semibold" id="monthlyYearSelect" style="width: 120px;">
-                                                @for($y = date('Y'); $y >= date('Y') - 5; $y--)
-                                                    <option value="{{ $y }}">{{ $y }}</option>
-                                                @endfor
+                                                <?php for($y = date('Y'); $y >= date('Y') - 5; $y--): ?>
+                                                    <option value="<?php echo e($y); ?>"><?php echo e($y); ?></option>
+                                                <?php endfor; ?>
                                             </select>
                                         </div>
                                     </div>
@@ -879,6 +859,7 @@
                                                 <thead>
                                                     <tr>
                                                         <th>Tarikh</th>
+                                                        <th>No. Inden</th>
                                                         <th>Pembekal</th>
                                                         <th>Penilai</th>
                                                         <th class="text-center">Skor (%)</th>
@@ -889,7 +870,7 @@
                                                 </thead>
                                                 <tbody id="historyTableBody" class="text-body">
                                                     <tr>
-                                                        <td colspan="7" class="text-center py-4 text-muted">
+                                                        <td colspan="8" class="text-center py-4 text-muted">
                                                             <div class="spinner-border spinner-border-sm me-2" role="status"></div>
                                                             Memuat data sejarah penilaian...
                                                         </td>
@@ -901,7 +882,7 @@
                                 </div>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
             </div>
             <!-- Add Evaluation Modal -->
@@ -924,7 +905,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold small">Tarikh Penilaian</label>
-                                        <input type="date" class="form-control" name="evaluation_date" value="{{ date('Y-m-d') }}" required>
+                                        <input type="date" class="form-control" name="evaluation_date" value="<?php echo e(date('Y-m-d')); ?>" required>
                                     </div>
                                 </div>
                                 
@@ -942,7 +923,7 @@
                                         </div>
                                         <div class="col-md-4">
                                             <div class="small text-muted">Nama Penilai:</div>
-                                            <input type="text" class="form-control form-control-sm mt-1" name="evaluator_name" value="{{ Auth::user()->name }}" readonly>
+                                            <input type="text" class="form-control form-control-sm mt-1" name="evaluator_name" value="<?php echo e(Auth::user()->name); ?>" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -1040,7 +1021,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold small text-muted mb-1">Pegawai Penilai:</label>
-                                        <input type="text" class="form-control mb-3 bg-light" name="evaluator_name" value="{{ Auth::user()->name }}" readonly>
+                                        <input type="text" class="form-control mb-3 bg-light" name="evaluator_name" value="<?php echo e(Auth::user()->name); ?>" readonly>
                                         
                                         <label class="form-label fw-bold small text-muted mb-1">Ulasan / Catatan:</label>
                                         <textarea class="form-control" name="remarks" rows="2" placeholder="Masukkan ulasan tambahan jika perlu..."></textarea>
@@ -1142,144 +1123,6 @@
                     </div>
                 </div>
             </div>
-            <!-- View Evaluation Modal -->
-            <div class="modal fade" id="viewEvaluationModal" tabindex="-1" aria-labelledby="viewEvaluationModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header bg-info text-white">
-                            <h5 class="modal-title fw-bold" id="viewEvaluationModalLabel"><i class="fas fa-star me-2"></i>Butiran Penilaian Prestasi Pembekal</h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <!-- Summary Info -->
-                            <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <div class="small text-muted">Pembekal</div>
-                                    <div class="fw-bold fs-6" id="viewEvalSupplierName">-</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="small text-muted">Institusi</div>
-                                    <div class="fw-bold fs-6" id="viewEvalInstitutionName">-</div>
-                                </div>
-                            </div>
-                            <div class="row mb-4">
-                                <div class="col-md-4">
-                                    <div class="small text-muted">Tarikh Penilaian</div>
-                                    <div class="fw-bold" id="viewEvalDate">-</div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="small text-muted">Penilai</div>
-                                    <div class="fw-bold" id="viewEvalEvaluator">-</div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="small text-muted">Status</div>
-                                    <div class="form-control fw-bold text-center" id="viewEvalStatus">-</div>
-                                </div>
-                            </div>
-
-                            <!-- Criteria Items & Scores Table -->
-                            <h6 class="fw-bold text-muted mb-2"><i class="fas fa-list-check me-1"></i>Item & Skor Penilaian</h6>
-                            <div class="table-responsive mb-4">
-                                <table class="table table-bordered align-middle text-center" style="border-radius:8px; overflow:hidden;">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th class="text-start ps-3">Kriteria Penilaian</th>
-                                            <th style="width:120px;">Skor</th>
-                                            <th style="width:120px;">Daripada</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="text-start ps-3">
-                                                <div class="fw-bold">1. Kuantiti Bekalan</div>
-                                                <div class="small text-muted">Mencukupi dan mengikut pesanan</div>
-                                            </td>
-                                            <td class="fw-bold fs-5 text-primary" id="viewEvalQty">-</td>
-                                            <td class="text-muted">7</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-start ps-3">
-                                                <div class="fw-bold">2. Masa Penghantaran</div>
-                                                <div class="small text-muted">Menepati masa yang ditetapkan</div>
-                                            </td>
-                                            <td class="fw-bold fs-5 text-primary" id="viewEvalDelivery">-</td>
-                                            <td class="text-muted">7</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-start ps-3">
-                                                <div class="fw-bold">3. Harga Bekalan</div>
-                                                <div class="small text-muted">Berpatutan dan kompetitif</div>
-                                            </td>
-                                            <td class="fw-bold fs-5 text-primary" id="viewEvalPrice">-</td>
-                                            <td class="text-muted">7</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-start ps-3">
-                                                <div class="fw-bold">4. Kualiti Bekalan</div>
-                                                <div class="small text-muted">Memenuhi piawaian dan spesifikasi</div>
-                                            </td>
-                                            <td class="fw-bold fs-5 text-primary" id="viewEvalQuality">-</td>
-                                            <td class="text-muted">7</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-start ps-3">
-                                                <div class="fw-bold">5. Kerjasama</div>
-                                                <div class="small text-muted">Responsif dan mudah dihubungi</div>
-                                            </td>
-                                            <td class="fw-bold fs-5 text-primary" id="viewEvalCoop">-</td>
-                                            <td class="text-muted">7</td>
-                                        </tr>
-                                    </tbody>
-                                    <tfoot class="table-light fw-bold">
-                                        <tr>
-                                            <td class="text-start ps-3">Jumlah Skor</td>
-                                            <td class="fs-5 text-dark" id="viewEvalTotalScore">-</td>
-                                            <td class="text-muted">35</td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-
-                            <!-- Rating & Percentage -->
-                            <div class="row mb-4 text-center">
-                                <div class="col-md-6">
-                                    <div class="small text-muted mb-1">Peratusan</div>
-                                    <div class="fw-bold fs-3 text-primary" id="viewEvalPercentage">-</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="small text-muted mb-1">Penilaian Prestasi</div>
-                                    <div>
-                                        <span class="badge rounded-pill px-4 py-2 fs-6 shadow-sm" id="viewEvalRatingBadge">-</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Remarks -->
-                            <div class="mb-4">
-                                <div class="small text-muted fw-bold mb-1">Ulasan / Catatan:</div>
-                                <div class="p-3 bg-light rounded" id="viewEvalRemarks" style="min-height:50px;">-</div>
-                            </div>
-
-                            <!-- Confirmation Checkbox (for pending verification) -->
-                            <div id="viewEvalConfirmSection" class="alert alert-warning border-warning d-none">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="viewEvalConfirmCheck">
-                                    <label class="form-check-label fw-bold" for="viewEvalConfirmCheck">
-                                        Saya mengesahkan bahawa penilaian prestasi ini telah disemak dan adalah tepat mengikut rekod yang ada.
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times me-1"></i>Tutup</button>
-                            <button type="button" class="btn btn-success d-none" id="viewEvalVerifyBtn">
-                                <i class="fas fa-check-circle me-1"></i>Sahkan Penilaian
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Footer -->
             <footer class="footer">
                 <div class="container-fluid">
@@ -1310,7 +1153,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script>
-        @if($activePage === 'laporan-prestasi')
+        <?php if($activePage === 'laporan-prestasi'): ?>
         // Sliders score color scaling and calculation
         function initEvaluationSliders() {
             const sliders = document.querySelectorAll('#addEvaluationModal .slider-score');
@@ -1493,6 +1336,7 @@
                         html += `
                             <tr>
                                 <td>${evalDate}</td>
+                                <td class="fw-bold">${eval.order ? eval.order.order_number : '-'}</td>
                                 <td>${eval.supplier ? eval.supplier.company_name : '-'}</td>
                                 <td>${eval.evaluator_name}</td>
                                 <td class="text-center fw-bold">${eval.percentage}%</td>
@@ -1522,7 +1366,7 @@
                 } else {
                     tableBody.innerHTML = `
                         <tr>
-                            <td colspan="7" class="text-center py-4 text-muted">
+                            <td colspan="8" class="text-center py-4 text-muted">
                                 Tiada rekod penilaian prestasi ditemui.
                             </td>
                         </tr>
@@ -1532,7 +1376,7 @@
                 console.error('Error loading evaluations:', err);
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="7" class="text-center py-4 text-danger">
+                        <td colspan="8" class="text-center py-4 text-danger">
                             Gagal memuatkan rekod sejarah penilaian.
                         </td>
                     </tr>
@@ -1633,7 +1477,7 @@
                 alert('Gagal memuat butiran penilaian.');
             }
         }
-        @endif
+        <?php endif; ?>
 
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
             try { Chart.register(ChartDataLabels); } catch(e) { console.warn('ChartDataLabels register failed', e); }
@@ -1697,7 +1541,7 @@
             handleSidebarToggle();
             handleThemeToggle();
 
-            @if($activePage === 'laporan-prestasi')
+            <?php if($activePage === 'laporan-prestasi'): ?>
             // Initialization for Laporan Prestasi page
             initEvaluationSliders();
             loadOrdersForEvaluation();
@@ -1787,7 +1631,7 @@
                     verifyEvaluation(id);
                 }
             });
-            @endif
+            <?php endif; ?>
             // Load critical stock count for Pengarah Institusi
             (function loadCriticalStock(){
                 const countEl = document.getElementById('criticalStockCount');
@@ -1807,7 +1651,7 @@
                         }
                     })
                     .catch(() => {
-                        countEl.textContent = 'â€”';
+                        countEl.textContent = '—';
                         window.criticalStockItems = [];
                     });
 
@@ -2224,8 +2068,8 @@
             }
         });
     </script>
-    <script src="{{ asset('js/table-download.js') }}"></script>
-    <script src="{{ asset('js/session-timeout.js') }}"></script>
+    <script src="<?php echo e(asset('js/table-download.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/session-timeout.js')); ?>"></script>
     <script>
         $(document).ready(function() {
             // Check for search parameter to auto-filter and highlight results
@@ -2282,3 +2126,4 @@
     </script>
 </body>
 </html>
+<?php /**PATH C:\laragon\www\MySIPMa\resources\views/pengarah_institusi_dashboard.blade.php ENDPATH**/ ?>

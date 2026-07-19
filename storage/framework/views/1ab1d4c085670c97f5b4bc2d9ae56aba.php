@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Pengurusan Penjara - Admin Papan Pemuka</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="session-lifetime" content="{{ config('session.lifetime') }}">
-    <meta name="session-warning" content="{{ config('session-timeout.warning_time') }}">
-    <meta name="session-grace" content="{{ config('session-timeout.grace_period') }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <meta name="session-lifetime" content="<?php echo e(config('session.lifetime')); ?>">
+    <meta name="session-warning" content="<?php echo e(config('session-timeout.warning_time')); ?>">
+    <meta name="session-grace" content="<?php echo e(config('session-timeout.grace_period')); ?>">
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -32,7 +32,7 @@
     <link href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ asset('style.css') }}">
+    <link rel="stylesheet" href="<?php echo e(asset('style.css')); ?>">
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon"
@@ -47,7 +47,7 @@
             <div class="sidebar-header">
                 <a href="#" class="logo" data-page="home">
                     <div class="logo-icon">
-                        <img src="{{ asset('MySIPMa_logo_wWalls.png') }}" alt="MySIPMa Logo" height="50" class="me-2">
+                        <img src="<?php echo e(asset('MySIPMa_logo_wWalls.png')); ?>" alt="MySIPMa Logo" height="50" class="me-2">
                     </div>
                     <div class="logo-text">
                         <span class="fw-bold">MySIPMA</span>
@@ -141,10 +141,10 @@
             <!-- Sidebar Footer -->
             <div class="sidebar-footer">
                 <div class="user-profile">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()?->name ?? 'Pengarah HQ') }}&background=1a5632&color=fff&size=80"
-                        alt="{{ auth()->user()?->name ?? 'Pengarah HQ' }}" class="user-avatar">
+                    <img src="https://ui-avatars.com/api/?name=<?php echo e(urlencode(auth()->user()?->name ?? 'Pengarah HQ')); ?>&background=1a5632&color=fff&size=80"
+                        alt="<?php echo e(auth()->user()?->name ?? 'Pengarah HQ'); ?>" class="user-avatar">
                     <div class="user-info">
-                        <h6>{{ auth()->user()?->name ?? 'Pengarah HQ' }}</h6>
+                        <h6><?php echo e(auth()->user()?->name ?? 'Pengarah HQ'); ?></h6>
                         <small class="text-muted">Pentadbir Sistem</small>
                     </div>
                     <a href="#" class="logout-btn" id="logoutBtn">
@@ -217,9 +217,9 @@
                     <div class="dropdown notifications">
                         <button class="btn btn-icon" type="button" data-bs-toggle="dropdown">
                             <i class="fas fa-bell"></i>
-                            @if(($lowStockCount ?? collect($lowStockItems ?? [])->count()) > 0)
-                                <span class="badge-notification">{{ $lowStockCount ?? collect($lowStockItems ?? [])->count() }}</span>
-                            @endif
+                            <?php if(($lowStockCount ?? collect($lowStockItems ?? [])->count()) > 0): ?>
+                                <span class="badge-notification"><?php echo e($lowStockCount ?? collect($lowStockItems ?? [])->count()); ?></span>
+                            <?php endif; ?>
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
                             <div class="dropdown-header">
@@ -227,7 +227,7 @@
                                 <span class="text-muted small">Stok minimum</span>
                             </div>
                             <div class="dropdown-body">
-                                @forelse(collect($lowStockItems ?? [])->take(5) as $stockItem)
+                                <?php $__empty_1 = true; $__currentLoopData = collect($lowStockItems ?? [])->take(5); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $stockItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                     <a href="#" class="dropdown-item" data-page="bahan-mentah">
                                         <div class="d-flex">
                                             <div class="notification-icon bg-warning">
@@ -236,23 +236,27 @@
                                             <div class="flex-grow-1">
                                                 <h6>Stok Minimum</h6>
                                                 <p class="mb-0">
-                                                    {{ data_get($stockItem, 'name') }}:
-                                                    {{ number_format((float) data_get($stockItem, 'stock', 0), 2) }}
-                                                    {{ data_get($stockItem, 'unit', 'Unit') }}
+                                                    <?php echo e(data_get($stockItem, 'name')); ?>:
+                                                    <?php echo e(number_format((float) data_get($stockItem, 'stock', 0), 2)); ?>
+
+                                                    <?php echo e(data_get($stockItem, 'unit', 'Unit')); ?>
+
                                                 </p>
                                                 <small class="text-muted">
                                                     Min:
-                                                    {{ number_format((float) data_get($stockItem, 'minStock', 0), 2) }}
-                                                    {{ data_get($stockItem, 'unit', 'Unit') }}
+                                                    <?php echo e(number_format((float) data_get($stockItem, 'minStock', 0), 2)); ?>
+
+                                                    <?php echo e(data_get($stockItem, 'unit', 'Unit')); ?>
+
                                                 </small>
                                             </div>
                                         </div>
                                     </a>
-                                @empty
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                     <div class="dropdown-item text-muted">
                                         Tiada bahan yang mencecah stok minimum.
                                     </div>
-                                @endforelse
+                                <?php endif; ?>
                             </div>
                             <div class="dropdown-footer">
                                 <a href="#" class="text-primary" data-page="bahan-mentah">Lihat inventori</a>
@@ -316,10 +320,10 @@
                     <!-- User Menu -->
                     <div class="dropdown user-menu">
                         <button class="btn user-btn" type="button" data-bs-toggle="dropdown">
-                            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()?->name ?? 'Pengarah HQ') }}&background=1a5632&color=fff&size=40"
-                                alt="{{ auth()->user()?->name ?? 'Pengarah HQ' }}" class="user-img">
+                            <img src="https://ui-avatars.com/api/?name=<?php echo e(urlencode(auth()->user()?->name ?? 'Pengarah HQ')); ?>&background=1a5632&color=fff&size=40"
+                                alt="<?php echo e(auth()->user()?->name ?? 'Pengarah HQ'); ?>" class="user-img">
                             <span
-                                class="user-name d-none d-md-inline">{{ auth()->user()?->name ?? 'Pengarah HQ' }}</span>
+                                class="user-name d-none d-md-inline"><?php echo e(auth()->user()?->name ?? 'Pengarah HQ'); ?></span>
                             <i class="fas fa-chevron-down ms-2"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
@@ -349,18 +353,18 @@
             <div class="content-area">
                 <!-- Dashboard Page -->
                 <div class="page-content active" id="home-content">
-                    @include('partials.low_stock_notification', [
+                    <?php echo $__env->make('partials.low_stock_notification', [
                         'lowStockItems' => $lowStockItems ?? collect(),
                         'lowStockCount' => $lowStockCount ?? null,
                         'inventoryPage' => 'bahan-mentah',
-                    ])
+                    ], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
                     <!-- Welcome Banner -->
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="welcome-banner">
                                 <div class="banner-content">
-                                    <h2>Selamat Datang, {{ auth()->user()?->name ?? 'Pengarah HQ' }}</h2>
+                                    <h2>Selamat Datang, <?php echo e(auth()->user()?->name ?? 'Pengarah HQ'); ?></h2>
                                     <p class="mb-0">Sistem Pengurusan Penjara terintegrasi untuk pengurusan banduan,
                                         institusi, dan operasi harian.</p>
                                 </div>
@@ -384,7 +388,7 @@
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
                                             <h6 class="mb-2">Jumlah Pembekal</h6>
-                                            <h2 class="mb-0" id="total-inmates">{{ $totalSuppliers ?? 0 }}</h2>
+                                            <h2 class="mb-0" id="total-inmates"><?php echo e($totalSuppliers ?? 0); ?></h2>
                                             <div class="stat-change up">
                                                 <i class="fas fa-arrow-up me-1"></i>
                                                 <span>5.2% dari bulan lepas</span>
@@ -407,7 +411,7 @@
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
                                             <h6 class="mb-2">Jumlah Institusi</h6>
-                                            <h2 class="mb-0" id="total-institutions">{{ $totalInstitutions ?? 0 }}</h2>
+                                            <h2 class="mb-0" id="total-institutions"><?php echo e($totalInstitutions ?? 0); ?></h2>
                                             <div class="stat-change up">
                                                 <i class="fas fa-arrow-up me-1"></i>
                                                 <span>2 baru bulan ini</span>
@@ -430,7 +434,7 @@
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
                                             <h6 class="mb-2">Senarai Item</h6>
-                                            <h2 class="mb-0" id="total-materials">{{ $totalItems ?? 0 }}</h2>
+                                            <h2 class="mb-0" id="total-materials"><?php echo e($totalItems ?? 0); ?></h2>
                                             <div class="stat-change down">
                                                 <i class="fas fa-arrow-down me-1"></i>
                                                 <span>3.2% dari bulan lepas</span>
@@ -453,7 +457,7 @@
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
                                             <h6 class="mb-2">Menunggu Pengesahan</h6>
-                                            <h2 class="mb-0" id="pending-orders">{{ $pendingApprovals ?? 0 }}</h2>
+                                            <h2 class="mb-0" id="pending-orders"><?php echo e($pendingApprovals ?? 0); ?></h2>
                                             <div class="stat-change up">
                                                 <i class="fas fa-arrow-up me-1"></i>
                                                 <span>8 permintaan baru</span>
@@ -843,9 +847,9 @@
                                     </label>
                                     <select id="indenInstitusiFilter" class="form-select">
                                         <option value="">-- Semua Institusi --</option>
-                                        @foreach($institutions as $inst)
-                                            <option value="{{ $inst->id }}">{{ $inst->name }}</option>
-                                        @endforeach
+                                        <?php $__currentLoopData = $institutions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inst): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($inst->id); ?>"><?php echo e($inst->name); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 </div>
                                 <div class="col-lg-3 col-md-6">
@@ -2013,7 +2017,7 @@
                         <div class="card text-center h-100">
                             <div class="card-body">
                                 <div class="position-relative d-inline-block mb-3">
-                                    <img src="{{ auth()->user()?->image ? asset('storage/' . auth()->user()->image) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()?->name ?? 'Pengarah HQ') . '&background=1a5632&color=fff&size=150' }}"
+                                    <img src="<?php echo e(auth()->user()?->image ? asset('storage/' . auth()->user()->image) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()?->name ?? 'Pengarah HQ') . '&background=1a5632&color=fff&size=150'); ?>"
                                         alt="Profile Picture" class="rounded-circle img-thumbnail" id="profileAvatar"
                                         style="width: 150px; height: 150px; object-fit: cover;">
                                     <button
@@ -2023,7 +2027,8 @@
                                     </button>
                                     <input type="file" id="avatarInput" style="display: none;" accept="image/*">
                                 </div>
-                                <h4 class="mb-0" id="profileNameDisplay">{{ auth()->user()?->name ?? 'Pengarah HQ' }}
+                                <h4 class="mb-0" id="profileNameDisplay"><?php echo e(auth()->user()?->name ?? 'Pengarah HQ'); ?>
+
                                 </h4>
                                 <p class="text-muted">Pentadbir Sistem</p>
                                 <div class="d-grid gap-2">
@@ -2063,19 +2068,18 @@
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
                                         <span><i class="fas fa-envelope me-2 text-primary"></i>Email</span>
-                                        <span class="fw-medium">{{ auth()->user()?->email ?? 'pengarah.hq@gmail.com'
-                                            }}</span>
+                                        <span class="fw-medium"><?php echo e(auth()->user()?->email ?? 'pengarah.hq@gmail.com'); ?></span>
                                     </li>
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
                                         <span><i class="fas fa-phone me-2 text-primary"></i>No. Telefon</span>
-                                        <span class="fw-medium">{{ auth()->user()?->phone_number ?? '-' }}</span>
+                                        <span class="fw-medium"><?php echo e(auth()->user()?->phone_number ?? '-'); ?></span>
                                     </li>
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
                                         <span><i class="fas fa-building me-2 text-primary"></i>Institusi</span>
                                         <span
-                                            class="fw-medium" id="displayProfileInstitution">{{ auth()->user()?->institution?->name ?? 'Ibu Pejabat Penjara' }}</span>
+                                            class="fw-medium" id="displayProfileInstitution"><?php echo e(auth()->user()?->institution?->name ?? 'Ibu Pejabat Penjara'); ?></span>
                                     </li>
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
@@ -2096,23 +2100,23 @@
                                     id="btnCancelEdit">Batal</button>
                             </div>
                             <div class="card-body">
-                                <form id="formUpdateProfile" action="{{ route('profile.update') }}" method="POST">
-                                    @csrf
+                                <form id="formUpdateProfile" action="<?php echo e(route('profile.update')); ?>" method="POST">
+                                    <?php echo csrf_field(); ?>
                                     <div class="row mb-3">
                                         <div class="col-md-4">
                                             <label class="form-label">Nama Penuh</label>
                                             <input type="text" class="form-control" name="name"
-                                                value="{{ auth()->user()?->name }}" id="inputProfileName" required>
+                                                value="<?php echo e(auth()->user()?->name); ?>" id="inputProfileName" required>
                                         </div>
                                         <div class="col-md-4">
                                             <label class="form-label">Email</label>
                                             <input type="email" class="form-control" name="email"
-                                                value="{{ auth()->user()?->email }}" id="inputProfileEmail" required>
+                                                value="<?php echo e(auth()->user()?->email); ?>" id="inputProfileEmail" required>
                                         </div>
                                         <div class="col-md-4">
                                             <label class="form-label">No. Telefon</label>
                                             <input type="text" class="form-control" name="phone_number"
-                                                value="{{ auth()->user()?->phone_number }}" id="inputProfilePhone">
+                                                value="<?php echo e(auth()->user()?->phone_number); ?>" id="inputProfilePhone">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -2120,11 +2124,12 @@
                                             <label class="form-label">Institusi</label>
                                             <select class="form-select" name="institution_id" id="inputProfileInstitution">
                                                 <option value="">Pilih Institusi</option>
-                                                @foreach($institutions as $inst)
-                                                    <option value="{{ $inst->id }}" {{ (auth()->user()->institution_id == $inst->id) ? 'selected' : '' }}>
-                                                        {{ $inst->name }}
+                                                <?php $__currentLoopData = $institutions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inst): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($inst->id); ?>" <?php echo e((auth()->user()->institution_id == $inst->id) ? 'selected' : ''); ?>>
+                                                        <?php echo e($inst->name); ?>
+
                                                     </option>
-                                                @endforeach
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </select>
                                         </div>
                                     </div>
@@ -2151,9 +2156,9 @@
                                     Laluan</h5>
                             </div>
                             <div class="card-body">
-                                <form id="formChangePasswordStandalone" action="{{ route('profile.password') }}"
+                                <form id="formChangePasswordStandalone" action="<?php echo e(route('profile.password')); ?>"
                                     method="POST">
-                                    @csrf
+                                    <?php echo csrf_field(); ?>
                                     <div class="mb-3">
                                         <label class="form-label">Kata Laluan Semasa</label>
                                         <div class="input-group">
@@ -2667,8 +2672,8 @@
                     <h5 class="modal-title">Log Keluar</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form action="{{ route('logout') }}" method="POST" id="logoutForm">
-                    @csrf
+                <form action="<?php echo e(route('logout')); ?>" method="POST" id="logoutForm">
+                    <?php echo csrf_field(); ?>
                     <div class="modal-body">
                         <p>Adakah anda pasti ingin log keluar dari sistem?</p>
                     </div>
@@ -2813,9 +2818,9 @@
                                 <label class="form-label">Unit (UOM)</label>
                                 <select class="form-select" name="uom_id" id="item_uom_select" required>
                                     <option value="">Pilih Unit</option>
-                                    @foreach($uoms as $uom)
-                                        <option value="{{ $uom->id }}">{{ $uom->code }}</option>
-                                    @endforeach
+                                    <?php $__currentLoopData = $uoms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $uom): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($uom->id); ?>"><?php echo e($uom->code); ?></option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
                             </div>
                             <div class="col-md-4">
@@ -2908,25 +2913,25 @@
     <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
 
     <!-- Custom JavaScript -->
-    <script src="{{ asset('data.js') }}"></script>
+    <script src="<?php echo e(asset('data.js')); ?>"></script>
     <script>
         // Override hardcoded institutions with database data
         if (window.prisonData) {
-            window.prisonData.institutions = @json($institutions ?? []);
+            window.prisonData.institutions = <?php echo json_encode($institutions ?? [], 15, 512) ?>;
             
-            @if(isset($rawMaterials))
+            <?php if(isset($rawMaterials)): ?>
             // Override rawMaterials with database items for charts and materials table
-            window.prisonData.rawMaterials = @json($rawMaterials);
-            @endif
+            window.prisonData.rawMaterials = <?php echo json_encode($rawMaterials, 15, 512) ?>;
+            <?php endif; ?>
 
 
-            @if(isset($suppliers))
-            window.prisonData.suppliers = @json($suppliers);
-            @endif
+            <?php if(isset($suppliers)): ?>
+            window.prisonData.suppliers = <?php echo json_encode($suppliers, 15, 512) ?>;
+            <?php endif; ?>
 
-            @if(isset($positions))
-            window.prisonData.positions = @json($positions);
-            @endif
+            <?php if(isset($positions)): ?>
+            window.prisonData.positions = <?php echo json_encode($positions, 15, 512) ?>;
+            <?php endif; ?>
         } // end if (window.prisonData)
 
         // ===== Global Search Logic for HQ Dashboard (SPA) =====
@@ -3249,9 +3254,10 @@
 
         // ===== END INDEN PAGE LOGIC =====
     </script>
-    <script src="{{ asset('script.js') }}"></script>
-    <script src="{{ asset('js/table-download.js') }}"></script>
-    <script src="{{ asset('js/session-timeout.js') }}"></script>
+    <script src="<?php echo e(asset('script.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/table-download.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/session-timeout.js')); ?>"></script>
 </body>
 
 </html>
+<?php /**PATH C:\laragon\www\MySIPMa\resources\views/admin_dashboard.blade.php ENDPATH**/ ?>
