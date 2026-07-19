@@ -1,4 +1,4 @@
-﻿@php
+@php
     $activePage = $activePage ?? 'dashboard';
     $pageTitles = [
         'dashboard' => 'Papan Pemuka',
@@ -167,7 +167,7 @@
                                             </div>
                                             <div class="flex-grow-1">
                                                 <p class="mb-0 small text-body text-truncate" style="max-width: 240px;">
-                                                    Penilaian prestasi bagi pembekal <strong>{{ $pendingEval->supplier?->company_name }}</strong> memerlukan pengesahan anda.
+                                                    Penilaian bagi pembekal <strong>{{ $pendingEval->supplier?->company_name }}</strong> (No. Inden: {{ $pendingEval->order?->order_number }}) memerlukan pengesahan anda.
                                                 </p>
                                                 <small class="text-muted" style="font-size: 10px;">{{ $pendingEval->created_at->diffForHumans() }}</small>
                                             </div>
@@ -240,7 +240,7 @@
                             <div class="card p-4 h-100">
                                 <h6 class="text-uppercase text-muted mb-3">Jumlah Pesanan</h6>
                                 <h3 class="mb-0">{{ $orders->count() }}</h3>
-                                <div class="small text-muted mt-2">Jumlah Item: <strong>{{ number_format($inventoryTotals['total_quantity'] ?? 0, 2) }}</strong> &nbsp;â€¢&nbsp; Nilai: <strong>RM {{ number_format($inventoryTotals['total_value'] ?? 0, 2) }}</strong></div>
+                                <div class="small text-muted mt-2">Jumlah Item: <strong>{{ number_format($inventoryTotals['total_quantity'] ?? 0, 2) }}</strong> &nbsp;•&nbsp; Nilai: <strong>RM {{ number_format($inventoryTotals['total_value'] ?? 0, 2) }}</strong></div>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
@@ -257,7 +257,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="text-uppercase text-muted mb-1">Stok Kritikal</h6>
-                                        <h4 id="criticalStockCount" class="mb-0">â€”</h4>
+                                        <h4 id="criticalStockCount" class="mb-0">—</h4>
                                         <small class="text-muted">Item yang mencecah atau di bawah minimum</small>
                                     </div>
                                     <div>
@@ -761,6 +761,7 @@
                                                 <thead>
                                                     <tr>
                                                         <th>Tarikh</th>
+                                                        <th>No. Inden</th>
                                                         <th>Pembekal</th>
                                                         <th>Penilai</th>
                                                         <th class="text-center">Skor (%)</th>
@@ -773,6 +774,7 @@
                                                         @foreach($pendingEvaluations as $pendingEval)
                                                             <tr>
                                                                 <td>{{ $pendingEval->evaluation_date->format('d/m/Y') }}</td>
+                                                                <td>{{ $pendingEval->order?->order_number }}</td>
                                                                 <td>{{ $pendingEval->supplier?->company_name }}</td>
                                                                 <td>{{ $pendingEval->evaluator_name }}</td>
                                                                 <td class="text-center fw-bold">{{ round($pendingEval->percentage, 1) }}%</td>
@@ -799,7 +801,7 @@
                                                         @endforeach
                                                     @else
                                                         <tr>
-                                                            <td colspan="6" class="text-center py-4 text-muted">
+                                                            <td colspan="7" class="text-center py-4 text-muted">
                                                                 Tiada rekod penilaian menunggu pengesahan.
                                                             </td>
                                                         </tr>
@@ -879,6 +881,7 @@
                                                 <thead>
                                                     <tr>
                                                         <th>Tarikh</th>
+                                                        <th>No. Inden</th>
                                                         <th>Pembekal</th>
                                                         <th>Penilai</th>
                                                         <th class="text-center">Skor (%)</th>
@@ -889,7 +892,7 @@
                                                 </thead>
                                                 <tbody id="historyTableBody" class="text-body">
                                                     <tr>
-                                                        <td colspan="7" class="text-center py-4 text-muted">
+                                                        <td colspan="8" class="text-center py-4 text-muted">
                                                             <div class="spinner-border spinner-border-sm me-2" role="status"></div>
                                                             Memuat data sejarah penilaian...
                                                         </td>
@@ -1142,144 +1145,6 @@
                     </div>
                 </div>
             </div>
-            <!-- View Evaluation Modal -->
-            <div class="modal fade" id="viewEvaluationModal" tabindex="-1" aria-labelledby="viewEvaluationModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header bg-info text-white">
-                            <h5 class="modal-title fw-bold" id="viewEvaluationModalLabel"><i class="fas fa-star me-2"></i>Butiran Penilaian Prestasi Pembekal</h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <!-- Summary Info -->
-                            <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <div class="small text-muted">Pembekal</div>
-                                    <div class="fw-bold fs-6" id="viewEvalSupplierName">-</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="small text-muted">Institusi</div>
-                                    <div class="fw-bold fs-6" id="viewEvalInstitutionName">-</div>
-                                </div>
-                            </div>
-                            <div class="row mb-4">
-                                <div class="col-md-4">
-                                    <div class="small text-muted">Tarikh Penilaian</div>
-                                    <div class="fw-bold" id="viewEvalDate">-</div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="small text-muted">Penilai</div>
-                                    <div class="fw-bold" id="viewEvalEvaluator">-</div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="small text-muted">Status</div>
-                                    <div class="form-control fw-bold text-center" id="viewEvalStatus">-</div>
-                                </div>
-                            </div>
-
-                            <!-- Criteria Items & Scores Table -->
-                            <h6 class="fw-bold text-muted mb-2"><i class="fas fa-list-check me-1"></i>Item & Skor Penilaian</h6>
-                            <div class="table-responsive mb-4">
-                                <table class="table table-bordered align-middle text-center" style="border-radius:8px; overflow:hidden;">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th class="text-start ps-3">Kriteria Penilaian</th>
-                                            <th style="width:120px;">Skor</th>
-                                            <th style="width:120px;">Daripada</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="text-start ps-3">
-                                                <div class="fw-bold">1. Kuantiti Bekalan</div>
-                                                <div class="small text-muted">Mencukupi dan mengikut pesanan</div>
-                                            </td>
-                                            <td class="fw-bold fs-5 text-primary" id="viewEvalQty">-</td>
-                                            <td class="text-muted">7</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-start ps-3">
-                                                <div class="fw-bold">2. Masa Penghantaran</div>
-                                                <div class="small text-muted">Menepati masa yang ditetapkan</div>
-                                            </td>
-                                            <td class="fw-bold fs-5 text-primary" id="viewEvalDelivery">-</td>
-                                            <td class="text-muted">7</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-start ps-3">
-                                                <div class="fw-bold">3. Harga Bekalan</div>
-                                                <div class="small text-muted">Berpatutan dan kompetitif</div>
-                                            </td>
-                                            <td class="fw-bold fs-5 text-primary" id="viewEvalPrice">-</td>
-                                            <td class="text-muted">7</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-start ps-3">
-                                                <div class="fw-bold">4. Kualiti Bekalan</div>
-                                                <div class="small text-muted">Memenuhi piawaian dan spesifikasi</div>
-                                            </td>
-                                            <td class="fw-bold fs-5 text-primary" id="viewEvalQuality">-</td>
-                                            <td class="text-muted">7</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-start ps-3">
-                                                <div class="fw-bold">5. Kerjasama</div>
-                                                <div class="small text-muted">Responsif dan mudah dihubungi</div>
-                                            </td>
-                                            <td class="fw-bold fs-5 text-primary" id="viewEvalCoop">-</td>
-                                            <td class="text-muted">7</td>
-                                        </tr>
-                                    </tbody>
-                                    <tfoot class="table-light fw-bold">
-                                        <tr>
-                                            <td class="text-start ps-3">Jumlah Skor</td>
-                                            <td class="fs-5 text-dark" id="viewEvalTotalScore">-</td>
-                                            <td class="text-muted">35</td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-
-                            <!-- Rating & Percentage -->
-                            <div class="row mb-4 text-center">
-                                <div class="col-md-6">
-                                    <div class="small text-muted mb-1">Peratusan</div>
-                                    <div class="fw-bold fs-3 text-primary" id="viewEvalPercentage">-</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="small text-muted mb-1">Penilaian Prestasi</div>
-                                    <div>
-                                        <span class="badge rounded-pill px-4 py-2 fs-6 shadow-sm" id="viewEvalRatingBadge">-</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Remarks -->
-                            <div class="mb-4">
-                                <div class="small text-muted fw-bold mb-1">Ulasan / Catatan:</div>
-                                <div class="p-3 bg-light rounded" id="viewEvalRemarks" style="min-height:50px;">-</div>
-                            </div>
-
-                            <!-- Confirmation Checkbox (for pending verification) -->
-                            <div id="viewEvalConfirmSection" class="alert alert-warning border-warning d-none">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="viewEvalConfirmCheck">
-                                    <label class="form-check-label fw-bold" for="viewEvalConfirmCheck">
-                                        Saya mengesahkan bahawa penilaian prestasi ini telah disemak dan adalah tepat mengikut rekod yang ada.
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times me-1"></i>Tutup</button>
-                            <button type="button" class="btn btn-success d-none" id="viewEvalVerifyBtn">
-                                <i class="fas fa-check-circle me-1"></i>Sahkan Penilaian
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Footer -->
             <footer class="footer">
                 <div class="container-fluid">
@@ -1493,6 +1358,7 @@
                         html += `
                             <tr>
                                 <td>${evalDate}</td>
+                                <td class="fw-bold">${eval.order ? eval.order.order_number : '-'}</td>
                                 <td>${eval.supplier ? eval.supplier.company_name : '-'}</td>
                                 <td>${eval.evaluator_name}</td>
                                 <td class="text-center fw-bold">${eval.percentage}%</td>
@@ -1522,7 +1388,7 @@
                 } else {
                     tableBody.innerHTML = `
                         <tr>
-                            <td colspan="7" class="text-center py-4 text-muted">
+                            <td colspan="8" class="text-center py-4 text-muted">
                                 Tiada rekod penilaian prestasi ditemui.
                             </td>
                         </tr>
@@ -1532,7 +1398,7 @@
                 console.error('Error loading evaluations:', err);
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="7" class="text-center py-4 text-danger">
+                        <td colspan="8" class="text-center py-4 text-danger">
                             Gagal memuatkan rekod sejarah penilaian.
                         </td>
                     </tr>
@@ -1807,7 +1673,7 @@
                         }
                     })
                     .catch(() => {
-                        countEl.textContent = 'â€”';
+                        countEl.textContent = '—';
                         window.criticalStockItems = [];
                     });
 

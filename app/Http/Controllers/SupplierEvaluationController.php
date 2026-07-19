@@ -33,7 +33,7 @@ class SupplierEvaluationController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'order_id' => 'nullable|exists:orders,id',
+            'order_id' => 'required|exists:orders,id',
             'supplier_id' => 'required|exists:suppliers,id',
             'institution_id' => 'required|exists:institutions,id',
             'evaluator_name' => 'required|string|max:255',
