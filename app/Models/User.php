@@ -79,8 +79,8 @@ class User extends Authenticatable
 
         return match ($this->position?->code) {
             'PP' => in_array($feature, ['dashboard', 'senarai_inden', 'pengesahan_inden']),
-            'PR' => in_array($feature, ['dashboard', 'senarai_inden', 'penerimaan_inden']),
-            'PS' => in_array($feature, ['dashboard', 'senarai_inden', 'borang_inden']),
+            'PR' => in_array($feature, ['dashboard', 'senarai_inden', 'penerimaan_inden', 'penilaian_prestasi']),
+            'PS' => in_array($feature, ['dashboard', 'senarai_inden', 'borang_inden', 'penilaian_prestasi']),
             default => false,
         };
     }

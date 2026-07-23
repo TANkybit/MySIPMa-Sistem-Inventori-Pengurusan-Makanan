@@ -154,6 +154,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/evaluations/monthly', [\App\Http\Controllers\SupplierEvaluationController::class, 'getMonthlyData'])->name('evaluations.monthly');
         Route::post('/evaluations/{id}/verify', [\App\Http\Controllers\SupplierEvaluationController::class, 'verify'])->name('evaluations.verify');
         Route::get('/evaluations/{id}', [\App\Http\Controllers\SupplierEvaluationController::class, 'show'])->name('evaluations.show');
+        Route::get('/user/penilaian-prestasi', [DashboardController::class, 'userPenilaianPrestasi'])->name('user.penilaian_prestasi');
     });
 
     // --- User routes (per-position access) ---

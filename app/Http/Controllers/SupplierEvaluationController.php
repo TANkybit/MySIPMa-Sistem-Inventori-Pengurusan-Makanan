@@ -61,19 +61,28 @@ class SupplierEvaluationController extends Controller
             $rating = 'Sederhana';
         }
 
+        $user = Auth::user();
+        $isStaff = !in_array($user->landingRouteName(), ['pengarah.institusi.dashboard', 'pengarah.negeri.dashboard', 'admin.dashboard'], true);
+        $status = $isStaff ? 'Verified' : 'Pending';
+        $isVerified = $isStaff ? true : false;
+
         $evaluation = SupplierEvaluation::create(array_merge($validated, [
             'total_score' => $totalScore,
             'percentage' => $percentage,
             'performance_rating' => $rating,
-            'status' => 'Pending',
-            'is_verified' => false,
-            'created_by' => Auth::id(),
-            'updated_by' => Auth::id(),
+            'status' => $status,
+            'is_verified' => $isVerified,
+            'created_by' => $user->id,
+            'updated_by' => $user->id,
         ]));
+
+        $message = $isStaff
+            ? 'Penilaian prestasi pembekal berjaya dihantar.'
+            : 'Penilaian prestasi berjaya disimpan sebagai menunggu pengesahan.';
 
         return response()->json([
             'success' => true,
-            'message' => 'Penilaian prestasi berjaya disimpan sebagai menunggu pengesahan.',
+            'message' => $message,
             'data' => $evaluation
         ]);
     }

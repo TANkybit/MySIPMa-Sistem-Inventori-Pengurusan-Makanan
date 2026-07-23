@@ -7,20 +7,20 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Kemaskini</title>
 
-  <link href="{{ url('frontend/assets/img/LOGOMYSIPMA.png') }}" rel="icon">
+  <link href="<?php echo e(url('frontend/assets/img/LOGOMYSIPMA.png')); ?>" rel="icon">
 
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-  <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/vendor/aos/aos.css') }}" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/aos/aos.css')); ?>" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-  <link href="{{ asset('frontend/Nexa/assets/css/main2.css') }}" rel="stylesheet">
-  <link href="{{ asset('css/user-theme.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/css/index.css') }}" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/css/main2.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('css/user-theme.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/css/index.css')); ?>" rel="stylesheet">
 
   <style>
     .logo-glow {
@@ -689,71 +689,73 @@
     style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
     <div class="container d-flex align-items-center">
       <a href="#" class="logo-glow d-flex align-items-center" id="logoLogoutTrigger">
-        <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" style="height: 55px; width: auto;"
+        <img src="<?php echo e(asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png')); ?>" style="height: 55px; width: auto;"
           alt="MySIPMa logo">
       </a>
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          @if(Auth::user()->role?->role_name === 'admin hq')
-          <li><a href="{{ route('admin.dashboard') }}"
-              class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Papan Pemuka</a></li>
-          @else
-          <li><a href="{{ route('user.dashboard') }}"
-              class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Papan Pemuka</a></li>
-          @endif
-          <li><a href="{{ route('user.senarai.inden') }}"
-              class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
-          <li><a href="{{ route('user.inventori') }}"
-              class="{{ request()->routeIs('user.inventori') ? 'active' : '' }}">Inventori</a></li>
-          @if(Auth::user()->hasPermission('pengesahan_inden'))
-          <li><a href="{{ route('user.pengesahan.inden') }}"
-              class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
-          @endif
-          @if(Auth::user()->hasPermission('borang_inden'))
-          <li><a href="{{ route('borang.inden') }}"
-               class="{{ request()->routeIs('borang.inden*') ? 'active' : '' }}">Borang Inden</a></li>
-          @endif
-          @if(Auth::user()->hasPermission('penerimaan_inden'))
-          <li><a href="{{ route('borang.penerimaan') }}" class="{{ request()->routeIs('borang.penerimaan') ? 'active' : '' }}">Penerimaan</a></li>
-          @endif
-          @if(Auth::user()->hasPermission('penilaian_prestasi'))
-          <li><a href="{{ route('user.penilaian_prestasi') }}" class="{{ request()->routeIs('user.penilaian_prestasi') ? 'active' : '' }}">Penilaian Prestasi</a></li>
-          @endif
-          <li class="d-xl-none"><a href="{{ route('profile') }}" class="{{ request()->routeIs('profile') ? 'active' : '' }}">Profil</a></li>
+          <?php if(Auth::user()->role?->role_name === 'admin hq'): ?>
+          <li><a href="<?php echo e(route('admin.dashboard')); ?>"
+              class="<?php echo e(request()->routeIs('admin.dashboard') ? 'active' : ''); ?>">Papan Pemuka</a></li>
+          <?php else: ?>
+          <li><a href="<?php echo e(route('user.dashboard')); ?>"
+              class="<?php echo e(request()->routeIs('user.dashboard') ? 'active' : ''); ?>">Papan Pemuka</a></li>
+          <?php endif; ?>
+          <li><a href="<?php echo e(route('user.senarai.inden')); ?>"
+              class="<?php echo e(request()->routeIs('user.senarai.inden') ? 'active' : ''); ?>">Senarai Inden</a></li>
+          <li><a href="<?php echo e(route('user.inventori')); ?>"
+              class="<?php echo e(request()->routeIs('user.inventori') ? 'active' : ''); ?>">Inventori</a></li>
+          <?php if(Auth::user()->hasPermission('pengesahan_inden')): ?>
+          <li><a href="<?php echo e(route('user.pengesahan.inden')); ?>"
+              class="<?php echo e(request()->routeIs('user.pengesahan.inden') ? 'active' : ''); ?>">Pengesahan Inden</a></li>
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('borang_inden')): ?>
+          <li><a href="<?php echo e(route('borang.inden')); ?>"
+               class="<?php echo e(request()->routeIs('borang.inden*') ? 'active' : ''); ?>">Borang Inden</a></li>
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('penerimaan_inden')): ?>
+          <li><a href="<?php echo e(route('borang.penerimaan')); ?>" class="<?php echo e(request()->routeIs('borang.penerimaan') ? 'active' : ''); ?>">Penerimaan</a></li>
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('penilaian_prestasi')): ?>
+          <li><a href="<?php echo e(route('user.penilaian_prestasi')); ?>" class="<?php echo e(request()->routeIs('user.penilaian_prestasi') ? 'active' : ''); ?>">Penilaian Prestasi</a></li>
+          <?php endif; ?>
+          <li class="d-xl-none"><a href="<?php echo e(route('profile')); ?>" class="<?php echo e(request()->routeIs('profile') ? 'active' : ''); ?>">Profil</a></li>
           <li class="d-xl-none"><a href="#" id="navLogoutBtn" class="text-danger">Log Keluar</a></li>
           </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
       <div class="d-none d-xl-flex align-items-center gap-3">
-        @if(Auth::user()->hasPermission('pengesahan_inden'))
-        <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3"
+        <?php if(Auth::user()->hasPermission('pengesahan_inden')): ?>
+        <a href="<?php echo e(route('user.pengesahan.inden')); ?>" class="position-relative text-white fs-5 me-3"
           style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'"
           onmouseout="this.style.color=''">
           <i class="bi bi-bell-fill"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
             style="font-size: 0.65rem;">
-            {{ $pendingApprovals ?? 0 }}
+            <?php echo e($pendingApprovals ?? 0); ?>
+
             <span class="visually-hidden">Inden belum disah</span>
           </span>
         </a>
-        @endif
-        @if(Auth::user()->hasPermission('penerimaan_inden'))
-        <a href="{{ route('borang.penerimaan') }}" class="position-relative text-white fs-5 me-3"
+        <?php endif; ?>
+        <?php if(Auth::user()->hasPermission('penerimaan_inden')): ?>
+        <a href="<?php echo e(route('borang.penerimaan')); ?>" class="position-relative text-white fs-5 me-3"
           style="transition: color 0.3s;" onmouseover="this.style.color='#f59e0b'"
           onmouseout="this.style.color=''">
           <i class="bi bi-truck"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
             style="font-size: 0.65rem;">
-            {{ $pendingPenerimaan ?? 0 }}
+            <?php echo e($pendingPenerimaan ?? 0); ?>
+
             <span class="visually-hidden">Penerimaan belum diproses</span>
           </span>
         </a>
-        @endif
+        <?php endif; ?>
         <button class="btn btn-icon" id="themeToggle" style="background:none;border:none;color:var(--text);font-size:1.2rem;padding:4px 8px"><i class="bi bi-moon-fill"></i></button>
-        <a href="{{ route('profile') }}" class="profile-nav-link active text-decoration-none" style="transition: color 0.3s;"><i
-            class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}</a>
+        <a href="<?php echo e(route('profile')); ?>" class="profile-nav-link active text-decoration-none" style="transition: color 0.3s;"><i
+            class="bi bi-person-circle me-2"></i><?php echo e(Auth::user()->name ?? 'Pengguna'); ?></a>
         <button type="button" class="btn btn-custom btn-logout btn-sm px-3 py-2" id="desktopLogoutBtn"><i
               class="bi bi-box-arrow-right me-2"></i>Log Keluar</button>
       </div>
@@ -800,9 +802,9 @@
                 <label>Institusi</label>
                 <select id="institusiInput" required>
                   <option value="">-- Pilih Institusi --</option>
-                  @foreach($institutions as $inst)
-                    <option value="{{ $inst->id }}">{{ $inst->name }}</option>
-                  @endforeach
+                  <?php $__currentLoopData = $institutions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inst): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($inst->id); ?>"><?php echo e($inst->name); ?></option>
+                  <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
               </div>
               <div class="form-group">
@@ -909,7 +911,7 @@
 
     // Load existing profile data on page load
     function loadProfileData() {
-      fetch('{{ route("profile.me") }}')
+      fetch('<?php echo e(route("profile.me")); ?>')
         .then(response => response.json())
         .then(data => {
           document.getElementById('namaInput').value = data.name || '';
@@ -1082,13 +1084,13 @@
       if (avatarFile) {
         const formData = new FormData();
         formData.append('avatar', avatarFile);
-        formData.append('_token', '{{ csrf_token() }}');
+        formData.append('_token', '<?php echo e(csrf_token()); ?>');
 
-        fetch('{{ route("profile.avatar") }}', {
+        fetch('<?php echo e(route("profile.avatar")); ?>', {
           method: 'POST',
           headers: {
             'Accept': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
           },
           body: formData
         })
@@ -1120,12 +1122,12 @@
 
     function updateProfileInfo(nama, institusi_id, telefon) {
       const email = document.getElementById('emailInput').value.trim();
-      fetch('{{ route("profile.update") }}', {
+      fetch('<?php echo e(route("profile.update")); ?>', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
         },
         body: JSON.stringify({
           name: nama,
@@ -1146,7 +1148,7 @@
           
           // Redirect to profile view page after 1 second
           setTimeout(function() {
-            window.location.href = "{{ route('profile') }}";
+            window.location.href = "<?php echo e(route('profile')); ?>";
           }, 1000);
         } else {
           showStatus(data.message || 'Gagal mengemas kini profil.', 'error');
@@ -1186,12 +1188,12 @@
       }
 
       // Send password change request to server
-      fetch('{{ route("profile.password") }}', {
+      fetch('<?php echo e(route("profile.password")); ?>', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
         },
         body: JSON.stringify({
           current_password: oldPass,
@@ -1278,20 +1280,20 @@
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
   <div id="preloader"></div>
 
-  <script src="{{ asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/vendor/php-email-form/validate.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/vendor/aos/aos.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/vendor/glightbox/js/glightbox.min.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/vendor/purecounter/purecounter_vanilla.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/vendor/swiper/swiper-bundle.min.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/vendor/imagesloaded/imagesloaded.pkgd.min.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/vendor/isotope-layout/isotope.pkgd.min.js') }}"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/php-email-form/validate.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/aos/aos.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/glightbox/js/glightbox.min.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/purecounter/purecounter_vanilla.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/swiper/swiper-bundle.min.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/imagesloaded/imagesloaded.pkgd.min.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/isotope-layout/isotope.pkgd.min.js')); ?>"></script>
 
-  <script src="{{ asset('frontend/Nexa/assets/js/particles.min.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/js/main.js') }}"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/js/particles.min.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/js/main.js')); ?>"></script>
 
-    <script src="{{ asset('js/session-timeout.js') }}"></script>
-  <script src="{{ asset('js/user-theme.js') }}"></script>
+    <script src="<?php echo e(asset('js/session-timeout.js')); ?>"></script>
+  <script src="<?php echo e(asset('js/user-theme.js')); ?>"></script>
 
   <!-- Logout confirmation modal -->
   <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel" aria-hidden="true">
@@ -1306,8 +1308,8 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-cancel btn-sm px-3" data-bs-dismiss="modal">Batal</button>
-          <form action="{{ route('logout') }}" method="POST" id="logoutForm" class="d-inline">
-            @csrf
+          <form action="<?php echo e(route('logout')); ?>" method="POST" id="logoutForm" class="d-inline">
+            <?php echo csrf_field(); ?>
             <button type="submit" class="btn btn-danger btn-sm px-3"><i class="bi bi-box-arrow-right me-1"></i>Log Keluar</button>
           </form>
         </div>
@@ -1329,3 +1331,4 @@
 </body>
 </html>
 
+<?php /**PATH C:\laragon\www\MySIPMA_2\resources\views/update.blade.php ENDPATH**/ ?>

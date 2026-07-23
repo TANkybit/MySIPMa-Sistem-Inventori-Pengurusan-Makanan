@@ -663,6 +663,18 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function userPenilaianPrestasi()
+    {
+        $instId = Auth::user()->institution_id;
+        $pendingApprovals = $this->pendingApprovalCount($instId);
+        $pendingPenerimaan = Order::where('status', 'In Progress')->where('institution_id', $instId)->count();
+
+        return view('user_penilaian_prestasi', [
+            'pendingApprovals' => $pendingApprovals,
+            'pendingPenerimaan' => $pendingPenerimaan,
+        ]);
+    }
+
     public function pengesahanInden()
     {
         $instId = Auth::user()->institution_id;
