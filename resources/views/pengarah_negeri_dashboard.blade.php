@@ -700,10 +700,14 @@
                                                 <thead>
                                                     <tr>
                                                         <th>Tarikh</th>
-                                                        <th>No. Inden</th>
                                                         <th>Pembekal</th>
                                                         <th>Institusi</th>
                                                         <th>Penilai</th>
+                                                        <th class="text-center" title="Kuantiti Bekalan">Ktiti</th>
+                                                        <th class="text-center" title="Masa Penghantaran">Masa</th>
+                                                        <th class="text-center" title="Harga Bekalan">Harga</th>
+                                                        <th class="text-center" title="Kualiti Bekalan">Kualiti</th>
+                                                        <th class="text-center" title="Kerjasama">Kerjasama</th>
                                                         <th class="text-center">Skor (%)</th>
                                                         <th class="text-center">Rating</th>
                                                         <th class="text-center">Tindakan</th>
@@ -711,7 +715,7 @@
                                                 </thead>
                                                 <tbody id="negeriHistoryTableBody" class="text-body">
                                                     <tr>
-                                                        <td colspan="8" class="text-center py-4 text-muted">
+                                                        <td colspan="12" class="text-center py-4 text-muted">
                                                             <div class="spinner-border spinner-border-sm me-2" role="status"></div>
                                                             Memuat data penilaian...
                                                         </td>
@@ -729,6 +733,77 @@
                 </div>
             </div>
             <!-- Footer -->
+            <!-- View Evaluation Detail Modal (Negeri - read only) -->
+            <div class="modal fade" id="negeriViewEvaluationModal" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title"><i class="fas fa-clipboard-check me-2"></i>Butiran Penilaian Prestasi</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-4">
+                                    <div class="p-3 rounded-3 bg-light h-100">
+                                        <div class="small text-muted mb-1"><i class="fas fa-truck me-1"></i>Pembekal</div>
+                                        <div id="negeriViewSupplierName" class="fw-bold">-</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 rounded-3 bg-light h-100">
+                                        <div class="small text-muted mb-1"><i class="fas fa-calendar me-1"></i>Tarikh Penilaian</div>
+                                        <div id="negeriViewEvalDate" class="fw-bold">-</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 rounded-3 bg-light h-100">
+                                        <div class="small text-muted mb-1"><i class="fas fa-building me-1"></i>Institusi</div>
+                                        <div id="negeriViewInstitutionName" class="fw-bold">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-2"><span class="small text-muted"><i class="fas fa-user me-1"></i>Pegawai Penilai: </span><span id="negeriViewEvaluator" class="fw-semibold">-</span></div>
+
+                            <h6 class="fw-bold mb-3 mt-3 border-bottom pb-2">Pecahan Skor Penilaian</h6>
+                            <div class="mb-4" id="negeriViewCriteriaList"></div>
+
+                            <div class="row g-3 align-items-center mb-3">
+                                <div class="col-md-6">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-body text-center py-3">
+                                            <div class="text-muted small mb-1">Jumlah Skor</div>
+                                            <div class="fw-bold fs-3" id="negeriViewTotalScore">-</div>
+                                            <div class="text-muted small">daripada 35</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-center">
+                                    <div class="text-muted small mb-2">Peratusan &amp; Rating</div>
+                                    <div class="fw-bold fs-2 text-primary mb-1" id="negeriViewPercentage">-</div>
+                                    <span class="badge rounded-pill px-4 py-2 fs-6 shadow-sm" id="negeriViewRatingBadge">-</span>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold small text-muted">Ulasan / Catatan:</label>
+                                    <div id="negeriViewRemarks" class="p-3 bg-light rounded text-muted fst-italic">-</div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="alert alert-success border-0 d-flex align-items-center gap-2 mb-0">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>Penilaian ini telah <strong>disahkan</strong> oleh Pengarah Institusi.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Critical Stock Modal -->
             <div class="modal fade" id="criticalStockModal" tabindex="-1" aria-labelledby="criticalStockModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
@@ -824,39 +899,146 @@
             }
         }
 
+        // Score cell helper
+        function negeriScoreCellHtml(val) {
+            let cls = 'text-danger';
+            if (val >= 6) cls = 'text-success';
+            else if (val >= 4) cls = 'text-warning';
+            return `<span class="fw-bold ${cls}">${val}/7</span>`;
+        }
+
+        // Criteria progress bar row
+        function negeriCriteriaRowHtml(label, val) {
+            const pct = Math.round((val / 7) * 100);
+            let barCls = 'bg-danger';
+            if (val >= 6) barCls = 'bg-success';
+            else if (val >= 4) barCls = 'bg-warning';
+            return `<div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="small fw-semibold">${label}</span>
+                    <span class="small fw-bold">${val} / 7 <span class="text-muted">(${pct}%)</span></span>
+                </div>
+                <div class="progress" style="height:10px;">
+                    <div class="progress-bar ${barCls}" role="progressbar" style="width:${pct}%"></div>
+                </div>
+            </div>`;
+        }
+
+        // Dummy data for Pengarah Negeri view
+        const NEGERI_DUMMY_EVALUATIONS = [
+            {
+                id: 'ndummy-1',
+                evaluation_date: '2026-06-15',
+                supplier: { company_name: 'Syarikat Rempah Sdn. Bhd.' },
+                institution: { name: 'Penjara Kajang' },
+                evaluator_name: 'Pengarah Kajang',
+                criteria_quantity: 6, criteria_delivery: 5, criteria_price: 6, criteria_quality: 7, criteria_cooperation: 5,
+                total_score: 29, percentage: 82.9, performance_rating: 'Cemerlang',
+                remarks: 'Pembekal sangat responsif dan penghantaran tepat pada masanya.'
+            },
+            {
+                id: 'ndummy-2',
+                evaluation_date: '2026-05-20',
+                supplier: { company_name: 'Pembekal Bahan Mentah Utama' },
+                institution: { name: 'Penjara Sungai Buloh' },
+                evaluator_name: 'Pengarah Sungai Buloh',
+                criteria_quantity: 4, criteria_delivery: 4, criteria_price: 5, criteria_quality: 4, criteria_cooperation: 4,
+                total_score: 21, percentage: 60.0, performance_rating: 'Sederhana',
+                remarks: 'Kualiti boleh dipertingkatkan. Terdapat beberapa ketidakpadanan kuantiti.'
+            },
+            {
+                id: 'ndummy-3',
+                evaluation_date: '2026-04-10',
+                supplier: { company_name: 'Agro Supply Sdn. Bhd.' },
+                institution: { name: 'Penjara Kajang' },
+                evaluator_name: 'Pengarah Kajang',
+                criteria_quantity: 3, criteria_delivery: 2, criteria_price: 4, criteria_quality: 3, criteria_cooperation: 3,
+                total_score: 15, percentage: 42.9, performance_rating: 'Lemah',
+                remarks: 'Penghantaran lewat beberapa kali. Perlu tindakan segera.'
+            }
+        ];
+
+        function renderNegeriEvaluationsTable(dataList) {
+            const tableBody = document.getElementById('negeriHistoryTableBody');
+            if (!dataList || dataList.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="12" class="text-center py-4 text-muted">Tiada rekod penilaian prestasi yang telah disahkan ditemui.</td></tr>';
+                return;
+            }
+            let html = '';
+            dataList.forEach(ev => {
+                const evalDate = new Date(ev.evaluation_date).toLocaleDateString('ms-MY', { day:'2-digit', month:'2-digit', year:'numeric' });
+                let ratingBadge = '<span class="badge bg-danger">Lemah</span>';
+                if (ev.performance_rating === 'Cemerlang') ratingBadge = '<span class="badge bg-success">Cemerlang</span>';
+                else if (ev.performance_rating === 'Sederhana') ratingBadge = '<span class="badge bg-warning text-dark">Sederhana</span>';
+
+                html += `<tr>
+                    <td>${evalDate}</td>
+                    <td class="fw-semibold">${ev.supplier ? ev.supplier.company_name : '-'}</td>
+                    <td>${ev.institution ? ev.institution.name : '-'}</td>
+                    <td>${ev.evaluator_name}</td>
+                    <td class="text-center">${negeriScoreCellHtml(ev.criteria_quantity)}</td>
+                    <td class="text-center">${negeriScoreCellHtml(ev.criteria_delivery)}</td>
+                    <td class="text-center">${negeriScoreCellHtml(ev.criteria_price)}</td>
+                    <td class="text-center">${negeriScoreCellHtml(ev.criteria_quality)}</td>
+                    <td class="text-center">${negeriScoreCellHtml(ev.criteria_cooperation)}</td>
+                    <td class="text-center fw-bold">${ev.percentage}%</td>
+                    <td class="text-center">${ratingBadge}</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-primary negeri-view-eval-btn" data-id="${ev.id}" title="Lihat Detail">
+                            <i class="fas fa-eye"></i> Detail
+                        </button>
+                    </td>
+                </tr>`;
+            });
+            tableBody.innerHTML = html;
+            if ($.fn.DataTable.isDataTable('#negeri-evaluations-table')) { $('#negeri-evaluations-table').DataTable().destroy(); }
+            setTimeout(() => { $('#negeri-evaluations-table').DataTable({ responsive: true, order: [[0, 'desc']] }); }, 100);
+        }
+
+        function negeriShowViewModal(evalData) {
+            const evalDateStr = new Date(evalData.evaluation_date).toLocaleDateString('ms-MY', { day:'2-digit', month:'2-digit', year:'numeric' });
+            document.getElementById('negeriViewEvalDate').textContent = evalDateStr;
+            document.getElementById('negeriViewSupplierName').textContent = evalData.supplier ? evalData.supplier.company_name : '-';
+            document.getElementById('negeriViewInstitutionName').textContent = evalData.institution ? evalData.institution.name : '-';
+            document.getElementById('negeriViewEvaluator').textContent = evalData.evaluator_name;
+            document.getElementById('negeriViewTotalScore').textContent = evalData.total_score;
+            document.getElementById('negeriViewPercentage').textContent = `${evalData.percentage}%`;
+
+            const critList = document.getElementById('negeriViewCriteriaList');
+            critList.innerHTML = [
+                ['1. Kuantiti Bekalan', evalData.criteria_quantity],
+                ['2. Masa Penghantaran', evalData.criteria_delivery],
+                ['3. Harga Bekalan', evalData.criteria_price],
+                ['4. Kualiti Bekalan', evalData.criteria_quality],
+                ['5. Kerjasama', evalData.criteria_cooperation],
+            ].map(([label, val]) => negeriCriteriaRowHtml(label, val)).join('');
+
+            const badge = document.getElementById('negeriViewRatingBadge');
+            badge.textContent = (evalData.performance_rating || '').toUpperCase();
+            if (evalData.performance_rating === 'Cemerlang') badge.className = 'badge rounded-pill px-4 py-2 fs-6 shadow-sm bg-success text-white';
+            else if (evalData.performance_rating === 'Sederhana') badge.className = 'badge rounded-pill px-4 py-2 fs-6 shadow-sm bg-warning text-dark';
+            else badge.className = 'badge rounded-pill px-4 py-2 fs-6 shadow-sm bg-danger text-white';
+
+            document.getElementById('negeriViewRemarks').textContent = evalData.remarks || 'Tiada catatan tambahan.';
+
+            new bootstrap.Modal(document.getElementById('negeriViewEvaluationModal')).show();
+        }
+
         async function loadNegeriEvaluationsHistory() {
             const tableBody = document.getElementById('negeriHistoryTableBody');
             try {
                 const res = await fetch('/evaluations');
                 const json = await res.json();
                 if (json.success && json.data.length > 0) {
-                    let html = '';
-                    json.data.forEach(ev => {
-                        const evalDate = new Date(ev.evaluation_date).toLocaleDateString('ms-MY', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                        let ratingBadge = ev.performance_rating === 'Cemerlang'
-                            ? '<span class="badge bg-success">Cemerlang</span>'
-                            : ev.performance_rating === 'Sederhana'
-                                ? '<span class="badge bg-warning text-dark">Sederhana</span>'
-                                : '<span class="badge bg-danger">Lemah</span>';
-                        html += `<tr>
-                            <td>${evalDate}</td>
-                            <td class="fw-bold">${ev.order ? ev.order.order_number : '-'}</td>
-                            <td>${ev.supplier ? ev.supplier.company_name : '-'}</td>
-                            <td>${ev.institution ? ev.institution.name : '-'}</td>
-                            <td>${ev.evaluator_name}</td>
-                            <td class="text-center fw-bold">${ev.percentage}%</td>
-                            <td class="text-center">${ratingBadge}</td>
-                            <td class="text-center"><span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Disahkan</span></td>
-                        </tr>`;
-                    });
-                    tableBody.innerHTML = html;
-                    if ($.fn.DataTable.isDataTable('#negeri-evaluations-table')) { $('#negeri-evaluations-table').DataTable().destroy(); }
-                    setTimeout(() => { $('#negeri-evaluations-table').DataTable({ responsive: true, order: [[0, 'desc']] }); }, 100);
+                    window._negeriEvalStore = json.data;
+                    renderNegeriEvaluationsTable(json.data);
                 } else {
-                    tableBody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">Tiada rekod penilaian prestasi yang telah disahkan ditemui.</td></tr>';
+                    window._negeriEvalStore = NEGERI_DUMMY_EVALUATIONS;
+                    renderNegeriEvaluationsTable(NEGERI_DUMMY_EVALUATIONS);
                 }
             } catch (err) {
-                tableBody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-danger">Gagal memuatkan rekod sejarah penilaian.</td></tr>';
+                window._negeriEvalStore = NEGERI_DUMMY_EVALUATIONS;
+                renderNegeriEvaluationsTable(NEGERI_DUMMY_EVALUATIONS);
             }
         }
         @endif
@@ -876,6 +1058,15 @@
                     loadNegeriMonthlyStats(this.value);
                 });
             }
+            // Click delegation for detail view
+            document.addEventListener('click', function(e) {
+                const viewBtn = e.target.closest('.negeri-view-eval-btn');
+                if (viewBtn) {
+                    const id = viewBtn.getAttribute('data-id');
+                    const found = (window._negeriEvalStore || []).find(x => String(x.id) === String(id));
+                    if (found) negeriShowViewModal(found);
+                }
+            });
             @endif
 
             // Initialize DataTables if elements exist

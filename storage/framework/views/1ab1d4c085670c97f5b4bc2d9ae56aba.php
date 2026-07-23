@@ -1041,9 +1041,13 @@
                                             <thead class="bg-light">
                                                 <tr>
                                                     <th>Tarikh</th>
-                                                    <th>No. Inden</th>
                                                     <th>Pembekal</th>
                                                     <th>Institusi</th>
+                                                    <th class="text-center" title="Kuantiti Bekalan">Ktiti</th>
+                                                    <th class="text-center" title="Masa Penghantaran">Masa</th>
+                                                    <th class="text-center" title="Harga Bekalan">Harga</th>
+                                                    <th class="text-center" title="Kualiti Bekalan">Kualiti</th>
+                                                    <th class="text-center" title="Kerjasama">Kerjasama</th>
                                                     <th class="text-center">Skor (%)</th>
                                                     <th class="text-center">Rating</th>
                                                     <th class="text-center">Tindakan</th>
@@ -1052,7 +1056,7 @@
                                             <tbody id="performanceHistoryBody">
                                                 <!-- Populated by JS -->
                                                 <tr>
-                                                    <td colspan="7" class="text-center py-4 text-muted">
+                                                    <td colspan="11" class="text-center py-4 text-muted">
                                                         <div class="spinner-border spinner-border-sm me-2" role="status"></div>
                                                         Memuat data penilaian...
                                                     </td>

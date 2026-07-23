@@ -859,9 +859,13 @@
                                                 <thead>
                                                     <tr>
                                                         <th>Tarikh</th>
-                                                        <th>No. Inden</th>
                                                         <th>Pembekal</th>
                                                         <th>Penilai</th>
+                                                        <th class="text-center" title="Kuantiti">Ktiti</th>
+                                                        <th class="text-center" title="Masa Penghantaran">Masa</th>
+                                                        <th class="text-center" title="Harga">Harga</th>
+                                                        <th class="text-center" title="Kualiti">Kualiti</th>
+                                                        <th class="text-center" title="Kerjasama">Kerjasama</th>
                                                         <th class="text-center">Skor (%)</th>
                                                         <th class="text-center">Rating</th>
                                                         <th class="text-center">Status</th>
@@ -870,7 +874,7 @@
                                                 </thead>
                                                 <tbody id="historyTableBody" class="text-body">
                                                     <tr>
-                                                        <td colspan="8" class="text-center py-4 text-muted">
+                                                        <td colspan="12" class="text-center py-4 text-muted">
                                                             <div class="spinner-border spinner-border-sm me-2" role="status"></div>
                                                             Memuat data sejarah penilaian...
                                                         </td>
@@ -1033,6 +1037,126 @@
                             <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Batal</button>
                             <button type="button" class="btn btn-success px-4 shadow-sm" id="saveEvaluationBtn">
                                 <i class="fas fa-save me-2"></i>Simpan Penilaian
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View Evaluation Detail Modal -->
+            <div class="modal fade" id="viewEvaluationModal" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title"><i class="fas fa-clipboard-check me-2"></i>Butiran Penilaian Prestasi</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Info Header -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-4">
+                                    <div class="p-3 rounded-3 bg-light h-100">
+                                        <div class="small text-muted mb-1"><i class="fas fa-truck me-1"></i>Pembekal</div>
+                                        <div id="viewEvalSupplierName" class="fw-bold">-</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 rounded-3 bg-light h-100">
+                                        <div class="small text-muted mb-1"><i class="fas fa-calendar me-1"></i>Tarikh Penilaian</div>
+                                        <div id="viewEvalDate" class="fw-bold">-</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 rounded-3 bg-light h-100">
+                                        <div class="small text-muted mb-1"><i class="fas fa-user me-1"></i>Pegawai Penilai</div>
+                                        <div id="viewEvalEvaluator" class="fw-bold">-</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Score Breakdown by Criteria -->
+                            <h6 class="fw-bold mb-3 border-bottom pb-2">Pecahan Skor Penilaian</h6>
+                            <div class="mb-4" id="viewEvalCriteriaList">
+                                <!-- criteria rows rendered by JS -->
+                            </div>
+
+                            <!-- Total Score Summary -->
+                            <div class="row g-3 align-items-center mb-3">
+                                <div class="col-md-6">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-body text-center py-3">
+                                            <div class="text-muted small mb-1">Jumlah Skor</div>
+                                            <div class="fw-bold fs-3" id="viewEvalTotalScore">-</div>
+                                            <div class="text-muted small">daripada 35</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-center">
+                                    <div class="text-muted small mb-2">Peratusan &amp; Rating</div>
+                                    <div class="fw-bold fs-2 text-primary mb-1" id="viewEvalPercentage">-</div>
+                                    <span class="badge rounded-pill px-4 py-2 fs-6 shadow-sm" id="viewEvalRatingBadge">-</span>
+                                </div>
+                            </div>
+
+                            <!-- Status & Remarks -->
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-muted">Status:</label>
+                                    <div id="viewEvalStatus" class="form-control fw-bold text-center">-</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-muted">Institusi:</label>
+                                    <div id="viewEvalInstitutionName" class="form-control bg-light">-</div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold small text-muted">Ulasan / Catatan:</label>
+                                    <div id="viewEvalRemarks" class="p-3 bg-light rounded text-muted fst-italic">-</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                            <button type="button" class="btn btn-success d-none" id="viewEvalVerifyBtn">
+                                <i class="fas fa-check-circle me-2"></i>Sahkan Penilaian Ini
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Verify Confirmation Modal -->
+            <div class="modal fade" id="verifyConfirmModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title"><i class="fas fa-shield-alt me-2"></i>Pengesahan Penilaian</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-warning border-0 mb-3">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Sila baca dengan teliti sebelum mengesahkan.</strong>
+                            </div>
+                            <div class="p-3 bg-light rounded mb-4">
+                                <p class="mb-1"><strong>Pembekal:</strong> <span id="verifySupplierName" class="text-primary">-</span></p>
+                                <p class="mb-1"><strong>Tarikh Penilaian:</strong> <span id="verifyEvalDate">-</span></p>
+                                <p class="mb-0"><strong>Skor / Rating:</strong> <span id="verifyEvalScore">-</span></p>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="verifyCheckbox">
+                                <label class="form-check-label" for="verifyCheckbox">
+                                    Saya mengesahkan bahawa maklumat penilaian prestasi pembekal ini adalah betul, tepat dan telah disemak dengan teliti.
+                                </label>
+                            </div>
+                            <p class="text-muted small mb-0">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Setelah disahkan, penilaian ini akan dipaparkan kepada Pengarah HQ dan Pengarah Negeri untuk rujukan.
+                            </p>
+                        </div>
+                        <div class="modal-footer border-0">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="button" class="btn btn-success" id="confirmVerifyBtn" disabled>
+                                <i class="fas fa-check-circle me-2"></i>Sahkan Sekarang
                             </button>
                         </div>
                     </div>
@@ -1301,181 +1425,265 @@
             }
         }
 
+        // Score cell helper
+        function scoreCellHtml(val) {
+            let cls = 'text-danger';
+            if (val >= 6) cls = 'text-success';
+            else if (val >= 4) cls = 'text-warning';
+            return `<span class="fw-bold ${cls}">${val}/7</span>`;
+        }
+
+        // Criteria progress bar row
+        function criteriaRowHtml(label, val) {
+            const pct = Math.round((val / 7) * 100);
+            let barCls = 'bg-danger';
+            if (val >= 6) barCls = 'bg-success';
+            else if (val >= 4) barCls = 'bg-warning';
+            return `
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="small fw-semibold">${label}</span>
+                        <span class="small fw-bold">${val} / 7 <span class="text-muted">(${pct}%)</span></span>
+                    </div>
+                    <div class="progress" style="height:10px;">
+                        <div class="progress-bar ${barCls}" role="progressbar" style="width:${pct}%"></div>
+                    </div>
+                </div>`;
+        }
+
+        // Dummy data for demonstration
+        const DUMMY_EVALUATIONS = [
+            {
+                id: 'dummy-1',
+                evaluation_date: '2026-06-15',
+                supplier: { company_name: 'Syarikat Rempah Sdn. Bhd.' },
+                institution: { name: 'Penjara Kajang' },
+                evaluator_name: '<?php echo e(Auth::user()->name); ?>',
+                criteria_quantity: 6, criteria_delivery: 5, criteria_price: 6, criteria_quality: 7, criteria_cooperation: 5,
+                total_score: 29, percentage: 82.9, performance_rating: 'Cemerlang', status: 'Verified',
+                remarks: 'Pembekal sangat responsif dan penghantaran tepat pada masanya.'
+            },
+            {
+                id: 'dummy-2',
+                evaluation_date: '2026-05-20',
+                supplier: { company_name: 'Pembekal Bahan Mentah Utama' },
+                institution: { name: 'Penjara Kajang' },
+                evaluator_name: '<?php echo e(Auth::user()->name); ?>',
+                criteria_quantity: 4, criteria_delivery: 4, criteria_price: 5, criteria_quality: 4, criteria_cooperation: 4,
+                total_score: 21, percentage: 60.0, performance_rating: 'Sederhana', status: 'Pending',
+                remarks: 'Kualiti boleh dipertingkatkan. Terdapat beberapa ketidakpadanan kuantiti.'
+            },
+            {
+                id: 'dummy-3',
+                evaluation_date: '2026-04-10',
+                supplier: { company_name: 'Agro Supply Sdn. Bhd.' },
+                institution: { name: 'Penjara Kajang' },
+                evaluator_name: '<?php echo e(Auth::user()->name); ?>',
+                criteria_quantity: 3, criteria_delivery: 2, criteria_price: 4, criteria_quality: 3, criteria_cooperation: 3,
+                total_score: 15, percentage: 42.9, performance_rating: 'Lemah', status: 'Pending',
+                remarks: 'Penghantaran lewat beberapa kali. Perlu tindakan segera.'
+            }
+        ];
+
+        function renderEvaluationsTable(dataList) {
+            const tableBody = document.getElementById('historyTableBody');
+            if (!dataList || dataList.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="12" class="text-center py-4 text-muted">Tiada rekod penilaian prestasi ditemui.</td></tr>`;
+                return;
+            }
+            let html = '';
+            dataList.forEach(ev => {
+                const evalDate = new Date(ev.evaluation_date).toLocaleDateString('ms-MY', { day:'2-digit', month:'2-digit', year:'numeric' });
+                let ratingBadge = '<span class="badge bg-danger">Lemah</span>';
+                if (ev.performance_rating === 'Cemerlang') ratingBadge = '<span class="badge bg-success">Cemerlang</span>';
+                else if (ev.performance_rating === 'Sederhana') ratingBadge = '<span class="badge bg-warning text-dark">Sederhana</span>';
+
+                let statusBadge = '<span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>Menunggu</span>';
+                if (ev.status === 'Verified') statusBadge = '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Disahkan</span>';
+
+                let actions = `<button class="btn btn-sm btn-outline-primary view-eval-btn" data-id="${ev.id}" title="Lihat Detail"><i class="fas fa-eye"></i> Detail</button>`;
+                if (ev.status !== 'Verified') {
+                    actions += ` <button class="btn btn-sm btn-outline-success verify-eval-btn" data-id="${ev.id}" title="Sahkan"><i class="fas fa-check"></i> Sahkan</button>`;
+                }
+
+                html += `<tr>
+                    <td>${evalDate}</td>
+                    <td class="fw-semibold">${ev.supplier ? ev.supplier.company_name : '-'}</td>
+                    <td>${ev.evaluator_name}</td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_quantity)}</td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_delivery)}</td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_price)}</td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_quality)}</td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_cooperation)}</td>
+                    <td class="text-center fw-bold">${ev.percentage}%</td>
+                    <td class="text-center">${ratingBadge}</td>
+                    <td class="text-center">${statusBadge}</td>
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center gap-1">${actions}</div>
+                    </td>
+                </tr>`;
+            });
+            tableBody.innerHTML = html;
+            if ($.fn.DataTable.isDataTable('#evaluations-history-table')) {
+                $('#evaluations-history-table').DataTable().destroy();
+            }
+            setTimeout(() => {
+                $('#evaluations-history-table').DataTable({ responsive: true, order: [[0, 'desc']] });
+            }, 100);
+        }
+
         // Load History Table
         async function loadEvaluationsHistory() {
             const tableBody = document.getElementById('historyTableBody');
             try {
                 const res = await fetch('/evaluations');
                 const json = await res.json();
-                
                 if (json.success && json.data.length > 0) {
-                    let html = '';
-                    json.data.forEach(eval => {
-                        const evalDate = new Date(eval.evaluation_date).toLocaleDateString('ms-MY', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric'
-                        });
-                        
-                        let ratingBadge = '';
-                        if (eval.performance_rating === 'Cemerlang') {
-                            ratingBadge = '<span class="badge bg-success">Cemerlang</span>';
-                        } else if (eval.performance_rating === 'Sederhana') {
-                            ratingBadge = '<span class="badge bg-warning text-dark">Sederhana</span>';
-                        } else {
-                            ratingBadge = '<span class="badge bg-danger">Lemah</span>';
-                        }
-                        
-                        let statusBadge = '';
-                        if (eval.status === 'Verified') {
-                            statusBadge = '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Disahkan</span>';
-                        } else {
-                            statusBadge = '<span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>Menunggu</span>';
-                        }
-                        
-                        html += `
-                            <tr>
-                                <td>${evalDate}</td>
-                                <td class="fw-bold">${eval.order ? eval.order.order_number : '-'}</td>
-                                <td>${eval.supplier ? eval.supplier.company_name : '-'}</td>
-                                <td>${eval.evaluator_name}</td>
-                                <td class="text-center fw-bold">${eval.percentage}%</td>
-                                <td class="text-center">${ratingBadge}</td>
-                                <td class="text-center">${statusBadge}</td>
-                                <td class="text-center">
-                                    <div class="d-flex justify-content-center gap-2">
-                                        <button class="btn btn-sm btn-info text-white view-eval-btn" data-id="${eval.id}">
-                                            <i class="fas fa-eye"></i> Papar
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
-                    });
-                    tableBody.innerHTML = html;
-                    
-                    if ($.fn.DataTable.isDataTable('#evaluations-history-table')) {
-                        $('#evaluations-history-table').DataTable().destroy();
-                    }
-                    setTimeout(() => {
-                        $('#evaluations-history-table').DataTable({
-                            responsive: true,
-                            order: [[0, 'desc']]
-                        });
-                    }, 100);
+                    window._evalDataStore = json.data;
+                    renderEvaluationsTable(json.data);
                 } else {
-                    tableBody.innerHTML = `
-                        <tr>
-                            <td colspan="8" class="text-center py-4 text-muted">
-                                Tiada rekod penilaian prestasi ditemui.
-                            </td>
-                        </tr>
-                    `;
+                    // No real data – show dummy for demonstration
+                    window._evalDataStore = DUMMY_EVALUATIONS;
+                    renderEvaluationsTable(DUMMY_EVALUATIONS);
                 }
             } catch (err) {
                 console.error('Error loading evaluations:', err);
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="8" class="text-center py-4 text-danger">
-                            Gagal memuatkan rekod sejarah penilaian.
-                        </td>
-                    </tr>
-                `;
+                window._evalDataStore = DUMMY_EVALUATIONS;
+                renderEvaluationsTable(DUMMY_EVALUATIONS);
             }
         }
 
-        // Setup verification action
-        async function verifyEvaluation(id) {
-            if (!confirm('Adakah anda bersetuju untuk mengesahkan penilaian prestasi pembekal ini? Sila pastikan maklumat penilaian adalah betul.')) {
-                return;
-            }
-            
-            try {
-                const res = await fetch(`/evaluations/${id}/verify`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json'
-                    }
-                });
-                const json = await res.json();
-                if (json.success) {
-                    alert(json.message || 'Penilaian berjaya disahkan.');
-                    window.location.reload();
-                } else {
-                    alert(json.message || 'Gagal mengesahkan penilaian.');
+        // Helper: get eval data from store by id
+        function findEvalById(id) {
+            return (window._evalDataStore || []).find(e => String(e.id) === String(id)) || null;
+        }
+
+        // Show verify confirmation modal
+        function showVerifyModal(evalData) {
+            const evalDateStr = new Date(evalData.evaluation_date).toLocaleDateString('ms-MY', { day:'2-digit', month:'2-digit', year:'numeric' });
+            document.getElementById('verifySupplierName').textContent = evalData.supplier ? evalData.supplier.company_name : '-';
+            document.getElementById('verifyEvalDate').textContent = evalDateStr;
+            document.getElementById('verifyEvalScore').textContent = `${evalData.total_score}/35 (${evalData.percentage}%) — ${evalData.performance_rating}`;
+
+            const checkbox = document.getElementById('verifyCheckbox');
+            const confirmBtn = document.getElementById('confirmVerifyBtn');
+            checkbox.checked = false;
+            confirmBtn.disabled = true;
+            checkbox.onchange = () => { confirmBtn.disabled = !checkbox.checked; };
+
+            confirmBtn.onclick = async () => {
+                confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyahkan...';
+                confirmBtn.disabled = true;
+                // Skip API for dummy data
+                if (String(evalData.id).startsWith('dummy')) {
+                    setTimeout(() => {
+                        bootstrap.Modal.getInstance(document.getElementById('verifyConfirmModal')).hide();
+                        evalData.status = 'Verified';
+                        renderEvaluationsTable(window._evalDataStore);
+                        alert('Penilaian (demo) berjaya disahkan.');
+                    }, 800);
+                    return;
                 }
-            } catch (err) {
-                console.error('Error verifying evaluation:', err);
-                alert('Ralat sistem berlaku ketika melakukan pengesahan.');
-            }
+                try {
+                    const r = await fetch(`/evaluations/${evalData.id}/verify`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json'
+                        }
+                    });
+                    const result = await r.json();
+                    bootstrap.Modal.getInstance(document.getElementById('verifyConfirmModal')).hide();
+                    if (result.success) {
+                        alert(result.message || 'Penilaian berjaya disahkan.');
+                        window.location.reload();
+                    } else {
+                        alert(result.message || 'Gagal mengesahkan penilaian.');
+                    }
+                } catch (e) {
+                    alert('Ralat sistem berlaku ketika pengesahan.');
+                    confirmBtn.innerHTML = '<i class="fas fa-check-circle me-2"></i>Sahkan Sekarang';
+                    confirmBtn.disabled = false;
+                }
+            };
+
+            const modal = new bootstrap.Modal(document.getElementById('verifyConfirmModal'));
+            modal.show();
         }
 
-        // Setup view details popup
+        // Show detail view modal
+        function showViewModal(evalData) {
+            const evalDateStr = new Date(evalData.evaluation_date).toLocaleDateString('ms-MY', { day:'2-digit', month:'2-digit', year:'numeric' });
+            document.getElementById('viewEvalDate').textContent = evalDateStr;
+            document.getElementById('viewEvalSupplierName').textContent = evalData.supplier ? evalData.supplier.company_name : '-';
+            document.getElementById('viewEvalInstitutionName').textContent = evalData.institution ? evalData.institution.name : '-';
+            document.getElementById('viewEvalEvaluator').textContent = evalData.evaluator_name;
+            document.getElementById('viewEvalTotalScore').textContent = evalData.total_score;
+            document.getElementById('viewEvalPercentage').textContent = `${evalData.percentage}%`;
+
+            // Criteria breakdown
+            const critList = document.getElementById('viewEvalCriteriaList');
+            critList.innerHTML = [
+                ['1. Kuantiti Bekalan', evalData.criteria_quantity],
+                ['2. Masa Penghantaran', evalData.criteria_delivery],
+                ['3. Harga Bekalan', evalData.criteria_price],
+                ['4. Kualiti Bekalan', evalData.criteria_quality],
+                ['5. Kerjasama', evalData.criteria_cooperation],
+            ].map(([label, val]) => criteriaRowHtml(label, val)).join('');
+
+            const badge = document.getElementById('viewEvalRatingBadge');
+            badge.textContent = (evalData.performance_rating || '').toUpperCase();
+            if (evalData.performance_rating === 'Cemerlang') badge.className = 'badge rounded-pill px-4 py-2 fs-6 shadow-sm bg-success text-white';
+            else if (evalData.performance_rating === 'Sederhana') badge.className = 'badge rounded-pill px-4 py-2 fs-6 shadow-sm bg-warning text-dark';
+            else badge.className = 'badge rounded-pill px-4 py-2 fs-6 shadow-sm bg-danger text-white';
+
+            const statusDiv = document.getElementById('viewEvalStatus');
+            const verifyBtn = document.getElementById('viewEvalVerifyBtn');
+            if (evalData.status === 'Verified') {
+                statusDiv.textContent = '✓ DISAHKAN';
+                statusDiv.className = 'form-control fw-bold text-center bg-success text-white';
+                verifyBtn.classList.add('d-none');
+            } else {
+                statusDiv.textContent = '⏳ MENUNGGU PENGESAHAN';
+                statusDiv.className = 'form-control fw-bold text-center bg-warning text-dark';
+                verifyBtn.classList.remove('d-none');
+                verifyBtn.onclick = () => {
+                    bootstrap.Modal.getInstance(document.getElementById('viewEvaluationModal')).hide();
+                    setTimeout(() => showVerifyModal(evalData), 300);
+                };
+            }
+
+            document.getElementById('viewEvalRemarks').textContent = evalData.remarks || 'Tiada catatan tambahan.';
+
+            const viewModal = new bootstrap.Modal(document.getElementById('viewEvaluationModal'));
+            viewModal.show();
+        }
+
+        // Async wrapper for API-backed view (falls back to local data store)
         async function viewEvaluation(id) {
+            // Try local store first (works for dummy + cached real data)
+            const localData = findEvalById(id);
+            if (localData) { showViewModal(localData); return; }
             try {
                 const res = await fetch(`/evaluations/${id}`);
                 const json = await res.json();
-                
-                if (json.success) {
-                    const evalData = json.data;
-                    document.getElementById('viewEvalOrderNo').textContent = evalData.order ? evalData.order.order_number : '-';
-                    
-                    const evalDateStr = new Date(evalData.evaluation_date).toLocaleDateString('ms-MY', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric'
-                    });
-                    document.getElementById('viewEvalDate').textContent = evalDateStr;
-                    document.getElementById('viewEvalSupplierName').textContent = evalData.supplier ? evalData.supplier.company_name : '-';
-                    document.getElementById('viewEvalInstitutionName').textContent = evalData.institution ? evalData.institution.name : '-';
-                    document.getElementById('viewEvalEvaluator').textContent = evalData.evaluator_name;
-                    
-                    document.getElementById('viewEvalQty').textContent = evalData.criteria_quantity + ' / 7';
-                    document.getElementById('viewEvalDelivery').textContent = evalData.criteria_delivery + ' / 7';
-                    document.getElementById('viewEvalPrice').textContent = evalData.criteria_price + ' / 7';
-                    document.getElementById('viewEvalQuality').textContent = evalData.criteria_quality + ' / 7';
-                    document.getElementById('viewEvalCoop').textContent = evalData.criteria_cooperation + ' / 7';
-                    
-                    document.getElementById('viewEvalTotalScore').textContent = `${evalData.total_score} / 35`;
-                    document.getElementById('viewEvalPercentage').textContent = `${evalData.percentage}%`;
-                    
-                    const badge = document.getElementById('viewEvalRatingBadge');
-                    badge.textContent = evalData.performance_rating.toUpperCase();
-                    if (evalData.performance_rating === 'Cemerlang') {
-                        badge.className = 'badge rounded-pill px-4 py-2 fs-6 shadow-sm bg-success text-white';
-                    } else if (evalData.performance_rating === 'Sederhana') {
-                        badge.className = 'badge rounded-pill px-4 py-2 fs-6 shadow-sm bg-warning text-dark';
-                    } else {
-                        badge.className = 'badge rounded-pill px-4 py-2 fs-6 shadow-sm bg-danger text-white';
-                    }
-                    
-                    const statusDiv = document.getElementById('viewEvalStatus');
-                    if (evalData.status === 'Verified') {
-                        statusDiv.textContent = 'DISAHKAN';
-                        statusDiv.className = 'form-control mb-3 bg-success text-white fw-bold';
-                        document.getElementById('viewEvalVerifyBtn').classList.add('d-none');
-                    } else {
-                        statusDiv.textContent = 'MENUNGGU PENGESAHAN';
-                        statusDiv.className = 'form-control mb-3 bg-warning text-dark fw-bold';
-                        
-                        const verifyBtn = document.getElementById('viewEvalVerifyBtn');
-                        verifyBtn.classList.remove('d-none');
-                        verifyBtn.onclick = () => {
-                            bootstrap.Modal.getInstance(document.getElementById('viewEvaluationModal')).hide();
-                            verifyEvaluation(evalData.id);
-                        };
-                    }
-                    
-                    document.getElementById('viewEvalRemarks').textContent = evalData.remarks || 'Tiada catatan.';
-                    
-                    const viewModal = new bootstrap.Modal(document.getElementById('viewEvaluationModal'));
-                    viewModal.show();
-                }
+                if (json.success) showViewModal(json.data);
+                else alert('Gagal memuat butiran penilaian.');
             } catch (err) {
                 console.error('Error fetching evaluation details:', err);
                 alert('Gagal memuat butiran penilaian.');
             }
+        }
+
+        // Async wrapper for verification
+        async function verifyEvaluation(id) {
+            const localData = findEvalById(id);
+            if (localData) { showVerifyModal(localData); return; }
+            try {
+                const res = await fetch(`/evaluations/${id}`);
+                const json = await res.json();
+                if (json.success) showVerifyModal(json.data);
+            } catch (err) { alert('Gagal memuat data penilaian.'); }
         }
         <?php endif; ?>
 

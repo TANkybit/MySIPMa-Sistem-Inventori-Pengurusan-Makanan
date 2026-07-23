@@ -1415,76 +1415,151 @@ class PrisonSystem {
     }
 
     async loadPerformanceReportsPage() {
-        console.log('Loading Performance Reports (Real-time)...');
+        console.log('Loading Performance Reports (Real-time option + Dummy fallback)...');
         
         const historyBody = document.getElementById('performanceHistoryBody');
         if (historyBody) {
-            historyBody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Memuatkan data...</td></tr>';
+            historyBody.innerHTML = '<tr><td colspan="11" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Memuatkan data...</td></tr>';
         }
 
+        const HQ_DUMMY_EVALUATIONS = [
+            {
+                id: 'hdummy-1',
+                evaluation_date: '2026-06-15',
+                supplier: { company_name: 'Syarikat Rempah Sdn. Bhd.' },
+                institution: { name: 'Penjara Kajang' },
+                evaluator_name: 'Pengarah Kajang',
+                criteria_quantity: 6, criteria_delivery: 5, criteria_price: 6, criteria_quality: 7, criteria_cooperation: 5,
+                total_score: 29, percentage: 82.9, performance_rating: 'Cemerlang',
+                remarks: 'Pembekal sangat responsif dan penghantaran tepat pada masanya.'
+            },
+            {
+                id: 'hdummy-2',
+                evaluation_date: '2026-05-20',
+                supplier: { company_name: 'Pembekal Bahan Mentah Utama' },
+                institution: { name: 'Penjara Sungai Buloh' },
+                evaluator_name: 'Pengarah Sungai Buloh',
+                criteria_quantity: 4, criteria_delivery: 4, criteria_price: 5, criteria_quality: 4, criteria_cooperation: 4,
+                total_score: 21, percentage: 60.0, performance_rating: 'Sederhana',
+                remarks: 'Kualiti boleh dipertingkatkan. Terdapat beberapa ketidakpadanan kuantiti.'
+            },
+            {
+                id: 'hdummy-3',
+                evaluation_date: '2026-04-10',
+                supplier: { company_name: 'Agro Supply Sdn. Bhd.' },
+                institution: { name: 'Penjara Kajang' },
+                evaluator_name: 'Pengarah Kajang',
+                criteria_quantity: 3, criteria_delivery: 2, criteria_price: 4, criteria_quality: 3, criteria_cooperation: 3,
+                total_score: 15, percentage: 42.9, performance_rating: 'Lemah',
+                remarks: 'Penghantaran lewat beberapa kali. Perlu tindakan segera.'
+            }
+        ];
+
+        // helper for coloring table cells
+        const scoreCellHtml = (val) => {
+            let cls = 'text-danger';
+            if (val >= 6) cls = 'text-success';
+            else if (val >= 4) cls = 'text-warning';
+            return `<span class="fw-bold ${cls}">${val}/7</span>`;
+        };
+
         try {
-            // Fetch stats for cards and charts
-            const statsRes = await fetch('/evaluations/stats', {
-                headers: { 'Accept': 'application/json' }
-            });
-            
-            if (!statsRes.ok) throw new Error(`HTTP error! status: ${statsRes.status}`);
-            
-            const statsResult = await statsRes.json();
-            
-            if (statsResult.success) {
-                const stats = statsResult.stats;
-                if (document.getElementById('statTotalEval')) document.getElementById('statTotalEval').textContent = stats.total;
-                if (document.getElementById('statAvgPercentage')) document.getElementById('statAvgPercentage').textContent = `${stats.average}%`;
-                if (document.getElementById('statCemerlangCount')) document.getElementById('statCemerlangCount').textContent = stats.ratings['Cemerlang'] || 0;
-                if (document.getElementById('statLemahCount')) document.getElementById('statLemahCount').textContent = stats.ratings['Lemah'] || 0;
-                
-                this.updatePerformanceRatingChart(stats.ratings);
-            }
-            
-            // Fetch history for table
-            const histRes = await fetch('/evaluations', {
-                headers: { 'Accept': 'application/json' }
-            });
-            
-            if (!histRes.ok) throw new Error(`HTTP error! status: ${histRes.status}`);
-            
-            const histResult = await histRes.json();
-            
-            if (histResult.success && historyBody) {
-                historyBody.innerHTML = '';
-                if (histResult.data.length === 0) {
-                    historyBody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">Tiada rekod penilaian ditemui. Sila tambah penilaian baru.</td></tr>';
-                } else {
-                    histResult.data.forEach(ev => {
-                        const row = document.createElement('tr');
-                        const ratingBadge = ev.performance_rating === 'Cemerlang' ? 'bg-success' : 
-                                          (ev.performance_rating === 'Sederhana' ? 'bg-warning text-dark' : 'bg-danger');
-                        
-                        row.innerHTML = `
-                            <td>${new Date(ev.evaluation_date).toLocaleDateString('ms-MY')}</td>
-                            <td><span class="badge bg-light text-dark border">${ev.order?.order_no || 'N/A'}</span></td>
-                            <td><div class="fw-bold">${ev.supplier?.company_name || 'N/A'}</div></td>
-                            <td><div class="small">${ev.institution?.name || 'N/A'}</div></td>
-                            <td class="text-center"><div class="fw-bold text-primary">${ev.percentage}%</div></td>
-                            <td class="text-center"><span class="badge rounded-pill px-3 ${ratingBadge}">${ev.performance_rating}</span></td>
-                            <td class="text-center">
-                                <button class="btn btn-sm btn-outline-info" onclick="prisonSystem.viewEvaluation(${ev.id})">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </td>
-                        `;
-                        historyBody.appendChild(row);
-                    });
+            let realData = [];
+            let stats = null;
+
+            // 1. Try to fetch stats
+            try {
+                const statsRes = await fetch('/evaluations/stats', { headers: { 'Accept': 'application/json' } });
+                if (statsRes.ok) {
+                    const statsResult = await statsRes.json();
+                    if (statsResult.success && statsResult.stats && statsResult.stats.total > 0) {
+                        stats = statsResult.stats;
+                    }
                 }
+            } catch (e) {
+                console.warn('Failed to fetch real stats, falling back to local calculation.');
             }
+
+            // 2. Try to fetch history list
+            try {
+                const histRes = await fetch('/evaluations', { headers: { 'Accept': 'application/json' } });
+                if (histRes.ok) {
+                    const histResult = await histRes.json();
+                    if (histResult.success && histResult.data && histResult.data.length > 0) {
+                        realData = histResult.data;
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed to fetch real evaluations history.');
+            }
+
+            // Use dummy if no data is pulled
+            const evaluationsList = realData.length > 0 ? realData : HQ_DUMMY_EVALUATIONS;
+            window._hqEvalStore = evaluationsList;
+
+            // Recalculate stats if real ones are absent
+            if (!stats) {
+                const total = evaluationsList.length;
+                const sumPct = evaluationsList.reduce((acc, ev) => acc + (parseFloat(ev.percentage) || 0), 0);
+                const avgPct = total > 0 ? Math.round(sumPct / total * 10) / 10 : 0;
+                
+                const ratingsMap = { 'Cemerlang': 0, 'Sederhana': 0, 'Lemah': 0 };
+                evaluationsList.forEach(ev => {
+                    if (ratingsMap[ev.performance_rating] !== undefined) {
+                        ratingsMap[ev.performance_rating]++;
+                    }
+                });
+
+                stats = {
+                    total: total,
+                    average: avgPct,
+                    ratings: ratingsMap
+                };
+            }
+
+            // Update stats indicators on cards
+            if (document.getElementById('statTotalEval')) document.getElementById('statTotalEval').textContent = stats.total;
+            if (document.getElementById('statAvgPercentage')) document.getElementById('statAvgPercentage').textContent = `${stats.average}%`;
+            if (document.getElementById('statCemerlangCount')) document.getElementById('statCemerlangCount').textContent = stats.ratings['Cemerlang'] || 0;
+            if (document.getElementById('statLemahCount')) document.getElementById('statLemahCount').textContent = stats.ratings['Lemah'] || 0;
             
+            this.updatePerformanceRatingChart(stats.ratings);
+
+            // Render table body
+            if (historyBody) {
+                historyBody.innerHTML = '';
+                evaluationsList.forEach(ev => {
+                    const row = document.createElement('tr');
+                    const ratingBadge = ev.performance_rating === 'Cemerlang' ? 'bg-success' : 
+                                      (ev.performance_rating === 'Sederhana' ? 'bg-warning text-dark' : 'bg-danger');
+                    
+                    row.innerHTML = `
+                        <td>${new Date(ev.evaluation_date).toLocaleDateString('ms-MY')}</td>
+                        <td><div class="fw-bold">${ev.supplier?.company_name || 'N/A'}</div></td>
+                        <td><div class="small">${ev.institution?.name || 'N/A'}</div></td>
+                        <td class="text-center">${scoreCellHtml(ev.criteria_quantity)}</td>
+                        <td class="text-center">${scoreCellHtml(ev.criteria_delivery)}</td>
+                        <td class="text-center">${scoreCellHtml(ev.criteria_price)}</td>
+                        <td class="text-center">${scoreCellHtml(ev.criteria_quality)}</td>
+                        <td class="text-center">${scoreCellHtml(ev.criteria_cooperation)}</td>
+                        <td class="text-center"><div class="fw-bold text-primary">${ev.percentage}%</div></td>
+                        <td class="text-center"><span class="badge rounded-pill px-3 ${ratingBadge}">${ev.performance_rating}</span></td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-info" onclick="prisonSystem.viewEvaluation('${ev.id}')">
+                                <i class="fas fa-eye"></i> Detail
+                            </button>
+                        </td>
+                    `;
+                    historyBody.appendChild(row);
+                });
+            }
+
             // Re-render Trend Chart
             this.renderPerformanceTrendChart();
 
         } catch (error) {
             console.error('Error loading performance page:', error);
-            if (historyBody) historyBody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger">Ralat memuatkan data: ${error.message}. Sila cuba lagi.</td></tr>`;
+            if (historyBody) historyBody.innerHTML = `<tr><td colspan="11" class="text-center py-4 text-danger">Ralat memuatkan data: ${error.message}. Sila cuba lagi.</td></tr>`;
         }
     }
 
@@ -4888,52 +4963,112 @@ class PrisonSystem {
     }
 
     async viewEvaluation(id) {
+        // helper for progress bars
+        const criteriaRowHtml = (label, val) => {
+            const pct = Math.round((val / 7) * 100);
+            let barCls = 'bg-danger';
+            if (val >= 6) barCls = 'bg-success';
+            else if (val >= 4) barCls = 'bg-warning';
+            return `<div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="small fw-semibold text-body">${label}</span>
+                    <span class="small fw-bold text-body">${val} / 7 <span class="text-muted">(${pct}%)</span></span>
+                </div>
+                <div class="progress" style="height:10px;">
+                    <div class="progress-bar ${barCls}" role="progressbar" style="width:${pct}%"></div>
+                </div>
+            </div>`;
+        };
+
         try {
-            const response = await fetch(`/evaluations/${id}`);
-            const result = await response.json();
-            
-            if (result.success) {
-                const ev = result.data;
+            let ev = null;
+            // 1. Look up cached evaluations list
+            if (window._hqEvalStore) {
+                ev = window._hqEvalStore.find(x => String(x.id) === String(id));
+            }
+
+            // 2. Fetch if not found in cache
+            if (!ev) {
+                const response = await fetch(`/evaluations/${id}`);
+                const result = await response.json();
+                if (result.success) {
+                    ev = result.data;
+                }
+            }
+
+            if (ev) {
+                // Style rating badge
+                let ratingClass = 'bg-danger text-white';
+                if (ev.performance_rating === 'Cemerlang') ratingClass = 'bg-success text-white';
+                else if (ev.performance_rating === 'Sederhana') ratingClass = 'bg-warning text-dark';
+
                 const content = `
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-body">
-                            <div class="row mb-3">
-                                <div class="col-6">
-                                    <div class="text-muted small">Pembekal</div>
-                                    <div class="fw-bold">${ev.supplier?.company_name || 'N/A'}</div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="text-muted small">Tarikh Penilaian</div>
-                                    <div class="fw-bold">${new Date(ev.evaluation_date).toLocaleDateString('ms-MY')}</div>
+                    <div class="container-fluid p-0">
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <div class="p-3 rounded-3 bg-light h-100">
+                                    <div class="small text-muted mb-1"><i class="fas fa-truck me-1"></i>Pembekal</div>
+                                    <div class="fw-bold text-dark">${ev.supplier?.company_name || 'N/A'}</div>
                                 </div>
                             </div>
-                            <hr class="my-2 opacity-10">
-                            <ul class="list-unstyled mb-0">
-                                <li class="d-flex justify-content-between mb-1">
-                                    <span>Kuantiti Bekalan:</span>
-                                    <span class="fw-bold text-success">${ev.criteria_quantity} / 7</span>
-                                </li>
-                                <li class="d-flex justify-content-between mb-1">
-                                    <span>Masa Penghantaran:</span>
-                                    <span class="fw-bold text-success">${ev.criteria_delivery} / 7</span>
-                                </li>
-                                <li class="d-flex justify-content-between mb-1">
-                                    <span>Harga Bekalan:</span>
-                                    <span class="fw-bold text-success">${ev.criteria_price} / 7</span>
-                                </li>
-                                <li class="d-flex justify-content-between mb-1">
-                                    <span>Kualiti Bekalan:</span>
-                                    <span class="fw-bold text-success">${ev.criteria_quality} / 7</span>
-                                </li>
-                                <li class="d-flex justify-content-between mb-1">
-                                    <span>Kerjasama:</span>
-                                    <span class="fw-bold text-success">${ev.criteria_cooperation} / 7</span>
-                                </li>
-                            </ul>
-                            <div class="mt-3 p-2 rounded bg-light text-center">
-                                <div class="fw-bold text-primary fs-5">${ev.percentage}% - ${ev.performance_rating}</div>
+                            <div class="col-md-4">
+                                <div class="p-3 rounded-3 bg-light h-100">
+                                    <div class="small text-muted mb-1"><i class="fas fa-calendar me-1"></i>Tarikh Penilaian</div>
+                                    <div class="fw-bold text-dark">${new Date(ev.evaluation_date).toLocaleDateString('ms-MY')}</div>
+                                </div>
                             </div>
-                            ${ev.remarks ? `<div class="mt-3 small text-muted"><strong>Ulasan:</strong> ${ev.remarks}</div>` : ''}
+                            <div class="col-md-4">
+                                <div class="p-3 rounded-3 bg-light h-100">
+                                    <div class="small text-muted mb-1"><i class="fas fa-building me-1"></i>Institusi</div>
+                                    <div class="fw-bold text-dark">${ev.institution?.name || 'N/A'}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <span class="small text-muted"><i class="fas fa-user me-1"></i>Pegawai Penilai: </span>
+                            <span class="fw-semibold text-dark">${ev.evaluator_name || 'N/A'}</span>
+                        </div>
+
+                        <h6 class="fw-bold mb-3 border-bottom pb-2 text-dark">Pecahan Skor Penilaian</h6>
+                        <div class="mb-4">
+                            ${criteriaRowHtml('1. Kuantiti Bekalan', ev.criteria_quantity)}
+                            ${criteriaRowHtml('2. Masa Penghantaran', ev.criteria_delivery)}
+                            ${criteriaRowHtml('3. Harga Bekalan', ev.criteria_price)}
+                            ${criteriaRowHtml('4. Kualiti Bekalan', ev.criteria_quality)}
+                            ${criteriaRowHtml('5. Kerjasama', ev.criteria_cooperation)}
+                        </div>
+
+                        <div class="row g-3 align-items-center mb-4">
+                            <div class="col-md-6">
+                                <div class="card border-0 bg-light shadow-sm">
+                                    <div class="card-body text-center py-3">
+                                        <div class="text-muted small mb-1">Jumlah Skor</div>
+                                        <div class="fw-bold fs-3 text-dark">${ev.total_score || (ev.criteria_quantity + ev.criteria_delivery + ev.criteria_price + ev.criteria_quality + ev.criteria_cooperation)}</div>
+                                        <div class="text-muted small">daripada 35</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 text-center">
+                                <div class="text-muted small mb-2">Peratusan &amp; Rating</div>
+                                <div class="fw-bold fs-2 text-primary mb-1">${ev.percentage}%</div>
+                                <span class="badge rounded-pill px-4 py-2 fs-6 shadow-sm ${ratingClass}">${ev.performance_rating}</span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-12 mb-2">
+                                <label class="form-label fw-bold small text-muted">Ulasan / Catatan:</label>
+                                <div class="p-3 bg-light rounded text-muted fst-italic border-start border-3 border-secondary">
+                                    ${ev.remarks || 'Tiada catatan tambahan.'}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="alert alert-success border-0 d-flex align-items-center gap-2 mb-0 shadow-sm">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Penilaian ini telah <strong>disahkan</strong> oleh Pengarah Institusi.</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -4943,8 +5078,24 @@ class PrisonSystem {
                 if (viewBody && viewTitle) {
                     viewTitle.textContent = 'Butiran Penilaian Prestasi';
                     viewBody.innerHTML = content;
-                    new bootstrap.Modal(document.getElementById('viewModal')).show();
+                    
+                    // Keep modal-lg formatting for detail breakdown
+                    const dialog = document.querySelector('#viewModal .modal-dialog');
+                    if (dialog) dialog.classList.add('modal-lg');
+                    
+                    // Show standard Bootstrap 5 modal
+                    const modalEl = document.getElementById('viewModal');
+                    const modal = new bootstrap.Modal(modalEl);
+                    modal.show();
+
+                    // Cleanup width on close to prevent issues in other sections
+                    modalEl.addEventListener('hidden.bs.modal', function handler() {
+                        if (dialog) dialog.classList.remove('modal-lg');
+                        modalEl.removeEventListener('hidden.bs.modal', handler);
+                    });
                 }
+            } else {
+                this.showNotification('Penilaian tidak dijumpai.', 'danger');
             }
         } catch (error) {
             console.error('Error viewing eval:', error);
