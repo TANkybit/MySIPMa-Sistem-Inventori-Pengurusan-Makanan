@@ -1036,8 +1036,24 @@
 
                                     <div class="row mb-5">
                                         <div class="col-lg-7">
-                                            <h6 class="fw-bold mb-3"><i class="fas fa-chart-line me-2 text-primary"></i>Tred Prestasi Keseluruhan</h6>
-                                            <div id="performanceTrendChart" style="min-height: 300px;"></div>
+                                            <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+                                                <h6 class="fw-bold mb-0"><i class="fas fa-chart-line me-2 text-primary"></i>Tred Prestasi Keseluruhan</h6>
+                                                <span id="performanceTrendFilterBadge" class="badge rounded-pill px-3 py-1 d-none align-items-center gap-1"
+                                                    style="background:rgba(26,86,50,0.10);color:#1a5632;border:1px solid #1a5632;font-size:0.78rem;font-weight:600;">
+                                                    <i class="fas fa-filter me-1" style="font-size:0.7em;"></i>
+                                                    <span id="performanceTrendFilterLabel">-</span>
+                                                    <button type="button" id="performanceTrendFilterClear"
+                                                        class="btn-close btn-close-sm ms-1"
+                                                        style="font-size:0.6em;opacity:0.7;"
+                                                        title="Padam penapis"
+                                                        aria-label="Padam penapis bulan"
+                                                        onclick="prisonSystem.clearPerformanceTrendFilter()"></button>
+                                                </span>
+                                                <span class="text-muted small ms-auto d-none d-sm-inline" style="font-size:0.75rem;">
+                                                    <i class="fas fa-hand-pointer me-1 opacity-50"></i>Klik titik data untuk menapis
+                                                </span>
+                                            </div>
+                                            <div id="performanceTrendChart" style="min-height: 300px;cursor:pointer;" title="Klik pada bulan untuk menapis data prestasi"></div>
                                         </div>
                                         <div class="col-lg-5">
                                             <h6 class="fw-bold mb-3"><i class="fas fa-chart-pie me-2 text-success"></i>Taburan Rating Prestasi</h6>
