@@ -1678,7 +1678,7 @@
 
             document.getElementById('viewEvalRemarks').textContent = evalData.remarks || 'Tiada catatan tambahan.';
 
-            const viewModal = new bootstrap.Modal(document.getElementById('viewEvaluationModal'));
+            const viewModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('viewEvaluationModal'));
             viewModal.show();
         }
 
@@ -1907,7 +1907,7 @@
 
                         const modalEl = document.getElementById('criticalStockModal');
                         if (modalEl) {
-                            const modal = new bootstrap.Modal(modalEl);
+                            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
                             modal.show();
                         }
                     });
@@ -1949,7 +1949,7 @@
 
                         const modalEl = document.getElementById('criticalStockModal');
                         if (modalEl) {
-                            const modal = new bootstrap.Modal(modalEl);
+                            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
                             modal.show();
                         }
                     });

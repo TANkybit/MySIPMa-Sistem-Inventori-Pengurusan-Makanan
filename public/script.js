@@ -4173,7 +4173,7 @@ class PrisonSystem {
                     </table>
                 </div>
             `;
-            new bootstrap.Modal(document.getElementById('viewModal')).show();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('viewModal')).show();
             return;
         }
 
@@ -4225,7 +4225,7 @@ class PrisonSystem {
         html += '</table></div>';
 
         body.innerHTML = html;
-        new bootstrap.Modal(document.getElementById('viewModal')).show();
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('viewModal')).show();
     }
 
     showEditModal(action, id) {
@@ -5519,7 +5519,7 @@ class PrisonSystem {
                     
                     // Show standard Bootstrap 5 modal
                     const modalEl = document.getElementById('viewModal');
-                    const modal = new bootstrap.Modal(modalEl);
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
                     modal.show();
 
                     // Cleanup width on close to prevent issues in other sections
