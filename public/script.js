@@ -1834,28 +1834,11 @@ class PrisonSystem {
                 toolbar: { show: false },
                 animations: { enabled: true, speed: 400 },
                 events: {
+                    markerClick: (event, chartContext, config) => {
+                        this.handlePerformanceTrendClick(event, config);
+                    },
                     dataPointSelection: (event, chartContext, config) => {
-                        const idx = config.dataPointIndex;
-                        if (idx === undefined || idx < 0) return;
-
-                        if (event && event.shiftKey && this.performanceTrendSelectedMonths.length > 0) {
-                            // Range selection with shift+click
-                            const last = this.performanceTrendSelectedMonths[this.performanceTrendSelectedMonths.length - 1];
-                            const min = Math.min(last, idx);
-                            const max = Math.max(last, idx);
-                            this.performanceTrendSelectedMonths = [];
-                            for (let i = min; i <= max; i++) this.performanceTrendSelectedMonths.push(i);
-                        } else {
-                            // Toggle single month
-                            if (this.performanceTrendSelectedMonths.includes(idx)) {
-                                this.performanceTrendSelectedMonths = this.performanceTrendSelectedMonths.filter(i => i !== idx);
-                            } else {
-                                this.performanceTrendSelectedMonths = [idx];
-                            }
-                        }
-
-                        this._updatePerformanceTrendBadge(this.performanceTrendSelectedMonths);
-                        this.applyPerformanceSlicer(this.performanceTrendSelectedMonths);
+                        this.handlePerformanceTrendClick(event, config);
                     }
                 }
             },
@@ -1877,6 +1860,30 @@ class PrisonSystem {
         const chart = new ApexCharts(trendEl, options);
         chart.render();
         this.charts.performanceTrend = chart;
+    }
+
+    handlePerformanceTrendClick(event, config) {
+        const idx = config?.dataPointIndex;
+        if (idx === undefined || idx === null || idx < 0) return;
+
+        if (event && event.shiftKey && this.performanceTrendSelectedMonths.length > 0) {
+            // Range selection with shift+click
+            const last = this.performanceTrendSelectedMonths[this.performanceTrendSelectedMonths.length - 1];
+            const min = Math.min(last, idx);
+            const max = Math.max(last, idx);
+            this.performanceTrendSelectedMonths = [];
+            for (let i = min; i <= max; i++) this.performanceTrendSelectedMonths.push(i);
+        } else {
+            // Toggle single month
+            if (this.performanceTrendSelectedMonths.includes(idx)) {
+                this.performanceTrendSelectedMonths = this.performanceTrendSelectedMonths.filter(i => i !== idx);
+            } else {
+                this.performanceTrendSelectedMonths = [idx];
+            }
+        }
+
+        this._updatePerformanceTrendBadge(this.performanceTrendSelectedMonths);
+        this.applyPerformanceSlicer(this.performanceTrendSelectedMonths);
     }
 
     /** Update the visual filter badge based on selected month indices */
@@ -2004,8 +2011,9 @@ class PrisonSystem {
                 renderRows(filtered);
                 applyStats(computeStats(filtered));
             } else {
-                // Server-side filtering
-                const monthsCsv = selectedIndices.join(',');
+                // Server-side filtering (backend expects 1-based months 1-12)
+                const dbMonths = selectedIndices.map(i => i + 1);
+                const monthsCsv = dbMonths.join(',');
                 const res  = await fetch(`/evaluations/filter?months=${encodeURIComponent(monthsCsv)}`, { headers: { 'Accept': 'application/json' } });
                 if (!res.ok) throw new Error('Failed to fetch filtered evaluations');
                 const json = await res.json();
