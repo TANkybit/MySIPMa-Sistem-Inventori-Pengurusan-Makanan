@@ -485,7 +485,8 @@
           json.data.forEach(order => {
             const opt = document.createElement('option');
             opt.value = order.id;
-            opt.textContent = order.order_number + ' (' + order.order_date + ')';
+            var dateStr = order.order_date ? new Date(order.order_date).toLocaleDateString('ms-MY', {day:'2-digit',month:'2-digit',year:'numeric'}) : '-';
+            opt.textContent = (order.order_no || 'INDEN-' + order.id) + ' (' + dateStr + ')';
             select.appendChild(opt);
           });
         }

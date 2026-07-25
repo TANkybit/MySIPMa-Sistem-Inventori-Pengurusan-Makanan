@@ -167,7 +167,7 @@
                                             </div>
                                             <div class="flex-grow-1">
                                                 <p class="mb-0 small text-body text-truncate" style="max-width: 240px;">
-                                                    Penilaian bagi pembekal <strong><?php echo e($pendingEval->supplier?->company_name); ?></strong> (No. Inden: <?php echo e($pendingEval->order?->order_number); ?>) memerlukan pengesahan anda.
+                                                    Penilaian bagi pembekal <strong><?php echo e($pendingEval->supplier?->company_name); ?></strong> (No. Inden: <?php echo e($pendingEval->order?->order_no); ?>) memerlukan pengesahan anda.
                                                 </p>
                                                 <small class="text-muted" style="font-size: 10px;"><?php echo e($pendingEval->created_at->diffForHumans()); ?></small>
                                             </div>
@@ -752,7 +752,7 @@
                                                         <?php $__currentLoopData = $pendingEvaluations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pendingEval): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                             <tr>
                                                                 <td><?php echo e($pendingEval->evaluation_date->format('d/m/Y')); ?></td>
-                                                                <td><?php echo e($pendingEval->order?->order_number); ?></td>
+                                                                <td><?php echo e($pendingEval->order?->order_no); ?></td>
                                                                 <td><?php echo e($pendingEval->supplier?->company_name); ?></td>
                                                                 <td><?php echo e($pendingEval->evaluator_name); ?></td>
                                                                 <td class="text-center fw-bold"><?php echo e(round($pendingEval->percentage, 1)); ?>%</td>
@@ -1345,7 +1345,8 @@
                     json.data.forEach(order => {
                         const opt = document.createElement('option');
                         opt.value = order.id;
-                        opt.textContent = `${order.order_number} (${order.order_date})`;
+                        const dateStr = order.order_date ? new Date(order.order_date).toLocaleDateString('ms-MY', {day:'2-digit',month:'2-digit',year:'numeric'}) : '-';
+                        opt.textContent = `${order.order_no || 'INDEN-' + order.id} (${dateStr})`;
                         select.appendChild(opt);
                     });
                 }
