@@ -368,13 +368,22 @@
     #statsRow1 > .col-md-3:nth-child(4) .stat-card { background: #052e16; }
     #statsRow1 > .col-md-3:nth-child(5) .stat-card { background: #1e1b4b; }
   </style>
+  <link href="{{ asset('css/design.css') }}?v=3" rel="stylesheet">
+<style>
+body.mobile-nav-active { background: #000 !important; }
+body.mobile-nav-active .navmenu { background: #000 !important; }
+body.mobile-nav-active .navmenu > ul { background: #000 !important; border: none !important; box-shadow: none !important; inset: 0 !important; border-radius: 0 !important; overflow: visible !important; padding-top: 60px !important; }
+body.mobile-nav-active #navmenu ul li a { color: #fff !important; }
+body.mobile-nav-active #navmenu ul li a:hover, body.mobile-nav-active #navmenu ul li a.active { color: #7CB342 !important; }
+body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-active footer { display: none !important; }
+</style>
 </head>
 
 <body>
 
   <header id="header" class="header d-flex align-items-center sticky-top"
     style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
-    <div class="container d-flex align-items-center">
+    <div class="container position-relative d-flex align-items-center justify-content-between">
       <a href="#" class="logo-glow d-flex align-items-center" id="logoLogoutTrigger">
         <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" style="height: 55px; width: auto;"
           alt="MySIPMa logo">

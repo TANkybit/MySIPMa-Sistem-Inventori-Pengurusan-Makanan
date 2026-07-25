@@ -87,6 +87,8 @@ class DashboardController extends Controller
                 return [
                     'id' => $item->id,
                     'name' => $item->name,
+                    'category_id' => $item->category_id,
+                    'uom_id' => $item->uom_id,
                     'category' => $item->categoryName ?? 'Tiada',
                     'stock' => $stock,
                     'unit' => $item->uomCode ?? 'Unit',
@@ -653,11 +655,13 @@ class DashboardController extends Controller
     public function senaraiInden()
     {
         $instId = Auth::user()->institution_id;
+        $institution = Auth::user()->institution;
         $query = $this->ordersWithDetails($instId);
         $pendingPenerimaan = Order::where('status', 'In Progress')->where('institution_id', $instId)->count();
 
         return view('senarai_inden', [
             'orders' => $query->get(),
+            'institutionName' => $institution?->name ?? Auth::user()->institution_id,
             'pendingApprovals' => $this->pendingApprovalCount($instId),
             'pendingPenerimaan' => $pendingPenerimaan,
         ]);
@@ -1260,6 +1264,10 @@ class DashboardController extends Controller
                 'institutions.name as institution_name',
                 'suppliers.company_name as supplier_name',
                 'suppliers.email as supplier_email',
+                'suppliers.phone_number as supplier_phone',
+                'suppliers.contact_person as supplier_contact',
+                'suppliers.address as supplier_address',
+                'suppliers.postcode as supplier_postcode',
                 DB::raw('COALESCE(approvals.status, 0) as approval_status'),
                 'approvals.approval_date',
                 'approvals.remarks as approval_remarks',
@@ -2155,8 +2163,9 @@ class DashboardController extends Controller
             }
 
             $forecast = [];
+            $floor = $avgMonthly * 0.3;
             for ($i = 1; $i <= 3; $i++) {
-                $val = max(0, $slope * ($n + $i) + $intercept);
+                $val = max($floor, $slope * ($n + $i) + $intercept);
                 $forecast[] = round($val, 1);
             }
 
@@ -2199,8 +2208,9 @@ class DashboardController extends Controller
 
         usort($predictions, fn($a, $b) => $a['monthsUntilEmpty'] <=> $b['monthsUntilEmpty']);
 
-        $top5 = array_slice($predictions, 0, 5);
-        $bottom5 = array_filter($predictions, fn($p) => $p['avgMonthly'] > 0);
+        $withUsage = array_filter($predictions, fn($p) => $p['avgMonthly'] > 0);
+        $top5 = array_slice($withUsage, 0, 5);
+        $bottom5 = $withUsage;
         usort($bottom5, fn($a, $b) => $b['monthsUntilEmpty'] <=> $a['monthsUntilEmpty']);
         $bottom5 = array_slice($bottom5, 0, 5);
 
@@ -2232,6 +2242,8 @@ class DashboardController extends Controller
             ->select(
                 'i.id',
                 'i.name',
+                'i.category_id',
+                'cat.name as category_name',
                 'i.current_quantity',
                 'u.code as uom_code'
             )
@@ -2267,6 +2279,24 @@ class DashboardController extends Controller
             ->get()
             ->keyBy('item_id');
 
+        $fallbackContracts = DB::table('contract_items as ci')
+            ->join('contracts as c', 'ci.contract_id', '=', 'c.id')
+            ->join('order_items as oi', 'oi.item_id', '=', 'ci.item_id')
+            ->join('orders as o', function ($j) use ($instId) {
+                $j->on('o.id', '=', 'oi.order_id')
+                  ->where('o.institution_id', $instId);
+            })
+            ->whereNotIn('ci.item_id', $contractData->keys())
+            ->select(
+                'ci.item_id',
+                'c.contract_no',
+                'ci.estimated_quantity',
+                'ci.unit_price'
+            )
+            ->distinct()
+            ->get()
+            ->keyBy('item_id');
+
         $usageData = DB::table('order_items as oi')
             ->join('orders as o', 'oi.order_id', '=', 'o.id')
             ->where('o.institution_id', $instId)
@@ -2286,6 +2316,10 @@ class DashboardController extends Controller
         foreach ($items as $item) {
             $contract = $contractData->get($item->id);
             $usage = $usageData->get($item->id);
+
+            if (!$contract) {
+                $contract = $fallbackContracts->get($item->id);
+            }
 
             $item->contract_no = $contract ? $contract->contract_no : '-';
             $item->siling_kuantiti = $contract ? number_format($contract->estimated_quantity, 0) : '-';
@@ -2322,9 +2356,11 @@ class DashboardController extends Controller
         $pendingApprovals = $this->pendingApprovalCount($instId);
         $pendingPenerimaan = Order::where('status', 'In Progress')->where('institution_id', $instId)->count();
 
+        $categories = DB::table('categories')->orderBy('name')->select('id', 'name')->get();
+
         return view('user_inventori', compact(
             'items', 'totalItems', 'hampirHabis', 'sederhana', 'banyakLagi',
-            'pendingApprovals', 'pendingPenerimaan'
+            'pendingApprovals', 'pendingPenerimaan', 'categories'
         ));
     }
 }

@@ -214,7 +214,16 @@
     [data-bs-theme="light"] #logoutConfirmModal .btn-cancel { background:#f3f4f6; border-color:#d1d5db; color:#374151; }
     [data-bs-theme="light"] #logoutConfirmModal .btn-cancel:hover { background:#e5e7eb; }
   </style>
+  <link href="{{ asset('css/design.css') }}?v=3" rel="stylesheet">
 
+<style>
+body.mobile-nav-active { background: #000 !important; }
+body.mobile-nav-active .navmenu { background: #000 !important; }
+body.mobile-nav-active .navmenu > ul { background: #000 !important; border: none !important; box-shadow: none !important; inset: 0 !important; border-radius: 0 !important; overflow: visible !important; padding-top: 60px !important; }
+body.mobile-nav-active #navmenu ul li a { color: #fff !important; }
+body.mobile-nav-active #navmenu ul li a:hover, body.mobile-nav-active #navmenu ul li a.active { color: #7CB342 !important; }
+body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-active footer { display: none !important; }
+</style>
 <body>
 
   <header id="header" class="header d-flex align-items-center sticky-top" style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
@@ -283,6 +292,9 @@
 
       <div class="row justify-content-center">
         <div class="col-lg-10">
+          <div class="mb-3" style="color:var(--text);font-size:14px;font-weight:500;">
+            <i class="bi bi-building me-1"></i> Institusi: <span class="text-success">{{ $institutionName ?? '-' }}</span>
+          </div>
           <div class="card-table">
             <div class="table-responsive">
               <table id="senaraiIndenTable" class="table table-dark-custom w-100">
@@ -291,9 +303,7 @@
                     <th>Bil</th>
                     <th>No. Inden</th>
                     <th>Tarikh</th>
-                    <th>Institusi</th>
                     <th>Pembekal</th>
-                    <th>Emel Pembekal</th>
                     <th>Jumlah</th>
                     <th>Status</th>
                     <th>Tindakan</th>
@@ -321,20 +331,18 @@
                       <td>{{ $loop->iteration }}</td>
                       <td><a href="{{ Auth::user()->hasPermission('borang_inden') ? route('borang.inden.edit', $order->id) : route('borang.inden.show', $order->id) }}" class="text-success fw-semibold text-decoration-none">{{ $order->order_no }}</a></td>
                       <td>{{ $order->order_date ? \Carbon\Carbon::parse($order->order_date)->format('d/m/Y') : '-' }}</td>
-                      <td>{{ $order->institution_name ?? '-' }}</td>
-                      <td>{{ $order->supplier_name ?? '-' }}</td>
-                      <td>{{ $order->supplier_email ?? '-' }}</td>
+                      <td><a href="#" class="text-info text-decoration-none" data-bs-toggle="modal" data-bs-target="#supplierModal{{ $order->id }}">{{ $order->supplier_name ?? '-' }}</a></td>
                       <td>RM {{ number_format((float) $order->total_amount, 2) }}</td>
                       <td><span class="badge {{ $orderBadge }}">{{ $statusLabel }}</span></td>
                       <td>
                         @if($order->order_status === 'Completed')
-                          <a href="{{ route('borang.penerimaan.cetak', $order->id) }}" target="_blank" class="btn btn-sm" style="background:var(--accent);color:#0f172a;border-radius:999px;padding:4px 12px;font-size:.8rem;font-weight:600;text-decoration:none;"><i class="bi bi-printer me-1"></i>Cetak Penerimaan</a>
+                          <a href="{{ route('borang.penerimaan.cetak', $order->id) }}" target="_blank" class="btn-link-action"><i class="bi bi-printer me-1"></i>Cetak Penerimaan</a>
                         @endif
                       </td>
                     </tr>
                   @empty
                     <tr>
-                      <td colspan="9" class="text-center text-white-50 py-4">Tiada rekod inden ditemui.</td>
+                      <td colspan="7" class="text-center text-white-50 py-4">Tiada rekod inden ditemui.</td>
                     </tr>
                   @endforelse
                 </tbody>
@@ -350,6 +358,34 @@
   <footer class="text-center py-4" style="border-top: 1px solid rgba(255,255,255,0.05); margin-top: auto;">
     <p class="mb-0 text-white-50"><small>&copy; 2026 MySIPMa. Hak Cipta Terpelihara.</small></p>
   </footer>
+
+  @foreach (($orders ?? collect()) as $order)
+  @if($order->supplier_name)
+  <div class="modal fade" id="supplierModal{{ $order->id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;">
+        <div class="modal-header" style="border-bottom:1px solid var(--border);">
+          <h5 class="modal-title" style="color:var(--text);font-weight:600;"><i class="bi bi-building me-2 text-info"></i>Maklumat Pembekal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter:invert(1);"></button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-borderless mb-0" style="color:var(--text);">
+            <tr><td style="width:120px;color:var(--text-muted);">Nama Syarikat</td><td style="font-weight:500;">{{ $order->supplier_name }}</td></tr>
+            <tr><td style="color:var(--text-muted);">Contact Person</td><td>{{ $order->supplier_contact ?? '-' }}</td></tr>
+            <tr><td style="color:var(--text-muted);">Emel</td><td>{{ $order->supplier_email ?? '-' }}</td></tr>
+            <tr><td style="color:var(--text-muted);">No. Telefon</td><td>{{ $order->supplier_phone ?? '-' }}</td></tr>
+            <tr><td style="color:var(--text-muted);">Alamat</td><td>{{ $order->supplier_address ?? '-' }}</td></tr>
+            <tr><td style="color:var(--text-muted);">Poskod</td><td>{{ $order->supplier_postcode ?? '-' }}</td></tr>
+          </table>
+        </div>
+        <div class="modal-footer" style="border-top:1px solid var(--border);">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  @endif
+  @endforeach
 
   <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

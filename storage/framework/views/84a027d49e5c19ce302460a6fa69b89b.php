@@ -412,7 +412,16 @@
       border-radius: 999px;
     }
   </style>
+  <link href="<?php echo e(asset('css/design.css')); ?>?v=3" rel="stylesheet">
 
+<style>
+body.mobile-nav-active { background: #000 !important; }
+body.mobile-nav-active .navmenu { background: #000 !important; }
+body.mobile-nav-active .navmenu > ul { background: #000 !important; border: none !important; box-shadow: none !important; inset: 0 !important; border-radius: 0 !important; overflow: visible !important; padding-top: 60px !important; }
+body.mobile-nav-active #navmenu ul li a { color: #fff !important; }
+body.mobile-nav-active #navmenu ul li a:hover, body.mobile-nav-active #navmenu ul li a.active { color: #7CB342 !important; }
+body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-active footer { display: none !important; }
+</style>
 <body>
 
   <header id="header" class="header d-flex align-items-center sticky-top" style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
@@ -524,6 +533,18 @@
         </div>
       </div>
 
+      <!-- Category Filter -->
+      <div class="row justify-content-center mb-3">
+        <div class="col-lg-3">
+          <select id="categoryFilter" class="form-select form-select-sm" style="background:var(--surface-soft);border-color:var(--border);color:var(--text);">
+            <option value="">Semua Kategori</option>
+            <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($cat->name); ?>"><?php echo e($cat->name); ?></option>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+          </select>
+        </div>
+      </div>
+
       <div class="row justify-content-center">
         <div class="col-lg-12">
           <div class="card-table">
@@ -545,7 +566,7 @@
                 </thead>
                 <tbody>
                   <?php $__empty_1 = true; $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                    <tr>
+                    <tr data-category="<?php echo e($item->category_name ?? ''); ?>">
                       <td><?php echo e($loop->iteration); ?></td>
                       <td class="fw-semibold"><?php echo e($item->name); ?></td>
                       <td><?php echo e(number_format($item->current_quantity, 0)); ?></td>
@@ -599,7 +620,7 @@
   <script>
     $(document).ready(function() {
         <?php if($items->isNotEmpty()): ?>
-        $('#inventoriTable').DataTable({
+        var inventTable = $('#inventoriTable').DataTable({
             pageLength: 10,
             pagingType: 'full_numbers',
             lengthChange: true,
@@ -623,6 +644,15 @@
                 }
             }
         });
+
+        // Category filter
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            var cat = $('#categoryFilter').val();
+            if (!cat) return true;
+            var row = inventTable.row(dataIndex).node();
+            return $(row).data('category') === cat;
+        });
+        $('#categoryFilter').on('change', function() { inventTable.draw(); });
         <?php endif; ?>
     });
   </script>

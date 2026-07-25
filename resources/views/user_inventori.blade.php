@@ -412,7 +412,16 @@
       border-radius: 999px;
     }
   </style>
+  <link href="{{ asset('css/design.css') }}?v=3" rel="stylesheet">
 
+<style>
+body.mobile-nav-active { background: #000 !important; }
+body.mobile-nav-active .navmenu { background: #000 !important; }
+body.mobile-nav-active .navmenu > ul { background: #000 !important; border: none !important; box-shadow: none !important; inset: 0 !important; border-radius: 0 !important; overflow: visible !important; padding-top: 60px !important; }
+body.mobile-nav-active #navmenu ul li a { color: #fff !important; }
+body.mobile-nav-active #navmenu ul li a:hover, body.mobile-nav-active #navmenu ul li a.active { color: #7CB342 !important; }
+body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-active footer { display: none !important; }
+</style>
 <body>
 
   <header id="header" class="header d-flex align-items-center sticky-top" style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
@@ -522,6 +531,18 @@
         </div>
       </div>
 
+      <!-- Category Filter -->
+      <div class="row justify-content-center mb-3">
+        <div class="col-lg-3">
+          <select id="categoryFilter" class="form-select form-select-sm" style="background:var(--surface-soft);border-color:var(--border);color:var(--text);">
+            <option value="">Semua Kategori</option>
+            @foreach($categories as $cat)
+            <option value="{{ $cat->name }}">{{ $cat->name }}</option>
+            @endforeach
+          </select>
+        </div>
+      </div>
+
       <div class="row justify-content-center">
         <div class="col-lg-12">
           <div class="card-table">
@@ -543,7 +564,7 @@
                 </thead>
                 <tbody>
                   @forelse ($items as $item)
-                    <tr>
+                    <tr data-category="{{ $item->category_name ?? '' }}">
                       <td>{{ $loop->iteration }}</td>
                       <td class="fw-semibold">{{ $item->name }}</td>
                       <td>{{ number_format($item->current_quantity, 0) }}</td>
@@ -597,7 +618,7 @@
   <script>
     $(document).ready(function() {
         @if($items->isNotEmpty())
-        $('#inventoriTable').DataTable({
+        var inventTable = $('#inventoriTable').DataTable({
             pageLength: 10,
             pagingType: 'full_numbers',
             lengthChange: true,
@@ -621,6 +642,15 @@
                 }
             }
         });
+
+        // Category filter
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            var cat = $('#categoryFilter').val();
+            if (!cat) return true;
+            var row = inventTable.row(dataIndex).node();
+            return $(row).data('category') === cat;
+        });
+        $('#categoryFilter').on('change', function() { inventTable.draw(); });
         @endif
     });
   </script>

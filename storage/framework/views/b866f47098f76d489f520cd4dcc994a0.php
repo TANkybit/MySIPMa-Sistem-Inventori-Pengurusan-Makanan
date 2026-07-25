@@ -115,14 +115,23 @@
       .text-white-50:hover { color: #10b981 !important; }
     }
   </style>
+  <link href="<?php echo e(asset('css/design.css')); ?>?v=3" rel="stylesheet">
+<style>
+body.mobile-nav-active { background: #000 !important; }
+body.mobile-nav-active .navmenu { background: #000 !important; }
+body.mobile-nav-active .navmenu > ul { background: #000 !important; border: none !important; box-shadow: none !important; inset: 0 !important; border-radius: 0 !important; overflow: visible !important; padding-top: 60px !important; }
+body.mobile-nav-active #navmenu ul li a { color: #fff !important; }
+body.mobile-nav-active #navmenu ul li a:hover, body.mobile-nav-active #navmenu ul li a.active { color: #7CB342 !important; }
+body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-active footer { display: none !important; }
+</style>
 </head>
 
 <body>
 
   <header id="header" class="header d-flex align-items-center sticky-top"
     style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
-    <div class="container d-flex align-items-center">
-      <a href="<?php echo e(route('user.dashboard')); ?>" class="logo-glow d-flex align-items-center">
+    <div class="container position-relative d-flex align-items-center justify-content-between">
+      <a href="#" class="logo-glow d-flex align-items-center" id="logoLogoutTrigger">
         <img src="<?php echo e(asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png')); ?>" style="height: 55px; width: auto;" alt="MySIPMa logo">
       </a>
 
@@ -387,6 +396,7 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/js/mobile-nav.js')); ?>"></script>
 
   <script>
     // Theme toggle
@@ -487,7 +497,7 @@
           json.data.forEach(order => {
             const opt = document.createElement('option');
             opt.value = order.id;
-            opt.textContent = order.order_number + ' (' + order.order_date + ')';
+            opt.textContent = order.order_no + ' (' + order.order_date + ')';
             select.appendChild(opt);
           });
         }

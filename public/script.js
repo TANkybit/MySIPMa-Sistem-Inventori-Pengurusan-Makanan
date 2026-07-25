@@ -2599,8 +2599,10 @@ class PrisonSystem {
         if (window.prisonData.rawMaterials) {
             window.prisonData.rawMaterials.forEach(material => {
                 items.push({
-                    name: cleanName(material.name),
+                    name: material.name,
                     category: material.category,
+                    category_id: material.category_id,
+                    uom_id: material.uom_id,
                     subcategory: material.subcategory || '-',
                     ceiling_limit: material.ceiling_limit || '-',
                     price: material.price ? 'RM ' + parseFloat(material.price).toFixed(2) : '-',
@@ -2611,11 +2613,27 @@ class PrisonSystem {
             });
         }
 
+        const itemCategoryId = (item) => item.category_id || (item.category === 'makanan' ? 1 : 0);
+        const itemUomId = (item) => item.uom_id || 1;
+        const itemStatus = (item) => item.status === 'active' || item.status === '1' ? 'active' : 'inactive';
+
         items.forEach((item, index) => {
             const row = document.createElement('tr');
+            const escapedName = item.name.replace(/"/g, '&quot;');
             row.innerHTML = `
                 <td>${index + 1}</td>
-                <td><div class="fw-medium">${cleanName(item.name)}</div></td>
+                <td>
+                    <div class="fw-medium item-name-cell" data-item-id="${item.id || index}" data-category-id="${itemCategoryId(item)}" data-uom-id="${itemUomId(item)}" data-item-status="${itemStatus(item)}">
+                        <span class="item-name-label">${item.name}</span>
+                        <div class="item-edit-fields d-none" style="display:none;">
+                            <div class="input-group input-group-sm flex-nowrap" style="min-width:280px;">
+                                <input type="text" class="form-control form-control-sm item-name-input" value="${escapedName}">
+                                <button class="btn btn-success save-item-name" type="button"><i class="fas fa-check"></i></button>
+                                <button class="btn btn-secondary cancel-item-edit" type="button"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </td>
                 <td>${item.category}</td>
                 <td>${item.subcategory || '-'}</td>
                 <td>${item.ceiling_limit || '-'}</td>
@@ -2624,7 +2642,7 @@ class PrisonSystem {
                 <td><span class="badge bg-${item.status === 'active' ? 'success' : 'secondary'}">${item.status === 'active' ? 'Aktif' : 'Tidak Aktif'}</span></td>
                 <td>
                     <div class="btn-group btn-group-sm">
-                        <button class="btn btn-sm btn-outline-primary" data-action="edit-item" data-id="${item.id || index}"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-outline-primary edit-item-btn" data-action="edit-item" data-id="${item.id || index}"><i class="fas fa-edit"></i></button>
                     </div>
                 </td>
             `;
@@ -2632,6 +2650,91 @@ class PrisonSystem {
         });
 
         this.initDataTable('#item-list-table');
+
+        // === Inline Edit Item Name ===
+        const table = document.getElementById('item-list-table');
+
+        table.addEventListener('click', (e) => {
+            const editBtn = e.target.closest('[data-action="edit-item"]');
+            if (editBtn) {
+                e.preventDefault();
+                const row = editBtn.closest('tr');
+                const cell = row.querySelector('.item-name-cell');
+                cell.querySelector('.item-name-label').style.display = 'none';
+                const editFields = cell.querySelector('.item-edit-fields');
+                editFields.style.display = '';
+                editFields.querySelector('.item-name-input').focus();
+                editBtn.disabled = true;
+                return;
+            }
+
+            const saveBtn = e.target.closest('.save-item-name');
+            if (saveBtn) {
+                e.preventDefault();
+                this._saveItemName(saveBtn);
+                return;
+            }
+
+            const cancelBtn = e.target.closest('.cancel-item-edit');
+            if (cancelBtn) {
+                e.preventDefault();
+                this._cancelItemEdit(cancelBtn);
+                return;
+            }
+        });
+    }
+
+    _saveItemName(saveBtn) {
+        const editFields = saveBtn.closest('.item-edit-fields');
+        const cell = editFields.closest('.item-name-cell');
+        const input = editFields.querySelector('.item-name-input');
+        const newName = input.value.trim();
+        if (!newName) return;
+
+        const itemId = cell.dataset.itemId;
+        const origText = saveBtn.innerHTML;
+        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+        saveBtn.disabled = true;
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+        fetch(`/items/${itemId}`, {
+            method: 'PUT',
+            headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json', 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: newName,
+                category_id: cell.dataset.categoryId || 1,
+                uom_id: cell.dataset.uomId || 1,
+                status: cell.dataset.itemStatus || 'active'
+            })
+        })
+        .then(r => r.json())
+        .then(result => {
+            if (result.success) {
+                const label = cell.querySelector('.item-name-label');
+                label.textContent = newName;
+                this._cancelItemEdit(saveBtn);
+                this.showNotification('Nama item berjaya dikemaskini.', 'success');
+            } else {
+                this.showNotification(result.message || 'Gagal mengemaskini item.', 'danger');
+                saveBtn.innerHTML = origText;
+                saveBtn.disabled = false;
+            }
+        })
+        .catch(() => {
+            this.showNotification('Ralat sistem.', 'danger');
+            saveBtn.innerHTML = origText;
+            saveBtn.disabled = false;
+        });
+    }
+
+    _cancelItemEdit(cancelBtn) {
+        const editFields = cancelBtn.closest('.item-edit-fields');
+        const cell = editFields.closest('.item-name-cell');
+        cell.querySelector('.item-name-label').style.display = '';
+        editFields.style.display = 'none';
+        const editBtn = cell.closest('tr').querySelector('[data-action="edit-item"]');
+        if (editBtn) editBtn.disabled = false;
     }
 
     initTooltips() {

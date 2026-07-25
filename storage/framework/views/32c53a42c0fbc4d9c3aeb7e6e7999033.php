@@ -20,7 +20,6 @@
 
   <link href="<?php echo e(asset('frontend/Nexa/assets/css/main2.css')); ?>" rel="stylesheet">
   <link href="<?php echo e(asset('css/user-theme.css')); ?>" rel="stylesheet">
-  <link href="<?php echo e(asset('frontend/Nexa/assets/css/index.css')); ?>" rel="stylesheet">
 
   <style>
     .logo-glow {
@@ -80,10 +79,6 @@
       background: rgba(255, 255, 255, 0.1);
       border-color: #fff;
     }
-
-    .profile-nav-link { color: #ffffff !important; }
-    .profile-nav-link.active,
-    .profile-nav-link:hover { color: #10b981 !important; }
 
     /* Full height layout */
     html, body {
@@ -348,6 +343,8 @@
       font-size: 14px;
       transition: all .2s;
       font-family: 'Montserrat', sans-serif;
+      width: 100% !important;
+      box-sizing: border-box !important;
     }
 
     .form-group input:focus,
@@ -681,13 +678,22 @@
     [data-bs-theme="light"] #logoutConfirmModal .btn-cancel { background:#f3f4f6; border-color:#d1d5db; color:#374151; }
     [data-bs-theme="light"] #logoutConfirmModal .btn-cancel:hover { background:#e5e7eb; }
   </style>
+  <link href="<?php echo e(asset('css/design.css')); ?>?v=3" rel="stylesheet">
+<style>
+body.mobile-nav-active { background: #000 !important; }
+body.mobile-nav-active .navmenu { background: #000 !important; }
+body.mobile-nav-active .navmenu > ul { background: #000 !important; border: none !important; box-shadow: none !important; inset: 0 !important; border-radius: 0 !important; overflow: visible !important; padding-top: 60px !important; }
+body.mobile-nav-active #navmenu ul li a { color: #fff !important; }
+body.mobile-nav-active #navmenu ul li a:hover, body.mobile-nav-active #navmenu ul li a.active { color: #7CB342 !important; }
+body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-active footer { display: none !important; }
+</style>
 </head>
 
 <body class="index-page">
 
   <header id="header" class="header d-flex align-items-center sticky-top"
     style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
-    <div class="container d-flex align-items-center">
+    <div class="container position-relative d-flex align-items-center justify-content-between">
       <a href="#" class="logo-glow d-flex align-items-center" id="logoLogoutTrigger">
         <img src="<?php echo e(asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png')); ?>" style="height: 55px; width: auto;"
           alt="MySIPMa logo">
@@ -754,7 +760,7 @@
         </a>
         <?php endif; ?>
         <button class="btn btn-icon" id="themeToggle" style="background:none;border:none;color:var(--text);font-size:1.2rem;padding:4px 8px"><i class="bi bi-moon-fill"></i></button>
-        <a href="<?php echo e(route('profile')); ?>" class="profile-nav-link active text-decoration-none" style="transition: color 0.3s;"><i
+        <a href="<?php echo e(route('profile')); ?>" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''"><i
             class="bi bi-person-circle me-2"></i><?php echo e(Auth::user()->name ?? 'Pengguna'); ?></a>
         <button type="button" class="btn btn-custom btn-logout btn-sm px-3 py-2" id="desktopLogoutBtn"><i
               class="bi bi-box-arrow-right me-2"></i>Log Keluar</button>
@@ -1290,8 +1296,11 @@
   <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/isotope-layout/isotope.pkgd.min.js')); ?>"></script>
 
   <script src="<?php echo e(asset('frontend/Nexa/assets/js/particles.min.js')); ?>"></script>
-  <script src="<?php echo e(asset('frontend/Nexa/assets/js/main.js')); ?>"></script>
-
+  <script src="<?php echo e(asset('frontend/Nexa/assets/js/mobile-nav.js')); ?>"></script>
+  <script>
+    const preloader = document.querySelector('#preloader');
+    if (preloader) { window.addEventListener('load', () => preloader.remove()); }
+  </script>
     <script src="<?php echo e(asset('js/session-timeout.js')); ?>"></script>
   <script src="<?php echo e(asset('js/user-theme.js')); ?>"></script>
 

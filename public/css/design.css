@@ -1,0 +1,1101 @@
+/* ═══════════════════════════════════════════════════════
+   MySIPMA — FLASHY CYBER-MATCHA THEME
+   ═══════════════════════════════════════════════════════ */
+
+:root {
+  --matcha: #7CB342;
+  --matcha-dark: #558B2F;
+  --matcha-light: #AED581;
+  --matcha-pale: #C5E1A5;
+  --matcha-bg: #080a08;
+  --matcha-surface: #101410;
+  --matcha-border: rgba(124, 179, 66, 0.18);
+  --matcha-glow: rgba(124, 179, 66, 0.35);
+  --matcha-soft: rgba(124, 179, 66, 0.12);
+  --glass-bg: rgba(16, 21, 16, 0.65);
+  --glass-border: rgba(124, 179, 66, 0.15);
+}
+
+/* ── 1. BODY — Animated Moss Aurora Background ── */
+:root:root body {
+  background: radial-gradient(circle at top, rgba(124, 179, 66, 0.18) 0%, transparent 45%), 
+              linear-gradient(160deg, #070907 0%, #0e110e 50%, #121512 100%) !important;
+  color: #f3f7f3 !important;
+  position: relative !important;
+  background-attachment: fixed !important;
+}
+
+/* Slow-Drifting Luminous Moss Blobs */
+:root:root main::before {
+  content: '' !important;
+  position: fixed !important;
+  top: -10% !important;
+  right: -5% !important;
+  width: 550px !important;
+  height: 550px !important;
+  background: radial-gradient(circle, rgba(124, 179, 66, 0.12) 0%, rgba(174, 213, 129, 0.05) 50%, transparent 70%) !important;
+  border-radius: 50% !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+  animation: matchaDrift1 25s ease-in-out infinite alternate !important;
+}
+:root:root main::after {
+  content: '' !important;
+  position: fixed !important;
+  bottom: -15% !important;
+  left: -5% !important;
+  width: 600px !important;
+  height: 600px !important;
+  background: radial-gradient(circle, rgba(174, 213, 129, 0.1) 0%, rgba(197, 225, 165, 0.03) 50%, transparent 70%) !important;
+  border-radius: 50% !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+  animation: matchaDrift2 30s ease-in-out infinite alternate !important;
+}
+
+@keyframes matchaDrift1 {
+  0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  100% { transform: translate(120px, -80px) scale(1.2) rotate(360deg); }
+}
+@keyframes matchaDrift2 {
+  0% { transform: translate(0, 0) scale(1.1) rotate(0deg); }
+  100% { transform: translate(-80px, 120px) scale(0.9) rotate(-360deg); }
+}
+
+:root:root main { position: relative; z-index: 1; }
+
+/* ── 2. HEADER — Translucent Frosted Glass ── */
+:root:root #header {
+  background: rgba(8, 10, 8, 0.8) !important;
+  backdrop-filter: blur(24px) saturate(120%) !important;
+  border-bottom: 1px solid var(--matcha-border) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ── 3. PAGE HEADER — Glow Gradient ── */
+:root:root .dashboard-header h1 {
+  background: linear-gradient(135deg, #7CB342, #AED581, #C5E1A5) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.5px;
+  text-shadow: 0 0 30px rgba(124, 179, 66, 0.25) !important;
+}
+
+:root:root .dashboard-header::after {
+  content: '' !important;
+  display: block !important;
+  width: 100px !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, transparent, #7CB342, #AED581, #7CB342, transparent) !important;
+  border-radius: 4px !important;
+  margin: 14px auto 0 !important;
+  animation: matchaPulse 3s ease-in-out infinite !important;
+}
+
+@keyframes matchaPulse {
+  0%, 100% { opacity: 0.5; transform: scaleX(1); }
+  50% { opacity: 1; transform: scaleX(1.2); }
+}
+
+/* ── 4. BENTO CARDS — Glassmorphism & Hover Glow ── */
+:root:root .card-table, :root:root .card-box, :root:root .card-form, :root:root .summary-card {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(20px) saturate(130%) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4) !important;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+:root:root .card-table::before, :root:root .card-box::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 3px !important;
+  background: linear-gradient(90deg, transparent, #7CB342, #AED581, #7CB342, transparent) !important;
+  z-index: 2 !important;
+}
+
+:root:root .card-table:hover, :root:root .card-box:hover, :root:root .summary-card:hover {
+  transform: translateY(-6px) scale(1.008) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 35px var(--matcha-glow) !important;
+  border-color: rgba(124, 179, 66, 0.4) !important;
+}
+
+/* ── 5. TABLES — Neon Glass rows ── */
+:root:root .table-dark-custom thead th {
+  background: linear-gradient(135deg, #3E6B34, #558B2F, #7CB342) !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 1px !important;
+  padding: 18px 14px !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+:root:root .table-dark-custom thead th:first-child { border-radius: 16px 0 0 0 !important; }
+:root:root .table-dark-custom thead th:last-child { border-radius: 0 16px 0 0 !important; }
+
+:root:root .table-dark-custom tbody tr {
+  transition: background-color 0.3s ease;
+}
+
+:root:root .table-dark-custom tbody tr:hover td {
+  background: rgba(124, 179, 66, 0.1) !important;
+}
+
+:root:root .table-dark-custom tbody tr td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  padding: 16px 14px !important;
+  color: #e2e8f0 !important;
+}
+
+/* ── 6. STAT CARDS ── */
+:root:root .stat-card {
+  backdrop-filter: blur(20px) saturate(120%) !important;
+  border-radius: 24px !important;
+  border: 1px solid var(--glass-border) !important;
+  background: var(--glass-bg) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+}
+
+:root:root .stat-card:hover {
+  transform: translateY(-8px) !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 35px var(--matcha-glow) !important;
+  border-color: rgba(124, 179, 66, 0.4) !important;
+}
+
+/* ── 7. BUTTONS — Moving Shine Effect ── */
+:root:root .btn-custom, :root:root .btn-glow {
+  background: linear-gradient(135deg, #558B2F, #7CB342) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  padding: 14px 32px !important;
+  font-weight: 800 !important;
+  color: #fff !important;
+  box-shadow: 0 6px 20px rgba(85, 139, 47, 0.35) !important;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+:root:root .btn-custom::after, :root:root .btn-glow::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transition: 0.6s ease;
+}
+
+:root:root .btn-custom:hover::after, :root:root .btn-glow:hover::after {
+  left: 100%;
+}
+
+:root:root .btn-custom:hover, :root:root .btn-glow:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 12px 30px rgba(85, 139, 47, 0.5), 0 0 20px var(--matcha-glow) !important;
+  background: linear-gradient(135deg, #7CB342, #AED581) !important;
+  color: #fff !important;
+}
+
+:root:root .btn-outline-action {
+  background: rgba(124, 179, 66, 0.08) !important;
+  border: 1.5px solid rgba(124, 179, 66, 0.3) !important;
+  color: #AED581 !important;
+  border-radius: 14px !important;
+  font-weight: 800 !important;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+}
+
+:root:root .btn-outline-action:hover {
+  background: linear-gradient(135deg, #558B2F, #7CB342) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 6px 20px rgba(85, 139, 47, 0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+:root:root .btn-link-action {
+  background: linear-gradient(135deg, #558B2F, #7CB342) !important;
+  color: #fff !important;
+  padding: 8px 20px !important;
+  border-radius: 50px !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 15px rgba(85, 139, 47, 0.25) !important;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+:root:root .btn-link-action:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 25px rgba(85, 139, 47, 0.4) !important;
+  color: #fff !important;
+}
+
+:root:root .btn-danger-custom {
+  background: linear-gradient(135deg, #c0392b, #e74c3c) !important;
+  box-shadow: 0 6px 20px rgba(192, 57, 43, 0.35) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  color: #ffffff !important;
+  transition: all 0.3s ease;
+}
+:root:root .btn-danger-custom:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 12px 30px rgba(192, 57, 43, 0.5) !important;
+  color: #ffffff !important;
+}
+
+/* ── 8. GLOWING NEON BADGES ── */
+:root:root .badge-soft-success {
+  background: rgba(124, 179, 66, 0.12) !important;
+  color: #C5E1A5 !important;
+  border: 1px solid rgba(124, 179, 66, 0.3) !important;
+  text-shadow: 0 0 8px rgba(124, 179, 66, 0.4) !important;
+  box-shadow: 0 0 10px rgba(124, 179, 66, 0.1) inset !important;
+}
+:root:root .badge-soft-warning {
+  background: rgba(255, 193, 7, 0.12) !important;
+  color: #FFE082 !important;
+  border: 1px solid rgba(255, 193, 7, 0.3) !important;
+  text-shadow: 0 0 8px rgba(255, 193, 7, 0.4) !important;
+  box-shadow: 0 0 10px rgba(255, 193, 7, 0.1) inset !important;
+}
+:root:root .badge-soft-danger {
+  background: rgba(239, 68, 68, 0.12) !important;
+  color: #fca5a5 !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  text-shadow: 0 0 8px rgba(239, 68, 68, 0.4) !important;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.1) inset !important;
+}
+:root:root .badge-soft-info {
+  background: rgba(6, 182, 212, 0.12) !important;
+  color: #a5f3fc !important;
+  border: 1px solid rgba(6, 182, 212, 0.3) !important;
+  text-shadow: 0 0 8px rgba(6, 182, 212, 0.4) !important;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.1) inset !important;
+}
+
+:root:root .badge.bg-success { background: linear-gradient(135deg, #558B2F, #7CB342) !important; color: #fff !important; box-shadow: 0 2px 10px rgba(124, 179, 66, 0.3) !important; }
+:root:root .badge.bg-warning { background: linear-gradient(135deg, #F57F17, #FFB300) !important; color: #fff !important; box-shadow: 0 2px 10px rgba(245, 127, 23, 0.3) !important; }
+:root:root .badge.bg-info { background: linear-gradient(135deg, #00695C, #26A69A) !important; color: #fff !important; box-shadow: 0 2px 10px rgba(38, 166, 154, 0.3) !important; }
+:root:root .badge.bg-danger { background: linear-gradient(135deg, #c0392b, #e74c3c) !important; color: #fff !important; box-shadow: 0 2px 10px rgba(192, 57, 43, 0.3) !important; }
+
+/* ── 9. FORM INPUTS — Glass Outlines ── */
+:root:root .form-control, :root:root .form-select {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(124, 179, 66, 0.25) !important;
+  border-radius: 16px !important;
+  color: #ffffff !important;
+  padding: 14px 18px !important;
+  transition: all 0.3s ease !important;
+}
+:root:root .form-control option, :root:root .form-select option {
+  color: #1e293b !important;
+  background: #ffffff !important;
+}
+:root:root .form-control:focus, :root:root .form-select:focus {
+  border-color: #AED581 !important;
+  box-shadow: 0 0 0 4px rgba(124, 179, 66, 0.18), 0 0 20px rgba(124, 179, 66, 0.15) !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+  color: #ffffff !important;
+}
+
+/* ── 10. NAV LINKS ── */
+:root:root .navmenu ul li a:hover,
+:root:root .navmenu ul li a.active {
+  color: #AED581 !important;
+  -webkit-text-fill-color: #AED581 !important;
+}
+
+/* ── 11. DATATABLES ── */
+:root:root .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background: linear-gradient(135deg, #558B2F, #7CB342) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 4px 15px rgba(85, 139, 47, 0.35) !important;
+  border-radius: 12px !important;
+}
+
+/* ── 12. LOGOUT BUTTON ── */
+:root:root .btn-logout {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #f1f5f1 !important;
+  border-radius: 50px !important;
+  padding: 10px 24px !important;
+  font-weight: 800 !important;
+  transition: all 0.3s ease !important;
+}
+:root:root .btn-logout:hover {
+  background: linear-gradient(135deg, #c0392b, #e74c3c) !important;
+  border-color: transparent !important;
+  box-shadow: 0 6px 24px rgba(192, 57, 43, 0.3) !important;
+  transform: translateY(-2px) !important;
+  color: #fff !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   LIGHT MODE — Matcha Latte (Frosted Cream Glass)
+   ═══════════════════════════════════════════════════════ */
+
+/* ── 13. BACKGROUND & BASE ── */
+:root:root [data-bs-theme="light"] body {
+  background: radial-gradient(circle at top, rgba(124, 179, 66, 0.08) 0%, transparent 45%), 
+              #f5f7f2 !important;
+  color: #2d3a22 !important;
+}
+
+:root:root [data-bs-theme="light"] h1,
+:root:root [data-bs-theme="light"] h2,
+:root:root [data-bs-theme="light"] h3,
+:root:root [data-bs-theme="light"] h4,
+:root:root [data-bs-theme="light"] h5,
+:root:root [data-bs-theme="light"] h6 {
+  color: #1b2612 !important;
+}
+
+:root:root [data-bs-theme="light"] p,
+:root:root [data-bs-theme="light"] label,
+:root:root [data-bs-theme="light"] span:not(.badge),
+:root:root [data-bs-theme="light"] td,
+:root:root [data-bs-theme="light"] th {
+  color: #2d3a22 !important;
+}
+
+:root:root [data-bs-theme="light"] .header {
+  background: rgba(245, 247, 242, 0.92) !important;
+}
+
+/* ── 14. HEADER (#header ID) ── */
+:root:root [data-bs-theme="light"] #header {
+  background: rgba(245, 247, 242, 0.92) !important;
+  border-bottom: 1px solid rgba(124, 179, 66, 0.15) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.04) !important;
+}
+
+/* ── 15. PAGE HEADER (gradient) ── */
+:root:root [data-bs-theme="light"] .dashboard-header h1 {
+  background: linear-gradient(135deg, #3E6B34, #558B2F, #7CB342) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+:root:root [data-bs-theme="light"] .dashboard-header::after {
+  background: linear-gradient(90deg, #7CB342, #AED581, #7CB342) !important;
+}
+
+/* ── 16. CARDS ── */
+:root:root [data-bs-theme="light"] .card-table,
+:root:root [data-bs-theme="light"] .card-box,
+:root:root [data-bs-theme="light"] .card-form,
+:root:root [data-bs-theme="light"] .summary-card {
+  background: #ffffff !important;
+  border-color: rgba(124, 179, 66, 0.2) !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.04) !important;
+}
+:root:root [data-bs-theme="light"] .card-table:hover,
+:root:root [data-bs-theme="light"] .card-box:hover,
+:root:root [data-bs-theme="light"] .summary-card:hover {
+  box-shadow: 0 16px 40px rgba(124, 179, 66, 0.1) !important;
+  border-color: rgba(124, 179, 66, 0.35) !important;
+}
+:root:root [data-bs-theme="light"] .card-table::before,
+:root:root [data-bs-theme="light"] .card-box::before {
+  background: linear-gradient(90deg, transparent, #7CB342, #AED581, #7CB342, transparent) !important;
+}
+
+/* ── 17. TABLE ── */
+:root:root [data-bs-theme="light"] .table-dark-custom {
+  color: #2d3a22 !important;
+  border-color: rgba(0,0,0,0.06) !important;
+}
+:root:root [data-bs-theme="light"] .table-dark-custom thead th {
+  background: linear-gradient(135deg, #558B2F, #7CB342) !important;
+  color: #fff !important;
+}
+:root:root [data-bs-theme="light"] .table-dark-custom tbody tr td {
+  background: transparent !important;
+  color: #2d3a22 !important;
+  border-bottom: 1px solid rgba(0,0,0,0.06) !important;
+}
+:root:root [data-bs-theme="light"] .table-dark-custom tbody tr:hover td {
+  background: rgba(124, 179, 66, 0.05) !important;
+}
+
+/* Bootstrap default .table-dark */
+:root:root [data-bs-theme="light"] .table-dark {
+  --bs-table-bg: transparent !important;
+  --bs-table-color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .table-dark tr {
+  border-bottom-color: rgba(124, 179, 66, 0.08) !important;
+}
+:root:root [data-bs-theme="light"] .table-dark th {
+  color: #1b2612 !important;
+}
+:root:root [data-bs-theme="light"] .table-dark td {
+  color: #2d3a22 !important;
+}
+
+/* ── 18. STAT CARDS ── */
+:root:root [data-bs-theme="light"] .stat-card {
+  background: #ffffff !important;
+  border-color: rgba(124, 179, 66, 0.2) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03) !important;
+}
+:root:root [data-bs-theme="light"] .stat-card:hover {
+  box-shadow: 0 12px 40px rgba(124, 179, 66, 0.1) !important;
+  border-color: rgba(124, 179, 66, 0.35) !important;
+}
+:root:root [data-bs-theme="light"] .stat-card .stat-title {
+  color: #607352 !important;
+}
+:root:root [data-bs-theme="light"] .stat-card .stat-value {
+  color: #1b2612 !important;
+}
+:root:root [data-bs-theme="light"] .stat-card .stat-change {
+  color: #558B2F !important;
+}
+
+/* Dashboard stat cards — override dark ID-specific backgrounds */
+:root:root [data-bs-theme="light"] #statsRow1 > .col-md-3:nth-child(1) .stat-card,
+:root:root [data-bs-theme="light"] #statsRow1 > .col-md-3:nth-child(2) .stat-card,
+:root:root [data-bs-theme="light"] #statsRow1 > .col-md-3:nth-child(3) .stat-card,
+:root:root [data-bs-theme="light"] #statsRow1 > .col-md-3:nth-child(4) .stat-card,
+:root:root [data-bs-theme="light"] #statsRow1 > .col-md-3:nth-child(5) .stat-card {
+  background: #ffffff !important;
+}
+
+/* ── 19. NAVIGATION ── */
+:root:root [data-bs-theme="light"] .navmenu ul li a {
+  color: #607352 !important;
+}
+:root:root [data-bs-theme="light"] .navmenu ul li a:hover,
+:root:root [data-bs-theme="light"] .navmenu ul li a.active {
+  color: #558B2F !important;
+  -webkit-text-fill-color: #558B2F !important;
+}
+:root:root [data-bs-theme="light"] .navmenu ul li a::after {
+  background: linear-gradient(90deg, #7CB342, #AED581) !important;
+}
+
+/* ── 20. FORM INPUTS ── */
+:root:root [data-bs-theme="light"] .form-control,
+:root:root [data-bs-theme="light"] .form-select {
+  background: #ffffff !important;
+  border-color: rgba(124, 179, 66, 0.3) !important;
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .form-control:focus,
+:root:root [data-bs-theme="light"] .form-select:focus {
+  border-color: #7CB342 !important;
+  box-shadow: 0 0 0 3px rgba(124, 179, 66, 0.15), 0 0 20px rgba(124, 179, 66, 0.04) !important;
+  background: #ffffff !important;
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .form-label,
+:root:root [data-bs-theme="light"] .form-label-custom {
+  color: #2d3a22 !important;
+}
+
+/* ── 21. WELCOME BANNER ── */
+:root:root [data-bs-theme="light"] .welcome-banner {
+  background: linear-gradient(135deg, #558B2F, #7CB342) !important;
+  border-color: transparent !important;
+}
+:root:root [data-bs-theme="light"] .welcome-banner h2,
+:root:root [data-bs-theme="light"] .welcome-banner p {
+  color: #ffffff !important;
+}
+
+/* ── 22. BUTTONS ── */
+:root:root [data-bs-theme="light"] .btn-logout {
+  color: #607352 !important;
+  border-color: rgba(124, 179, 66, 0.3) !important;
+  background: rgba(124, 179, 66, 0.04) !important;
+}
+:root:root [data-bs-theme="light"] .btn-logout:hover {
+  color: #fff !important;
+  background: linear-gradient(135deg, #c0392b, #e74c3c) !important;
+  border-color: transparent !important;
+}
+
+:root:root [data-bs-theme="light"] .btn-outline-action {
+  background: rgba(124, 179, 66, 0.04) !important;
+  color: #558B2F !important;
+  border-color: rgba(124, 179, 66, 0.3) !important;
+}
+:root:root [data-bs-theme="light"] .btn-outline-action:hover {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #558B2F, #7CB342) !important;
+  border-color: transparent !important;
+}
+
+/* ── 23. SUMMARY CARDS ── */
+:root:root [data-bs-theme="light"] .summary-card {
+  background: #ffffff !important;
+  border-color: rgba(124, 179, 66, 0.15) !important;
+}
+:root:root [data-bs-theme="light"] .summary-card h6 {
+  color: #607352 !important;
+}
+:root:root [data-bs-theme="light"] .summary-card span {
+  color: #1b2612 !important;
+}
+:root:root [data-bs-theme="light"] .summary-card .text-muted {
+  color: #8c9c82 !important;
+}
+
+/* Inventori stat rows — override dark ID backgrounds */
+:root:root [data-bs-theme="light"] #inventStatsRow > .col-md-3:nth-child(1) .summary-card,
+:root:root [data-bs-theme="light"] #inventStatsRow > .col-md-3:nth-child(2) .summary-card,
+:root:root [data-bs-theme="light"] #inventStatsRow > .col-md-3:nth-child(3) .summary-card,
+:root:root [data-bs-theme="light"] #inventStatsRow > .col-md-3:nth-child(4) .summary-card {
+  background: #ffffff !important;
+  border-color: rgba(124, 179, 66, 0.15) !important;
+}
+
+/* ── 24. DATATABLES ── */
+:root:root [data-bs-theme="light"] .dataTables_wrapper .dataTables_length label,
+:root:root [data-bs-theme="light"] .dataTables_wrapper .dataTables_filter label,
+:root:root [data-bs-theme="light"] .dataTables_wrapper .dataTables_info {
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .dataTables_filter input {
+  background: #ffffff !important;
+  border-color: rgba(124, 179, 66, 0.3) !important;
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .dataTables_filter input:focus {
+  border-color: #7CB342 !important;
+  box-shadow: 0 0 0 3px rgba(124, 179, 66, 0.08) !important;
+}
+:root:root [data-bs-theme="light"] .dataTables_length select,
+:root:root [data-bs-theme="light"] .form-select-sm,
+:root:root [data-bs-theme="light"] .form-control-sm {
+  background: #ffffff !important;
+  color: #2d3a22 !important;
+  border-color: rgba(124, 179, 66, 0.3) !important;
+}
+
+/* ── 25. PAGINATION ── */
+:root:root [data-bs-theme="light"] .page-item .page-link {
+  background: #ffffff !important;
+  border-color: rgba(124, 179, 66, 0.15) !important;
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .page-item.active .page-link {
+  background: linear-gradient(135deg, #558B2F, #7CB342) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 2px 10px rgba(85, 139, 47, 0.2) !important;
+}
+
+/* ── 26. NOTIFICATION ICONS ── */
+:root:root [data-bs-theme="light"] .position-relative .text-white {
+  color: #1b2612 !important;
+}
+:root:root [data-bs-theme="light"] .position-relative .text-white:hover {
+  color: #558B2F !important;
+}
+
+/* ── 27. MODAL (generic) ── */
+:root:root [data-bs-theme="light"] .modal-content {
+  background: #ffffff !important;
+  color: #2d3a22 !important;
+  border-color: rgba(124, 179, 66, 0.15) !important;
+}
+:root:root [data-bs-theme="light"] .modal-header,
+:root:root [data-bs-theme="light"] .modal-footer {
+  border-color: rgba(0, 0, 0, 0.05) !important;
+}
+:root:root [data-bs-theme="light"] .modal-title {
+  color: #1b2612 !important;
+}
+
+/* Logout confirm modal — override ID-based inline styles */
+:root:root [data-bs-theme="light"] #logoutConfirmModal .modal-content {
+  background: #ffffff !important;
+  border-color: rgba(124, 179, 66, 0.2) !important;
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] #logoutConfirmModal .modal-header {
+  border-bottom-color: rgba(0, 0, 0, 0.05) !important;
+}
+:root:root [data-bs-theme="light"] #logoutConfirmModal .modal-title {
+  color: #1b2612 !important;
+}
+:root:root [data-bs-theme="light"] #logoutConfirmModal .btn-cancel {
+  background: rgba(124, 179, 66, 0.06) !important;
+  border-color: rgba(124, 179, 66, 0.25) !important;
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] #logoutConfirmModal .btn-cancel:hover {
+  background: rgba(124, 179, 66, 0.12) !important;
+}
+
+/* ── 28. SELECT2 ── */
+:root:root [data-bs-theme="light"] .select2-container--default .select2-selection--single,
+:root:root [data-bs-theme="light"] .select2-container--default .select2-selection--multiple {
+  background: #ffffff !important;
+  border-color: rgba(124, 179, 66, 0.3) !important;
+}
+:root:root [data-bs-theme="light"] .select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .select2-dropdown {
+  background: #ffffff !important;
+  border-color: rgba(124, 179, 66, 0.2) !important;
+}
+:root:root [data-bs-theme="light"] .select2-results__option {
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .select2-results__option--highlighted {
+  background: #7CB342 !important;
+  color: #fff !important;
+}
+:root:root [data-bs-theme="light"] .select2-search__field {
+  background: #ffffff !important;
+  border-color: rgba(124, 179, 66, 0.3) !important;
+  color: #2d3a22 !important;
+}
+
+/* ── 29. DROPDOWN ── */
+:root:root [data-bs-theme="light"] .dropdown-menu {
+  background: #ffffff !important;
+  border-color: rgba(124, 179, 66, 0.15) !important;
+}
+:root:root [data-bs-theme="light"] .dropdown-item {
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .dropdown-item:hover,
+:root:root [data-bs-theme="light"] .dropdown-item:focus {
+  background: rgba(124, 179, 66, 0.08) !important;
+  color: #1b2612 !important;
+}
+
+/* ── 30. MISC TEXT ── */
+:root:root [data-bs-theme="light"] .mobile-nav-toggle.bi::before {
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .text-white-50 {
+  color: #607352 !important;
+}
+:root:root [data-bs-theme="light"] .muted,
+:root:root [data-bs-theme="light"] .text-muted {
+  color: #607352 !important;
+}
+:root:root [data-bs-theme="light"] .text-success {
+  color: #558B2F !important;
+}
+:root:root [data-bs-theme="light"] .theme-toggle .btn-icon,
+:root:root [data-bs-theme="light"] #themeToggle {
+  color: #2d3a22 !important;
+}
+
+/* ── 31. ALERTS + BADGES ── */
+:root:root [data-bs-theme="light"] .alert-info {
+  background: rgba(124, 179, 66, 0.06) !important;
+  border-color: rgba(124, 179, 66, 0.15) !important;
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .alert-warning {
+  background: rgba(245, 158, 11, 0.06) !important;
+  border-color: rgba(245, 158, 11, 0.15) !important;
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .table .text-white-50,
+:root:root [data-bs-theme="light"] .table-dark-custom .text-white-50 {
+  color: #607352 !important;
+}
+
+/* Badges */
+:root:root [data-bs-theme="light"] .badge.bg-success,
+:root:root [data-bs-theme="light"] .badge-soft-success {
+  color: #558B2F !important;
+}
+:root:root [data-bs-theme="light"] .badge-soft-success {
+  background: rgba(124, 179, 66, 0.12) !important;
+  border-color: rgba(124, 179, 66, 0.25) !important;
+}
+:root:root [data-bs-theme="light"] .badge-soft-warning {
+  background: rgba(245, 158, 11, 0.12) !important;
+  color: #d97706 !important;
+  border-color: rgba(245, 158, 11, 0.25) !important;
+}
+:root:root [data-bs-theme="light"] .badge-soft-danger {
+  background: rgba(231, 76, 60, 0.12) !important;
+  color: #dc2626 !important;
+  border-color: rgba(231, 76, 60, 0.25) !important;
+}
+:root:root [data-bs-theme="light"] .badge-soft-info {
+  background: rgba(69, 179, 157, 0.12) !important;
+  color: #0d9488 !important;
+  border-color: rgba(69, 179, 157, 0.25) !important;
+}
+
+/* ── 32. UTILITY CLASS OVERRIDES ── */
+:root:root [data-bs-theme="light"] .card-header.bg-white {
+  background: #ffffff !important;
+  border-bottom-color: rgba(0,0,0,0.05) !important;
+}
+:root:root [data-bs-theme="light"] .bg-light {
+  background: #f8fafc !important;
+}
+:root:root [data-bs-theme="light"] .card.bg-light {
+  background: #ffffff !important;
+}
+:root:root [data-bs-theme="light"] select option {
+  color: #1e293b !important;
+  background: #ffffff !important;
+}
+:root:root [data-bs-theme="light"] select:disabled,
+:root:root [data-bs-theme="light"] input:disabled,
+:root:root [data-bs-theme="light"] textarea:disabled {
+  background: #f1f5f9 !important;
+  color: #64748b !important;
+  -webkit-text-fill-color: #64748b !important;
+}
+
+/* ── 33. RANGE SLIDER ── */
+:root:root [data-bs-theme="light"] input[type="range"].form-range::-webkit-slider-runnable-track {
+  background: rgba(124, 179, 66, 0.15) !important;
+}
+
+/* ── 34. LOGO ── */
+:root:root [data-bs-theme="light"] .logo-glow img {
+  filter: brightness(100%) drop-shadow(2px 3px 4px rgba(0,0,0,0.05)) !important;
+}
+
+/* ── 35. FOOTER ── */
+:root:root [data-bs-theme="light"] footer,
+:root:root [data-bs-theme="light"] #footer {
+  border-top-color: rgba(124, 179, 66, 0.08) !important;
+  background: #ffffff !important;
+}
+:root:root [data-bs-theme="light"] footer p,
+:root:root [data-bs-theme="light"] #footer p,
+:root:root [data-bs-theme="light"] #footer .copyright {
+  color: #607352 !important;
+}
+:root:root [data-bs-theme="light"] #footer h4 {
+  color: #1b2612 !important;
+}
+:root:root [data-bs-theme="light"] #footer .social-links a {
+  background: rgba(124, 179, 66, 0.08) !important;
+  border-color: rgba(124, 179, 66, 0.2) !important;
+  color: #558B2F !important;
+}
+
+/* ── 36. CHART CARD ── */
+:root:root [data-bs-theme="light"] .chart-card {
+  background: #ffffff !important;
+  border-color: rgba(124, 179, 66, 0.15) !important;
+}
+
+/* ── 37. PROFILE / UPDATE PAGE SPECIFIC ── */
+:root:root [data-bs-theme="light"] .profile-card {
+  background: linear-gradient(145deg, #558B2F, #7CB342) !important;
+  border-color: transparent !important;
+  box-shadow: 0 12px 40px rgba(85, 139, 47, 0.15) !important;
+}
+:root:root [data-bs-theme="light"] .profile-card * {
+  color: #ffffff !important;
+}
+:root:root [data-bs-theme="light"] .profile-card-cover {
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05)) !important;
+  border-bottom-color: rgba(255,255,255,0.1) !important;
+}
+:root:root [data-bs-theme="light"] .profile-card-cover .profile-name {
+  color: #ffffff !important;
+}
+:root:root [data-bs-theme="light"] .profile-card-cover .profile-role-badge {
+  background: rgba(255,255,255,0.2) !important;
+  border-color: rgba(255,255,255,0.3) !important;
+  color: #ffffff !important;
+}
+:root:root [data-bs-theme="light"] .profile-info-item {
+  background: rgba(255,255,255,0.1) !important;
+  border-color: rgba(255,255,255,0.15) !important;
+}
+:root:root [data-bs-theme="light"] .profile-info-item:hover {
+  background: rgba(255,255,255,0.15) !important;
+  border-color: rgba(255,255,255,0.25) !important;
+}
+:root:root [data-bs-theme="light"] .profile-info-item .info-icon {
+  color: #ffffff !important;
+}
+:root:root [data-bs-theme="light"] .profile-info-item .info-value {
+  color: #ffffff !important;
+}
+:root:root [data-bs-theme="light"] .profile-view-container h1,
+:root:root [data-bs-theme="light"] .profile-view-container h2 {
+  color: #1b2612 !important;
+}
+
+/* ── 38. CRITERIA TABLE (eval form) ── */
+:root:root [data-bs-theme="light"] .criteria-table {
+  border-color: rgba(124, 179, 66, 0.15) !important;
+}
+:root:root [data-bs-theme="light"] .criteria-table thead th {
+  background: linear-gradient(135deg, #558B2F, #7CB342) !important;
+  color: #ffffff !important;
+}
+:root:root [data-bs-theme="light"] .criteria-table th,
+:root:root [data-bs-theme="light"] .criteria-table td {
+  color: #2d3a22 !important;
+  border-color: rgba(0,0,0,0.06) !important;
+}
+
+/* ── 39. BORANG INDEN SPECIFIC ── */
+:root:root [data-bs-theme="light"] .hero,
+:root:root [data-bs-theme="light"] .section-card {
+  background: #ffffff !important;
+}
+:root:root [data-bs-theme="light"] .chip {
+  background: rgba(124, 179, 66, 0.08) !important;
+  border-color: rgba(124, 179, 66, 0.2) !important;
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .btn-soft {
+  background: rgba(124, 179, 66, 0.06) !important;
+  border-color: rgba(124, 179, 66, 0.2) !important;
+  color: #558B2F !important;
+}
+:root:root [data-bs-theme="light"] .items-wrap {
+  border-color: rgba(124, 179, 66, 0.15) !important;
+}
+:root:root [data-bs-theme="light"] .items-toolbar {
+  background: #f8fafc !important;
+  border-bottom-color: rgba(0,0,0,0.06) !important;
+}
+:root:root [data-bs-theme="light"] .item-card {
+  background: #ffffff !important;
+  border-bottom-color: rgba(0,0,0,0.05) !important;
+}
+:root:root [data-bs-theme="light"] .item-card td {
+  color: #2d3a22 !important;
+  border-color: rgba(0,0,0,0.05) !important;
+}
+:root:root [data-bs-theme="light"] .totals-box {
+  background: #f8fafc !important;
+  color: #2d3a22 !important;
+  border: 1px solid rgba(124, 179, 66, 0.15) !important;
+}
+:root:root [data-bs-theme="light"] .totals-box p {
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .totals-row {
+  border-color: rgba(0, 0, 0, 0.05) !important;
+}
+:root:root [data-bs-theme="light"] .borang-menu button {
+  background: #ffffff !important;
+  border-color: rgba(124, 179, 66, 0.2) !important;
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .borang-menu .menu-title {
+  color: #1b2612 !important;
+}
+
+/* ── 40. BORANG PENERIMAAN SPECIFIC ── */
+:root:root [data-bs-theme="light"] .order-info-grid {
+  background: #ffffff !important;
+  border-color: rgba(124, 179, 66, 0.12) !important;
+}
+:root:root [data-bs-theme="light"] .order-info-item label {
+  color: #607352 !important;
+}
+:root:root [data-bs-theme="light"] .order-info-item p {
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .date-input {
+  background: #ffffff !important;
+  border-color: rgba(124, 179, 66, 0.3) !important;
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .date-input:focus {
+  background: #ffffff !important;
+  color: #2d3a22 !important;
+  border-color: #7CB342 !important;
+}
+:root:root [data-bs-theme="light"] .wrong-toggle {
+  border-color: rgba(124, 179, 66, 0.25) !important;
+}
+
+/* ── 41. PENGESAHAN MODAL ── */
+:root:root [data-bs-theme="light"] .modal-content-custom {
+  background: #ffffff !important;
+  color: #2d3a22 !important;
+  border-color: rgba(124, 179, 66, 0.2) !important;
+}
+:root:root [data-bs-theme="light"] .radio-option {
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .modal-body-custom textarea {
+  background: #ffffff !important;
+  color: #2d3a22 !important;
+  border-color: rgba(124, 179, 66, 0.3) !important;
+}
+
+/* ── 42. UPDATE PAGE SPECIFIC ── */
+:root:root [data-bs-theme="light"] .tab-nav {
+  background: rgba(124, 179, 66, 0.06) !important;
+}
+:root:root [data-bs-theme="light"] .tab-button {
+  color: #607352 !important;
+}
+:root:root [data-bs-theme="light"] .tab-button:hover {
+  color: #558B2F !important;
+  background: rgba(124, 179, 66, 0.06) !important;
+}
+:root:root [data-bs-theme="light"] .tab-button.active {
+  color: #fff !important;
+  background: linear-gradient(135deg, #558B2F, #7CB342) !important;
+  box-shadow: 0 2px 8px rgba(85, 139, 47, 0.3) !important;
+}
+:root:root [data-bs-theme="light"] .tab-panel > h3 {
+  color: #1b2612 !important;
+}
+:root:root [data-bs-theme="light"] .tab-panel > h3 i {
+  color: #558B2F !important;
+}
+:root:root [data-bs-theme="light"] .form-section {
+  background: #ffffff !important;
+  border-color: rgba(124, 179, 66, 0.12) !important;
+}
+:root:root [data-bs-theme="light"] #avatarPreviu {
+  background: rgba(124, 179, 66, 0.05) !important;
+  border-color: rgba(124, 179, 66, 0.25) !important;
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .custom-file-label {
+  background: rgba(124, 179, 66, 0.08) !important;
+  color: #558B2F !important;
+  border-color: rgba(124, 179, 66, 0.25) !important;
+}
+:root:root [data-bs-theme="light"] .custom-file-label:hover {
+  background: rgba(124, 179, 66, 0.15) !important;
+}
+:root:root [data-bs-theme="light"] .form-group label {
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .form-group input,
+:root:root [data-bs-theme="light"] .form-group select {
+  background: #ffffff !important;
+  border-color: rgba(124, 179, 66, 0.3) !important;
+  color: #2d3a22 !important;
+}
+:root:root [data-bs-theme="light"] .form-group input:read-only {
+  background: #f1f5f9 !important;
+  color: #64748b !important;
+}
+:root:root [data-bs-theme="light"] .password-toggle-btn {
+  color: #607352 !important;
+}
+:root:root [data-bs-theme="light"] .password-toggle-btn:hover {
+  color: #558B2F !important;
+}
+:root:root [data-bs-theme="light"] .btn-secondary {
+  background: rgba(124, 179, 66, 0.08) !important;
+  color: #558B2F !important;
+  border-color: rgba(124, 179, 66, 0.2) !important;
+}
+:root:root [data-bs-theme="light"] .btn-secondary:hover {
+  background: linear-gradient(135deg, #558B2F, #7CB342) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+}
+
+/* ── 43. DARK MODE DEFAULTS (kept for un-themed pages) ── */
+:root:root .summary-card {
+  background: rgba(19, 23, 19, 0.6) !important;
+  backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(124, 179, 66, 0.08) !important;
+  border-radius: 18px !important;
+  padding: 22px !important;
+}
+
+:root:root .rating-badge {
+  border-radius: 50px !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+  letter-spacing: 0.5px !important;
+}
+
+:root:root .criteria-table thead th {
+  background: linear-gradient(135deg, #558B2F, #7CB342) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  border: none !important;
+}
+
+:root:root footer {
+  border-top: 1px solid rgba(124, 179, 66, 0.1) !important;
+}
+
+:root:root .welcome-banner {
+  background: linear-gradient(135deg, rgba(85, 139, 47, 0.15), rgba(124, 179, 66, 0.1)) !important;
+  backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(124, 179, 66, 0.12) !important;
+  border-radius: 22px !important;
+  padding: 36px !important;
+}
+
+:root:root .position-relative .badge.rounded-pill.bg-danger {
+  background: linear-gradient(135deg, #c0392b, #e74c3c) !important;
+  box-shadow: 0 2px 8px rgba(192, 57, 43, 0.3) !important;
+}
+
+:root:root input[type="range"].form-range::-webkit-slider-runnable-track {
+  background: rgba(124, 179, 66, 0.15) !important;
+}
+
+:root:root .logo-glow {
+  animation: logoBreathe 4s ease-in-out infinite !important;
+}
+@keyframes logoBreathe {
+  0%, 100% { filter: brightness(150%) drop-shadow(0 0 4px rgba(124, 179, 66, 0.2)); }
+  50% { filter: brightness(170%) drop-shadow(0 0 12px rgba(124, 179, 66, 0.4)); }
+}
+
+/* ── 44. MOBILE NAV — Fixes ── */
+:root:root .mobile-nav-toggle {
+  font-size: 24px !important;
+  cursor: pointer !important;
+  transition: color 0.3s ease !important;
+}
+:root:root .mobile-nav-toggle:hover {
+  color: #7CB342 !important;
+}
+:root:root .mobile-nav-toggle.bi::before {
+  color: #ffffff !important;
+}
+
+/* Ensure mobile nav menu has solid background & proper layering */
+:root:root body.mobile-nav-active .navmenu {
+  background: #000000 !important;
+}
+:root:root body.mobile-nav-active .navmenu > ul {
+  background: #000000 !important;
+  border: none !important;
+  box-shadow: none !important;
+  inset: 0 !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+:root:root body.mobile-nav-active .navmenu ul li a {
+  color: #ffffff !important;
+}
+:root:root body.mobile-nav-active .navmenu ul li a:hover,
+:root:root body.mobile-nav-active .navmenu ul li a.active {
+  color: #7CB342 !important;
+}
