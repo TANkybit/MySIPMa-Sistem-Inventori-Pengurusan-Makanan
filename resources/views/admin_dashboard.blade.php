@@ -1003,16 +1003,34 @@
                                             </div>
                                         </div>
                                         <div class="col-md-3">
-                                            <div class="p-3 rounded-3" style="background-color: #fff8e1;">
-                                                <div class="text-muted small mb-1">Rating Cemerlang</div>
-                                                <h3 class="mb-0 fw-bold" style="color: #f57f17;" id="statCemerlangCount">0</h3>
-                                            </div>
+                                            <button type="button" class="performance-rating-card p-3 rounded-3 w-100 h-100 text-start"
+                                                style="background-color: #fff8e1;"
+                                                data-performance-rating-card data-rating="Cemerlang"
+                                                title="Lihat butiran rating Cemerlang"
+                                                aria-label="Lihat butiran rating Cemerlang">
+                                                <span class="d-flex justify-content-between align-items-start gap-3">
+                                                    <span>
+                                                        <span class="d-block text-muted small mb-1">Rating Cemerlang</span>
+                                                        <span class="d-block mb-0 fw-bold fs-3" style="color: #f57f17;" id="statCemerlangCount">0</span>
+                                                    </span>
+                                                    <i class="fas fa-circle-info text-warning opacity-75" aria-hidden="true"></i>
+                                                </span>
+                                            </button>
                                         </div>
                                         <div class="col-md-3">
-                                            <div class="p-3 rounded-3" style="background-color: #fce4ec;">
-                                                <div class="text-muted small mb-1">Rating Lemah</div>
-                                                <h3 class="mb-0 fw-bold text-danger" id="statLemahCount">0</h3>
-                                            </div>
+                                            <button type="button" class="performance-rating-card p-3 rounded-3 w-100 h-100 text-start"
+                                                style="background-color: #fce4ec;"
+                                                data-performance-rating-card data-rating="Lemah"
+                                                title="Lihat butiran rating Lemah"
+                                                aria-label="Lihat butiran rating Lemah">
+                                                <span class="d-flex justify-content-between align-items-start gap-3">
+                                                    <span>
+                                                        <span class="d-block text-muted small mb-1">Rating Lemah</span>
+                                                        <span class="d-block mb-0 fw-bold fs-3 text-danger" id="statLemahCount">0</span>
+                                                    </span>
+                                                    <i class="fas fa-circle-info text-danger opacity-75" aria-hidden="true"></i>
+                                                </span>
+                                            </button>
                                         </div>
                                     </div>
 

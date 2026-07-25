@@ -757,6 +757,30 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--white);
 }
 
+.performance-rating-card {
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.performance-rating-card:hover,
+.performance-rating-card:focus-visible {
+    box-shadow: var(--card-shadow-hover);
+    outline: 0;
+    transform: translateY(-2px);
+}
+
+.performance-rating-card:focus-visible {
+    box-shadow: 0 0 0 0.2rem rgba(26, 86, 50, 0.18), var(--card-shadow-hover);
+}
+
+#performanceRatingChart .apexcharts-pie-area,
+#performanceRatingChart .apexcharts-datalabel {
+    cursor: pointer;
+}
+
 .stat-change {
     display: flex;
     align-items: center;
@@ -2016,4 +2040,3 @@ h1, h2, h3, h4, h5, h6 {
     background-color: rgba(255, 255, 255, 0.07);
     color: #ffffff;
 }
-

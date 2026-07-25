@@ -1421,6 +1421,7 @@ class PrisonSystem {
         if (historyBody) {
             historyBody.innerHTML = '<tr><td colspan="11" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Memuatkan data...</td></tr>';
         }
+        this.bindPerformanceRatingCards();
 
         const HQ_DUMMY_EVALUATIONS = [
             {
@@ -1563,6 +1564,142 @@ class PrisonSystem {
         }
     }
 
+    bindPerformanceRatingCards() {
+        const cards = document.querySelectorAll('[data-performance-rating-card]');
+        cards.forEach(card => {
+            if (card.dataset.bound === 'true') return;
+            card.dataset.bound = 'true';
+            card.addEventListener('click', () => {
+                this.showPerformanceRatingDetails(card.dataset.rating);
+            });
+        });
+    }
+
+    showPerformanceRatingDetails(rating) {
+        const modalEl = document.getElementById('viewModal');
+        const viewBody = document.getElementById('viewModalBody');
+        const viewTitle = document.getElementById('viewModalTitle');
+        if (!modalEl || !viewBody || !viewTitle) return;
+
+        const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        }[char]));
+        const evaluations = Array.isArray(window._hqEvalStore) ? window._hqEvalStore : [];
+        const matchedEvaluations = evaluations.filter(ev => ev.performance_rating === rating);
+        const averagePercentage = matchedEvaluations.length
+            ? matchedEvaluations.reduce((sum, ev) => sum + (parseFloat(ev.percentage) || 0), 0) / matchedEvaluations.length
+            : 0;
+        const ratingMeta = {
+            Cemerlang: { badge: 'bg-success', text: 'text-success', icon: 'fa-star' },
+            Lemah: { badge: 'bg-danger', text: 'text-danger', icon: 'fa-triangle-exclamation' },
+            Sederhana: { badge: 'bg-warning text-dark', text: 'text-warning', icon: 'fa-gauge' }
+        };
+        const meta = ratingMeta[rating] || ratingMeta.Sederhana;
+        const rows = matchedEvaluations.map(ev => {
+            const totalScore = ev.total_score || (
+                (parseInt(ev.criteria_quantity, 10) || 0) +
+                (parseInt(ev.criteria_delivery, 10) || 0) +
+                (parseInt(ev.criteria_price, 10) || 0) +
+                (parseInt(ev.criteria_quality, 10) || 0) +
+                (parseInt(ev.criteria_cooperation, 10) || 0)
+            );
+            const percentage = Number.isFinite(parseFloat(ev.percentage)) ? `${parseFloat(ev.percentage).toFixed(1)}%` : 'N/A';
+
+            return `
+                <tr>
+                    <td>
+                        <div class="fw-semibold text-dark">${escapeHtml(ev.supplier?.company_name || 'N/A')}</div>
+                        <div class="small text-muted">${escapeHtml(ev.evaluator_name || 'N/A')}</div>
+                    </td>
+                    <td>${escapeHtml(ev.institution?.name || 'N/A')}</td>
+                    <td>${this.formatDate(ev.evaluation_date)}</td>
+                    <td class="text-center"><span class="fw-bold">${escapeHtml(totalScore)}/35</span></td>
+                    <td class="text-center"><span class="fw-bold text-primary">${escapeHtml(percentage)}</span></td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-sm btn-outline-info" data-evaluation-detail-id="${escapeHtml(ev.id)}" aria-label="Lihat butiran penilaian">
+                            <i class="fas fa-eye" aria-hidden="true"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+        const emptyState = `
+            <div class="text-center text-muted py-4">
+                <i class="fas fa-circle-info fs-4 mb-2 d-block" aria-hidden="true"></i>
+                Tiada penilaian dengan rating ${escapeHtml(rating)}.
+            </div>
+        `;
+
+        viewTitle.textContent = `Butiran Rating ${rating}`;
+        viewBody.innerHTML = `
+            <div class="container-fluid p-0">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+                    <div>
+                        <div class="small text-muted mb-1">Senarai penilaian mengikut rating</div>
+                        <h6 class="fw-bold mb-0 ${meta.text}">
+                            <i class="fas ${meta.icon} me-2" aria-hidden="true"></i>Rating ${escapeHtml(rating)}
+                        </h6>
+                    </div>
+                    <span class="badge rounded-pill px-3 py-2 ${meta.badge}">${matchedEvaluations.length} penilaian</span>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <div class="p-3 rounded-3 bg-light h-100">
+                            <div class="small text-muted mb-1">Jumlah Penilaian</div>
+                            <div class="fw-bold fs-4 text-dark">${matchedEvaluations.length}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 rounded-3 bg-light h-100">
+                            <div class="small text-muted mb-1">Purata Prestasi</div>
+                            <div class="fw-bold fs-4 text-primary">${averagePercentage.toFixed(1)}%</div>
+                        </div>
+                    </div>
+                </div>
+
+                ${matchedEvaluations.length ? `
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Pembekal</th>
+                                    <th>Institusi</th>
+                                    <th>Tarikh</th>
+                                    <th class="text-center">Skor</th>
+                                    <th class="text-center">Peratus</th>
+                                    <th class="text-center">Tindakan</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
+                ` : emptyState}
+            </div>
+        `;
+
+        viewBody.querySelectorAll('[data-evaluation-detail-id]').forEach(button => {
+            button.addEventListener('click', () => {
+                this.viewEvaluation(button.dataset.evaluationDetailId);
+            });
+        });
+
+        const dialog = modalEl.querySelector('.modal-dialog');
+        if (dialog) dialog.classList.add('modal-lg');
+
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+
+        modalEl.addEventListener('hidden.bs.modal', function handler() {
+            if (dialog) dialog.classList.remove('modal-lg');
+            modalEl.removeEventListener('hidden.bs.modal', handler);
+        });
+    }
+
     renderPerformanceTrendChart() {
         const trendEl = document.querySelector("#performanceTrendChart");
         if (!trendEl) return;
@@ -1570,6 +1707,9 @@ class PrisonSystem {
         if (this.charts.performanceTrend) {
             this.charts.performanceTrend.destroy();
         }
+
+        // store selected months (indices 0-11)
+        if (!Array.isArray(this.performanceTrendSelectedMonths)) this.performanceTrendSelectedMonths = [];
 
         const options = {
             series: [{
@@ -1580,6 +1720,31 @@ class PrisonSystem {
                 type: 'area',
                 height: 300,
                 toolbar: { show: false },
+                events: {
+                    // click a point to filter by that month; shift+click to select a range
+                    dataPointSelection: (event, chartContext, config) => {
+                        const idx = config.dataPointIndex;
+                        if (idx === undefined || idx < 0) return;
+
+                        // shift+click => range selection from last selected to this
+                        if (event && event.shiftKey && this.performanceTrendSelectedMonths.length > 0) {
+                            const last = this.performanceTrendSelectedMonths[this.performanceTrendSelectedMonths.length - 1];
+                            const min = Math.min(last, idx);
+                            const max = Math.max(last, idx);
+                            this.performanceTrendSelectedMonths = [];
+                            for (let i = min; i <= max; i++) this.performanceTrendSelectedMonths.push(i);
+                        } else {
+                            // toggle single month selection
+                            if (this.performanceTrendSelectedMonths.includes(idx)) {
+                                this.performanceTrendSelectedMonths = this.performanceTrendSelectedMonths.filter(i => i !== idx);
+                            } else {
+                                this.performanceTrendSelectedMonths = [idx];
+                            }
+                        }
+
+                        this.applyPerformanceSlicer(this.performanceTrendSelectedMonths);
+                    }
+                }
             },
             colors: ['#1a5632'],
             fill: {
@@ -1603,6 +1768,93 @@ class PrisonSystem {
         this.charts.performanceTrend = chart;
     }
 
+    async applyPerformanceSlicer(selectedIndices) {
+        // selectedIndices: array of month indices (0-11). Empty = clear filter.
+        const historyBody = document.getElementById('performanceHistoryBody');
+
+        const renderRows = (list) => {
+            if (!historyBody) return;
+            if (!list || list.length === 0) {
+                historyBody.innerHTML = '<tr><td colspan="11" class="text-center py-4 text-muted">Tiada penilaian untuk pilihan ini.</td></tr>';
+                return;
+            }
+
+            historyBody.innerHTML = '';
+            list.forEach(ev => {
+                const ratingBadge = ev.performance_rating === 'Cemerlang' ? 'bg-success' : 
+                                  (ev.performance_rating === 'Sederhana' ? 'bg-warning text-dark' : 'bg-danger');
+                const scoreCellHtml = (val) => {
+                    let cls = 'text-danger';
+                    if (val >= 6) cls = 'text-success';
+                    else if (val >= 4) cls = 'text-warning';
+                    return `<span class="fw-bold ${cls}">${val}/7</span>`;
+                };
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date(ev.evaluation_date).toLocaleDateString('ms-MY')}</td>
+                    <td><div class="fw-bold">${ev.supplier?.company_name || 'N/A'}</div></td>
+                    <td><div class="small">${ev.institution?.name || 'N/A'}</div></td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_quantity)}</td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_delivery)}</td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_price)}</td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_quality)}</td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_cooperation)}</td>
+                    <td class="text-center"><div class="fw-bold text-primary">${ev.percentage}%</div></td>
+                    <td class="text-center"><span class="badge rounded-pill px-3 ${ratingBadge}">${ev.performance_rating}</span></td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-info" onclick="prisonSystem.viewEvaluation('${ev.id}')">
+                            <i class="fas fa-eye"></i> Detail
+                        </button>
+                    </td>
+                `;
+                historyBody.appendChild(row);
+            });
+        };
+
+        try {
+            if (!selectedIndices || selectedIndices.length === 0) {
+                // restore full dataset and stats from server
+                const [histRes, statsRes] = await Promise.all([
+                    fetch('/evaluations', { headers: { 'Accept': 'application/json' } }),
+                    fetch('/evaluations/stats', { headers: { 'Accept': 'application/json' } }),
+                ]);
+
+                const histJson = histRes.ok ? await histRes.json() : { success: true, data: [] };
+                const statsJson = statsRes.ok ? await statsRes.json() : { success: true, stats: { total: 0, average: 0, ratings: {} } };
+
+                const list = (histJson && histJson.data) ? histJson.data : [];
+                renderRows(list);
+
+                const stats = statsJson.stats || { total: 0, average: 0, ratings: {} };
+                if (document.getElementById('statTotalEval')) document.getElementById('statTotalEval').textContent = stats.total || 0;
+                if (document.getElementById('statAvgPercentage')) document.getElementById('statAvgPercentage').textContent = `${stats.average || 0}%`;
+                if (document.getElementById('statCemerlangCount')) document.getElementById('statCemerlangCount').textContent = (stats.ratings && stats.ratings['Cemerlang']) ? stats.ratings['Cemerlang'] : 0;
+                if (document.getElementById('statLemahCount')) document.getElementById('statLemahCount').textContent = (stats.ratings && stats.ratings['Lemah']) ? stats.ratings['Lemah'] : 0;
+                this.updatePerformanceRatingChart(stats.ratings || {});
+                return;
+            }
+
+            // ask server for filtered evaluations and stats; server expects months (0-based or 1-based CSV)
+            const monthsCsv = selectedIndices.join(',');
+            const res = await fetch(`/evaluations/filter?months=${encodeURIComponent(monthsCsv)}`, { headers: { 'Accept': 'application/json' } });
+            if (!res.ok) throw new Error('Failed to fetch filtered evaluations');
+            const json = await res.json();
+            const list = json.data || [];
+            const stats = json.stats || { total: 0, average: 0, ratings: {} };
+
+            renderRows(list);
+            if (document.getElementById('statTotalEval')) document.getElementById('statTotalEval').textContent = stats.total || 0;
+            if (document.getElementById('statAvgPercentage')) document.getElementById('statAvgPercentage').textContent = `${stats.average || 0}%`;
+            if (document.getElementById('statCemerlangCount')) document.getElementById('statCemerlangCount').textContent = (stats.ratings && stats.ratings['Cemerlang']) ? stats.ratings['Cemerlang'] : 0;
+            if (document.getElementById('statLemahCount')) document.getElementById('statLemahCount').textContent = (stats.ratings && stats.ratings['Lemah']) ? stats.ratings['Lemah'] : 0;
+            this.updatePerformanceRatingChart(stats.ratings || {});
+
+        } catch (err) {
+            console.error('Slicer AJAX error:', err);
+        }
+    }
+
     updatePerformanceRatingChart(ratings) {
         const ratingEl = document.querySelector("#performanceRatingChart");
         if (!ratingEl) return;
@@ -1611,6 +1863,7 @@ class PrisonSystem {
             this.charts.performanceRating.destroy();
         }
 
+        const labels = ['Cemerlang', 'Sederhana', 'Lemah'];
         const data = [
             ratings['Cemerlang'] || 0,
             ratings['Sederhana'] || 0,
@@ -1621,9 +1874,17 @@ class PrisonSystem {
             series: data,
             chart: {
                 type: 'donut',
-                height: 300
+                height: 300,
+                events: {
+                    dataPointSelection: (_event, _chartContext, config) => {
+                        const selectedRating = labels[config.dataPointIndex];
+                        if (selectedRating) {
+                            this.showPerformanceRatingDetails(selectedRating);
+                        }
+                    }
+                }
             },
-            labels: ['Cemerlang', 'Sederhana', 'Lemah'],
+            labels,
             colors: ['#198754', '#ffc107', '#dc3545'],
             legend: { position: 'bottom' },
             plotOptions: {

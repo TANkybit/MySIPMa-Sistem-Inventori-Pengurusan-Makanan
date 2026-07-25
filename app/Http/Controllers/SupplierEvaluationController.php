@@ -6,6 +6,7 @@ use App\Models\SupplierEvaluation;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SupplierEvaluationController extends Controller
 {
@@ -233,6 +234,55 @@ class SupplierEvaluationController extends Controller
         return response()->json([
             'success' => true,
             'data' => $data
+        ]);
+    }
+
+    /**
+     * Return evaluations filtered by months (accepts comma-separated month indices or numbers).
+     * months parameter can be '0,1,2' (0-based) or '1,2,3' (1-based). Returns evaluations and stats.
+     */
+    public function filterByMonths(Request $request)
+    {
+        $user = Auth::user();
+        $monthsParam = $request->input('months', '');
+        if (empty($monthsParam)) {
+            return response()->json(['success' => true, 'data' => [], 'stats' => ['total' => 0, 'average' => 0, 'ratings' => []]]);
+        }
+
+        $parts = array_filter(array_map('trim', explode(',', $monthsParam)), function ($v) { return $v !== ''; });
+        $months = array_map(function ($v) { return intval($v); }, $parts);
+        if (count($months) === 0) {
+            return response()->json(['success' => true, 'data' => [], 'stats' => ['total' => 0, 'average' => 0, 'ratings' => []]]);
+        }
+
+        // detect zero-based (0..11) and convert to 1..12
+        $min = min($months);
+        if ($min === 0) {
+            $months = array_map(function ($m) { return $m + 1; }, $months);
+        }
+
+        $query = SupplierEvaluation::with(['supplier', 'institution'])->whereIn(DB::raw('MONTH(evaluation_date)'), $months);
+
+        if ($user->landingRouteName() === 'pengarah.institusi.dashboard') {
+            $query->where('institution_id', $user->institution_id);
+        } else {
+            $query->where('status', 'Verified');
+        }
+
+        $evaluations = $query->orderBy('evaluation_date', 'desc')->get();
+
+        $total = $evaluations->count();
+        $avg = $total > 0 ? round($evaluations->avg('percentage'), 1) : 0;
+        $ratings = $evaluations->groupBy('performance_rating')->map->count();
+
+        return response()->json([
+            'success' => true,
+            'data' => $evaluations,
+            'stats' => [
+                'total' => $total,
+                'average' => $avg,
+                'ratings' => $ratings
+            ]
         ]);
     }
 }
