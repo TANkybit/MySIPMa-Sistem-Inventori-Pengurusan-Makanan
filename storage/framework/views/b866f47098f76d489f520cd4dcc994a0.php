@@ -202,39 +202,71 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
           <div class="card-form">
             <form id="evaluationForm">
               <?php echo csrf_field(); ?>
-              <!-- Order Selection -->
+
+              <!-- Institution Label -->
+              <div class="mb-4">
+                <label class="form-label-custom">Institusi</label>
+                <div class="fw-bold fs-5"><?php echo e($institution->name ?? '-'); ?></div>
+              </div>
+
+              <!-- Syarikat + Tarikh Penilaian -->
               <div class="row mb-4">
                 <div class="col-md-6">
-                  <label class="form-label-custom">No. Inden / Pesanan</label>
-                  <select class="form-select" name="order_id" id="evalOrderId" required>
-                    <option value="">Pilih Pesanan</option>
+                  <label class="form-label-custom">Syarikat</label>
+                  <select class="form-select" name="supplier_id" id="supplierSelect" required>
+                    <option value="">Pilih Syarikat</option>
+                    <?php $__currentLoopData = $suppliers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                      <option value="<?php echo e($s->id); ?>"><?php echo e($s->company_name); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                   </select>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label-custom">Tarikh Penilaian</label>
-                  <input type="date" class="form-control" name="evaluation_date" value="<?php echo e(date('Y-m-d')); ?>" required>
+                  <input type="date" class="form-control" name="evaluation_date" id="evalDate" value="<?php echo e(date('Y-m-d')); ?>" required>
                 </div>
               </div>
 
-              <!-- Supplier Info -->
-              <div id="evalSupplierInfo" class="alert d-none mb-4" style="background:var(--surface-soft);border:1px solid var(--border);border-radius:12px;">
-                <div class="row align-items-center">
-                  <div class="col-md-4">
-                    <div class="small text-muted">Pembekal</div>
-                    <div id="evalSupplierName" class="fw-bold fs-6">-</div>
-                    <input type="hidden" name="supplier_id" id="evalSupplierId">
-                  </div>
-                  <div class="col-md-4">
-                    <div class="small text-muted">Institusi</div>
-                    <div id="evalInstitutionName" class="fw-bold fs-6">-</div>
-                    <input type="hidden" name="institution_id" id="evalInstitutionId">
-                  </div>
-                  <div class="col-md-4">
-                    <div class="small text-muted">Nama Penilai</div>
-                    <input type="text" class="form-control form-control-sm mt-1 bg-transparent" name="evaluator_name" value="<?php echo e(Auth::user()->name); ?>" readonly>
-                  </div>
+              <!-- Tarikh Pesanan (range, count fetched if both filled) -->
+              <div class="row mb-4">
+                <div class="col-md-5">
+                  <label class="form-label-custom">Tarikh Pesanan (Dari)</label>
+                  <input type="date" class="form-control" name="order_date_from" id="orderDateFrom">
+                </div>
+                <div class="col-md-5">
+                  <label class="form-label-custom">Tarikh Pesanan (Ke)</label>
+                  <input type="date" class="form-control" name="order_date_to" id="orderDateTo">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                  <div id="orderCountDisplay" class="fw-bold fs-5" style="color:var(--accent);display:none;"></div>
                 </div>
               </div>
+
+              <!-- Tarikh Bekalan (range) -->
+              <div class="row mb-4">
+                <div class="col-md-5">
+                  <label class="form-label-custom">Tarikh Bekalan (Dari)</label>
+                  <input type="date" class="form-control" name="supply_date_from">
+                </div>
+                <div class="col-md-5">
+                  <label class="form-label-custom">Tarikh Bekalan (Ke)</label>
+                  <input type="date" class="form-control" name="supply_date_to">
+                </div>
+              </div>
+
+              <!-- Jenis Bekalan + Penilai -->
+              <div class="row mb-4">
+                <div class="col-md-6">
+                  <label class="form-label-custom">Jenis Bekalan</label>
+                  <input type="text" class="form-control" name="supply_type" placeholder="Contoh: Makanan, Peralatan, dll">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label-custom">Nama Penilai</label>
+                  <input type="text" class="form-control" name="evaluator_name" value="<?php echo e(Auth::user()->name); ?>" readonly>
+                </div>
+              </div>
+
+              <input type="hidden" name="institution_id" value="<?php echo e($institution->id ?? ''); ?>">
+              <input type="hidden" name="order_count" id="orderCountInput" value="0">
 
               <!-- Criteria Table -->
               <div class="table-responsive">
@@ -485,28 +517,6 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
       }
     }
 
-    // Load orders
-    async function loadOrders() {
-      try {
-        const res = await fetch('/evaluations/orders');
-        const json = await res.json();
-        if (json.success) {
-          const select = document.getElementById('evalOrderId');
-          select.innerHTML = '<option value="">Pilih Pesanan</option>';
-          window.evaluationOrders = json.data;
-          json.data.forEach(order => {
-            const opt = document.createElement('option');
-            opt.value = order.id;
-            opt.textContent = order.order_no + ' (' + order.order_date + ')';
-            select.appendChild(opt);
-          });
-        }
-      } catch (err) {
-        console.error('Error loading orders:', err);
-        showAlert('danger', 'Gagal memuatkan senarai pesanan.');
-      }
-    }
-
     function showAlert(type, message) {
       const container = document.getElementById('alertContainer');
       const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
@@ -516,27 +526,83 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
       setTimeout(() => { container.innerHTML = ''; }, 5000);
     }
 
-    // Order select change
+    // Fetch order count when both dates are filled and supplier selected
+    async function fetchOrderCount() {
+      const supplierId = document.getElementById('supplierSelect').value;
+      const dateFrom = document.getElementById('orderDateFrom').value;
+      const dateTo = document.getElementById('orderDateTo').value;
+      const display = document.getElementById('orderCountDisplay');
+      const input = document.getElementById('orderCountInput');
+
+      if (!supplierId || !dateFrom || !dateTo) {
+        display.style.display = 'none';
+        input.value = 0;
+        return;
+      }
+
+      if (dateFrom > dateTo) {
+        display.style.display = 'block';
+        display.textContent = 'Tarikh tidak sah';
+        display.style.color = '#ef4444';
+        input.value = 0;
+        return;
+      }
+
+      try {
+        const res = await fetch('/evaluations/count-orders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo e(csrf_token()); ?>',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ supplier_id: supplierId, order_date_from: dateFrom, order_date_to: dateTo })
+        });
+        const json = await res.json();
+        if (json.success) {
+          display.style.display = 'block';
+          display.style.color = '#10b981';
+          display.textContent = json.count + ' PESANAN';
+          input.value = json.count;
+        } else {
+          display.style.display = 'block';
+          display.textContent = 'Ralat';
+          display.style.color = '#ef4444';
+        }
+      } catch (err) {
+        console.error('Error fetching order count:', err);
+      }
+    }
+
+    // Validate date range
+    function validateDateRange() {
+      const orderFrom = document.getElementById('orderDateFrom');
+      const orderTo = document.getElementById('orderDateTo');
+      const supplyFrom = document.querySelector('input[name="supply_date_from"]');
+      const supplyTo = document.querySelector('input[name="supply_date_to"]');
+
+      function check(from, to) {
+        if (from.value && to.value && from.value > to.value) {
+          to.setCustomValidity('Tarikh "Ke" mesti selepas tarikh "Dari".');
+        } else {
+          to.setCustomValidity('');
+        }
+      }
+
+      orderFrom.addEventListener('change', () => { check(orderFrom, orderTo); fetchOrderCount(); });
+      orderTo.addEventListener('change', () => { check(orderFrom, orderTo); fetchOrderCount(); });
+      supplyFrom.addEventListener('change', () => check(supplyFrom, supplyTo));
+      supplyTo.addEventListener('change', () => check(supplyFrom, supplyTo));
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
       initSliders();
-      loadOrders();
       calculateScore();
+      validateDateRange();
 
-      document.getElementById('evalOrderId').addEventListener('change', function() {
-        const orderId = this.value;
-        if (!orderId) {
-          document.getElementById('evalSupplierInfo').classList.add('d-none');
-          return;
-        }
-        const order = (window.evaluationOrders || []).find(o => o.id == orderId);
-        if (order) {
-          document.getElementById('evalSupplierName').textContent = order.supplier ? order.supplier.company_name : '-';
-          document.getElementById('evalSupplierId').value = order.supplier_id || '';
-          document.getElementById('evalInstitutionName').textContent = order.institution ? order.institution.name : '-';
-          document.getElementById('evalInstitutionId').value = order.institution_id || '';
-          document.getElementById('evalSupplierInfo').classList.remove('d-none');
-        } else {
-          document.getElementById('evalSupplierInfo').classList.add('d-none');
+      document.getElementById('supplierSelect').addEventListener('change', function() {
+        if (document.getElementById('orderDateFrom').value && document.getElementById('orderDateTo').value) {
+          fetchOrderCount();
         }
       });
 
@@ -569,9 +635,9 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
             document.getElementById('successMessage').textContent = msg;
             new bootstrap.Modal(document.getElementById('successModal')).show();
             form.reset();
-            document.getElementById('evalSupplierInfo').classList.add('d-none');
+            document.getElementById('orderCountDisplay').style.display = 'none';
+            document.getElementById('evalDate').value = new Date().toISOString().split('T')[0];
             calculateScore();
-            loadOrders();
           } else {
             const errorMsg = result.errors ? Object.values(result.errors).flat().join('\n') : (result.message || 'Ralat menyimpan penilaian.');
             showAlert('danger', errorMsg);

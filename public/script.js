@@ -1415,43 +1415,140 @@ class PrisonSystem {
     }
 
     async loadPerformanceReportsPage() {
-        console.log('Loading Performance Reports (Real-time option + Dummy fallback)...');
+        console.log('Loading Performance Reports (Real-time + Dummy fallback)...');
         
         const historyBody = document.getElementById('performanceHistoryBody');
         if (historyBody) {
             historyBody.innerHTML = '<tr><td colspan="11" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Memuatkan data...</td></tr>';
         }
+        this.bindPerformanceRatingCards();
+
+        // Reset slicer state on fresh load
+        this.performanceTrendSelectedMonths = [];
+        this._updatePerformanceTrendBadge([]);
+
+        const MONTH_NAMES = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'];
 
         const HQ_DUMMY_EVALUATIONS = [
             {
                 id: 'hdummy-1',
-                evaluation_date: '2026-06-15',
+                evaluation_date: '2026-01-15',
                 supplier: { company_name: 'Syarikat Rempah Sdn. Bhd.' },
                 institution: { name: 'Penjara Kajang' },
                 evaluator_name: 'Pengarah Kajang',
-                criteria_quantity: 6, criteria_delivery: 5, criteria_price: 6, criteria_quality: 7, criteria_cooperation: 5,
-                total_score: 29, percentage: 82.9, performance_rating: 'Cemerlang',
-                remarks: 'Pembekal sangat responsif dan penghantaran tepat pada masanya.'
+                criteria_quantity: 5, criteria_delivery: 5, criteria_price: 5, criteria_quality: 5, criteria_cooperation: 5,
+                total_score: 25, percentage: 75.0, performance_rating: 'Sederhana',
+                remarks: 'Prestasi awal tahun yang memuaskan.'
             },
             {
                 id: 'hdummy-2',
+                evaluation_date: '2026-02-20',
+                supplier: { company_name: 'Pembekal Bahan Mentah Utama' },
+                institution: { name: 'Penjara Sungai Buloh' },
+                evaluator_name: 'Pengarah Sungai Buloh',
+                criteria_quantity: 5, criteria_delivery: 5, criteria_price: 5, criteria_quality: 6, criteria_cooperation: 5,
+                total_score: 26, percentage: 78.6, performance_rating: 'Sederhana',
+                remarks: 'Kualiti meningkat berbanding bulan lalu.'
+            },
+            {
+                id: 'hdummy-3',
+                evaluation_date: '2026-03-12',
+                supplier: { company_name: 'Agro Supply Sdn. Bhd.' },
+                institution: { name: 'Penjara Alor Setar' },
+                evaluator_name: 'Pengarah Alor Setar',
+                criteria_quantity: 6, criteria_delivery: 5, criteria_price: 5, criteria_quality: 6, criteria_cooperation: 6,
+                total_score: 28, percentage: 80.0, performance_rating: 'Sederhana',
+                remarks: 'Hampir mencapai rating cemerlang.'
+            },
+            {
+                id: 'hdummy-4',
+                evaluation_date: '2026-04-15',
+                supplier: { company_name: 'Syarikat Rempah Sdn. Bhd.' },
+                institution: { name: 'Penjara Kajang' },
+                evaluator_name: 'Pengarah Kajang',
+                criteria_quantity: 6, criteria_delivery: 6, criteria_price: 6, criteria_quality: 6, criteria_cooperation: 5,
+                total_score: 29, percentage: 82.9, performance_rating: 'Cemerlang',
+                remarks: 'Cemerlang — penghantaran tepat masa.'
+            },
+            {
+                id: 'hdummy-5',
                 evaluation_date: '2026-05-20',
                 supplier: { company_name: 'Pembekal Bahan Mentah Utama' },
                 institution: { name: 'Penjara Sungai Buloh' },
                 evaluator_name: 'Pengarah Sungai Buloh',
-                criteria_quantity: 4, criteria_delivery: 4, criteria_price: 5, criteria_quality: 4, criteria_cooperation: 4,
-                total_score: 21, percentage: 60.0, performance_rating: 'Sederhana',
-                remarks: 'Kualiti boleh dipertingkatkan. Terdapat beberapa ketidakpadanan kuantiti.'
+                criteria_quantity: 6, criteria_delivery: 5, criteria_price: 5, criteria_quality: 6, criteria_cooperation: 6,
+                total_score: 28, percentage: 84.3, performance_rating: 'Cemerlang',
+                remarks: 'Meneruskan prestasi cemerlang.'
             },
             {
-                id: 'hdummy-3',
-                evaluation_date: '2026-04-10',
+                id: 'hdummy-6',
+                evaluation_date: '2026-06-15',
                 supplier: { company_name: 'Agro Supply Sdn. Bhd.' },
+                institution: { name: 'Penjara Alor Setar' },
+                evaluator_name: 'Pengarah Alor Setar',
+                criteria_quantity: 5, criteria_delivery: 6, criteria_price: 6, criteria_quality: 6, criteria_cooperation: 5,
+                total_score: 28, percentage: 84.0, performance_rating: 'Cemerlang',
+                remarks: 'Konsisten dan tepat.'
+            },
+            {
+                id: 'hdummy-7',
+                evaluation_date: '2026-07-10',
+                supplier: { company_name: 'Syarikat Rempah Sdn. Bhd.' },
                 institution: { name: 'Penjara Kajang' },
                 evaluator_name: 'Pengarah Kajang',
-                criteria_quantity: 3, criteria_delivery: 2, criteria_price: 4, criteria_quality: 3, criteria_cooperation: 3,
-                total_score: 15, percentage: 42.9, performance_rating: 'Lemah',
-                remarks: 'Penghantaran lewat beberapa kali. Perlu tindakan segera.'
+                criteria_quantity: 6, criteria_delivery: 6, criteria_price: 6, criteria_quality: 6, criteria_cooperation: 6,
+                total_score: 30, percentage: 88.0, performance_rating: 'Cemerlang',
+                remarks: 'Kualiti tertinggi setakat ini.'
+            },
+            {
+                id: 'hdummy-8',
+                evaluation_date: '2026-08-20',
+                supplier: { company_name: 'Pembekal Bahan Mentah Utama' },
+                institution: { name: 'Penjara Sungai Buloh' },
+                evaluator_name: 'Pengarah Sungai Buloh',
+                criteria_quantity: 6, criteria_delivery: 6, criteria_price: 6, criteria_quality: 7, criteria_cooperation: 6,
+                total_score: 31, percentage: 90.0, performance_rating: 'Cemerlang',
+                remarks: 'Luar biasa — semua kriteria dipenuhi dengan baik.'
+            },
+            {
+                id: 'hdummy-9',
+                evaluation_date: '2026-09-18',
+                supplier: { company_name: 'Agro Supply Sdn. Bhd.' },
+                institution: { name: 'Penjara Alor Setar' },
+                evaluator_name: 'Pengarah Alor Setar',
+                criteria_quantity: 6, criteria_delivery: 6, criteria_price: 5, criteria_quality: 6, criteria_cooperation: 6,
+                total_score: 29, percentage: 89.0, performance_rating: 'Cemerlang',
+                remarks: 'Cemerlang berterusan.'
+            },
+            {
+                id: 'hdummy-10',
+                evaluation_date: '2026-10-22',
+                supplier: { company_name: 'Syarikat Rempah Sdn. Bhd.' },
+                institution: { name: 'Penjara Kajang' },
+                evaluator_name: 'Pengarah Kajang',
+                criteria_quantity: 7, criteria_delivery: 6, criteria_price: 6, criteria_quality: 7, criteria_cooperation: 6,
+                total_score: 32, percentage: 92.0, performance_rating: 'Cemerlang',
+                remarks: 'Tiada aduan — servis terbaik.'
+            },
+            {
+                id: 'hdummy-11',
+                evaluation_date: '2026-11-14',
+                supplier: { company_name: 'Pembekal Bahan Mentah Utama' },
+                institution: { name: 'Penjara Sungai Buloh' },
+                evaluator_name: 'Pengarah Sungai Buloh',
+                criteria_quantity: 6, criteria_delivery: 7, criteria_price: 6, criteria_quantity: 6, criteria_cooperation: 6,
+                total_score: 31, percentage: 91.0, performance_rating: 'Cemerlang',
+                remarks: 'Kebolehpercayaan tinggi.'
+            },
+            {
+                id: 'hdummy-12',
+                evaluation_date: '2026-12-10',
+                supplier: { company_name: 'Agro Supply Sdn. Bhd.' },
+                institution: { name: 'Penjara Alor Setar' },
+                evaluator_name: 'Pengarah Alor Setar',
+                criteria_quantity: 7, criteria_delivery: 7, criteria_price: 7, criteria_quality: 7, criteria_cooperation: 6,
+                total_score: 34, percentage: 93.0, performance_rating: 'Cemerlang',
+                remarks: 'Prestasi terbaik sepanjang tahun.'
             }
         ];
 
@@ -1493,16 +1590,32 @@ class PrisonSystem {
                 console.warn('Failed to fetch real evaluations history.');
             }
 
-            // Use dummy if no data is pulled
-            const evaluationsList = realData.length > 0 ? realData : HQ_DUMMY_EVALUATIONS;
+            // 3. Determine mode and store full unfiltered list
+            const isDummy = realData.length === 0;
+            this.isPerformanceDummyMode = isDummy;
+            const evaluationsList = isDummy ? HQ_DUMMY_EVALUATIONS : realData;
             window._hqEvalStore = evaluationsList;
+            window._hqUnfilteredEvalStore = evaluationsList; // immutable unfiltered reference
 
-            // Recalculate stats if real ones are absent
+            // 4. Compute monthly average sums from evaluationsList for the trend chart
+            const monthlySum   = new Array(12).fill(0);
+            const monthlyCount = new Array(12).fill(0);
+            evaluationsList.forEach(ev => {
+                const d = new Date(ev.evaluation_date);
+                const m = d.getMonth(); // 0-based
+                monthlySum[m]   += parseFloat(ev.percentage) || 0;
+                monthlyCount[m] += 1;
+            });
+            const monthlyAvg = monthlySum.map((s, i) =>
+                monthlyCount[i] > 0 ? Math.round((s / monthlyCount[i]) * 10) / 10 : null
+            );
+
+            // 5. Recalculate stats if real ones are absent
             if (!stats) {
                 const total = evaluationsList.length;
                 const sumPct = evaluationsList.reduce((acc, ev) => acc + (parseFloat(ev.percentage) || 0), 0);
                 const avgPct = total > 0 ? Math.round(sumPct / total * 10) / 10 : 0;
-                
+
                 const ratingsMap = { 'Cemerlang': 0, 'Sederhana': 0, 'Lemah': 0 };
                 evaluationsList.forEach(ev => {
                     if (ratingsMap[ev.performance_rating] !== undefined) {
@@ -1510,29 +1623,25 @@ class PrisonSystem {
                     }
                 });
 
-                stats = {
-                    total: total,
-                    average: avgPct,
-                    ratings: ratingsMap
-                };
+                stats = { total, average: avgPct, ratings: ratingsMap };
             }
 
-            // Update stats indicators on cards
+            // 6. Update summary stat cards
             if (document.getElementById('statTotalEval')) document.getElementById('statTotalEval').textContent = stats.total;
             if (document.getElementById('statAvgPercentage')) document.getElementById('statAvgPercentage').textContent = `${stats.average}%`;
             if (document.getElementById('statCemerlangCount')) document.getElementById('statCemerlangCount').textContent = stats.ratings['Cemerlang'] || 0;
             if (document.getElementById('statLemahCount')) document.getElementById('statLemahCount').textContent = stats.ratings['Lemah'] || 0;
-            
+
             this.updatePerformanceRatingChart(stats.ratings);
 
-            // Render table body
+            // 7. Render table body
             if (historyBody) {
                 historyBody.innerHTML = '';
                 evaluationsList.forEach(ev => {
                     const row = document.createElement('tr');
-                    const ratingBadge = ev.performance_rating === 'Cemerlang' ? 'bg-success' : 
+                    const ratingBadge = ev.performance_rating === 'Cemerlang' ? 'bg-success' :
                                       (ev.performance_rating === 'Sederhana' ? 'bg-warning text-dark' : 'bg-danger');
-                    
+
                     row.innerHTML = `
                         <td>${new Date(ev.evaluation_date).toLocaleDateString('ms-MY')}</td>
                         <td><div class="fw-bold">${ev.supplier?.company_name || 'N/A'}</div></td>
@@ -1542,7 +1651,7 @@ class PrisonSystem {
                         <td class="text-center">${scoreCellHtml(ev.criteria_price)}</td>
                         <td class="text-center">${scoreCellHtml(ev.criteria_quality)}</td>
                         <td class="text-center">${scoreCellHtml(ev.criteria_cooperation)}</td>
-                        <td class="text-center"><div class="fw-bold text-primary">${ev.percentage}%</div></td>
+                        <td class="text-center"><div class="fw-bold text-primary">${parseFloat(ev.percentage).toFixed(1)}%</div></td>
                         <td class="text-center"><span class="badge rounded-pill px-3 ${ratingBadge}">${ev.performance_rating}</span></td>
                         <td class="text-center">
                             <button class="btn btn-sm btn-outline-info" onclick="prisonSystem.viewEvaluation('${ev.id}')">
@@ -1554,8 +1663,8 @@ class PrisonSystem {
                 });
             }
 
-            // Re-render Trend Chart
-            this.renderPerformanceTrendChart();
+            // 8. Render Trend Chart with dynamic monthly averages
+            this.renderPerformanceTrendChart(monthlyAvg);
 
         } catch (error) {
             console.error('Error loading performance page:', error);
@@ -1563,44 +1672,360 @@ class PrisonSystem {
         }
     }
 
-    renderPerformanceTrendChart() {
+    bindPerformanceRatingCards() {
+        const cards = document.querySelectorAll('[data-performance-rating-card]');
+        cards.forEach(card => {
+            if (card.dataset.bound === 'true') return;
+            card.dataset.bound = 'true';
+            card.addEventListener('click', () => {
+                this.showPerformanceRatingDetails(card.dataset.rating);
+            });
+        });
+    }
+
+    showPerformanceRatingDetails(rating) {
+        const modalEl = document.getElementById('viewModal');
+        const viewBody = document.getElementById('viewModalBody');
+        const viewTitle = document.getElementById('viewModalTitle');
+        if (!modalEl || !viewBody || !viewTitle) return;
+
+        const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        }[char]));
+        const evaluations = Array.isArray(window._hqEvalStore) ? window._hqEvalStore : [];
+        const matchedEvaluations = evaluations.filter(ev => ev.performance_rating === rating);
+        const averagePercentage = matchedEvaluations.length
+            ? matchedEvaluations.reduce((sum, ev) => sum + (parseFloat(ev.percentage) || 0), 0) / matchedEvaluations.length
+            : 0;
+        const ratingMeta = {
+            Cemerlang: { badge: 'bg-success', text: 'text-success', icon: 'fa-star' },
+            Lemah: { badge: 'bg-danger', text: 'text-danger', icon: 'fa-triangle-exclamation' },
+            Sederhana: { badge: 'bg-warning text-dark', text: 'text-warning', icon: 'fa-gauge' }
+        };
+        const meta = ratingMeta[rating] || ratingMeta.Sederhana;
+        const rows = matchedEvaluations.map(ev => {
+            const totalScore = ev.total_score || (
+                (parseInt(ev.criteria_quantity, 10) || 0) +
+                (parseInt(ev.criteria_delivery, 10) || 0) +
+                (parseInt(ev.criteria_price, 10) || 0) +
+                (parseInt(ev.criteria_quality, 10) || 0) +
+                (parseInt(ev.criteria_cooperation, 10) || 0)
+            );
+            const percentage = Number.isFinite(parseFloat(ev.percentage)) ? `${parseFloat(ev.percentage).toFixed(1)}%` : 'N/A';
+
+            return `
+                <tr>
+                    <td>
+                        <div class="fw-semibold text-dark">${escapeHtml(ev.supplier?.company_name || 'N/A')}</div>
+                        <div class="small text-muted">${escapeHtml(ev.evaluator_name || 'N/A')}</div>
+                    </td>
+                    <td>${escapeHtml(ev.institution?.name || 'N/A')}</td>
+                    <td>${this.formatDate(ev.evaluation_date)}</td>
+                    <td class="text-center"><span class="fw-bold">${escapeHtml(totalScore)}/35</span></td>
+                    <td class="text-center"><span class="fw-bold text-primary">${escapeHtml(percentage)}</span></td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-sm btn-outline-info" data-evaluation-detail-id="${escapeHtml(ev.id)}" aria-label="Lihat butiran penilaian">
+                            <i class="fas fa-eye" aria-hidden="true"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+        const emptyState = `
+            <div class="text-center text-muted py-4">
+                <i class="fas fa-circle-info fs-4 mb-2 d-block" aria-hidden="true"></i>
+                Tiada penilaian dengan rating ${escapeHtml(rating)}.
+            </div>
+        `;
+
+        viewTitle.textContent = `Butiran Rating ${rating}`;
+        viewBody.innerHTML = `
+            <div class="container-fluid p-0">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+                    <div>
+                        <div class="small text-muted mb-1">Senarai penilaian mengikut rating</div>
+                        <h6 class="fw-bold mb-0 ${meta.text}">
+                            <i class="fas ${meta.icon} me-2" aria-hidden="true"></i>Rating ${escapeHtml(rating)}
+                        </h6>
+                    </div>
+                    <span class="badge rounded-pill px-3 py-2 ${meta.badge}">${matchedEvaluations.length} penilaian</span>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <div class="p-3 rounded-3 bg-light h-100">
+                            <div class="small text-muted mb-1">Jumlah Penilaian</div>
+                            <div class="fw-bold fs-4 text-dark">${matchedEvaluations.length}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 rounded-3 bg-light h-100">
+                            <div class="small text-muted mb-1">Purata Prestasi</div>
+                            <div class="fw-bold fs-4 text-primary">${averagePercentage.toFixed(1)}%</div>
+                        </div>
+                    </div>
+                </div>
+
+                ${matchedEvaluations.length ? `
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Pembekal</th>
+                                    <th>Institusi</th>
+                                    <th>Tarikh</th>
+                                    <th class="text-center">Skor</th>
+                                    <th class="text-center">Peratus</th>
+                                    <th class="text-center">Tindakan</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
+                ` : emptyState}
+            </div>
+        `;
+
+        viewBody.querySelectorAll('[data-evaluation-detail-id]').forEach(button => {
+            button.addEventListener('click', () => {
+                this.viewEvaluation(button.dataset.evaluationDetailId);
+            });
+        });
+
+        const dialog = modalEl.querySelector('.modal-dialog');
+        if (dialog) dialog.classList.add('modal-lg');
+
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+
+        modalEl.addEventListener('hidden.bs.modal', function handler() {
+            if (dialog) dialog.classList.remove('modal-lg');
+            modalEl.removeEventListener('hidden.bs.modal', handler);
+        });
+    }
+
+    renderPerformanceTrendChart(monthlyAvg) {
         const trendEl = document.querySelector("#performanceTrendChart");
         if (!trendEl) return;
-        
+
         if (this.charts.performanceTrend) {
             this.charts.performanceTrend.destroy();
         }
 
+        // Initialise selection state
+        if (!Array.isArray(this.performanceTrendSelectedMonths)) this.performanceTrendSelectedMonths = [];
+
+        // Build series data: use dynamic averages if provided, otherwise fallback to hardcoded
+        const MONTH_NAMES = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'];
+        const FALLBACK    = [75, 78, 80, 82, 85, 84, 88, 90, 89, 92, 91, 93];
+        const seriesData  = (monthlyAvg && monthlyAvg.length === 12)
+            ? monthlyAvg.map((v, i) => v !== null ? v : FALLBACK[i])
+            : FALLBACK;
+
         const options = {
-            series: [{
-                name: 'Purata Prestasi (%)',
-                data: [75, 78, 80, 82, 85, 84, 88, 90, 89, 92, 91, 93],
-            }],
+            series: [{ name: 'Purata Prestasi (%)', data: seriesData }],
             chart: {
                 type: 'area',
                 height: 300,
                 toolbar: { show: false },
+                animations: { enabled: true, speed: 400 },
+                events: {
+                    markerClick: (event, chartContext, config) => {
+                        this.handlePerformanceTrendClick(event, config);
+                    },
+                    dataPointSelection: (event, chartContext, config) => {
+                        this.handlePerformanceTrendClick(event, config);
+                    }
+                }
             },
             colors: ['#1a5632'],
             fill: {
                 type: 'gradient',
-                gradient: {
-                    shadeIntensity: 1,
-                    opacityFrom: 0.45,
-                    opacityTo: 0.05,
-                    stops: [20, 100],
-                },
+                gradient: { shadeIntensity: 1, opacityFrom: 0.45, opacityTo: 0.05, stops: [20, 100] },
             },
             stroke: { curve: 'smooth', width: 3 },
-            xaxis: {
-                categories: ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'],
+            markers: { size: 5, hover: { size: 7 } },
+            tooltip: {
+                y: { formatter: val => `${val}%` },
+                x: { show: true }
             },
-            yaxis: { max: 100, min: 0 },
+            xaxis: { categories: MONTH_NAMES },
+            yaxis: { max: 100, min: 0, labels: { formatter: v => `${v}%` } },
         };
 
         const chart = new ApexCharts(trendEl, options);
         chart.render();
         this.charts.performanceTrend = chart;
+    }
+
+    handlePerformanceTrendClick(event, config) {
+        const idx = config?.dataPointIndex;
+        if (idx === undefined || idx === null || idx < 0) return;
+
+        if (event && event.shiftKey && this.performanceTrendSelectedMonths.length > 0) {
+            // Range selection with shift+click
+            const last = this.performanceTrendSelectedMonths[this.performanceTrendSelectedMonths.length - 1];
+            const min = Math.min(last, idx);
+            const max = Math.max(last, idx);
+            this.performanceTrendSelectedMonths = [];
+            for (let i = min; i <= max; i++) this.performanceTrendSelectedMonths.push(i);
+        } else {
+            // Toggle single month
+            if (this.performanceTrendSelectedMonths.includes(idx)) {
+                this.performanceTrendSelectedMonths = this.performanceTrendSelectedMonths.filter(i => i !== idx);
+            } else {
+                this.performanceTrendSelectedMonths = [idx];
+            }
+        }
+
+        this._updatePerformanceTrendBadge(this.performanceTrendSelectedMonths);
+        this.applyPerformanceSlicer(this.performanceTrendSelectedMonths);
+    }
+
+    /** Update the visual filter badge based on selected month indices */
+    _updatePerformanceTrendBadge(selectedIndices) {
+        const MONTH_NAMES = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'];
+        const badge = document.getElementById('performanceTrendFilterBadge');
+        const label = document.getElementById('performanceTrendFilterLabel');
+        if (!badge || !label) return;
+
+        if (!selectedIndices || selectedIndices.length === 0) {
+            badge.classList.add('d-none');
+            badge.classList.remove('d-inline-flex');
+            label.textContent = '-';
+        } else {
+            const names = selectedIndices.map(i => MONTH_NAMES[i] || i).join(', ');
+            label.textContent = names;
+            badge.classList.remove('d-none');
+            badge.classList.add('d-inline-flex');
+        }
+    }
+
+    /** Clear the trend chart filter and restore all data */
+    clearPerformanceTrendFilter() {
+        this.performanceTrendSelectedMonths = [];
+        this._updatePerformanceTrendBadge([]);
+        this.applyPerformanceSlicer([]);
+    }
+
+    async applyPerformanceSlicer(selectedIndices) {
+        // selectedIndices: array of month indices (0-11). Empty = clear filter.
+        const historyBody = document.getElementById('performanceHistoryBody');
+
+        const scoreCellHtml = (val) => {
+            let cls = 'text-danger';
+            if (val >= 6) cls = 'text-success';
+            else if (val >= 4) cls = 'text-warning';
+            return `<span class="fw-bold ${cls}">${val}/7</span>`;
+        };
+
+        const computeStats = (list) => {
+            const total = list.length;
+            const sumPct = list.reduce((a, ev) => a + (parseFloat(ev.percentage) || 0), 0);
+            const average = total > 0 ? Math.round(sumPct / total * 10) / 10 : 0;
+            const ratingsMap = { 'Cemerlang': 0, 'Sederhana': 0, 'Lemah': 0 };
+            list.forEach(ev => { if (ratingsMap[ev.performance_rating] !== undefined) ratingsMap[ev.performance_rating]++; });
+            return { total, average, ratings: ratingsMap };
+        };
+
+        const renderRows = (list) => {
+            if (!historyBody) return;
+            if (!list || list.length === 0) {
+                historyBody.innerHTML = '<tr><td colspan="11" class="text-center py-4 text-muted">Tiada penilaian untuk pilihan ini.</td></tr>';
+                return;
+            }
+            historyBody.innerHTML = '';
+            list.forEach(ev => {
+                const ratingBadge = ev.performance_rating === 'Cemerlang' ? 'bg-success' :
+                    (ev.performance_rating === 'Sederhana' ? 'bg-warning text-dark' : 'bg-danger');
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date(ev.evaluation_date).toLocaleDateString('ms-MY')}</td>
+                    <td><div class="fw-bold">${ev.supplier?.company_name || 'N/A'}</div></td>
+                    <td><div class="small">${ev.institution?.name || 'N/A'}</div></td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_quantity)}</td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_delivery)}</td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_price)}</td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_quality)}</td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_cooperation)}</td>
+                    <td class="text-center"><div class="fw-bold text-primary">${parseFloat(ev.percentage).toFixed(1)}%</div></td>
+                    <td class="text-center"><span class="badge rounded-pill px-3 ${ratingBadge}">${ev.performance_rating}</span></td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-info" onclick="prisonSystem.viewEvaluation('${ev.id}')">
+                            <i class="fas fa-eye"></i> Detail
+                        </button>
+                    </td>
+                `;
+                historyBody.appendChild(row);
+            });
+        };
+
+        const applyStats = (stats) => {
+            if (document.getElementById('statTotalEval')) document.getElementById('statTotalEval').textContent = stats.total || 0;
+            if (document.getElementById('statAvgPercentage')) document.getElementById('statAvgPercentage').textContent = `${stats.average || 0}%`;
+            if (document.getElementById('statCemerlangCount')) document.getElementById('statCemerlangCount').textContent = (stats.ratings && stats.ratings['Cemerlang']) ? stats.ratings['Cemerlang'] : 0;
+            if (document.getElementById('statLemahCount')) document.getElementById('statLemahCount').textContent = (stats.ratings && stats.ratings['Lemah']) ? stats.ratings['Lemah'] : 0;
+            window._hqEvalStore = window._hqEvalStore; // keep reference for rating card modal
+            this.updatePerformanceRatingChart(stats.ratings || {});
+        };
+
+        try {
+            const isDummy = !!this.isPerformanceDummyMode;
+            const unfiltered = Array.isArray(window._hqUnfilteredEvalStore) ? window._hqUnfilteredEvalStore : [];
+
+            if (!selectedIndices || selectedIndices.length === 0) {
+                // ---- Clear filter: restore full data ----
+                if (isDummy) {
+                    // Local restoration
+                    window._hqEvalStore = unfiltered;
+                    renderRows(unfiltered);
+                    applyStats(computeStats(unfiltered));
+                } else {
+                    // Fetch from server
+                    const [histRes, statsRes] = await Promise.all([
+                        fetch('/evaluations', { headers: { 'Accept': 'application/json' } }),
+                        fetch('/evaluations/stats', { headers: { 'Accept': 'application/json' } }),
+                    ]);
+                    const histJson  = histRes.ok  ? await histRes.json()  : { data: [] };
+                    const statsJson = statsRes.ok ? await statsRes.json() : { stats: { total: 0, average: 0, ratings: {} } };
+                    const list      = histJson.data || [];
+                    window._hqEvalStore = list;
+                    renderRows(list);
+                    applyStats(statsJson.stats || { total: 0, average: 0, ratings: {} });
+                }
+                return;
+            }
+
+            // ---- Apply filter ----
+            if (isDummy) {
+                // Local month filtering (0-based)
+                const filtered = unfiltered.filter(ev => {
+                    const m = new Date(ev.evaluation_date).getMonth();
+                    return selectedIndices.includes(m);
+                });
+                window._hqEvalStore = filtered;
+                renderRows(filtered);
+                applyStats(computeStats(filtered));
+            } else {
+                // Server-side filtering (backend expects 1-based months 1-12)
+                const dbMonths = selectedIndices.map(i => i + 1);
+                const monthsCsv = dbMonths.join(',');
+                const res  = await fetch(`/evaluations/filter?months=${encodeURIComponent(monthsCsv)}`, { headers: { 'Accept': 'application/json' } });
+                if (!res.ok) throw new Error('Failed to fetch filtered evaluations');
+                const json = await res.json();
+                const list = json.data || [];
+                window._hqEvalStore = list;
+                renderRows(list);
+                applyStats(json.stats || { total: 0, average: 0, ratings: {} });
+            }
+
+        } catch (err) {
+            console.error('Slicer error:', err);
+        }
     }
 
     updatePerformanceRatingChart(ratings) {
@@ -1611,6 +2036,7 @@ class PrisonSystem {
             this.charts.performanceRating.destroy();
         }
 
+        const labels = ['Cemerlang', 'Sederhana', 'Lemah'];
         const data = [
             ratings['Cemerlang'] || 0,
             ratings['Sederhana'] || 0,
@@ -1621,9 +2047,17 @@ class PrisonSystem {
             series: data,
             chart: {
                 type: 'donut',
-                height: 300
+                height: 300,
+                events: {
+                    dataPointSelection: (_event, _chartContext, config) => {
+                        const selectedRating = labels[config.dataPointIndex];
+                        if (selectedRating) {
+                            this.showPerformanceRatingDetails(selectedRating);
+                        }
+                    }
+                }
             },
-            labels: ['Cemerlang', 'Sederhana', 'Lemah'],
+            labels,
             colors: ['#198754', '#ffc107', '#dc3545'],
             legend: { position: 'bottom' },
             plotOptions: {
@@ -3842,7 +4276,7 @@ class PrisonSystem {
                     </table>
                 </div>
             `;
-            new bootstrap.Modal(document.getElementById('viewModal')).show();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('viewModal')).show();
             return;
         }
 
@@ -3894,7 +4328,7 @@ class PrisonSystem {
         html += '</table></div>';
 
         body.innerHTML = html;
-        new bootstrap.Modal(document.getElementById('viewModal')).show();
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('viewModal')).show();
     }
 
     showEditModal(action, id) {
@@ -5188,7 +5622,7 @@ class PrisonSystem {
                     
                     // Show standard Bootstrap 5 modal
                     const modalEl = document.getElementById('viewModal');
-                    const modal = new bootstrap.Modal(modalEl);
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
                     modal.show();
 
                     // Cleanup width on close to prevent issues in other sections

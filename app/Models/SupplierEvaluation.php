@@ -12,9 +12,14 @@ class SupplierEvaluation extends Model
     protected $table = 'supplier_evaluations';
 
     protected $fillable = [
-        'order_id',
         'supplier_id',
         'institution_id',
+        'order_date_from',
+        'order_date_to',
+        'order_count',
+        'supply_date_from',
+        'supply_date_to',
+        'supply_type',
         'evaluator_name',
         'evaluation_date',
         'criteria_quantity',
@@ -34,14 +39,13 @@ class SupplierEvaluation extends Model
 
     protected $casts = [
         'evaluation_date' => 'date',
+        'order_date_from' => 'date',
+        'order_date_to' => 'date',
+        'supply_date_from' => 'date',
+        'supply_date_to' => 'date',
         'percentage' => 'decimal:2',
         'is_verified' => 'boolean',
     ];
-
-    public function order()
-    {
-        return $this->belongsTo(Order::class);
-    }
 
     public function supplier()
     {
@@ -51,5 +55,10 @@ class SupplierEvaluation extends Model
     public function institution()
     {
         return $this->belongsTo(Institution::class);
+    }
+
+    public function order()
+    {
+        return null;
     }
 }

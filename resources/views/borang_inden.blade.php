@@ -51,8 +51,16 @@
     .items-toolbar { align-items:center; background: #111827; border-bottom:1px solid rgba(255,255,255,.08); display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; padding:18px 20px; }
     .item-card { border-bottom:1px solid rgba(255,255,255,.08); padding:20px; background: var(--surface-soft); }
     .item-card:last-child { border-bottom:0; }
+    .item-card td { vertical-align:middle; }
     .item-index { align-items:center; background: var(--accent); border-radius:999px; color:#0f172a; display:inline-flex; font-size:.8rem; font-weight:700; height:34px; justify-content:center; width:34px; }
     .item-actions { align-items:center; display:flex; gap:10px; justify-content:space-between; margin-bottom:16px; }
+    .item-name-display, .item-qty-display, .item-unit-display, .item-price-display, .item-ceiling-display, .item-ceiling-unit-display, .item-total-display { display:inline; font-weight:500; color:var(--text); }
+    .item-card.editing .item-qty-display { display:none !important; }
+    .item-card.editing .item-order-qty { display:block !important; }
+    .item-card.editing .edit-item { display:none !important; }
+    .item-card.editing .save-item-qty { display:inline-flex !important; }
+    .item-card.editing .cancel-item-edit { display:inline-flex !important; }
+    [data-bs-theme="light"] .item-name-display, [data-bs-theme="light"] .item-qty-display, [data-bs-theme="light"] .item-unit-display, [data-bs-theme="light"] .item-price-display, [data-bs-theme="light"] .item-ceiling-display, [data-bs-theme="light"] .item-ceiling-unit-display, [data-bs-theme="light"] .item-total-display { color:#111827; }
     .btn-round { border-radius:999px; font-weight:700; padding:10px 16px; }
     .btn-add { background: var(--accent); border:0; color:#0f172a; }
     .btn-soft { background: rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); color: var(--text); }
@@ -692,97 +700,101 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
     </form>
   </div>
 
-  {{-- Item Modal (Add / Edit) --}}
-  <div class="modal fade" id="itemModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" style="background:#11151f; border:1px solid rgba(255,255,255,.08); color:#e2e8f0;">
-        <div class="modal-header border-0">
-          <h5 class="modal-title fw-bold" id="itemModalTitle">Edit Item</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" id="editItemIndex" value="-1">
-          <div class="mb-3">
-            <label class="form-label">Nama Barang <span class="text-danger">*</span></label>
-            <select class="form-select" id="itemModalName">
-              <option value="">-- Pilih Barang --</option>
-            </select>
-            <div id="itemModalNameError" class="d-none" style="color:#f87171;font-size:.82rem;margin-top:4px;font-weight:500;"><i class="bi bi-exclamation-circle-fill me-1"></i><span></span></div>
-          </div>
-          <div class="row g-3">
-            <div class="col-6">
-              <label class="form-label">Kuantiti <span class="text-danger">*</span></label>
-              <input class="form-control" id="itemModalQty" type="number" min="1" step="1" value="1">
-            </div>
-            <div class="col-6">
-              <label class="form-label">Unit</label>
-              <input class="form-control" id="itemModalUnit" type="text" readonly placeholder="Auto isi dari item">
-            </div>
-          </div>
-          <div class="mb-3 mt-3">
-            <label class="form-label">Harga Seunit (RM)</label>
-            <input class="form-control" id="itemModalPrice" type="text" readonly placeholder="Auto isi dari item">
-          </div>
-        </div>
-        <div class="modal-footer border-0">
-          <button class="btn btn-round btn-soft" type="button" data-bs-dismiss="modal">Batal</button>
-          <button class="btn btn-round btn-add" type="button" id="itemModalSave">Simpan</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {{-- Delete Confirmation Modal --}}
-  <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-      <div class="modal-content" style="background:#11151f; border:1px solid rgba(255,255,255,.08); color:#e2e8f0;">
-        <div class="modal-body text-center py-4">
-          <i class="bi bi-exclamation-triangle-fill text-danger fs-1 mb-3 d-block"></i>
-          <h5 class="fw-bold mb-2">Pengesahan Padam</h5>
-          <p class="mb-0" style="color:var(--muted);">Anda pasti mahu memadam item ini?</p>
-        </div>
-        <div class="modal-footer border-0 justify-content-center">
-          <button class="btn btn-round btn-soft" type="button" data-bs-dismiss="modal">Batal</button>
-          <button class="btn btn-round" type="button" id="deleteConfirmBtn" style="background:#dc3545; color:#fff;">Padam</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   </main>
+
+{{-- Item Modal (Add / Edit) --}}
+<div class="modal fade" id="itemModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:#11151f; border:1px solid rgba(255,255,255,.08); color:#e2e8f0;">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold" id="itemModalTitle">Tambah Item</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Nama Barang <span class="text-danger">*</span></label>
+          <select class="form-select" id="itemModalName">
+            <option value="">-- Pilih Barang --</option>
+          </select>
+          <div id="itemModalNameError" class="d-none" style="color:#f87171;font-size:.82rem;margin-top:4px;font-weight:500;"><i class="bi bi-exclamation-circle-fill me-1"></i><span></span></div>
+        </div>
+        <div class="row g-3">
+          <div class="col-6">
+            <label class="form-label">Kuantiti <span class="text-danger">*</span></label>
+            <input class="form-control" id="itemModalQty" type="number" min="1" step="1" value="1">
+          </div>
+          <div class="col-6">
+            <label class="form-label">Unit</label>
+            <input class="form-control" id="itemModalUnit" type="text" readonly placeholder="Auto isi dari item">
+          </div>
+        </div>
+        <div class="mb-3 mt-3">
+          <label class="form-label">Harga Seunit (RM)</label>
+          <input class="form-control" id="itemModalPrice" type="text" readonly placeholder="Auto isi dari item">
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-round btn-soft" type="button" data-bs-dismiss="modal">Batal</button>
+        <button class="btn btn-round btn-add" type="button" id="itemModalSave">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{-- Delete Confirmation Modal --}}
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content" style="background:#11151f; border:1px solid rgba(255,255,255,.08); color:#e2e8f0;">
+      <div class="modal-body text-center py-4">
+        <i class="bi bi-exclamation-triangle-fill text-danger fs-1 mb-3 d-block"></i>
+        <h5 class="fw-bold mb-2">Pengesahan Padam</h5>
+        <p class="mb-0" style="color:var(--muted);">Anda pasti mahu memadam item ini?</p>
+      </div>
+      <div class="modal-footer border-0 justify-content-center">
+        <button class="btn btn-round btn-soft" type="button" data-bs-dismiss="modal">Batal</button>
+        <button class="btn btn-round" type="button" id="deleteConfirmBtn" style="background:#dc3545; color:#fff;">Padam</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <template id="itemTemplate">
   <tr class="item-card">
     <td><span class="item-index"></span></td>
     <td data-order="">
-      <input class="form-control item-name" type="text" readonly placeholder="Klik Edit untuk pilih barang">
+      <span class="item-name-display"></span>
       <input class="item-contract-id" type="hidden" name="items[0][contract_item_id]">
       <input type="hidden" class="item-name-hidden" name="items[0][name]">
     </td>
-    <td data-order="0"><input class="form-control item-order-qty item-calc" type="number" min="1" step="1" value="0" required></td>
+    <td data-order="0">
+      <span class="item-qty-display"></span>
+      <input class="form-control item-order-qty item-calc" type="number" min="1" step="1" value="0" style="display:none;">
+    </td>
     <td data-order="">
-      <input class="form-control item-unit" type="text" readonly placeholder="-">
+      <span class="item-unit-display"></span>
       <input type="hidden" class="item-unit-hidden" name="items[0][unit]">
     </td>
     <td data-order="0">
-      <input class="form-control item-unit-price" type="text" readonly placeholder="-">
+      <span class="item-price-display"></span>
       <input type="hidden" class="item-unit-price-hidden" name="items[0][unitPrice]">
     </td>
     <td data-order="0">
-      <input class="form-control item-ceiling" type="text" readonly value="--">
+      <span class="item-ceiling-display">--</span>
       <div class="item-ceiling-warning small text-danger fw-semibold mt-1" style="display:none;">
         <i class="bi bi-exclamation-triangle-fill me-1"></i>Melebihi had siling!
       </div>
     </td>
     <td data-order="0">
-      <input class="form-control item-ceiling-unit" type="text" readonly value="--">
+      <span class="item-ceiling-unit-display">--</span>
       <div class="item-ceiling-unit-warning small text-danger fw-semibold mt-1" style="display:none;">
         <i class="bi bi-exclamation-triangle-fill me-1"></i>Melebihi had siling!
       </div>
     </td>
-    <td data-order="0"><input class="form-control item-total" type="text" value="RM 0.00" readonly></td>
-    <td><div class="d-flex flex-wrap gap-1">
+    <td data-order="0"><span class="item-total-display">RM 0.00</span></td>
+    <td><div class="d-flex flex-wrap gap-1 item-actions">
         <button class="btn btn-sm btn-outline-info edit-item" type="button" title="Edit"><i class="bi bi-pencil"></i></button>
+        <button class="btn btn-sm btn-success save-item-qty" type="button" title="Simpan" style="display:none;"><i class="bi bi-check"></i></button>
+        <button class="btn btn-sm btn-secondary cancel-item-edit" type="button" title="Batal" style="display:none;"><i class="bi bi-x"></i></button>
         <button class="btn btn-sm btn-outline-danger remove-item" type="button" title="Padam"><i class="bi bi-trash"></i></button>
       </div></td>
   </tr>
@@ -1058,17 +1070,19 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         // ── Flatpickr date pickers ──
         if (typeof flatpickr !== 'undefined') {
           document.querySelectorAll('.date-input:not([readonly])').forEach(function (el) {
-            flatpickr(el, {
-              dateFormat: 'd/m/Y',
-              allowInput: true,
-              locale: 'ms',
-              onChange: function (selectedDates, dateStr) {
-                hasUnsavedChanges = true;
-                triggerAutoSave();
-                updateTimeMinimum(dateStr, localDate, now, timeInputs);
-                updateDayName(el);
-              },
-            });
+            try {
+              flatpickr(el, {
+                dateFormat: 'd/m/Y',
+                allowInput: true,
+                locale: 'ms',
+                onChange: function (selectedDates, dateStr) {
+                  hasUnsavedChanges = true;
+                  triggerAutoSave();
+                  updateTimeMinimum(dateStr, localDate, now, timeInputs);
+                  updateDayName(el);
+                },
+              });
+            } catch (_e) {}
           });
         }
       }
@@ -1238,7 +1252,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
           const unitPrice = numberValue(card.querySelector('.item-unit-price-hidden'));
           const lineTotal = orderQty * unitPrice;
           card._lineTotal = lineTotal;
-          card.querySelector('.item-total').value = formatCurrency(lineTotal);
+          card.querySelector('.item-total-display').textContent = formatCurrency(lineTotal);
           orderQtyTotal += orderQty;
           grandTotal += lineTotal;
         });
@@ -1255,11 +1269,11 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
           var groupRemaining = parseFloat(card.dataset.ceilingGroupRemaining) || 0;
           var estQty = parseFloat(card.dataset.estimatedQuantity) || 0;
           var orderedQty = parseFloat(card.dataset.orderedQuantity) || 0;
-          var ceilingInput = card.querySelector('.item-ceiling');
+          var ceilingDisplay = card.querySelector('.item-ceiling-display');
           var ceilingWarning = card.querySelector('.item-ceiling-warning');
-          var ceilingUnitInput = card.querySelector('.item-ceiling-unit');
+          var ceilingUnitDisplay = card.querySelector('.item-ceiling-unit-display');
           var ceilingUnitWarning = card.querySelector('.item-ceiling-unit-warning');
-          if (!ceilingInput) return;
+          if (!ceilingDisplay) return;
 
           // RM fair-share ceiling
           var rmExceeded = false;
@@ -1269,28 +1283,26 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
               if (other !== card) othersTotal += other._lineTotal || 0;
             });
             var rmRemaining = Math.max(0, groupRemaining - othersTotal);
-            ceilingInput.value = formatCurrency(rmRemaining);
+            ceilingDisplay.textContent = formatCurrency(rmRemaining);
             rmExceeded = (card._lineTotal || 0) > rmRemaining;
-            ceilingInput.style.color = rmExceeded ? '#f87171' : '';
-            ceilingInput.style.borderColor = rmExceeded ? '#f87171' : '';
+            ceilingDisplay.style.color = rmExceeded ? '#f87171' : '';
             ceilingWarning.style.display = rmExceeded ? 'block' : 'none';
           } else {
-            ceilingInput.value = '--';
+            ceilingDisplay.textContent = '--';
             ceilingWarning.style.display = 'none';
           }
 
           // Unit ceiling
-          if (ceilingUnitInput) {
+          if (ceilingUnitDisplay) {
             if (estQty > 0) {
               var unitRemaining = Math.max(0, estQty - orderedQty);
-              ceilingUnitInput.value = formatNumber(unitRemaining) + ' / ' + formatNumber(estQty);
+              ceilingUnitDisplay.textContent = formatNumber(unitRemaining) + ' / ' + formatNumber(estQty);
               var orderQtyVal = numberValue(card.querySelector('.item-order-qty'));
               var unitExceeded = orderQtyVal > unitRemaining;
-              ceilingUnitInput.style.color = unitExceeded ? '#f87171' : '';
-              ceilingUnitInput.style.borderColor = unitExceeded ? '#f87171' : '';
+              ceilingUnitDisplay.style.color = unitExceeded ? '#f87171' : '';
               ceilingUnitWarning.style.display = unitExceeded ? 'block' : 'none';
             } else {
-              ceilingUnitInput.value = '--';
+              ceilingUnitDisplay.textContent = '--';
               ceilingUnitWarning.style.display = 'none';
             }
           }
@@ -1338,7 +1350,6 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
       }
 
       let deleteTargetRow = null;
-      let editTargetRow = null;
 
       function wireItemCard(card) {
         card.querySelectorAll('.item-calc').forEach((input) => {
@@ -1346,43 +1357,27 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         });
 
         if (isReadOnly) {
-          card.querySelectorAll('.edit-item, .remove-item').forEach((btn) => btn.classList.add('d-none'));
-          card.querySelectorAll('input').forEach((input) => input.setAttribute('readonly', 'readonly'));
+          card.querySelectorAll('.edit-item, .remove-item, .save-item-qty, .cancel-item-edit').forEach((btn) => btn.classList.add('d-none'));
           return;
         }
 
         card.querySelector('.edit-item').addEventListener('click', function () {
-          editTargetRow = card;
-          const name = card.querySelector('.item-name-hidden').value || '';
-          const qty = card.querySelector('.item-order-qty').value;
-          document.getElementById('itemModalTitle').textContent = 'Edit Item';
-          document.getElementById('editItemIndex').value = Array.from(getItemRows()).indexOf(card);
+          card.classList.add('editing');
+          card.querySelector('.item-order-qty').value = card.querySelector('.item-qty-display').textContent;
+          card.querySelector('.item-order-qty').focus();
+        });
 
-          const select = document.getElementById('itemModalName');
-          select.innerHTML = '<option value="">-- Pilih Barang --</option>';
-          contractItems.forEach(function (ci) {
-            const opt = document.createElement('option');
-            opt.value = ci.id;
-            opt.textContent = ci.item_name;
-            opt.dataset.unit = ci.uom_code || 'Unit';
-            opt.dataset.price = ci.unit_price || 0;
-            if (ci.item_name === name) opt.selected = true;
-            select.appendChild(opt);
-          });
+        card.querySelector('.save-item-qty').addEventListener('click', function () {
+          const qty = parseFloat(card.querySelector('.item-order-qty').value) || 0;
+          card.querySelector('.item-qty-display').textContent = qty;
+          card.classList.remove('editing');
+          updateSummary();
+          updateCeilingAlert();
+        });
 
-          document.getElementById('itemModalQty').value = qty || 1;
-
-          const selectedOpt = select.options[select.selectedIndex];
-          if (selectedOpt && selectedOpt.value) {
-            document.getElementById('itemModalUnit').value = selectedOpt.dataset.unit || '';
-            document.getElementById('itemModalPrice').value = selectedOpt.dataset.price ? formatCurrency(selectedOpt.dataset.price) : '';
-          } else {
-            document.getElementById('itemModalUnit').value = '';
-            document.getElementById('itemModalPrice').value = '';
-          }
-
-          document.getElementById('itemModalNameError').classList.add('d-none');
-          new bootstrap.Modal(document.getElementById('itemModal')).show();
+        card.querySelector('.cancel-item-edit').addEventListener('click', function () {
+          card.querySelector('.item-order-qty').value = card.querySelector('.item-qty-display').textContent;
+          card.classList.remove('editing');
         });
 
         card.querySelector('.remove-item').addEventListener('click', function () {
@@ -1393,20 +1388,27 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
 
       function addItem(defaults = {}) {
         const card = itemTemplate.content.firstElementChild.cloneNode(true);
+        const name = defaults.name || '';
+        const qty = defaults.orderQty ?? 0;
+        const unit = defaults.unit || 'Unit';
+        const price = defaults.unitPrice ?? 0;
+        const priceFormatted = formatCurrency(price);
+
         card.querySelector('.item-contract-id').value = defaults.contract_item_id ?? '';
-        card.querySelector('.item-name').value = defaults.name || '';
-        card.querySelector('.item-name-hidden').value = defaults.name || '';
-        card.querySelector('.item-unit').value = defaults.unit || 'Unit';
-        card.querySelector('.item-unit-hidden').value = defaults.unit || 'Unit';
-        card.querySelector('.item-order-qty').value = defaults.orderQty ?? 0;
-        card.querySelector('.item-unit-price').value = formatCurrency(defaults.unitPrice ?? 0);
-        card.querySelector('.item-unit-price-hidden').value = defaults.unitPrice ?? 0;
+        card.querySelector('.item-name-hidden').value = name;
+        card.querySelector('.item-name-display').textContent = name;
+        card.querySelector('.item-unit-hidden').value = unit;
+        card.querySelector('.item-unit-display').textContent = unit;
+        card.querySelector('.item-order-qty').value = qty;
+        card.querySelector('.item-qty-display').textContent = qty;
+        card.querySelector('.item-unit-price-hidden').value = price;
+        card.querySelector('.item-price-display').textContent = priceFormatted;
         card.dataset.ceilingGroupId = defaults.ceiling_limit_id ?? '';
         card.dataset.ceilingGroupRemaining = defaults.ceiling_group_remaining ?? '';
         card.dataset.estimatedQuantity = defaults.estimated_quantity ?? '';
         card.dataset.orderedQuantity = defaults.ordered_quantity ?? 0;
-        if (defaults.name) {
-          card.querySelector('.item-name').removeAttribute('placeholder');
+        if (name) {
+          card.querySelector('.item-name-display').textContent = name;
         }
         if (itemDataTable) {
           itemDataTable.row.add(card).draw(false);
@@ -1422,11 +1424,28 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
       wireUlasanCounter();
       initItemDataTable();
 
-      // Tambah Item button — adds empty row
-      const tambahBtn = document.getElementById('tambahItemBtn');
+      // Tambah Item button → populate modal then show
+      var tambahBtn = document.getElementById('tambahItemBtn');
       if (tambahBtn) {
         tambahBtn.addEventListener('click', function () {
-          addItem({});
+          document.getElementById('itemModalTitle').textContent = 'Tambah Item';
+          const select = document.getElementById('itemModalName');
+          select.innerHTML = '<option value="">-- Pilih Barang --</option>';
+          contractItems.forEach(function (ci) {
+            const opt = document.createElement('option');
+            opt.value = ci.id;
+            opt.textContent = ci.item_name;
+            opt.dataset.unit = ci.uom_code || 'Unit';
+            opt.dataset.price = ci.unit_price || 0;
+            select.appendChild(opt);
+          });
+          document.getElementById('itemModalQty').value = 1;
+          document.getElementById('itemModalUnit').value = '';
+          document.getElementById('itemModalPrice').value = '';
+          document.getElementById('itemModalNameError').classList.add('d-none');
+          bootstrap.Modal.getInstance(document.getElementById('itemModal'))?.hide?.();
+          var mi = new bootstrap.Modal(document.getElementById('itemModal'));
+          mi.show();
         });
       }
 
@@ -1447,7 +1466,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         });
       }
 
-      // Item Modal Save
+      // Item Modal Save — always adds a new row
       document.getElementById('itemModalSave').addEventListener('click', function () {
         try {
           const select = document.getElementById('itemModalName');
@@ -1469,31 +1488,21 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
           errEl.classList.add('d-none');
           if (qty <= 0) { alert('Kuantiti mestilah lebih besar daripada 0.'); return; }
 
-          const editIdx = parseInt(document.getElementById('editItemIndex').value);
-
-          if (editIdx >= 0) {
-            const rows = getItemRows();
-            const card = rows[editIdx];
-            card.querySelector('.item-name').value = name;
-            card.querySelector('.item-name-hidden').value = name;
-            card.querySelector('.item-contract-id').value = contractItemId;
-            card.querySelector('.item-order-qty').value = qty;
-            card.querySelector('.item-unit').value = unit;
-            card.querySelector('.item-unit-hidden').value = unit;
-            card.querySelector('.item-unit-price').value = formatCurrency(price);
-            card.querySelector('.item-unit-price-hidden').value = price;
-            var ci = contractItems.find(function (c) { return String(c.id) === String(contractItemId); });
-            if (ci) {
-              card.dataset.ceilingGroupId = ci.ceiling_limit_id ?? '';
-              card.dataset.ceilingGroupRemaining = ci.ceiling_group_remaining ?? '';
-              card.dataset.estimatedQuantity = ci.estimated_quantity ?? '';
-              card.dataset.orderedQuantity = ci.ordered_quantity ?? 0;
-            }
-            updateSummary();
-          } else {
-            addItem({ contract_item_id: contractItemId, name: name, unit: unit, orderQty: qty, unitPrice: price });
-          }
-          bootstrap.Modal.getInstance(document.getElementById('itemModal')).hide();
+          // Look up ceiling data from contractItems for this item
+          var ci = contractItems.find(function (c) { return String(c.id) === String(contractItemId); });
+          addItem({
+            contract_item_id: contractItemId,
+            name: name,
+            unit: unit,
+            orderQty: qty,
+            unitPrice: price,
+            ceiling_limit_id: ci ? ci.ceiling_limit_id : '',
+            ceiling_group_remaining: ci ? ci.ceiling_group_remaining : '',
+            estimated_quantity: ci ? ci.estimated_quantity : '',
+            ordered_quantity: ci ? ci.ordered_quantity : 0,
+          });
+          var mi = bootstrap.Modal.getInstance(document.getElementById('itemModal'));
+          if (mi) mi.hide();
         } catch (e) {
           console.error('Item modal save error:', e);
           alert('Ralat semasa menyimpan item. Sila cuba semula.');
@@ -1796,8 +1805,8 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         return getItemRows().map(function (card) {
           return {
             contract_item_id: card.querySelector('.item-contract-id')?.value || '',
-            name: card.querySelector('.item-name-hidden')?.value || card.querySelector('.item-name')?.value || '',
-            unit: card.querySelector('.item-unit-hidden')?.value || card.querySelector('.item-unit')?.value || '',
+            name: card.querySelector('.item-name-hidden')?.value || card.querySelector('.item-name-display')?.textContent || '',
+            unit: card.querySelector('.item-unit-hidden')?.value || card.querySelector('.item-unit-display')?.textContent || '',
             orderQty: card.querySelector('.item-order-qty')?.value || 0,
             unitPrice: card.querySelector('.item-unit-price-hidden')?.value || 0,
           };

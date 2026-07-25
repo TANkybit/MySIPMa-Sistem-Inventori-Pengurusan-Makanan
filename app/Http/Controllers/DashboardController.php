@@ -676,6 +676,8 @@ class DashboardController extends Controller
         return view('user_penilaian_prestasi', [
             'pendingApprovals' => $pendingApprovals,
             'pendingPenerimaan' => $pendingPenerimaan,
+            'institution' => Institution::find($instId),
+            'suppliers' => Supplier::where('status', 1)->orderBy('company_name')->get(),
         ]);
     }
 

@@ -484,7 +484,7 @@ body.mobile-nav-active .navmenu { background: #000 !important; }
 body.mobile-nav-active .navmenu > ul { background: #000 !important; border: none !important; box-shadow: none !important; inset: 0 !important; border-radius: 0 !important; overflow: visible !important; padding-top: 60px !important; }
 body.mobile-nav-active #navmenu ul li a { color: #fff !important; }
 body.mobile-nav-active #navmenu ul li a:hover, body.mobile-nav-active #navmenu ul li a.active { color: #7CB342 !important; }
-body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-active footer { display: none !important; }
+body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-active footer, body.mobile-nav-active #particle-canvas { display: none !important; }
 </style>
 </head>
 
@@ -571,6 +571,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
   </header>
 
 
+    <main>
     <div id="particle-canvas"></div>
     <div class="container profile-view-container">
 
@@ -677,6 +678,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
   </script>
 
   <!-- Footer Section -->
+</main>
 
 <footer id="footer" class="footer light-background">
     <div class="container">

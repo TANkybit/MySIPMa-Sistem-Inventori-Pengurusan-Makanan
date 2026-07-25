@@ -685,7 +685,7 @@ body.mobile-nav-active .navmenu { background: #000 !important; }
 body.mobile-nav-active .navmenu > ul { background: #000 !important; border: none !important; box-shadow: none !important; inset: 0 !important; border-radius: 0 !important; overflow: visible !important; padding-top: 60px !important; }
 body.mobile-nav-active #navmenu ul li a { color: #fff !important; }
 body.mobile-nav-active #navmenu ul li a:hover, body.mobile-nav-active #navmenu ul li a.active { color: #7CB342 !important; }
-body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-active footer { display: none !important; }
+body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-active footer, body.mobile-nav-active #particle-canvas { display: none !important; }
 </style>
 </head>
 
@@ -768,6 +768,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
     </div>
   </header>
   
+    <main>
     <div id="particle-canvas"></div>
     <div class="container profile-view-container">
 
@@ -806,12 +807,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
             <div class="form-row">
               <div class="form-group">
                 <label>Institusi</label>
-                <select id="institusiInput" required>
-                  <option value="">-- Pilih Institusi --</option>
-                  <?php $__currentLoopData = $institutions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inst): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <option value="<?php echo e($inst->id); ?>"><?php echo e($inst->name); ?></option>
-                  <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                </select>
+                <input type="text" id="institusiInput" value="<?php echo e(Auth::user()->institution->name ?? '-'); ?>" readonly>
               </div>
               <div class="form-group">
                 <label>Jawatan</label>
@@ -922,7 +918,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         .then(data => {
           document.getElementById('namaInput').value = data.name || '';
           document.getElementById('emailInput').value = data.email || '';
-          document.getElementById('institusiInput').value = data.institution_id || '';
+          // Institusi is display-only, pre-populated from PHP
           document.getElementById('jawatanInput').value = data.position_name || '';
           document.getElementById('perananInput').value = (data.username || '').replace(/\b\w/g, c => c.toUpperCase());
           document.getElementById('telefonInput').value = data.phone_number || '';
@@ -1069,16 +1065,11 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
 
     function handleUpdateProfile() {
       const nama = document.getElementById('namaInput').value.trim();
-      const institusi_id = document.getElementById('institusiInput').value;
       const telefon = document.getElementById('telefonInput').value.trim();
       const avatarFile = document.getElementById('avatarInput').files[0];
       
       if (!nama) {
         showStatus('Sila isi nama!', 'error');
-        return;
-      }
-      if (!institusi_id) {
-        showStatus('Sila isi institusi!', 'error');
         return;
       }
       if (!telefon) {
@@ -1114,7 +1105,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
             return;
           }
           // After avatar upload succeeds, update profile info
-          updateProfileInfo(nama, institusi_id, telefon);
+          updateProfileInfo(nama, telefon);
         })
         .catch(err => {
           console.error('Avatar upload error:', err);
@@ -1122,11 +1113,11 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         });
       } else {
         // No avatar selected, just update profile info
-        updateProfileInfo(nama, institusi_id, telefon);
+        updateProfileInfo(nama, telefon);
       }
     }
 
-    function updateProfileInfo(nama, institusi_id, telefon) {
+    function updateProfileInfo(nama, telefon) {
       const email = document.getElementById('emailInput').value.trim();
       fetch('<?php echo e(route("profile.update")); ?>', {
         method: 'POST',
@@ -1138,8 +1129,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         body: JSON.stringify({
           name: nama,
           email: email,
-          phone_number: telefon,
-          institution_id: institusi_id ? parseInt(institusi_id) : null
+          phone_number: telefon
         })
       })
       .then(response => {
@@ -1234,6 +1224,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
   </script>
 
   <!-- Footer Section -->
+</main>
 
 <footer id="footer" class="footer light-background">
     <div class="container">

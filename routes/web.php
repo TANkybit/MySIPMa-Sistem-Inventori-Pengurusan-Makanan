@@ -148,7 +148,9 @@ Route::middleware('auth')->group(function () {
     // --- Supplier Performance Evaluation Routes ---
     Route::middleware('permission:penilaian_prestasi')->group(function () {
         Route::get('/evaluations', [\App\Http\Controllers\SupplierEvaluationController::class, 'index'])->name('evaluations.index');
+        Route::get('/evaluations/filter', [\App\Http\Controllers\SupplierEvaluationController::class, 'filterByMonths'])->name('evaluations.filter');
         Route::get('/evaluations/orders', [\App\Http\Controllers\SupplierEvaluationController::class, 'getOrders'])->name('evaluations.orders');
+        Route::post('/evaluations/count-orders', [\App\Http\Controllers\SupplierEvaluationController::class, 'countOrders'])->name('evaluations.count-orders');
         Route::post('/evaluations', [\App\Http\Controllers\SupplierEvaluationController::class, 'store'])->name('evaluations.store');
         Route::get('/evaluations/stats', [\App\Http\Controllers\SupplierEvaluationController::class, 'getStats'])->name('evaluations.stats');
         Route::get('/evaluations/monthly', [\App\Http\Controllers\SupplierEvaluationController::class, 'getMonthlyData'])->name('evaluations.monthly');
