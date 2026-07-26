@@ -451,7 +451,7 @@
                                                         <th style="width: 50px;">Bil</th>
                                                         <th>Nama Item</th>
                                                         <th>Jumlah Dipesan</th>
-                                                        <th>Jumlah Harga</th>
+                                                        <th>Jumlah Harga (RM)</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -460,7 +460,7 @@
                                                             <td>{{ $loop->iteration }}</td>
                                                             <td>{{ optional($item->item)->name ?? 'Item tidak dijumpai' }}</td>
                                                             <td>{{ number_format($item->total_ordered_quantity, 2) }}</td>
-                                                            <td>{{ number_format($item->total_ordered_price, 2) }}</td>
+                                                            <td>RM {{ number_format($item->total_ordered_price, 2) }}</td>
                                                         </tr>
                                                     @empty
                                                         <tr><td colspan="4" class="text-center text-muted py-4">Tiada data inventori untuk tempoh dipilih.</td></tr>

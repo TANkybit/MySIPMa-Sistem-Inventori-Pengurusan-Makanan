@@ -102,6 +102,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/pengarah-negeri', [DashboardController::class, 'pengarahNegeriDashboard'])->name('pengarah.negeri.dashboard');
     Route::get('/pengarah-negeri/ringkasan', [DashboardController::class, 'pengarahNegeriRingkasanPesanan'])->name('pengarah.negeri.ringkasan');
     Route::get('/pengarah-negeri/inventori', [DashboardController::class, 'pengarahNegeriInventori'])->name('pengarah.negeri.inventori');
+    Route::get('/pengarah-negeri/stok-kritikal', [DashboardController::class, 'pengarahNegeriStokKritikal'])->name('pengarah.negeri.stok_kritikal');
     Route::get('/pengarah-negeri/profil', [DashboardController::class, 'pengarahNegeriProfil'])->name('pengarah.negeri.profil');
     Route::get('/pengarah-negeri/laporan-prestasi', [DashboardController::class, 'pengarahNegeriLaporanPrestasi'])->name('pengarah.negeri.laporan_prestasi');
 
