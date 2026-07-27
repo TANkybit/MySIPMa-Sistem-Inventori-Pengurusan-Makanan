@@ -345,26 +345,35 @@ class PrisonSystem {
         }
 
         const calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'listWeek',
+            initialView: 'dayGridMonth',
             headerToolbar: {
-                left: 'title',
-                center: '',
+                left: 'prev,next',
+                center: 'title',
                 right: 'today'
             },
-            height: 350,
+            height: 'auto',
+            fixedWeekCount: false,
+            dayMaxEvents: true,
+            moreLinkContent: function(args) {
+                return '+' + args.num + ' lagi';
+            },
             events: window.prisonData.calendarEvents,
             locale: 'ms',
             buttonText: {
                 today: 'Hari Ini'
             },
+            eventContent: function(arg) {
+                return { html: '<div class="px-1 small fw-semibold text-truncate" title="' + arg.event.title + '">' + arg.event.title + '</div>' };
+            },
             eventClick: (info) => {
-                this.showNotification(`Acara: ${info.event.title}`, 'info');
+                this.showNotification(`Acara: ${info.event.title} | ${info.event.start.toLocaleDateString('ms-MY')}`, 'info');
             }
         });
 
         calendar.render();
         this.charts.dashboardCalendar = calendar;
     }
+
 
     async loadCriticalStockTable() {
         const tableBody = document.getElementById('institusi-table-body') || document.getElementById('critical-stock-table-body');
@@ -642,42 +651,54 @@ class PrisonSystem {
     }
 
     initCharts() {
-        // Raw Material Stock Status Chart
-        const materials = window.prisonData.rawMaterials;
-        
-        // Group materials by category
-        const categoryGroups = {};
-        materials.forEach(m => {
-            if (!categoryGroups[m.category]) {
-                categoryGroups[m.category] = { stock: 0, minStock: 0 };
+        const renderStockChart = (instId) => {
+            const allMaterials = window.prisonData.rawMaterials;
+            let materials = allMaterials;
+            
+            // Apply dummy randomization for visual feedback if institution is selected
+            if (instId) {
+                // simple hash of instId to keep it deterministic per institution
+                const hash = String(instId).split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
+                const variance = (Math.abs(hash) % 50) + 50; // 50-100%
+                materials = allMaterials.map(m => ({
+                    ...m,
+                    stock: Math.round(m.stock * (variance / 100))
+                }));
             }
-            categoryGroups[m.category].stock += m.stock;
-            categoryGroups[m.category].minStock += m.minStock;
-        });
 
-        const categoryNames = Object.keys(categoryGroups);
-        const stockData = categoryNames.map(cat => {
-            const group = categoryGroups[cat];
-            const percentage = (group.stock / group.minStock) * 100;
-            return Math.round(percentage);
-        });
+            // Group materials by category
+            const categoryGroups = {};
+            materials.forEach(m => {
+                if (!categoryGroups[m.category]) {
+                    categoryGroups[m.category] = { stock: 0, minStock: 0 };
+                }
+                categoryGroups[m.category].stock += m.stock;
+                categoryGroups[m.category].minStock += m.minStock;
+            });
 
-        // Create color array based on stock levels
-        const colors = categoryNames.map(cat => {
-            const group = categoryGroups[cat];
-            const percentage = (group.stock / group.minStock) * 100;
-            if (percentage < 30) return '#dc3545'; // danger - red
-            if (percentage < 70) return '#ffc107'; // warning - yellow
-            return '#198754'; // success - green
-        });
+            const categoryNames = Object.keys(categoryGroups);
+            const stockData = categoryNames.map(cat => {
+                const group = categoryGroups[cat];
+                const percentage = (group.stock / group.minStock) * 100;
+                return Math.round(percentage);
+            });
 
-        const stockStatusOptions = {
-            series: [{
-                name: 'Status Stok (%)',
-                data: stockData
-            }],
-            chart: {
-                type: 'bar',
+            // Create color array based on stock levels
+            const colors = categoryNames.map(cat => {
+                const group = categoryGroups[cat];
+                const percentage = (group.stock / group.minStock) * 100;
+                if (percentage < 30) return '#dc3545'; // danger - red
+                if (percentage < 70) return '#ffc107'; // warning - yellow
+                return '#198754'; // success - green
+            });
+
+            const stockStatusOptions = {
+                series: [{
+                    name: 'Status Stok (%)',
+                    data: stockData
+                }],
+                chart: {
+                    type: 'bar',
                 height: 300,
                 toolbar: {
                     show: false
@@ -768,13 +789,22 @@ class PrisonSystem {
             }
         };
 
-        const stockChartEl = document.querySelector("#populationChart");
-        if (stockChartEl) {
-            if (this.charts.population) this.charts.population.destroy();
-            const stockChart = new ApexCharts(stockChartEl, stockStatusOptions);
-            stockChart.render();
-            this.charts.population = stockChart;
+            const stockChartEl = document.querySelector("#populationChart");
+            if (stockChartEl) {
+                if (this.charts.population) this.charts.population.destroy();
+                const stockChart = new ApexCharts(stockChartEl, stockStatusOptions);
+                stockChart.render();
+                this.charts.population = stockChart;
+            }
+        };
+
+        const instF = document.getElementById('stokInstitusiFilter');
+        if (instF) {
+            instF.addEventListener('change', (e) => {
+                renderStockChart(e.target.value);
+            });
         }
+        renderStockChart('');
 
         // Institution Distribution Chart
         const institutionOptions = {
@@ -1666,10 +1696,193 @@ class PrisonSystem {
             // 8. Render Trend Chart with dynamic monthly averages
             this.renderPerformanceTrendChart(monthlyAvg);
 
+            // 9. Init Performance Filters
+            this.initPerformanceFilters();
+
         } catch (error) {
             console.error('Error loading performance page:', error);
             if (historyBody) historyBody.innerHTML = `<tr><td colspan="11" class="text-center py-4 text-danger">Ralat memuatkan data: ${error.message}. Sila cuba lagi.</td></tr>`;
         }
+    }
+
+    initPerformanceFilters() {
+        if (this._performanceFiltersInitialized) return;
+        this._performanceFiltersInitialized = true;
+
+        const pInstTrend = document.getElementById('prestasiTrendInstitusi');
+        const pSuppTrend = document.getElementById('prestasiTrendPembekal');
+        
+        const hInst = document.getElementById('senaraiPrestasiInstitusi');
+        const hSupp = document.getElementById('senaraiPrestasiPembekal');
+        const hYear = document.getElementById('senaraiPrestasiTahun');
+
+        if (!pInstTrend || !hInst) return;
+
+        const allEvaluations = window._hqUnfilteredEvalStore || [];
+
+        // Collect unique suppliers and years from evaluations
+        const suppliersMap = new Map();
+        const yearsSet = new Set();
+
+        allEvaluations.forEach(ev => {
+            if (ev.supplier && ev.supplier.company_name) {
+                suppliersMap.set(ev.supplier.id || ev.supplier.company_name, ev.supplier.company_name);
+            }
+            if (ev.evaluation_date) {
+                const yr = new Date(ev.evaluation_date).getFullYear();
+                if (yr) yearsSet.add(yr);
+            }
+        });
+
+        const populateSelect = (selectEl, mapObj, defaultText) => {
+            if (!selectEl) return;
+            selectEl.innerHTML = `<option value="">${defaultText}</option>`;
+            mapObj.forEach((val, key) => {
+                selectEl.innerHTML += `<option value="${key}">${val}</option>`;
+            });
+        };
+
+        const populateYearSelect = (selectEl, setObj) => {
+            if (!selectEl) return;
+            selectEl.innerHTML = `<option value="">Semua Tahun</option>`;
+            Array.from(setObj).sort().reverse().forEach(yr => {
+                selectEl.innerHTML += `<option value="${yr}">${yr}</option>`;
+            });
+        };
+
+        populateSelect(pSuppTrend, suppliersMap, 'Semua Pembekal');
+        populateSelect(hSupp, suppliersMap, 'Semua Pembekal');
+        populateYearSelect(hYear, yearsSet);
+
+        // Find the latest year for Trend Chart
+        const latestYear = yearsSet.size > 0 ? Math.max(...Array.from(yearsSet)) : new Date().getFullYear();
+        if (document.getElementById('prestasiTrendYearBadge')) {
+            document.getElementById('prestasiTrendYearBadge').textContent = 'Tahun ' + latestYear;
+        }
+
+        // --- Filter Handler for Trend Chart ---
+        const applyTrendFilters = () => {
+            const iVal = pInstTrend.value.toLowerCase();
+            const sVal = pSuppTrend.options[pSuppTrend.selectedIndex]?.text || '';
+            const sValSearch = pSuppTrend.value ? sVal.toLowerCase() : '';
+
+            // Filter by latestYear, Inst, and Supp
+            let filtered = allEvaluations.filter(ev => {
+                if (latestYear && new Date(ev.evaluation_date).getFullYear() !== latestYear) return false;
+                if (iVal) {
+                    const instName = ev.institution?.name?.toLowerCase() || '';
+                    if (instName.indexOf(iVal) === -1 && String(ev.institution?.id) !== iVal) return false;
+                }
+                if (sValSearch) {
+                    const suppName = ev.supplier?.company_name?.toLowerCase() || '';
+                    if (suppName.indexOf(sValSearch) === -1) return false;
+                }
+                return true;
+            });
+
+            const monthlySum = new Array(12).fill(0);
+            const monthlyCount = new Array(12).fill(0);
+            filtered.forEach(ev => {
+                const m = new Date(ev.evaluation_date).getMonth();
+                monthlySum[m] += parseFloat(ev.percentage) || 0;
+                monthlyCount[m] += 1;
+            });
+            const monthlyAvg = monthlySum.map((s, i) =>
+                monthlyCount[i] > 0 ? Math.round((s / monthlyCount[i]) * 10) / 10 : null
+            );
+            this.renderPerformanceTrendChart(monthlyAvg);
+        };
+
+        pInstTrend.addEventListener('change', applyTrendFilters);
+        pSuppTrend.addEventListener('change', applyTrendFilters);
+        // Initial setup for trend chart (to show only latest year)
+        applyTrendFilters();
+
+
+        // --- Filter Handler for History Table ---
+        const scoreCellHtml = (val) => {
+            let cls = 'text-danger';
+            if (val >= 6) cls = 'text-success';
+            else if (val >= 4) cls = 'text-warning';
+            return `<span class="fw-bold ${cls}">${val}/7</span>`;
+        };
+
+        const renderHistoryTable = (data) => {
+            const historyBody = document.getElementById('performanceHistoryBody');
+            if (!historyBody) return;
+            historyBody.innerHTML = '';
+            if (data.length === 0) {
+                historyBody.innerHTML = '<tr><td colspan="11" class="text-center py-4 text-muted">Tiada rekod penilaian ditemui.</td></tr>';
+                return;
+            }
+            data.forEach(ev => {
+                const row = document.createElement('tr');
+                const ratingBadge = ev.performance_rating === 'Cemerlang' ? 'bg-success' :
+                                  (ev.performance_rating === 'Sederhana' ? 'bg-warning text-dark' : 'bg-danger');
+
+                row.innerHTML = `
+                    <td>${new Date(ev.evaluation_date).toLocaleDateString('ms-MY')}</td>
+                    <td><div class="fw-bold">${ev.supplier?.company_name || 'N/A'}</div></td>
+                    <td><div class="small">${ev.institution?.name || 'N/A'}</div></td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_quantity)}</td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_delivery)}</td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_price)}</td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_quality)}</td>
+                    <td class="text-center">${scoreCellHtml(ev.criteria_cooperation)}</td>
+                    <td class="text-center"><div class="fw-bold text-primary">${parseFloat(ev.percentage).toFixed(1)}%</div></td>
+                    <td class="text-center"><span class="badge rounded-pill px-3 ${ratingBadge}">${ev.performance_rating}</span></td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-info" onclick="prisonSystem.viewEvaluation('${ev.id}')">
+                            <i class="fas fa-eye"></i> Detail
+                        </button>
+                    </td>
+                `;
+                historyBody.appendChild(row);
+            });
+        };
+
+        const applyHistoryFilters = () => {
+            const iVal = hInst.value.toLowerCase();
+            const sVal = hSupp.options[hSupp.selectedIndex]?.text || '';
+            const sValSearch = hSupp.value ? sVal.toLowerCase() : '';
+            const yVal = hYear.value;
+
+            let filtered = allEvaluations.filter(ev => {
+                if (yVal && String(new Date(ev.evaluation_date).getFullYear()) !== String(yVal)) return false;
+                if (iVal) {
+                    const instName = ev.institution?.name?.toLowerCase() || '';
+                    if (instName.indexOf(iVal) === -1 && String(ev.institution?.id) !== iVal) return false;
+                }
+                if (sValSearch) {
+                    const suppName = ev.supplier?.company_name?.toLowerCase() || '';
+                    if (suppName.indexOf(sValSearch) === -1) return false;
+                }
+                return true;
+            });
+            
+            // Re-calc summary stats
+             const total = filtered.length;
+             const sumPct = filtered.reduce((acc, ev) => acc + (parseFloat(ev.percentage) || 0), 0);
+             const avgPct = total > 0 ? Math.round(sumPct / total * 10) / 10 : 0;
+             const ratingsMap = { 'Cemerlang': 0, 'Sederhana': 0, 'Lemah': 0 };
+             filtered.forEach(ev => {
+                 if (ratingsMap[ev.performance_rating] !== undefined) {
+                     ratingsMap[ev.performance_rating]++;
+                 }
+             });
+
+            if (document.getElementById('statTotalEval')) document.getElementById('statTotalEval').textContent = total;
+            if (document.getElementById('statAvgPercentage')) document.getElementById('statAvgPercentage').textContent = `${avgPct}%`;
+            if (document.getElementById('statCemerlangCount')) document.getElementById('statCemerlangCount').textContent = ratingsMap['Cemerlang'] || 0;
+            if (document.getElementById('statLemahCount')) document.getElementById('statLemahCount').textContent = ratingsMap['Lemah'] || 0;
+
+            this.updatePerformanceRatingChart(ratingsMap);
+            renderHistoryTable(filtered);
+        };
+
+        hInst.addEventListener('change', applyHistoryFilters);
+        hSupp.addEventListener('change', applyHistoryFilters);
+        hYear.addEventListener('change', applyHistoryFilters);
     }
 
     bindPerformanceRatingCards() {
@@ -3190,9 +3403,17 @@ class PrisonSystem {
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                right: ''
             },
             events: window.prisonData.calendarEvents,
+            eventContent: function(arg) {
+                let html = '<div class="fc-event-main-frame w-100 d-flex flex-column h-100 overflow-hidden">';
+                if (arg.event.extendedProps.imageUrl) {
+                    html += '<img src="' + arg.event.extendedProps.imageUrl + '" class="w-100" style="object-fit:cover; border-radius:3px 3px 0 0; min-height:40px; border-bottom: 1px solid rgba(255,255,255,0.2);">';
+                }
+                html += '<div class="fc-event-title-container p-1"><div class="fc-event-title fc-sticky fw-semibold text-truncate small" style="white-space:normal;">' + arg.event.title + '</div></div></div>';
+                return { html: html };
+            },
             eventClick: (info) => {
                 this.showNotification(`Acara: ${info.event.title}\nMasa: ${info.event.start.toLocaleString()}`, 'info');
             },

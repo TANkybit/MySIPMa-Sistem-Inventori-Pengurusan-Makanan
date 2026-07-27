@@ -1290,38 +1290,42 @@ const prisonData = {
         {
             id: 1,
             title: 'Mesyuarat Pengurusan',
-            start: '2026-02-16T10:00:00',
-            end: '2026-02-16T12:00:00',
+            start: '2026-07-28T10:00:00',
+            end: '2026-07-28T12:00:00',
             color: '#1a5632',
             location: 'Penjara Kajang',
-            description: 'Mesyuarat bulanan pengurusan semua institusi'
+            description: 'Mesyuarat bulanan pengurusan semua institusi',
+            imageUrl: 'https://picsum.photos/400/200?random=1'
         },
         {
             id: 2,
             title: 'Lawatan Pemeriksaan',
-            start: '2026-02-18T14:00:00',
-            end: '2026-02-18T16:00:00',
+            start: '2026-07-30T14:00:00',
+            end: '2026-07-30T16:00:00',
             color: '#198754',
             location: 'Penjara Sungai Buloh',
-            description: 'Lawatan pemeriksaan oleh pihak berkuasa'
+            description: 'Lawatan pemeriksaan oleh pihak berkuasa',
+            imageUrl: 'https://picsum.photos/400/200?random=2'
         },
         {
             id: 3,
             title: 'Latihan Kakitangan',
-            start: '2026-02-20T09:00:00',
-            end: '2026-02-20T17:00:00',
+            start: '2026-08-01T09:00:00',
+            end: '2026-08-01T17:00:00',
             color: '#ffc107',
             location: 'Pusat Latihan',
-            description: 'Latihan peningkatan kemahiran untuk kakitangan'
+            description: 'Latihan peningkatan kemahiran untuk kakitangan',
+            imageUrl: 'https://picsum.photos/400/200?random=3'
         },
         {
             id: 4,
             title: 'Audit Dalaman',
-            start: '2026-02-25T08:00:00',
-            end: '2026-02-26T17:00:00',
+            start: '2026-08-05T08:00:00',
+            end: '2026-08-06T17:00:00',
             color: '#0dcaf0',
             location: 'Semua Institusi',
-            description: 'Audit dalaman sistem dan operasi'
+            description: 'Audit dalaman sistem dan operasi',
+            imageUrl: 'https://picsum.photos/400/200?random=4'
         }
     ],
 
