@@ -1,0 +1,46 @@
+<?php $__env->startComponent('mail::message'); ?>
+# Mesej Baru dari MySIPMa Contact Form
+
+Anda telah menerima satu mesej baru.
+
+**Nama:** <?php echo e($data['name']); ?>
+
+**Emel:** <?php echo e($data['email']); ?>
+
+**Tajuk:** <?php echo e($data['subject'] ?? 'Tiada Tajuk'); ?>
+
+**Tarikh/Masa (MYT):** <?php echo e(now()->format('d/m/Y h:i A')); ?>
+
+
+**Mesej:**
+<?php echo e($data['message']); ?>
+
+
+<?php if (isset($component)) { $__componentOriginal15a5e11357468b3880ae1300c3be6c4f = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal15a5e11357468b3880ae1300c3be6c4f = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => $__env->getContainer()->make(Illuminate\View\Factory::class)->make('mail::button'),'data' => ['url' => 'mailto:'.($data['email'] ?? '')]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
+<?php $component->withName('mail::button'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag && $constructor = (new ReflectionClass(Illuminate\View\AnonymousComponent::class))->getConstructor()): ?>
+<?php $attributes = $attributes->except(collect($constructor->getParameters())->map->getName()->all()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['url' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute('mailto:'.($data['email'] ?? ''))]); ?>
+Balas kepada <?php echo e($data['name'] ?? 'pengirim'); ?>
+
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal15a5e11357468b3880ae1300c3be6c4f)): ?>
+<?php $attributes = $__attributesOriginal15a5e11357468b3880ae1300c3be6c4f; ?>
+<?php unset($__attributesOriginal15a5e11357468b3880ae1300c3be6c4f); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal15a5e11357468b3880ae1300c3be6c4f)): ?>
+<?php $component = $__componentOriginal15a5e11357468b3880ae1300c3be6c4f; ?>
+<?php unset($__componentOriginal15a5e11357468b3880ae1300c3be6c4f); ?>
+<?php endif; ?>
+
+Terima Kasih,<br>
+<?php echo e(config('app.name')); ?>
+
+<?php echo $__env->renderComponent(); ?>
+<?php /**PATH C:\laragon\www\MySIPMA_2\resources\views/emails/contact.blade.php ENDPATH**/ ?>

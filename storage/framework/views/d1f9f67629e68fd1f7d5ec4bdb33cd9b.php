@@ -365,23 +365,31 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
   <?php if($order->supplier_name): ?>
   <div class="modal fade" id="supplierModal<?php echo e($order->id); ?>" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;">
-        <div class="modal-header" style="border-bottom:1px solid var(--border);">
-          <h5 class="modal-title" style="color:var(--text);font-weight:600;"><i class="bi bi-building me-2 text-info"></i>Maklumat Pembekal</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter:invert(1);"></button>
+      <div class="modal-content" style="background:linear-gradient(160deg,#0f140f,#080a08);border:1px solid rgba(124,179,66,.2);border-radius:20px;box-shadow:0 18px 48px rgba(0,0,0,.5),0 0 32px rgba(124,179,66,.08);position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:15%;right:15%;height:2px;background:linear-gradient(90deg,transparent,#7CB342,transparent);border-radius:0 0 4px 4px;"></div>
+        <div class="modal-header" style="border:none;padding:20px 24px 4px;position:relative;">
+          <div class="d-flex align-items-center gap-2">
+            <div style="width:36px;height:36px;background:rgba(124,179,66,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="bi bi-building" style="font-size:1rem;color:#7CB342;"></i>
+            </div>
+            <h5 class="modal-title fw-bold mb-0" style="color:#C5E1A5;font-size:1rem;">Maklumat Pembekal</h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter:brightness(0.5);transition:all .3s;font-size:.75rem;" onmouseover="this.style.filter='brightness(1)';this.style.transform='rotate(90deg) scale(1.15)'" onmouseout="this.style.filter='brightness(0.5)';this.style.transform=''"></button>
         </div>
-        <div class="modal-body">
-          <table class="table table-borderless mb-0" style="color:var(--text);">
-            <tr><td style="width:120px;color:var(--text-muted);">Nama Syarikat</td><td style="font-weight:500;"><?php echo e($order->supplier_name); ?></td></tr>
-            <tr><td style="color:var(--text-muted);">Contact Person</td><td><?php echo e($order->supplier_contact ?? '-'); ?></td></tr>
-            <tr><td style="color:var(--text-muted);">Emel</td><td><?php echo e($order->supplier_email ?? '-'); ?></td></tr>
-            <tr><td style="color:var(--text-muted);">No. Telefon</td><td><?php echo e($order->supplier_phone ?? '-'); ?></td></tr>
-            <tr><td style="color:var(--text-muted);">Alamat</td><td><?php echo e($order->supplier_address ?? '-'); ?></td></tr>
-            <tr><td style="color:var(--text-muted);">Poskod</td><td><?php echo e($order->supplier_postcode ?? '-'); ?></td></tr>
-          </table>
+        <div class="modal-body" style="padding:12px 24px 8px;position:relative;">
+          <div style="background:rgba(124,179,66,.04);border:1px solid rgba(124,179,66,.1);border-radius:12px;padding:4px 14px;">
+            <table class="table table-borderless mb-0">
+              <tr><td style="width:110px;padding:6px 0;vertical-align:middle;"><span style="display:inline-flex;align-items:center;gap:6px;color:#7CB342;font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:.03em;"><span style="width:3px;height:12px;background:#7CB342;border-radius:2px;display:inline-block;"></span>Nama Syarikat</span></td><td style="font-weight:500;padding:6px 0;vertical-align:middle;color:#f3f7f3;"><?php echo e($order->supplier_name); ?></td></tr>
+              <tr><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;"><span style="display:inline-flex;align-items:center;gap:6px;color:#7CB342;font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:.03em;"><span style="width:3px;height:12px;background:#7CB342;border-radius:2px;display:inline-block;"></span>Contact Person</span></td><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;color:#f3f7f3;"><?php echo e($order->supplier_contact ?? '-'); ?></td></tr>
+              <tr><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;"><span style="display:inline-flex;align-items:center;gap:6px;color:#7CB342;font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:.03em;"><span style="width:3px;height:12px;background:#7CB342;border-radius:2px;display:inline-block;"></span>Emel</span></td><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;color:#f3f7f3;word-break:break-all;"><?php echo e($order->supplier_email ?? '-'); ?></td></tr>
+              <tr><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;"><span style="display:inline-flex;align-items:center;gap:6px;color:#7CB342;font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:.03em;"><span style="width:3px;height:12px;background:#7CB342;border-radius:2px;display:inline-block;"></span>No. Telefon</span></td><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;color:#f3f7f3;"><?php echo e($order->supplier_phone ?? '-'); ?></td></tr>
+              <tr><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;"><span style="display:inline-flex;align-items:center;gap:6px;color:#7CB342;font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:.03em;"><span style="width:3px;height:12px;background:#7CB342;border-radius:2px;display:inline-block;"></span>Alamat</span></td><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;color:#f3f7f3;"><?php echo e($order->supplier_address ?? '-'); ?></td></tr>
+              <tr><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;"><span style="display:inline-flex;align-items:center;gap:6px;color:#7CB342;font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:.03em;"><span style="width:3px;height:12px;background:#7CB342;border-radius:2px;display:inline-block;"></span>Poskod</span></td><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;color:#f3f7f3;"><?php echo e($order->supplier_postcode ?? '-'); ?></td></tr>
+            </table>
+          </div>
         </div>
-        <div class="modal-footer" style="border-top:1px solid var(--border);">
-          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+        <div class="modal-footer" style="border:none;padding:4px 24px 16px;position:relative;">
+          <button type="button" class="btn btn-sm px-4 py-1.5" data-bs-dismiss="modal" style="background:linear-gradient(135deg,#7CB342,#558B2F);color:#fff;border:none;border-radius:50px;font-weight:600;font-size:0.8rem;transition:all .3s;box-shadow:0 4px 14px rgba(124,179,66,.2);" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px rgba(124,179,66,.35)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(124,179,66,.2)'">Tutup</button>
         </div>
       </div>
     </div>

@@ -735,8 +735,8 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
       <div class="d-none d-xl-flex align-items-center gap-3">
         @if(Auth::user()->hasPermission('pengesahan_inden'))
         <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3"
-          style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'"
-          onmouseout="this.style.color=''">
+          style="transition: color 0.3s;{{ request()->routeIs('profile*') ? 'color:#10b981!important;' : '' }}" onmouseover="this.style.color='#10b981'"
+          onmouseout="this.style.color='{{ request()->routeIs('profile*') ? '#10b981' : '' }}'">
           <i class="bi bi-bell-fill"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
             style="font-size: 0.65rem;">
@@ -747,8 +747,8 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         @endif
         @if(Auth::user()->hasPermission('penerimaan_inden'))
         <a href="{{ route('borang.penerimaan') }}" class="position-relative text-white fs-5 me-3"
-          style="transition: color 0.3s;" onmouseover="this.style.color='#f59e0b'"
-          onmouseout="this.style.color=''">
+          style="transition: color 0.3s;{{ request()->routeIs('profile*') ? 'color:#10b981!important;' : '' }}" onmouseover="this.style.color='#f59e0b'"
+          onmouseout="this.style.color='{{ request()->routeIs('profile*') ? '#10b981' : '' }}'">
           <i class="bi bi-truck"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
             style="font-size: 0.65rem;">
@@ -758,7 +758,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         </a>
         @endif
         <button class="btn btn-icon" id="themeToggle" style="background:none;border:none;color:var(--text);font-size:1.2rem;padding:4px 8px"><i class="bi bi-moon-fill"></i></button>
-        <a href="{{ route('profile') }}" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''"><i
+        <a href="{{ route('profile') }}" class="text-decoration-none" style="transition: color 0.3s;color:#10b981!important;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color='#10b981'"><i
             class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}</a>
         <button type="button" class="btn btn-custom btn-logout btn-sm px-3 py-2" id="desktopLogoutBtn"><i
               class="bi bi-box-arrow-right me-2"></i>Log Keluar</button>

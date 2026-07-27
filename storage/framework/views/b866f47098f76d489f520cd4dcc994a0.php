@@ -21,6 +21,8 @@
   <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css')); ?>" rel="stylesheet">
   <link href="<?php echo e(asset('frontend/Nexa/assets/css/main2.css')); ?>" rel="stylesheet">
   <link href="<?php echo e(asset('css/user-theme.css')); ?>" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
 
   <style>
     :root {
@@ -222,7 +224,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
                 </div>
                 <div class="col-md-6">
                   <label class="form-label-custom">Tarikh Penilaian</label>
-                  <input type="date" class="form-control" name="evaluation_date" id="evalDate" value="<?php echo e(date('Y-m-d')); ?>" required>
+                  <input type="text" class="form-control date-input" name="evaluation_date" id="evalDate" value="<?php echo e(date('d/m/Y')); ?>" placeholder="dd/mm/yyyy" required>
                 </div>
               </div>
 
@@ -230,28 +232,30 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
               <div class="row mb-4">
                 <div class="col-md-5">
                   <label class="form-label-custom">Tarikh Pesanan (Dari)</label>
-                  <input type="date" class="form-control" name="order_date_from" id="orderDateFrom">
+                  <input type="text" class="form-control date-input" name="order_date_from" id="orderDateFrom" placeholder="dd/mm/yyyy">
                 </div>
                 <div class="col-md-5">
                   <label class="form-label-custom">Tarikh Pesanan (Ke)</label>
-                  <input type="date" class="form-control" name="order_date_to" id="orderDateTo">
+                  <input type="text" class="form-control date-input" name="order_date_to" id="orderDateTo" placeholder="dd/mm/yyyy">
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
                   <div id="orderCountDisplay" class="fw-bold fs-5" style="color:var(--accent);display:none;"></div>
                 </div>
               </div>
+              <div class="date-format-hint" style="font-size:0.8rem;color:var(--muted);margin-top:-12px;margin-bottom:12px;">Format: dd/mm/yyyy</div>
 
               <!-- Tarikh Bekalan (range) -->
               <div class="row mb-4">
                 <div class="col-md-5">
                   <label class="form-label-custom">Tarikh Bekalan (Dari)</label>
-                  <input type="date" class="form-control" name="supply_date_from">
+                  <input type="text" class="form-control date-input" name="supply_date_from" placeholder="dd/mm/yyyy">
                 </div>
                 <div class="col-md-5">
                   <label class="form-label-custom">Tarikh Bekalan (Ke)</label>
-                  <input type="date" class="form-control" name="supply_date_to">
+                  <input type="text" class="form-control date-input" name="supply_date_to" placeholder="dd/mm/yyyy">
                 </div>
               </div>
+              <div class="date-format-hint" style="font-size:0.8rem;color:var(--muted);margin-top:-12px;margin-bottom:12px;">Format: dd/mm/yyyy</div>
 
               <!-- Jenis Bekalan + Penilai -->
               <div class="row mb-4">
@@ -429,6 +433,8 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="<?php echo e(asset('frontend/Nexa/assets/js/mobile-nav.js')); ?>"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ms.js"></script>
 
   <script>
     // Theme toggle
@@ -529,8 +535,8 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
     // Fetch order count when both dates are filled and supplier selected
     async function fetchOrderCount() {
       const supplierId = document.getElementById('supplierSelect').value;
-      const dateFrom = document.getElementById('orderDateFrom').value;
-      const dateTo = document.getElementById('orderDateTo').value;
+      const dateFrom = toYmd(document.getElementById('orderDateFrom').value);
+      const dateTo = toYmd(document.getElementById('orderDateTo').value);
       const display = document.getElementById('orderCountDisplay');
       const input = document.getElementById('orderCountInput');
 
@@ -582,23 +588,73 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
       const supplyTo = document.querySelector('input[name="supply_date_to"]');
 
       function check(from, to) {
-        if (from.value && to.value && from.value > to.value) {
+        const a = parseDmy(from.value);
+        const b = parseDmy(to.value);
+        if (a && b && a > b) {
           to.setCustomValidity('Tarikh "Ke" mesti selepas tarikh "Dari".');
         } else {
           to.setCustomValidity('');
         }
       }
 
-      orderFrom.addEventListener('change', () => { check(orderFrom, orderTo); fetchOrderCount(); });
-      orderTo.addEventListener('change', () => { check(orderFrom, orderTo); fetchOrderCount(); });
-      supplyFrom.addEventListener('change', () => check(supplyFrom, supplyTo));
-      supplyTo.addEventListener('change', () => check(supplyFrom, supplyTo));
+      function validateSupplyAfterOrder() {
+        const oFrom = parseDmy(orderFrom.value);
+        const sFrom = parseDmy(supplyFrom.value);
+        const sTo = parseDmy(supplyTo.value);
+
+        if (sFrom && oFrom && sFrom < oFrom) {
+          supplyFrom.setCustomValidity('Tarikh Bekalan mesti selepas Tarikh Pesanan.');
+          supplyFrom.reportValidity();
+        } else {
+          supplyFrom.setCustomValidity('');
+        }
+
+        if (sTo && oFrom && sTo < oFrom) {
+          supplyTo.setCustomValidity('Tarikh Bekalan mesti selepas Tarikh Pesanan.');
+          supplyTo.reportValidity();
+        } else {
+          supplyTo.setCustomValidity('');
+        }
+      }
+
+      orderFrom.addEventListener('change', () => { check(orderFrom, orderTo); fetchOrderCount(); validateSupplyAfterOrder(); });
+      orderTo.addEventListener('change', () => { check(orderFrom, orderTo); fetchOrderCount(); validateSupplyAfterOrder(); });
+      supplyFrom.addEventListener('change', () => { check(supplyFrom, supplyTo); validateSupplyAfterOrder(); });
+      supplyTo.addEventListener('change', () => { check(supplyFrom, supplyTo); validateSupplyAfterOrder(); });
+    }
+
+    function parseDmy(val) {
+      if (!val) return null;
+      const parts = val.split('/');
+      if (parts.length !== 3) return null;
+      return new Date(+parts[2], +parts[1] - 1, +parts[0]);
+    }
+
+    function toYmd(val) {
+      if (!val) return '';
+      const d = parseDmy(val);
+      if (!d || isNaN(d.getTime())) return '';
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return y + '-' + m + '-' + day;
     }
 
     document.addEventListener('DOMContentLoaded', function() {
       initSliders();
       calculateScore();
       validateDateRange();
+
+      // Flatpickr init
+      if (typeof flatpickr !== 'undefined') {
+        document.querySelectorAll('.date-input').forEach(function(el) {
+          flatpickr(el, {
+            dateFormat: 'd/m/Y',
+            allowInput: true,
+            locale: 'ms',
+          });
+        });
+      }
 
       document.getElementById('supplierSelect').addEventListener('change', function() {
         if (document.getElementById('orderDateFrom').value && document.getElementById('orderDateTo').value) {
@@ -614,7 +670,15 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
           return;
         }
 
+        // Convert d/m/y dates to Y-m-d for server
+        const dateFields = ['order_date_from', 'order_date_to', 'supply_date_from', 'supply_date_to', 'evaluation_date'];
         const formData = new FormData(form);
+        dateFields.forEach(function(name) {
+          const raw = formData.get(name);
+          if (raw) {
+            formData.set(name, toYmd(raw));
+          }
+        });
         const originalContent = this.innerHTML;
         this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menghantar...';
         this.disabled = true;

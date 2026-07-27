@@ -18,25 +18,25 @@
   <meta property="og:description" content="Sistem Inventori & Pengurusan Makanan" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://mysipma.com" />
-  <meta property="og:image" content="{{ asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png') }}" />
+  <meta property="og:image" content="<?php echo e(asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png')); ?>" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
 
   <!-- Favicons -->
-  <link rel="icon" type="image/png" href="{{ asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png') }}">
-  <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png') }}">
+  <link rel="icon" type="image/png" href="<?php echo e(asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png')); ?>">
+  <link rel="apple-touch-icon" sizes="180x180" href="<?php echo e(asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png')); ?>">
 
 
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/vendor/aos/aos.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/vendor/glightbox/css/glightbox.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/vendor/swiper/swiper-bundle.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/css/main2.css') }}" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/aos/aos.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/glightbox/css/glightbox.min.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/swiper/swiper-bundle.min.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/css/main2.css')); ?>" rel="stylesheet">
 
 <style>
   .index-page {
@@ -205,18 +205,18 @@
   <header id="header" class="header d-flex align-items-center sticky-top">
     <div class="container position-relative d-flex align-items-center justify-content-between">
 
-      <a href="{{ route('index') }}" class="logo-glow d-flex align-items-center me-auto me-xl-0">        
-        <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" 
+      <a href="<?php echo e(route('index')); ?>" class="logo-glow d-flex align-items-center me-auto me-xl-0">        
+        <img src="<?php echo e(asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png')); ?>" 
           style="height: 55px; width: auto;" 
           alt="MySIPMa logo">
       </a>
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="{{ route('index') }}#hero">Laman Utama</a></li>
-          <li><a href="{{ route('index') }}#about">Tentang Kami</a></li>
-          <li><a href="{{ route('index') }}#contact">Hubungi Kami</a></li>
-          <li><a href="{{ route('login') }}" class="{{ request()->routeIs('login') ? 'active' : '' }}">Log Masuk</a></li>
+          <li><a href="<?php echo e(route('index')); ?>#hero">Laman Utama</a></li>
+          <li><a href="<?php echo e(route('index')); ?>#about">Tentang Kami</a></li>
+          <li><a href="<?php echo e(route('index')); ?>#contact">Hubungi Kami</a></li>
+          <li><a href="<?php echo e(route('login')); ?>" class="<?php echo e(request()->routeIs('login') ? 'active' : ''); ?>">Log Masuk</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
@@ -235,7 +235,7 @@
 
     <section id="hero" class="hero section">
       <div class="hero-background">
-        <img src="{{ asset('frontend/Nexa/assets/img/PEJABATPENJARA.png') }}" alt="Background Image" class="img-fluid" loading="lazy">
+        <img src="<?php echo e(asset('frontend/Nexa/assets/img/PEJABATPENJARA.png')); ?>" alt="Background Image" class="img-fluid" loading="lazy">
         <div class="hero-overlay"></div>
       </div> 
 
@@ -248,11 +248,8 @@
               <p>Sistem Inventori Dan Pengurusan Makanan</p>
 
               <div class="hero-btns" data-aos="fade-up" data-aos-delay="300">
-                <a href="{{ route('borang.inden') }}" class="btn btn-primary">Borang Inden</a>
-                {{-- <a href="{{ route('sejarah') }}" class="btn btn-outline glightbox" target="_blank">
-                  <i class="bi bi-play-circle"></i> 
-                  Ketahui Lebih Lanjut
-                </a> --}}
+                <a href="<?php echo e(route('borang.inden')); ?>" class="btn btn-primary">Borang Inden</a>
+                
               </div>
             </div>
           </div>
@@ -276,7 +273,7 @@
           <div class="col-lg-6" data-aos="zoom-out" data-aos-delay="200">
             <div class="image-wrapper">
               <div class="image-box">
-                <img src="{{ asset('frontend/Nexa/assets/img/STORE3.png') }}" class="img-fluid" alt="Penjara Malaysia" loading="lazy">
+                <img src="<?php echo e(asset('frontend/Nexa/assets/img/STORE3.png')); ?>" class="img-fluid" alt="Penjara Malaysia" loading="lazy">
               </div>
             </div>
           </div>
@@ -298,8 +295,8 @@
                 </div>
 
                 <div class="container cta-buttons">
-                  <a href="{{ route('borang.inden') }}" class="btn-learn-more">Pergi ke Borang Inden</a>
-                  <a href="{{ route('login') }}" class="btn-get-started">Log Masuk</a>
+                  <a href="<?php echo e(route('borang.inden')); ?>" class="btn-learn-more">Pergi ke Borang Inden</a>
+                  <a href="<?php echo e(route('login')); ?>" class="btn-get-started">Log Masuk</a>
                 </div>
               </div>
             </div>
@@ -371,8 +368,8 @@
             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3984.629398860716!2d101.8048!3d2.9231!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cdcc8e21774e17%3A0x6c5c02604646732!2sIbu%20Pejabat%20Penjara%20Malaysia!5e0!3m2!1sen!2smy!4v1700000000000!5m2!1sen!2smy" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
               <h3>Hantar Mesej Kepada Kami</h3>
 
-              <form action="{{ route('contact.send') }}" method="post" class="php-email-form" data-recaptcha-site-key="{{ config('recaptcha.site_key') }}">
-                @csrf
+              <form action="<?php echo e(route('contact.send')); ?>" method="post" class="php-email-form" data-recaptcha-site-key="<?php echo e(config('recaptcha.site_key')); ?>">
+                <?php echo csrf_field(); ?>
                 <input type="hidden" name="g-recaptcha-response" id="recaptchaToken">
                 <div class="form-floating mb-3">
                   <input type="text" class="form-control" id="nameInput" name="name" placeholder="Full Name" required="">
@@ -478,15 +475,15 @@
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
   <div id="preloader"></div>
 
-  <script src="{{ asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/vendor/aos/aos.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/vendor/glightbox/js/glightbox.min.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/vendor/purecounter/purecounter_vanilla.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/vendor/swiper/swiper-bundle.min.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/vendor/imagesloaded/imagesloaded.pkgd.min.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/vendor/isotope-layout/isotope.pkgd.min.js') }}"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/aos/aos.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/glightbox/js/glightbox.min.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/purecounter/purecounter_vanilla.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/swiper/swiper-bundle.min.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/imagesloaded/imagesloaded.pkgd.min.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/isotope-layout/isotope.pkgd.min.js')); ?>"></script>
 
-  <script src="{{ asset('frontend/Nexa/assets/js/main.js') }}"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/js/main.js')); ?>"></script>
   <script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit" async defer></script>
 
   <script>
@@ -673,4 +670,4 @@
   <script src="//code.tidio.co/pgrnfjdqogbuoyxl5zjtvxtwclzdz9wv.js" async></script>
 
 </body>
-</html>
+</html><?php /**PATH C:\laragon\www\MySIPMA_2\resources\views/index.blade.php ENDPATH**/ ?>

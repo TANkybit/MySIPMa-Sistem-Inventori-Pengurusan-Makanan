@@ -136,13 +136,12 @@
     }
 
     /* Summary Cards */
-    .summary-card {
+    .stat-card {
       background: var(--surface);
       border: 2px solid transparent;
       border-radius: 24px;
       padding: 30px;
-      text-align: center;
-      box-shadow: 0 18px 48px rgba(0,0,0,.3);
+      box-shadow: 0 18px 48px rgba(0, 0, 0, .3);
       height: 100%;
       transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       position: relative;
@@ -151,7 +150,7 @@
       perspective: 800px;
     }
 
-    .summary-card::before {
+    .stat-card::before {
       content: '';
       position: absolute;
       inset: 0;
@@ -166,7 +165,7 @@
       z-index: 2;
     }
 
-    .summary-card::after {
+    .stat-card::after {
       content: '';
       position: absolute;
       top: -50%;
@@ -180,27 +179,86 @@
       z-index: 1;
     }
 
-    .summary-card .glow-ring {
+    .stat-card:hover::before {
+      background: linear-gradient(135deg, #10b981, #059669, #34d399, #10b981, #06b6d4, #10b981);
+      background-size: 400% 400%;
+      animation: gradientBorder 2s ease infinite;
+    }
+
+    .stat-card:hover::after {
+      left: 120%;
+    }
+
+    .stat-icon {
+      font-size: 2.5rem;
+      color: var(--accent);
+      margin-bottom: 20px;
+      display: inline-block;
+      padding: 15px;
+      background: rgba(16, 185, 129, .1);
+      border-radius: 16px;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      z-index: 3;
+    }
+
+    .stat-card:hover .stat-icon {
+      animation: iconFloat 1.2s ease-in-out infinite;
+      background: rgba(16, 185, 129, .25);
+      box-shadow: 0 0 25px rgba(16, 185, 129, .5), 0 0 50px rgba(16, 185, 129, .2), 0 0 80px rgba(16, 185, 129, .1);
+      border-radius: 20px;
+      transform: scale(1.15);
+    }
+
+    .stat-title {
+      color: var(--muted);
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 10px;
+      min-height: 24px;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 3;
+    }
+
+    .stat-card:hover .stat-title {
+      color: var(--accent);
+    }
+
+    .stat-value {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 0;
+      font-family: "Montserrat", sans-serif;
+      transition: all 0.4s ease;
+      position: relative;
+      z-index: 3;
+    }
+
+    .stat-card:hover .stat-value {
+      animation: neonPulse 1.5s ease-in-out infinite;
+    }
+
+    .stat-card .glow-ring {
       position: absolute;
       top: 50%;
       left: 50%;
       width: 60px;
       height: 60px;
-      border: 3px solid rgba(16, 185, 129, .15);
       border-radius: 50%;
-      transform: translate(-50%, -50%);
+      border: 2px solid rgba(16,185,129,.3);
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0;
       pointer-events: none;
       z-index: 0;
-      opacity: 0;
-      transition: opacity 0.4s ease;
     }
 
-    .summary-card:hover .glow-ring {
-      opacity: 1;
+    .stat-card:hover .glow-ring {
       animation: ringPulse 1.2s ease-out infinite;
     }
 
-    .summary-card:hover {
+    .stat-card:hover {
       transform: translateY(-14px) scale(1.04) rotateX(2deg);
       box-shadow:
         0 25px 70px rgba(16, 185, 129, .4),
@@ -208,62 +266,21 @@
         0 0 80px rgba(16, 185, 129, .1);
     }
 
-    .summary-card:hover::before {
-      background: linear-gradient(135deg, #10b981, #059669, #34d399, #10b981, #06b6d4, #10b981);
-      background-size: 400% 400%;
-      animation: gradientBorder 2s ease infinite;
-    }
+    /* Colored summary card backgrounds - light blue theme */
+    #inventStatsRow > .col-md-3:nth-child(1) .stat-card { background: #e0f2fe; border-color: #bae6fd; }
+    #inventStatsRow > .col-md-3:nth-child(2) .stat-card { background: #fee2e2; border-color: #fecaca; }
+    #inventStatsRow > .col-md-3:nth-child(3) .stat-card { background: #fef3c7; border-color: #fde68a; }
+    #inventStatsRow > .col-md-3:nth-child(4) .stat-card { background: #d1fae5; border-color: #a7f3d0; }
 
-    .summary-card:hover::after {
-      left: 120%;
-    }
+    [data-bs-theme="light"] #inventStatsRow > .col-md-3:nth-child(1) .stat-card { background: #e0f2fe !important; }
+    [data-bs-theme="light"] #inventStatsRow > .col-md-3:nth-child(2) .stat-card { background: #fee2e2 !important; }
+    [data-bs-theme="light"] #inventStatsRow > .col-md-3:nth-child(3) .stat-card { background: #fef3c7 !important; }
+    [data-bs-theme="light"] #inventStatsRow > .col-md-3:nth-child(4) .stat-card { background: #d1fae5 !important; }
 
-    .summary-card .stat-icon {
-      font-size: 2.5rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 70px;
-      height: 70px;
-      border-radius: 18px;
-      margin-bottom: 14px;
-      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    .summary-card:hover .stat-icon {
-      animation: iconFloat 1.2s ease-in-out infinite;
-      box-shadow: 0 0 25px rgba(16, 185, 129, .5), 0 0 50px rgba(16, 185, 129, .2), 0 0 80px rgba(16, 185, 129, .1);
-      border-radius: 20px;
-      transform: scale(1.15);
-    }
-
-    .summary-card .card-value {
-      font-size: 3.5rem;
-      font-weight: 800;
-      font-family: "Montserrat", sans-serif;
-      line-height: 1.2;
-      margin-bottom: 4px;
-      transition: all 0.3s ease;
-      position: relative;
-      z-index: 1;
-    }
-
-    .summary-card:hover .card-value {
-      animation: neonPulse 1.5s ease-in-out infinite;
-    }
-
-    .summary-card .card-label {
-      color: var(--muted);
-      font-size: 0.95rem;
-      font-weight: 500;
-      transition: color 0.3s ease;
-      position: relative;
-      z-index: 1;
-    }
-
-    .summary-card:hover .card-label {
-      color: var(--accent);
-    }
+    [data-bs-theme="dark"] #inventStatsRow > .col-md-3:nth-child(1) .stat-card { background: #172554; }
+    [data-bs-theme="dark"] #inventStatsRow > .col-md-3:nth-child(2) .stat-card { background: #450a0a; }
+    [data-bs-theme="dark"] #inventStatsRow > .col-md-3:nth-child(3) .stat-card { background: #451a03; }
+    [data-bs-theme="dark"] #inventStatsRow > .col-md-3:nth-child(4) .stat-card { background: #052e16; }
 
     @keyframes ringPulse {
       0% { transform: translate(-50%, -50%) scale(1); opacity: .6; }
@@ -285,22 +302,6 @@
       0%, 100% { text-shadow: 0 0 8px currentColor; }
       50% { text-shadow: 0 0 20px currentColor, 0 0 40px currentColor; }
     }
-
-    /* Colored summary card backgrounds - light blue theme */
-    #inventStatsRow > .col-md-3:nth-child(1) .summary-card { background: #e0f2fe; border-color: #bae6fd; }
-    #inventStatsRow > .col-md-3:nth-child(2) .summary-card { background: #fee2e2; border-color: #fecaca; }
-    #inventStatsRow > .col-md-3:nth-child(3) .summary-card { background: #fef3c7; border-color: #fde68a; }
-    #inventStatsRow > .col-md-3:nth-child(4) .summary-card { background: #d1fae5; border-color: #a7f3d0; }
-
-    [data-bs-theme="light"] #inventStatsRow > .col-md-3:nth-child(1) .summary-card { background: #e0f2fe !important; }
-    [data-bs-theme="light"] #inventStatsRow > .col-md-3:nth-child(2) .summary-card { background: #fee2e2 !important; }
-    [data-bs-theme="light"] #inventStatsRow > .col-md-3:nth-child(3) .summary-card { background: #fef3c7 !important; }
-    [data-bs-theme="light"] #inventStatsRow > .col-md-3:nth-child(4) .summary-card { background: #d1fae5 !important; }
-
-    [data-bs-theme="dark"] #inventStatsRow > .col-md-3:nth-child(1) .summary-card { background: #172554; }
-    [data-bs-theme="dark"] #inventStatsRow > .col-md-3:nth-child(2) .summary-card { background: #450a0a; }
-    [data-bs-theme="dark"] #inventStatsRow > .col-md-3:nth-child(3) .summary-card { background: #451a03; }
-    [data-bs-theme="dark"] #inventStatsRow > .col-md-3:nth-child(4) .summary-card { background: #052e16; }
 
     /* DataTables light theme */
     .table-inventori { color: #111827 !important; border-color: #e5e7eb !important; }
@@ -378,7 +379,8 @@
     [data-bs-theme="light"] .dropdown-item { color:#374151; }
     [data-bs-theme="light"] .dropdown-item:hover,[data-bs-theme="light"] .dropdown-item:focus { background:#f3f4f6; color:#111827; }
     [data-bs-theme="light"] select option { color:#111827; background:#fff; }
-    [data-bs-theme="light"] .summary-card { border-color:var(--border); }
+    [data-bs-theme="light"] .stat-card { border-color:var(--border); }
+    [data-bs-theme="light"] .stat-card .glow-ring { border-color:rgba(16,185,129,.2); }
     [data-bs-theme="light"] .card-table { background: #e0f2fe; border-color: #bae6fd; box-shadow: 0 4px 12px rgba(0,0,0,.08); }
     [data-bs-theme="dark"] .card-table { background: var(--surface); border-color: var(--border); }
 
@@ -492,43 +494,43 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
       <!-- Summary Cards -->
       <div class="row g-4 mb-5 justify-content-center" id="inventStatsRow">
         <div class="col-md-3">
-          <div class="summary-card text-center">
+          <div class="stat-card text-center">
             <div class="glow-ring"></div>
             <div class="stat-icon" style="color: var(--accent); background: rgba(16,185,129,.1);">
               <i class="bi bi-boxes"></i>
             </div>
-            <div class="card-value" style="color: var(--accent);"><?php echo e($totalItems); ?></div>
-            <div class="card-label">Jumlah Item</div>
+            <h3 class="stat-title">Jumlah Item</h3>
+            <p class="stat-value" data-count="<?php echo e($totalItems); ?>" style="color: var(--accent);"><?php echo e($totalItems); ?></p>
           </div>
         </div>
         <div class="col-md-3">
-          <div class="summary-card text-center">
+          <div class="stat-card text-center">
             <div class="glow-ring"></div>
             <div class="stat-icon" style="color: #ef4444; background: rgba(239,68,68,.1);">
               <i class="bi bi-exclamation-triangle-fill"></i>
             </div>
-            <div class="card-value" style="color: #ef4444;"><?php echo e($hampirHabis); ?></div>
-            <div class="card-label">Hampir Habis</div>
+            <h3 class="stat-title">Hampir Habis</h3>
+            <p class="stat-value" data-count="<?php echo e($hampirHabis); ?>" style="color: #ef4444;"><?php echo e($hampirHabis); ?></p>
           </div>
         </div>
         <div class="col-md-3">
-          <div class="summary-card text-center">
+          <div class="stat-card text-center">
             <div class="glow-ring"></div>
             <div class="stat-icon" style="color: #f59e0b; background: rgba(245,158,11,.1);">
               <i class="bi bi-hourglass-split"></i>
             </div>
-            <div class="card-value" style="color: #f59e0b;"><?php echo e($sederhana); ?></div>
-            <div class="card-label">Sederhana</div>
+            <h3 class="stat-title">Sederhana</h3>
+            <p class="stat-value" data-count="<?php echo e($sederhana); ?>" style="color: #f59e0b;"><?php echo e($sederhana); ?></p>
           </div>
         </div>
         <div class="col-md-3">
-          <div class="summary-card text-center">
+          <div class="stat-card text-center">
             <div class="glow-ring"></div>
             <div class="stat-icon" style="color: #22c55e; background: rgba(34,197,94,.1);">
               <i class="bi bi-check2-circle"></i>
             </div>
-            <div class="card-value" style="color: #22c55e;"><?php echo e($banyakLagi); ?></div>
-            <div class="card-label">Banyak Lagi</div>
+            <h3 class="stat-title">Banyak Lagi</h3>
+            <p class="stat-value" data-count="<?php echo e($banyakLagi); ?>" style="color: #22c55e;"><?php echo e($banyakLagi); ?></p>
           </div>
         </div>
       </div>
@@ -549,7 +551,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         <div class="col-lg-12">
           <div class="card-table">
             <div class="table-responsive">
-              <table id="inventoriTable" class="table table-inventori w-100">
+              <table id="inventoriTable" class="table table-dark-custom table-inventori w-100">
                 <thead>
                   <tr>
                     <th>Bil</th>
@@ -567,7 +569,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
                 <tbody>
                   <?php $__empty_1 = true; $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <tr data-category="<?php echo e($item->category_name ?? ''); ?>">
-                      <td><?php echo e($loop->iteration); ?></td>
+                      <td data-sort="<?php echo e($loop->iteration); ?>"><?php echo e($loop->iteration); ?></td>
                       <td class="fw-semibold"><?php echo e($item->name); ?></td>
                       <td><?php echo e(number_format($item->current_quantity, 0)); ?></td>
                       <td><?php echo e($item->uom_code); ?></td>
@@ -629,6 +631,21 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
                 '<"row"<"col-sm-12"tr>>' +
                 '<"row align-items-center mt-3"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
             order: [[9, 'asc']],
+            drawCallback: function() {
+              var api = this.api();
+              var order = api.order();
+              var isBilSort = order.length && order[0][0] === 0;
+              if (isBilSort) {
+                api.column(0, { order: 'applied', page: 'current' }).nodes().each(function(cell, i) {
+                  cell.innerHTML = cell.getAttribute('data-sort');
+                });
+              } else {
+                var start = api.page.info().start;
+                api.column(0, { order: 'applied', page: 'current' }).nodes().each(function(cell, i) {
+                  cell.innerHTML = start + i + 1;
+                });
+              }
+            },
             language: {
                 url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/ms.json',
                 emptyTable: "Tiada data tersedia",
@@ -696,7 +713,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
 
   <!-- 3D Tilt effect on summary cards -->
   <script>
-    document.querySelectorAll('.summary-card').forEach(function(card) {
+    document.querySelectorAll('.stat-card').forEach(function(card) {
       card.addEventListener('mousemove', function(e) {
         var rect = card.getBoundingClientRect();
         var x = e.clientX - rect.left;

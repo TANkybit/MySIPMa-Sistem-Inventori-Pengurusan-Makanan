@@ -33,6 +33,18 @@ class SupplierEvaluationController extends Controller
 
     public function store(Request $request)
     {
+        foreach (['order_date_from', 'order_date_to', 'supply_date_from', 'supply_date_to', 'evaluation_date'] as $dateField) {
+            if ($request->filled($dateField)) {
+                try {
+                    $dateValue = trim($request->input($dateField));
+                    $parsedDate = \Carbon\Carbon::createFromFormat('d/m/Y', $dateValue);
+                    if ($parsedDate->format('d/m/Y') === $dateValue) {
+                        $request->merge([$dateField => $parsedDate->format('Y-m-d')]);
+                    }
+                } catch (\Throwable $e) {}
+            }
+        }
+
         $validated = $request->validate([
             'supplier_id' => 'required|exists:suppliers,id',
             'institution_id' => 'required|exists:institutions,id',

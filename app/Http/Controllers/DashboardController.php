@@ -2329,10 +2329,14 @@ class DashboardController extends Controller
 
             if ($contract && $contract->estimated_quantity > 0) {
                 $peratus = ($item->jumlah_guna / $contract->estimated_quantity) * 100;
-                $item->peratus_guna = round($peratus, 1);
+                $item->peratus_guna = min(100, round($peratus, 1));
                 $item->baki = max(0, $contract->estimated_quantity - $item->jumlah_guna);
 
-                if ($peratus >= 80) {
+                if ($peratus >= 100) {
+                    $item->warna_status = '#6b7280';
+                    $item->status = 'Habis';
+                    $hampirHabis++;
+                } elseif ($peratus >= 80) {
                     $item->warna_status = '#ef4444';
                     $item->status = 'Hampir Habis';
                     $hampirHabis++;
