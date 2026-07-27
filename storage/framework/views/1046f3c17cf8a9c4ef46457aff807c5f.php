@@ -2283,4 +2283,4 @@ unset($__errorArgs, $__bag); ?>
   </script>
 </body>
 </html>
-<?php /**PATH C:\laragon\www\MySIPMA_2\resources\views/borang_inden.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\laragon\www\MySIPMa\resources\views/borang_inden.blade.php ENDPATH**/ ?>

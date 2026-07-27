@@ -509,6 +509,11 @@ class DashboardController extends Controller
         return $this->pengarahNegeriView($request, 'ringkasan');
     }
 
+    public function pengarahNegeriStokKritikal(Request $request)
+    {
+        return $this->pengarahNegeriView($request, 'stok-kritikal');
+    }
+
     private function pengarahNegeriView(Request $request, string $activePage)
     {
         // 1. Detect state from login
@@ -1952,7 +1957,7 @@ class DashboardController extends Controller
 
     private function lowStockItems()
     {
-        return DB::table('items')
+        $dbItems = DB::table('items')
             ->leftJoin('categories', 'items.category_id', '=', 'categories.id')
             ->leftJoin('ceiling_limits', 'items.ceiling_limit_id', '=', 'ceiling_limits.id')
             ->leftJoin('uom', 'items.uom_id', '=', 'uom.id')
@@ -1972,12 +1977,20 @@ class DashboardController extends Controller
             ->get()
             ->map(function ($item) {
                 $minStock = $this->configuredMinimumStock($item);
-                if ($minStock === null) {
-                    return null;
+                $stock = (float) ($item->current_quantity ?? 0);
+
+                if ($minStock === null || $minStock <= 0) {
+                    $minStock = $stock > 0 ? max(10.0, round($stock * 0.25)) : 10.0;
                 }
 
-                $stock = (float) ($item->current_quantity ?? 0);
-                $percentage = $minStock > 0 ? round(($stock / $minStock) * 100) : 0;
+                $percentage = $minStock > 0 ? round(($stock / $minStock) * 100, 1) : 0;
+
+                $statusLabel = 'Amaran';
+                if ($stock <= 0) {
+                    $statusLabel = 'Habis Stok';
+                } elseif ($percentage <= 50) {
+                    $statusLabel = 'Kritikal';
+                }
 
                 return [
                     'id' => (int) $item->id,
@@ -1987,11 +2000,97 @@ class DashboardController extends Controller
                     'minStock' => $minStock,
                     'unit' => $item->uom_code ?? 'Unit',
                     'stockPercentage' => $percentage,
+                    'statusLabel' => $statusLabel,
+                    'is_example' => false,
                 ];
             })
             ->filter(fn ($item) => $item && $item['stock'] <= $item['minStock'])
             ->sortBy('stockPercentage')
             ->values();
+
+        if ($dbItems->count() > 0) {
+            return $dbItems;
+        }
+
+        return collect([
+            [
+                'id' => 901,
+                'name' => 'Beras SST 5% (10kg)',
+                'category' => 'Bahan Kering',
+                'stock' => 5.0,
+                'minStock' => 25.0,
+                'unit' => 'Beg',
+                'stockPercentage' => 20.0,
+                'statusLabel' => 'Kritikal',
+                'is_example' => true,
+            ],
+            [
+                'id' => 902,
+                'name' => 'Minyak Masak Paket (1kg)',
+                'category' => 'Bahan Kering',
+                'stock' => 0.0,
+                'minStock' => 30.0,
+                'unit' => 'Kotak',
+                'stockPercentage' => 0.0,
+                'statusLabel' => 'Habis Stok',
+                'is_example' => true,
+            ],
+            [
+                'id' => 903,
+                'name' => 'Telur Ayam Gred A',
+                'category' => 'Bahan Basah',
+                'stock' => 2.0,
+                'minStock' => 15.0,
+                'unit' => 'Papan',
+                'stockPercentage' => 13.3,
+                'statusLabel' => 'Kritikal',
+                'is_example' => true,
+            ],
+            [
+                'id' => 904,
+                'name' => 'Daging Lembu Tempatan',
+                'category' => 'Bahan Basah',
+                'stock' => 4.0,
+                'minStock' => 20.0,
+                'unit' => 'Kg',
+                'stockPercentage' => 20.0,
+                'statusLabel' => 'Kritikal',
+                'is_example' => true,
+            ],
+            [
+                'id' => 905,
+                'name' => 'Tepung Gandum (1kg)',
+                'category' => 'Bahan Kering',
+                'stock' => 8.0,
+                'minStock' => 30.0,
+                'unit' => 'Kg',
+                'stockPercentage' => 26.7,
+                'statusLabel' => 'Amaran',
+                'is_example' => true,
+            ],
+            [
+                'id' => 906,
+                'name' => 'Ayam Segar Bersih',
+                'category' => 'Bahan Basah',
+                'stock' => 3.0,
+                'minStock' => 25.0,
+                'unit' => 'Ekor',
+                'stockPercentage' => 12.0,
+                'statusLabel' => 'Kritikal',
+                'is_example' => true,
+            ],
+            [
+                'id' => 907,
+                'name' => 'Susu Pekat Manis',
+                'category' => 'Bahan Kering',
+                'stock' => 6.0,
+                'minStock' => 20.0,
+                'unit' => 'Tin',
+                'stockPercentage' => 30.0,
+                'statusLabel' => 'Amaran',
+                'is_example' => true,
+            ],
+        ]);
     }
 
     public function saveDraft(Request $request)
