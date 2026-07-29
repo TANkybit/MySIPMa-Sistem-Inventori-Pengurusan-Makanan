@@ -6,6 +6,7 @@
         'institusi' => 'Inventori',
         'pembekal' => 'Pembekal',
         'senarai_user' => 'Senarai Pengguna',
+        'stok-kritikal' => 'Stok Kritikal',
         'laporan-prestasi' => 'Penilaian Prestasi Pembekal',
         'profil' => 'Profil Saya',
     ];
@@ -15,6 +16,7 @@
         'institusi' => 'pengarah.institusi.institusi',
         'pembekal' => 'pengarah.institusi.pembekal',
         'senarai_user' => 'pengarah.institusi.senarai_pengguna',
+        'stok-kritikal' => 'pengarah.institusi.stok_kritikal',
         'laporan-prestasi' => 'pengarah.institusi.laporan_prestasi',
         'profil' => 'pengarah.institusi.profil',
     ];
@@ -91,6 +93,12 @@
                         <a class="nav-link <?php echo e(request()->routeIs('pengarah.institusi.senarai_pengguna') ? 'active' : ''); ?>" href="<?php echo e(route('pengarah.institusi.senarai_pengguna')); ?>">
                             <i class="fas fa-users"></i>
                             <span>Senarai Pengguna</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo e(request()->routeIs('pengarah.institusi.stok_kritikal') ? 'active' : ''); ?>" href="<?php echo e(route('pengarah.institusi.stok_kritikal')); ?>">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Stok Kritikal</span>
                         </a>
                     </li>
 
@@ -722,9 +730,205 @@
                                 </div>
                             </div>
                         </div>
+                    <?php elseif($activePage === 'stok-kritikal'): ?>
+                        <?php
+                            $isExampleData = false;
+                            if (isset($lowStockItems) && count($lowStockItems) > 0) {
+                                $firstItem = is_array($lowStockItems->first()) ? $lowStockItems->first() : (array) $lowStockItems->first();
+                                $isExampleData = !empty($firstItem['is_example']);
+                            }
+                            // Compute critical stock items: items at <= 20% of min stock
+                            $criticalItems = isset($lowStockItems) ? collect($lowStockItems)->filter(function($i) {
+                                $item = (array)$i;
+                                $pct = (float)($item['stockPercentage'] ?? 0);
+                                return $pct <= 20;
+                            })->values() : collect();
+                            $totalCriticalCount = $criticalItems->count();
+                            $outOfStockCount = $criticalItems->filter(function($i) {
+                                $item = (array)$i;
+                                return ($item['stock'] ?? 0) <= 0;
+                            })->count();
+                            $criticalStageCount = $criticalItems->filter(function($i) {
+                                $item = (array)$i;
+                                return ($item['stock'] ?? 0) > 0 && ($item['stockPercentage'] ?? 0) <= 10;
+                            })->count();
+                            $warningStageCount = $criticalItems->filter(function($i) {
+                                $item = (array)$i;
+                                return ($item['stock'] ?? 0) > 0 && ($item['stockPercentage'] ?? 0) > 10 && ($item['stockPercentage'] ?? 0) <= 20;
+                            })->count();
+                        ?>
+
+                        <?php if($isExampleData): ?>
+                            <div class="alert alert-info border-0 shadow-sm d-flex align-items-center gap-3 mb-4">
+                                <i class="fas fa-info-circle fa-2x text-info"></i>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Data Contoh Dipaparkan</h6>
+                                    <p class="mb-0 small text-secondary">
+                                        Tiada rekod stok kritikal semasa yang melepasi had amaran dalam pangkalan data. Contoh senarai stok kritikal dipaparkan di bawah untuk tujuan demonstrasi dan rujukan.
+                                    </p>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <div class="text-uppercase small fw-bold text-muted mb-1">Jumlah Stok Kritikal</div>
+                                            <h2 class="fw-bold text-danger mb-0"><?php echo e($totalCriticalCount); ?></h2>
+                                            <small class="text-muted">(Bawah 20% minimum)</small>
+                                        </div>
+                                        <div class="rounded-circle bg-danger bg-opacity-10 p-3 text-danger">
+                                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <div class="text-uppercase small fw-bold text-muted mb-1">Item Habis Stok</div>
+                                            <h2 class="fw-bold text-dark mb-0"><?php echo e($outOfStockCount); ?></h2>
+                                        </div>
+                                        <div class="rounded-circle bg-dark bg-opacity-10 p-3 text-dark">
+                                            <i class="fas fa-times-circle fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <div class="text-uppercase small fw-bold text-muted mb-1">Sangat Kritikal (&le;10%)</div>
+                                            <h2 class="fw-bold text-danger mb-0"><?php echo e($criticalStageCount); ?></h2>
+                                        </div>
+                                        <div class="rounded-circle bg-danger bg-opacity-10 p-3 text-danger">
+                                            <i class="fas fa-battery-quarter fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <div class="text-uppercase small fw-bold text-muted mb-1">Hampir Kritikal (11-20%)</div>
+                                            <h2 class="fw-bold text-warning mb-0"><?php echo e($warningStageCount); ?></h2>
+                                        </div>
+                                        <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning">
+                                            <i class="fas fa-battery-half fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div>
+                                    <h5 class="card-title fw-bold mb-0 text-body">
+                                        <i class="fas fa-exclamation-triangle text-danger me-2"></i>Senarai Keseluruhan Item Stok Kritikal
+                                    </h5>
+                                    <p class="text-muted small mb-0">Memaparkan semua bahan mentah yang berada di bawah 20% paras minimum stok</p>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table id="critical-stock-all-table" class="table table-bordered table-hover align-middle w-100">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="text-center" style="width: 50px;">Bil.</th>
+                                                <th>Nama Item</th>
+                                                <th>Kategori</th>
+                                                <th class="text-center">Stok Semasa</th>
+                                                <th class="text-center">Min. Stok / Had</th>
+                                                <th style="min-width: 180px;">Paras Stok (%)</th>
+                                                <th class="text-center">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php $__empty_1 = true; $__currentLoopData = $criticalItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                                <?php
+                                                    $itemArr = (array)$item;
+                                                    $stock = (float)($itemArr['stock'] ?? 0);
+                                                    $minStock = (float)($itemArr['minStock'] ?? 0);
+                                                    $unit = $itemArr['unit'] ?? 'Unit';
+                                                    $percentage = (float)($itemArr['stockPercentage'] ?? 0);
+                                                    $statusLabel = $itemArr['statusLabel'] ?? ($stock <= 0 ? 'Habis Stok' : ($percentage <= 10 ? 'Sangat Kritikal' : 'Hampir Kritikal'));
+
+                                                    if ($stock <= 0) {
+                                                        $progressClass = 'bg-dark';
+                                                        $badgeClass = 'bg-dark text-white';
+                                                    } elseif ($percentage <= 10) {
+                                                        $progressClass = 'bg-danger';
+                                                        $badgeClass = 'bg-danger text-white';
+                                                    } else {
+                                                        $progressClass = 'bg-warning';
+                                                        $badgeClass = 'bg-warning text-dark';
+                                                    }
+                                                ?>
+                                                <tr>
+                                                    <td class="text-center fw-medium"><?php echo e($index + 1); ?></td>
+                                                    <td>
+                                                        <div class="fw-semibold text-primary"><?php echo e($itemArr['name'] ?? '-'); ?></div>
+                                                        <?php if(!empty($itemArr['is_example'])): ?>
+                                                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-20" style="font-size:0.7rem;">Contoh Data</span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge bg-light text-body border"><?php echo e($itemArr['category'] ?? 'Tanpa Kategori'); ?></span>
+                                                    </td>
+                                                    <td class="text-center fw-bold fs-6">
+                                                        <?php echo e(number_format($stock, 2)); ?> <small class="text-muted fw-normal"><?php echo e($unit); ?></small>
+                                                    </td>
+                                                    <td class="text-center fw-medium text-muted">
+                                                        <?php echo e(number_format($minStock, 2)); ?> <small class="text-muted"><?php echo e($unit); ?></small>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <div class="progress flex-grow-1" style="height: 10px;">
+                                                                <div class="progress-bar <?php echo e($progressClass); ?> progress-bar-striped progress-bar-animated" role="progressbar" style="width: <?php echo e(min(100, max(2, $percentage))); ?>%" aria-valuenow="<?php echo e($percentage); ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            </div>
+                                                            <span class="fw-bold small" style="min-width: 45px; text-align: right;"><?php echo e($percentage); ?>%</span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <span class="badge <?php echo e($badgeClass); ?> rounded-pill px-3 py-2">
+                                                            <?php if($stock <= 0): ?>
+                                                                <i class="fas fa-times-circle me-1"></i>
+                                                            <?php elseif($percentage <= 10): ?>
+                                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                            <?php else: ?>
+                                                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                                            <?php endif; ?>
+                                                            <?php echo e($statusLabel); ?>
+
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                                <tr>
+                                                    <td colspan="7" class="text-center py-4 text-muted">
+                                                        <i class="fas fa-check-circle text-success fa-2x d-block mb-2"></i>
+                                                        Tiada item stok kritikal (semua item melebihi 20% paras minimum).
+                                                    </td>
+                                                </tr>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
                     <?php elseif($activePage === 'laporan-prestasi'): ?>
                         <div class="row">
                             <div class="col-12">
+
                                 <!-- Section 1: Pending Evaluations for Verification -->
                                 <div class="card border-0 shadow-sm mb-4" id="pending-section">
                                     <div class="card-header bg-warning text-dark py-3 d-flex justify-content-between align-items-center">
@@ -807,24 +1011,24 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="table-responsive">
-                                            <table class="table table-bordered table-hover align-middle text-center text-body" id="monthly-stats-table">
+                                            <table class="table table-bordered table-hover align-middle text-center text-body" id="monthly-stats-table" style="min-width: 900px; font-size: 0.78rem;">
                                                 <thead class="bg-light text-body">
                                                     <tr>
-                                                        <th class="text-start">Pembekal</th>
-                                                        <th>Purata Tahunan</th>
-                                                        <th>Rating Tahunan</th>
-                                                        <th>Jan</th>
-                                                        <th>Feb</th>
-                                                        <th>Mac</th>
-                                                        <th>Apr</th>
-                                                        <th>Mei</th>
-                                                        <th>Jun</th>
-                                                        <th>Jul</th>
-                                                        <th>Ogos</th>
-                                                        <th>Sept</th>
-                                                        <th>Okt</th>
-                                                        <th>Nov</th>
-                                                        <th>Dis</th>
+                                                        <th class="text-start" style="min-width:130px;">Pembekal</th>
+                                                        <th style="min-width:80px;">Purata Tahunan</th>
+                                                        <th style="min-width:90px;">Rating Tahunan</th>
+                                                        <th style="min-width:38px;">Jan</th>
+                                                        <th style="min-width:38px;">Feb</th>
+                                                        <th style="min-width:38px;">Mac</th>
+                                                        <th style="min-width:38px;">Apr</th>
+                                                        <th style="min-width:38px;">Mei</th>
+                                                        <th style="min-width:38px;">Jun</th>
+                                                        <th style="min-width:38px;">Jul</th>
+                                                        <th style="min-width:38px;">Ogos</th>
+                                                        <th style="min-width:38px;">Sept</th>
+                                                        <th style="min-width:38px;">Okt</th>
+                                                        <th style="min-width:38px;">Nov</th>
+                                                        <th style="min-width:38px;">Dis</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="monthlyStatsTableBody" class="text-body">
@@ -837,6 +1041,7 @@
                                                 </tbody>
                                             </table>
                                         </div>
+
                                     </div>
                                 </div>
 
@@ -844,16 +1049,47 @@
                                 <div class="card border-0 shadow-sm mb-4">
                                     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                                         <div>
-                                            <h5 class="card-title mb-0 fw-bold text-body">Sejarah Penilaian Prestasi</h5>
+                                            <h5 class="card-title mb-0 fw-bold text-body">Senarai Penilaian Prestasi</h5>
                                             <p class="text-muted small mb-0">Semua rekod penilaian prestasi bagi institusi anda</p>
                                         </div>
                                         <div>
-                                            <button class="btn btn-primary btn-sm shadow-sm" id="btnTambahPenilaian">
-                                                <i class="fas fa-plus me-1"></i>Tambah Penilaian
-                                            </button>
+                                            
                                         </div>
                                     </div>
                                     <div class="card-body">
+                                        
+                                        <div class="row mb-3 align-items-end g-2">
+                                            <div class="col-auto">
+                                                <label class="form-label small fw-semibold mb-1">Tahun</label>
+                                                <select id="filterEvalYear" class="form-select form-select-sm" style="width: 110px;">
+                                                    <option value="">Semua</option>
+                                                    <?php for($y = date('Y'); $y >= date('Y') - 5; $y--): ?>
+                                                        <option value="<?php echo e($y); ?>"><?php echo e($y); ?></option>
+                                                    <?php endfor; ?>
+                                                </select>
+                                            </div>
+                                            <div class="col-auto">
+                                                <label class="form-label small fw-semibold mb-1">Institusi</label>
+                                                <select id="filterEvalInstitution" class="form-select form-select-sm" style="min-width: 180px;">
+                                                    <option value="">Semua Institusi</option>
+                                                    <?php $__currentLoopData = $institutions ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inst): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <option value="<?php echo e($inst->id); ?>"><?php echo e($inst->name); ?></option>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                </select>
+                                            </div>
+                                            <div class="col-auto">
+                                                <label class="form-label small fw-semibold mb-1">Pembekal</label>
+                                                <select id="filterEvalSupplier" class="form-select form-select-sm" style="min-width: 180px;">
+                                                    <option value="">Semua Pembekal</option>
+                                                    
+                                                </select>
+                                            </div>
+                                            <div class="col-auto">
+                                                <button class="btn btn-sm btn-outline-secondary" id="btnClearEvalFilter">
+                                                    <i class="fas fa-times me-1"></i>Lihat Semua
+                                                </button>
+                                            </div>
+                                        </div>
                                         <div class="table-responsive">
                                             <table class="table table-hover align-middle border-top text-body" id="evaluations-history-table">
                                                 <thead>
@@ -1756,16 +1992,75 @@
             
             const initialYear = document.getElementById('monthlyYearSelect').value;
             loadMonthlyStats(initialYear);
-            loadEvaluationsHistory();
-            
+            loadEvaluationsHistory().then(() => {
+                // Populate supplier filter dynamically from loaded data
+                const supplierSel = document.getElementById('filterEvalSupplier');
+                if (supplierSel && window._evalDataStore) {
+                    const uniqueSuppliers = {};
+                    (window._evalDataStore || []).forEach(e => {
+                        const id = e.supplier_id || (e.supplier && e.supplier.id) || '';
+                        const name = (e.supplier && e.supplier.company_name) ? e.supplier.company_name : null;
+                        if (name && !uniqueSuppliers[id]) {
+                            uniqueSuppliers[id] = name;
+                        }
+                    });
+                    Object.entries(uniqueSuppliers).forEach(([id, name]) => {
+                        const opt = document.createElement('option');
+                        opt.value = id;
+                        opt.textContent = name;
+                        supplierSel.appendChild(opt);
+                    });
+                }
+            });
+
+            // Filter logic for Senarai Penilaian Prestasi
+            function applyEvalFilters() {
+                const year = (document.getElementById('filterEvalYear')?.value || '').trim();
+                const instId = (document.getElementById('filterEvalInstitution')?.value || '').trim();
+                const suppId = (document.getElementById('filterEvalSupplier')?.value || '').trim();
+
+                const all = window._evalDataStore || [];
+                const filtered = all.filter(e => {
+                    let pass = true;
+                    if (year) {
+                        const evalYear = e.evaluation_date ? new Date(e.evaluation_date).getFullYear().toString() : '';
+                        if (evalYear !== year) pass = false;
+                    }
+                    if (instId) {
+                        const eInstId = String(e.institution_id || (e.institution && e.institution.id) || '');
+                        if (eInstId !== instId) pass = false;
+                    }
+                    if (suppId) {
+                        const eSuppId = String(e.supplier_id || (e.supplier && e.supplier.id) || '');
+                        if (eSuppId !== suppId) pass = false;
+                    }
+                    return pass;
+                });
+                renderEvaluationsTable(filtered);
+            }
+
+            ['filterEvalYear', 'filterEvalInstitution', 'filterEvalSupplier'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('change', applyEvalFilters);
+            });
+
+            const clearBtn = document.getElementById('btnClearEvalFilter');
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function() {
+                    ['filterEvalYear', 'filterEvalInstitution', 'filterEvalSupplier'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.value = '';
+                    });
+                    renderEvaluationsTable(window._evalDataStore || []);
+                });
+            }
+
             document.getElementById('monthlyYearSelect').addEventListener('change', function() {
                 loadMonthlyStats(this.value);
             });
+
             
-            document.getElementById('btnTambahPenilaian').addEventListener('click', function() {
-                const addModal = new bootstrap.Modal(document.getElementById('addEvaluationModal'));
-                addModal.show();
-            });
+            
             
             document.getElementById('evalOrderId').addEventListener('change', function() {
                 const orderId = this.value;

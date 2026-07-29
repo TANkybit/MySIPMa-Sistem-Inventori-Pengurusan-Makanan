@@ -318,6 +318,11 @@ class DashboardController extends Controller
         return $this->pengarahInstitusiView($request, 'laporan-prestasi');
     }
 
+    public function pengarahInstitusiStokKritikal(Request $request)
+    {
+        return $this->pengarahInstitusiView($request, 'stok-kritikal');
+    }
+
     public function adminInstitusiDashboard(Request $request)
     {
         return $this->pengarahInstitusiView($request, 'dashboard', 'admin_institusi_dashboard');
@@ -1702,12 +1707,20 @@ class DashboardController extends Controller
                 'ceiling_limits.yearly_limit',
                 'ceiling_limits.contract_limit',
             ])
+            ->where('items.status', 1)
             ->orderBy('items.name')
             ->get()
             ->map(function ($item) {
                 $stock = (float) ($item->current_quantity ?? 0);
                 $minStock = $this->resolveMinimumStock($item, $stock);
-                $percentage = $minStock > 0 ? round(($stock / $minStock) * 100) : 0;
+                $percentage = $minStock > 0 ? round(($stock / $minStock) * 100, 1) : 0;
+
+                $statusLabel = 'Amaran';
+                if ($stock <= 0) {
+                    $statusLabel = 'Habis Stok';
+                } elseif ($percentage <= 20) {
+                    $statusLabel = 'Kritikal';
+                }
 
                 return [
                     'id' => (int) $item->id,
@@ -1717,12 +1730,14 @@ class DashboardController extends Controller
                     'minStock' => $minStock,
                     'unit' => $item->uom_code ?? 'Unit',
                     'price' => (float) ($item->price_per_unit ?? 0),
-                    'status' => ((int) $item->status) === 1 ? 'active' : 'inactive',
+                    'status' => 'active',
                     'stockPercentage' => $percentage,
+                    'statusLabel' => $statusLabel,
                 ];
             })
+            // Filter: only items at or below 20% of minimum stock
+            ->filter(fn ($item) => $item['stockPercentage'] <= 20)
             ->sortBy('stockPercentage')
-            ->take(5)
             ->values();
 
         return response()->json([

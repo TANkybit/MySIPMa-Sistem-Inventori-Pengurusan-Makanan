@@ -96,6 +96,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/pengarah-institusi/senarai-user', [DashboardController::class, 'pengarahInstitusiSenaraiUser'])->name('pengarah.institusi.senarai_pengguna');
     Route::get('/pengarah-institusi/profil', [DashboardController::class, 'pengarahInstitusiProfil'])->name('pengarah.institusi.profil');
     Route::get('/pengarah-institusi/laporan-prestasi', [DashboardController::class, 'pengarahInstitusiLaporanPrestasi'])->name('pengarah.institusi.laporan_prestasi');
+    Route::get('/pengarah-institusi/stok-kritikal', [DashboardController::class, 'pengarahInstitusiStokKritikal'])->name('pengarah.institusi.stok_kritikal');
     // API: Dashboard data for Pengarah Institusi (filter by year/month)
     Route::middleware('auth')->get('/api/dashboard/pengarah-institusi', [DashboardController::class, 'apiPengarahInstitusiDashboard'])->name('api.pengarah.institusi.dashboard');
     Route::middleware('auth')->get('/api/pengarah-institusi/recent-orders', [DashboardController::class, 'apiPengarahInstitusiRecentOrders'])->name('api.pengarah.institusi.recent_orders');
