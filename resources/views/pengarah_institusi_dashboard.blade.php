@@ -1031,8 +1031,8 @@
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered table-hover align-middle text-center text-body" id="monthly-stats-table" style="min-width: 900px; font-size: 0.78rem;">
+                                        <div style="overflow-x: scroll; overflow-y: visible; -webkit-overflow-scrolling: touch; border: 1px solid #dee2e6; border-radius: 0.375rem;">
+                                            <table class="table table-bordered table-hover align-middle text-center text-body mb-0" id="monthly-stats-table" style="min-width: 1400px; font-size: 0.78rem;">
                                                 <thead class="bg-light text-body">
                                                     <tr>
                                                         <th class="text-start" style="min-width:130px;">Pembekal</th>

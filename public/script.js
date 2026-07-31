@@ -2914,9 +2914,8 @@ class PrisonSystem {
         
         let admins = window.prisonData.users;
         if (filterVal) {
-            // Note: In data, role might be "Admin" or "User"
-            const searchRole = filterVal.toLowerCase() === 'admin' ? 'Admin' : 'User';
-            admins = admins.filter(u => (u.role || '').toLowerCase() === searchRole.toLowerCase());
+            // Filter by role name (case-insensitive) — works for Admin, Pegawai Stor, Pegawai Penerima, Pegawai Pengesah
+            admins = admins.filter(u => (u.role || '').toLowerCase() === filterVal.toLowerCase());
         }
 
         admins.forEach((admin, index) => {

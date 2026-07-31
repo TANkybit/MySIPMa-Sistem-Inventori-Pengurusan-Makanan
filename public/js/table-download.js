@@ -148,7 +148,21 @@
 
         toolbar.appendChild(button);
 
-        const responsiveWrapper = table.closest('.table-responsive');
+        // Find the nearest scrollable wrapper: either Bootstrap's .table-responsive class
+        // or any parent div with overflow-x set to scroll/auto (our custom scroll containers)
+        const responsiveWrapper = table.closest('.table-responsive') ||
+            (function () {
+                let el = table.parentNode;
+                while (el && el !== document.body) {
+                    if (el.tagName === 'DIV') {
+                        const ox = el.style.overflowX || window.getComputedStyle(el).overflowX;
+                        if (ox === 'scroll' || ox === 'auto') return el;
+                    }
+                    el = el.parentNode;
+                }
+                return null;
+            })();
+
         if (responsiveWrapper && responsiveWrapper.parentNode) {
             responsiveWrapper.parentNode.insertBefore(toolbar, responsiveWrapper);
         } else {
