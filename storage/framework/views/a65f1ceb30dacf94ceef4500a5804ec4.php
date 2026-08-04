@@ -6,15 +6,15 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Borang Penerimaan - MySIPMa</title>
-  <link rel="icon" type="image/png" href="{{ asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png') }}">
-  <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png') }}">
+  <link rel="icon" type="image/png" href="<?php echo e(asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png')); ?>">
+  <link rel="apple-touch-icon" sizes="180x180" href="<?php echo e(asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png')); ?>">
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/css/main2.css') }}" rel="stylesheet">
-  <link href="{{ asset('css/user-theme.css') }}" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/css/main2.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('css/user-theme.css')); ?>" rel="stylesheet">
   <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -146,7 +146,7 @@
     [data-bs-theme="light"] #logoutConfirmModal .btn-cancel { background:#f3f4f6; border-color:#d1d5db; color:#374151; }
     [data-bs-theme="light"] #logoutConfirmModal .btn-cancel:hover { background:#e5e7eb; }
   </style>
-  <link href="{{ asset('css/design.css') }}?v=3" rel="stylesheet">
+  <link href="<?php echo e(asset('css/design.css')); ?>?v=3" rel="stylesheet">
 <style>
 body.mobile-nav-active { background: #000 !important; }
 body.mobile-nav-active .navmenu { background: #000 !important; }
@@ -160,51 +160,53 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
   <header id="header" class="header d-flex align-items-center sticky-top" style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
     <div class="container position-relative d-flex align-items-center justify-content-between">
       <a href="#" class="logo-glow d-flex align-items-center" id="logoLogoutTrigger">
-        <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" style="height: 55px; width: auto;" alt="MySIPMa logo">
+        <img src="<?php echo e(asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png')); ?>" style="height: 55px; width: auto;" alt="MySIPMa logo">
       </a>
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="{{ route('user.dashboard') }}" class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Papan Pemuka</a></li>
-          <li><a href="{{ route('user.senarai.inden') }}" class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
-          <li><a href="{{ route('user.inventori') }}" class="{{ request()->routeIs('user.inventori') ? 'active' : '' }}">Inventori</a></li>
-          @if(Auth::user()->hasPermission('pengesahan_inden'))
-          <li><a href="{{ route('user.pengesahan.inden') }}" class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
-          @endif
-          @if(Auth::user()->hasPermission('borang_inden'))
-          <li><a href="{{ route('borang.inden') }}" class="{{ request()->routeIs('borang.inden*') ? 'active' : '' }}">Borang Inden</a></li>
-          @endif
-          @if(Auth::user()->hasPermission('penerimaan_inden'))
-          <li><a href="{{ route('borang.penerimaan') }}" class="{{ request()->routeIs('borang.penerimaan') ? 'active' : '' }}">Penerimaan</a></li>
-          @endif
-          @if(Auth::user()->hasPermission('penilaian_prestasi'))
-          <li><a href="{{ route('user.penilaian_prestasi') }}" class="{{ request()->routeIs('user.penilaian_prestasi') ? 'active' : '' }}">Penilaian Prestasi</a></li>
-          @endif
-          <li class="d-xl-none"><a href="{{ route('profile') }}" class="{{ request()->routeIs('profile') ? 'active' : '' }}">Profil</a></li>
+          <li><a href="<?php echo e(route('user.dashboard')); ?>" class="<?php echo e(request()->routeIs('user.dashboard') ? 'active' : ''); ?>">Papan Pemuka</a></li>
+          <li><a href="<?php echo e(route('user.senarai.inden')); ?>" class="<?php echo e(request()->routeIs('user.senarai.inden') ? 'active' : ''); ?>">Senarai Inden</a></li>
+          <li><a href="<?php echo e(route('user.inventori')); ?>" class="<?php echo e(request()->routeIs('user.inventori') ? 'active' : ''); ?>">Inventori</a></li>
+          <?php if(Auth::user()->hasPermission('pengesahan_inden')): ?>
+          <li><a href="<?php echo e(route('user.pengesahan.inden')); ?>" class="<?php echo e(request()->routeIs('user.pengesahan.inden') ? 'active' : ''); ?>">Pengesahan Inden</a></li>
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('borang_inden')): ?>
+          <li><a href="<?php echo e(route('borang.inden')); ?>" class="<?php echo e(request()->routeIs('borang.inden*') ? 'active' : ''); ?>">Borang Inden</a></li>
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('penerimaan_inden')): ?>
+          <li><a href="<?php echo e(route('borang.penerimaan')); ?>" class="<?php echo e(request()->routeIs('borang.penerimaan') ? 'active' : ''); ?>">Penerimaan</a></li>
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('penilaian_prestasi')): ?>
+          <li><a href="<?php echo e(route('user.penilaian_prestasi')); ?>" class="<?php echo e(request()->routeIs('user.penilaian_prestasi') ? 'active' : ''); ?>">Penilaian Prestasi</a></li>
+          <?php endif; ?>
+          <li class="d-xl-none"><a href="<?php echo e(route('profile')); ?>" class="<?php echo e(request()->routeIs('profile') ? 'active' : ''); ?>">Profil</a></li>
           <li class="d-xl-none"><a href="#" id="navLogoutBtn" class="text-danger">Log Keluar</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
       <div class="d-none d-xl-flex align-items-center gap-3">
-        @if(Auth::user()->hasPermission('pengesahan_inden'))
-        <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''">
+        <?php if(Auth::user()->hasPermission('pengesahan_inden')): ?>
+        <a href="<?php echo e(route('user.pengesahan.inden')); ?>" class="position-relative text-white fs-5 me-3" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''">
           <i class="bi bi-bell-fill"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
-            {{ $pendingApprovals ?? 0 }}
+            <?php echo e($pendingApprovals ?? 0); ?>
+
             <span class="visually-hidden">Inden belum disah</span>
           </span>
         </a>
-        @endif
-        @if(Auth::user()->hasPermission('penerimaan_inden'))
-        <a href="{{ route('borang.penerimaan') }}" class="position-relative text-white fs-5 me-3" style="transition: color 0.3s;" onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color=''">
+        <?php endif; ?>
+        <?php if(Auth::user()->hasPermission('penerimaan_inden')): ?>
+        <a href="<?php echo e(route('borang.penerimaan')); ?>" class="position-relative text-white fs-5 me-3" style="transition: color 0.3s;" onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color=''">
           <i class="bi bi-truck"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
-            {{ $pendingPenerimaan ?? 0 }}
+            <?php echo e($pendingPenerimaan ?? 0); ?>
+
             <span class="visually-hidden">Penerimaan belum diproses</span>
           </span>
         </a>
-        @endif
+        <?php endif; ?>
         <button class="btn btn-icon" id="themeToggle" style="background:none;border:none;color:var(--text);font-size:1.2rem;padding:4px 8px"><i class="bi bi-moon-fill"></i></button>
-        <a href="{{ route('profile') }}" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''"><i class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}</a>
+        <a href="<?php echo e(route('profile')); ?>" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''"><i class="bi bi-person-circle me-2"></i><?php echo e(Auth::user()->name ?? 'Pengguna'); ?></a>
         <button type="button" class="btn btn-custom btn-logout btn-sm px-3 py-2" id="desktopLogoutBtn"><i class="bi bi-box-arrow-right me-2"></i>Log Keluar</button>
       </div>
     </div>
@@ -217,21 +219,21 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
       <p class="muted mb-0">Rekod penerimaan barang daripada pembekal berdasarkan pesanan inden.</p>
     </div>
 
-    @if (session('success'))
-      <div class="alert alert-success border-0 rounded-4 mb-4">{{ session('success') }}</div>
-    @endif
-    @if ($errors->any())
+    <?php if(session('success')): ?>
+      <div class="alert alert-success border-0 rounded-4 mb-4"><?php echo e(session('success')); ?></div>
+    <?php endif; ?>
+    <?php if($errors->any()): ?>
       <div class="alert alert-danger border-0 rounded-4 mb-4">
         <ul class="mb-0 ps-3">
-          @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-          @endforeach
+          <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <li><?php echo e($error); ?></li>
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </ul>
       </div>
-    @endif
+    <?php endif; ?>
 
-    <form method="POST" action="{{ route('borang.penerimaan.store') }}">
-      @csrf
+    <form method="POST" action="<?php echo e(route('borang.penerimaan.store')); ?>">
+      <?php echo csrf_field(); ?>
 
       <!-- Pilih Pesanan -->
       <div class="card-box section-card mb-4">
@@ -242,9 +244,9 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
           <label class="form-label">No. Pesanan Inden</label>
           <select class="form-select" name="order_id" id="orderSelect" required>
             <option value="">-- Pilih No. Inden --</option>
-            @foreach($orders as $order)
-              <option value="{{ $order->id }}" data-supplier="{{ $order->supplier_name ?? '-' }}" data-date="{{ $order->formatted_date ?? $order->order_date ?? '-' }}" data-institution="{{ $order->institution_name ?? '-' }}" {{ (request('order_id') == $order->id) ? 'selected' : '' }}>{{ $order->order_no }} - {{ $order->supplier_name ?? '-' }} ({{ $order->formatted_date ?? $order->order_date ?? '-' }})</option>
-            @endforeach
+            <?php $__currentLoopData = $orders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+              <option value="<?php echo e($order->id); ?>" data-supplier="<?php echo e($order->supplier_name ?? '-'); ?>" data-date="<?php echo e($order->formatted_date ?? $order->order_date ?? '-'); ?>" data-institution="<?php echo e($order->institution_name ?? '-'); ?>" <?php echo e((request('order_id') == $order->id) ? 'selected' : ''); ?>><?php echo e($order->order_no); ?> - <?php echo e($order->supplier_name ?? '-'); ?> (<?php echo e($order->formatted_date ?? $order->order_date ?? '-'); ?>)</option>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
           </select>
         </div>
       </div>
@@ -285,11 +287,11 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         <div class="row mb-4">
           <div class="col-md-4">
             <label class="form-label">Tarikh Terima</label>
-            <input class="form-control date-input" name="received_date" type="text" inputmode="numeric" value="{{ date('d/m/Y') }}" placeholder="dd/mm/yyyy">
+            <input class="form-control date-input" name="received_date" type="text" inputmode="numeric" value="<?php echo e(date('d/m/Y')); ?>" placeholder="dd/mm/yyyy">
           </div>
           <div class="col-md-4">
             <label class="form-label">Diterima Oleh</label>
-            <input type="text" class="form-control" name="received_by" value="{{ Auth::user()->name }}" readonly>
+            <input type="text" class="form-control" name="received_by" value="<?php echo e(Auth::user()->name); ?>" readonly>
           </div>
         </div>
 
@@ -331,7 +333,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         </div>
 
         <div class="action-row">
-          <a href="{{ route('borang.penerimaan') }}" class="btn btn-outline-secondary">Set Semula</a>
+          <a href="<?php echo e(route('borang.penerimaan')); ?>" class="btn btn-outline-secondary">Set Semula</a>
           <button type="submit" class="btn btn-custom" id="submitBtn">Simpan Penerimaan</button>
         </div>
       </div>
@@ -345,11 +347,11 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ms.js"></script>
-  <script src="{{ asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js')); ?>"></script>
 
   <script>
-    const uomList = @json($uoms);
-    const itemSearchUrl = "{{ route('items.search') }}";
+    const uomList = <?php echo json_encode($uoms, 15, 512) ?>;
+    const itemSearchUrl = "<?php echo e(route('items.search')); ?>";
 
     $(document).ready(function() {
       if (typeof flatpickr !== 'undefined') {
@@ -526,11 +528,11 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
       }
     });
   </script>
-    <script src="{{ asset('js/table-download.js') }}"></script>
-    <script src="{{ asset('js/table-download-pdf.js') }}"></script>
-    <script src="{{ asset('js/session-timeout.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/js/mobile-nav.js') }}"></script>
-  <script src="{{ asset('js/user-theme.js') }}"></script>
+    <script src="<?php echo e(asset('js/table-download.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/table-download-pdf.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/session-timeout.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/js/mobile-nav.js')); ?>"></script>
+  <script src="<?php echo e(asset('js/user-theme.js')); ?>"></script>
 
   <!-- Logout confirmation modal -->
   <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel" aria-hidden="true">
@@ -545,8 +547,8 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-cancel btn-sm px-3" data-bs-dismiss="modal">Batal</button>
-          <form action="{{ route('logout') }}" method="POST" id="logoutForm" class="d-inline">
-            @csrf
+          <form action="<?php echo e(route('logout')); ?>" method="POST" id="logoutForm" class="d-inline">
+            <?php echo csrf_field(); ?>
             <button type="submit" class="btn btn-danger btn-sm px-3"><i class="bi bi-box-arrow-right me-1"></i>Log Keluar</button>
           </form>
         </div>
@@ -567,3 +569,4 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
   </script>
 </body>
 </html>
+<?php /**PATH C:\laragon\www\MySIPMA_2\resources\views/borang_penerimaan.blade.php ENDPATH**/ ?>
