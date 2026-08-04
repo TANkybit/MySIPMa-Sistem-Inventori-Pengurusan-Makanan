@@ -97,9 +97,9 @@
       width: 100%; height: 100%;
       z-index: 0;
       background:
-        radial-gradient(ellipse at 15% 30%, rgba(99,102,241,.13) 0%, transparent 50%),
-        radial-gradient(ellipse at 85% 70%, rgba(168,85,247,.10) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, rgba(99,102,241,.05) 0%, transparent 50%);
+        radial-gradient(ellipse at 15% 30%, rgba(16,185,129,.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 85% 70%, rgba(98,226,255,.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(16,185,129,.06) 0%, transparent 50%);
       pointer-events: none;
     }
 
@@ -110,7 +110,7 @@
       width: 100%; height: 100%;
       z-index: 1;
       pointer-events: none;
-      opacity: 0.25;
+      opacity: 0.35;
     }
 
     body > .container {
@@ -135,12 +135,12 @@
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border: 1px solid rgba(255,255,255,.07);
-      border-radius: 20px;
+      border-radius: 24px;
       box-shadow: 0 30px 80px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05);
       padding: 0;
       color: #fff;
       width: 100%;
-      max-width: 640px;
+      max-width: 560px;
       overflow: hidden;
       position: relative;
     }
@@ -150,7 +150,7 @@
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 4px;
-      background: linear-gradient(90deg, #6366f1, #a855f7, #6366f1);
+      background: linear-gradient(90deg, #10b981, #62e2ff, #10b981);
       background-size: 200% 100%;
       animation: shimmerBar 3s ease-in-out infinite;
     }
@@ -159,6 +159,61 @@
       0% { background-position: 0% 0; }
       50% { background-position: 100% 0; }
       100% { background-position: 0% 0; }
+    }
+
+    /* ── Card Header / Cover ── */
+    .profile-card-cover {
+      background: linear-gradient(135deg, rgba(16,185,129,.25), rgba(98,226,255,.10));
+      padding: 36px 28px 20px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      position: relative;
+    }
+
+    .profile-card-cover .avatar-ring {
+      width: 104px;
+      height: 104px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      padding: 4px;
+      background: linear-gradient(135deg, #10b981, #62e2ff);
+      box-shadow: 0 0 30px rgba(16,185,129,.3);
+      transition: transform .4s ease;
+    }
+
+    .profile-card-cover .avatar-ring:hover {
+      transform: scale(1.06);
+    }
+
+    .profile-card-cover .avatar-ring .avatar-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #0f172a;
+      border: 2px solid #0f172a;
+    }
+
+    .profile-card-cover .profile-name {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -.3px;
+      color: #fff;
+    }
+
+    .profile-card-cover .profile-role-badge {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 4px 16px;
+      border-radius: 999px;
+      background: rgba(16,185,129,.18);
+      border: 1px solid rgba(16,185,129,.3);
+      color: #6ee7b7;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .4px;
+      text-transform: uppercase;
     }
 
     /* ── Pill Tabs ── */
@@ -200,8 +255,8 @@
 
     .tab-button.active {
       color: #fff;
-      background: rgba(99,102,241,.35);
-      box-shadow: 0 2px 8px rgba(99,102,241,.2);
+      background: rgba(16,185,129,.35);
+      box-shadow: 0 2px 8px rgba(16,185,129,.2);
     }
 
     .tab-panel {
@@ -214,7 +269,7 @@
     }
 
     .tab-panel > h3 {
-      color: #a5b4fc !important;
+      color: #6ee7b7 !important;
       font-size: 16px;
       margin: 0 0 16px;
       text-align: left;
@@ -226,7 +281,7 @@
     }
 
     .tab-panel > h3 i {
-      color: #818cf8;
+      color: #10b981;
       font-size: 18px;
     }
 
@@ -252,7 +307,7 @@
       height: 76px;
       border-radius: 14px;
       background: rgba(255,255,255,.06);
-      border: 2px dashed rgba(129,140,248,.4);
+      border: 2px dashed rgba(16,185,129,.4);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -279,8 +334,8 @@
     }
 
     .custom-file-label {
-      background: rgba(99,102,241,.2);
-      color: #c7d2fe;
+      background: rgba(16,185,129,.2);
+      color: #6ee7b7;
       padding: 7px 18px;
       border-radius: 8px;
       cursor: pointer;
@@ -289,11 +344,11 @@
       display: inline-block;
       text-align: center;
       font-size: 13px;
-      border: 1px solid rgba(99,102,241,.25);
+      border: 1px solid rgba(16,185,129,.25);
     }
 
     .custom-file-label:hover {
-      background: rgba(99,102,241,.3);
+      background: rgba(16,185,129,.3);
       transform: translateY(-1px);
     }
 
@@ -351,8 +406,8 @@
     .form-group textarea:focus,
     .form-group select:focus {
       outline: none;
-      border-color: #818cf8;
-      box-shadow: 0 0 0 3px rgba(99,102,241,.15);
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16,185,129,.15);
       background: rgba(255,255,255,1) !important;
     }
 
@@ -394,7 +449,7 @@
     }
 
     .password-toggle-btn:hover {
-      color: #818cf8;
+      color: #10b981;
     }
 
     .strength-indicator {
@@ -430,7 +485,7 @@
     .strength-text.weak { color: #f87171; }
     .strength-text.medium { color: #fbbf24; }
     .strength-text.strong { color: #6ee7b7; }
-    .strength-text.very-strong { color: #818cf8; }
+    .strength-text.very-strong { color: #10b981; }
 
     /* ── Submit Buttons ── */
     .submit-row {
@@ -441,7 +496,7 @@
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+      background: linear-gradient(135deg, #10b981, #059669) !important;
       color: #fff;
       padding: 10px 32px !important;
       border: none;
@@ -450,7 +505,7 @@
       font-size: 14px;
       transition: all .3s ease;
       cursor: pointer;
-      box-shadow: 0 6px 20px rgba(99,102,241,.25);
+      box-shadow: 0 6px 20px rgba(16,185,129,.25);
       letter-spacing: .3px;
       display: inline-flex;
       align-items: center;
@@ -459,7 +514,7 @@
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(99,102,241,.35);
+      box-shadow: 0 10px 30px rgba(16,185,129,.35);
     }
 
     .btn-secondary {
@@ -492,9 +547,9 @@
 
     #statusMsg.success {
       display: block;
-      background: rgba(99,102,241,.12);
-      border: 1px solid rgba(99,102,241,.25);
-      color: #c7d2fe;
+      background: rgba(16,185,129,.12);
+      border: 1px solid rgba(16,185,129,.25);
+      color: #6ee7b7;
     }
 
     #statusMsg.error {
@@ -619,33 +674,36 @@
     [data-bs-theme="light"] body { background: var(--bg); color: var(--text); }
     [data-bs-theme="light"] .header { background: rgba(255,255,255,0.95) !important; }
     [data-bs-theme="light"] h1, [data-bs-theme="light"] h2, [data-bs-theme="light"] h3, [data-bs-theme="light"] h4 { color: #111827; }
-    [data-bs-theme="light"] body::before { opacity: 0.7; }
+    [data-bs-theme="light"] body::before { opacity: 0.6; }
     [data-bs-theme="light"] #particle-canvas { display: none !important; }
-    [data-bs-theme="light"] .profile-card { background: #1e1b4b !important; color: #fff !important; backdrop-filter: blur(20px) !important; border-color: rgba(255,255,255,.1) !important; box-shadow: 0 20px 60px rgba(0,0,0,.3) !important; }
+    [data-bs-theme="light"] .profile-card { background: #0f2d22 !important; color: #fff !important; backdrop-filter: blur(20px) !important; border-color: rgba(255,255,255,.1) !important; box-shadow: 0 20px 60px rgba(0,0,0,.3) !important; }
+    [data-bs-theme="light"] .profile-card-cover { background: linear-gradient(135deg, rgba(16,185,129,.2), rgba(98,226,255,.1)) !important; border-bottom-color: rgba(255,255,255,.06) !important; }
+    [data-bs-theme="light"] .profile-card-cover .profile-name { color: #fff !important; }
+    [data-bs-theme="light"] .profile-card-cover .profile-role-badge { background: rgba(16,185,129,.25) !important; border-color: rgba(16,185,129,.4) !important; color: #6ee7b7 !important; }
     [data-bs-theme="light"] .tab-nav { background: rgba(255,255,255,.08) !important; }
     [data-bs-theme="light"] .tab-button { color: rgba(255,255,255,.5) !important; }
     [data-bs-theme="light"] .tab-button:hover { color: rgba(255,255,255,.8) !important; background: rgba(255,255,255,.06) !important; }
-    [data-bs-theme="light"] .tab-button.active { color: #fff !important; background: #6366f1 !important; box-shadow: 0 2px 8px rgba(99,102,241,.5) !important; }
-    [data-bs-theme="light"] .tab-panel > h3 { color: #c4b5fd !important; }
-    [data-bs-theme="light"] .tab-panel > h3 i { color: #a5b4fc !important; }
-    [data-bs-theme="light"] .form-section { background: #2e2a5c !important; border-color: rgba(255,255,255,.08) !important; }
-    [data-bs-theme="light"] #avatarPreviu { background: rgba(255,255,255,.06) !important; border-color: rgba(99,102,241,.4) !important; color: rgba(255,255,255,.5) !important; }
-    [data-bs-theme="light"] .custom-file-label { background: rgba(99,102,241,.2) !important; color: #a5b4fc !important; border-color: rgba(99,102,241,.3) !important; }
-    [data-bs-theme="light"] .custom-file-label:hover { background: rgba(99,102,241,.28) !important; }
+    [data-bs-theme="light"] .tab-button.active { color: #fff !important; background: #10b981 !important; box-shadow: 0 2px 8px rgba(16,185,129,.5) !important; }
+    [data-bs-theme="light"] .tab-panel > h3 { color: #6ee7b7 !important; }
+    [data-bs-theme="light"] .tab-panel > h3 i { color: #6ee7b7 !important; }
+    [data-bs-theme="light"] .form-section { background: #1b3d30 !important; border-color: rgba(255,255,255,.08) !important; }
+    [data-bs-theme="light"] #avatarPreviu { background: rgba(255,255,255,.06) !important; border-color: rgba(16,185,129,.4) !important; color: rgba(255,255,255,.5) !important; }
+    [data-bs-theme="light"] .custom-file-label { background: rgba(16,185,129,.2) !important; color: #6ee7b7 !important; border-color: rgba(16,185,129,.3) !important; }
+    [data-bs-theme="light"] .custom-file-label:hover { background: rgba(16,185,129,.28) !important; }
     [data-bs-theme="light"] .form-group label { color: rgba(255,255,255,.6) !important; }
     [data-bs-theme="light"] .form-group input, [data-bs-theme="light"] .form-group select { background: #fff !important; border-color: #d1d5db !important; color: #111827 !important; }
     [data-bs-theme="light"] .form-group input:read-only { background: #f3f4f6 !important; color: #9ca3af !important; }
     [data-bs-theme="light"] .password-toggle-btn { color: rgba(255,255,255,.5) !important; }
-    [data-bs-theme="light"] .password-toggle-btn:hover { color: #a5b4fc !important; }
+    [data-bs-theme="light"] .password-toggle-btn:hover { color: #6ee7b7 !important; }
     [data-bs-theme="light"] .btn-secondary { background: rgba(255,255,255,.1) !important; color: rgba(255,255,255,.7) !important; border-color: rgba(255,255,255,.15) !important; }
     [data-bs-theme="light"] .btn-secondary:hover { background: rgba(255,255,255,.16) !important; color: #fff !important; }
     [data-bs-theme="light"] .btn-logout { color: #374151 !important; border-color: rgba(0,0,0,.2) !important; }
     [data-bs-theme="light"] .btn-logout:hover { background: #e5e7eb !important; color: #111827 !important; }
     [data-bs-theme="light"] .text-white-50 { color: rgba(255,255,255,.5) !important; }
-    [data-bs-theme="light"] #footer { background: #1a1735 !important; border-top-color: rgba(255,255,255,.08) !important; }
-    [data-bs-theme="light"] #footer h4 { color: #c4b5fd !important; }
-    [data-bs-theme="light"] #footer p, [data-bs-theme="light"] #footer .copyright { color: rgba(255,255,255,.5) !important; }
-    [data-bs-theme="light"] #footer .social-links a { background: rgba(99,102,241,.2); border-color: rgba(99,102,241,.3); color: #a5b4fc; }
+    [data-bs-theme="light"] #footer { background: #f1f3f5 !important; border-top-color: #dee2e6 !important; }
+    [data-bs-theme="light"] #footer h4 { color: #111827 !important; }
+    [data-bs-theme="light"] #footer p, [data-bs-theme="light"] #footer .copyright { color: #6c757d !important; }
+    [data-bs-theme="light"] #footer .social-links a { background: rgba(16,185,129,.1); border-color: rgba(16,185,129,.3); color: #10b981; }
     [data-bs-theme="light"] #particle-canvas { display: none !important; }
     @keyframes logoPulse { 0% { filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0,0,0,.8)) drop-shadow(1px 1px 0 rgba(0,0,0,.5)) drop-shadow(0 0 8px rgba(16,185,129,.3)); transform: scale(1); } 50% { filter: brightness(210%) drop-shadow(2px 3px 0 rgba(0,0,0,.9)) drop-shadow(1px 1px 0 rgba(0,0,0,.6)) drop-shadow(0 0 16px rgba(16,185,129,.6)) drop-shadow(0 0 30px rgba(16,185,129,.2)); transform: scale(1.03); } 100% { filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0,0,0,.8)) drop-shadow(1px 1px 0 rgba(0,0,0,.5)) drop-shadow(0 0 8px rgba(16,185,129,.3)); transform: scale(1); } }
     @keyframes logoShine { 0% { filter: brightness(150%) drop-shadow(0 0 0 transparent); } 50% { filter: brightness(200%) drop-shadow(0 0 8px rgba(16,185,129,.5)); } 100% { filter: brightness(150%) drop-shadow(0 0 0 transparent); } }
@@ -770,7 +828,16 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
     <div id="particle-canvas"></div>
     <div class="container profile-view-container">
 
-      <div class="profile-card">
+<div class="profile-card">
+
+        <!-- Header / Cover -->
+        <div class="profile-card-cover">
+          <div class="avatar-ring">
+            <img src="{{ $avatarUrl }}" alt="Avatar" class="avatar-img">
+          </div>
+          <h2 class="profile-name">{{ Auth::user()->name }}</h2>
+          <span class="profile-role-badge">{{ Auth::user()->effectiveRoleName() }}</span>
+        </div>
 
         <div class="tab-nav">
           <button class="tab-button active" onclick="switchTab('profil', this)"><i class="fas fa-user"></i> Profil</button>
@@ -1057,7 +1124,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
       strengthText.textContent = strength;
       strengthText.className = 'strength-text ' + cls;
       barFill.style.width = pct + '%';
-      const colors = { weak: '#f87171', medium: '#fbbf24', strong: '#6ee7b7', 'very-strong': '#818cf8' };
+      const colors = { weak: '#f87171', medium: '#fbbf24', strong: '#6ee7b7', 'very-strong': '#10b981' };
       barFill.style.background = colors[cls] || '#f87171';
     }
 
