@@ -614,8 +614,8 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
             </div>
 
             <div class="profile-info-item">
-              <span class="info-icon"><i class="bi bi-geo-alt-fill"></i> Alamat</span>
-              <p class="info-value" id="displayAlamat">{{ $fullAddress ?: '-' }}</p>
+              <span class="info-icon"><i class="bi bi-geo-alt-fill"></i> Negeri</span>
+              <p class="info-value" id="displayAlamat">{{ $stateName ?: '-' }}</p>
             </div>
 
           </div>

@@ -889,10 +889,30 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
                 <input type="tel" id="telefonInput" placeholder="cth: 0123456789">
               </div>
             </div>
-            <div class="form-row single">
+            <div class="form-row">
               <div class="form-group">
-                <label>Alamat</label>
-                <input type="text" id="alamatInput" readonly>
+                <label>Negeri</label>
+                <select id="stateSelect">
+                  <option value="">-- Pilih Negeri --</option>
+                  @foreach($states ?? [] as $state)
+                    <option value="{{ $state->id }}" data-state="{{ $state->id }}">{{ $state->name }}</option>
+                  @endforeach
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Daerah</label>
+                <select id="districtSelect">
+                  <option value="">-- Pilih Daerah --</option>
+                  @foreach($districts ?? [] as $district)
+                    <option value="{{ $district->id }}" data-state="{{ $district->state_id }}">{{ $district->name }}</option>
+                  @endforeach
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Poskod</label>
+                <input type="text" id="postcodeInput" placeholder="cth: 46050">
               </div>
             </div>
           </div>
@@ -987,14 +1007,46 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
           document.getElementById('jawatanInput').value = data.position_name || '';
           document.getElementById('perananInput').value = (data.username || '').replace(/\b\w/g, c => c.toUpperCase());
           document.getElementById('telefonInput').value = data.phone_number || '';
-          document.getElementById('alamatInput').value = data.full_address || '';
-          
+          document.getElementById('postcodeInput').value = data.postcode || '';
+          populateDistricts(data.district_id, data.state_id);
+
           // Display avatar if exists
           if (data.avatar_url) {
             document.getElementById('avatarPreviu').innerHTML = '<img src="' + data.avatar_url + '" alt="Current Avatar">';
           }
         })
         .catch(err => console.log('Error loading profile:', err));
+    }
+
+    // Filter districts by selected state (cascading)
+    function populateDistricts(selectedDistrictId, selectedStateId) {
+      const stateSel = document.getElementById('stateSelect');
+      const districtSel = document.getElementById('districtSelect');
+
+      function refresh() {
+        const stateId = stateSel.value;
+        const options = Array.from(districtSel.options);
+        const visible = stateId
+          ? options.filter(opt => opt.dataset.state === stateId)
+          : options.filter(opt => opt.value !== '');
+        options.forEach(opt => {
+          opt.hidden = stateId
+            ? opt.dataset.state !== stateId
+            : opt.value === '';
+        });
+        if (!visible.some(opt => opt.selected)) {
+          districtSel.value = visible.length ? visible[0].value : '';
+        }
+      }
+
+      if (selectedStateId) stateSel.value = selectedStateId;
+      refresh();
+      if (selectedDistrictId) districtSel.value = selectedDistrictId;
+
+      if (typeof districtSel._wired === 'undefined') {
+        stateSel.addEventListener('change', refresh);
+        districtSel._wired = true;
+      }
     }
 
     document.addEventListener('DOMContentLoaded', loadProfileData);
@@ -1194,7 +1246,10 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         body: JSON.stringify({
           name: nama,
           email: email,
-          phone_number: telefon
+          phone_number: telefon,
+          postcode: document.getElementById('postcodeInput').value.trim(),
+          district_id: document.getElementById('districtSelect').value,
+          state_id: document.getElementById('stateSelect').value
         })
       })
       .then(response => {

@@ -5,7 +5,7 @@
   <script>document.documentElement.setAttribute('data-bs-theme',localStorage.getItem('theme')||'light')</script>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Kemaskini</title>
+  <title>Profil</title>
 
   <link href="<?php echo e(url('frontend/assets/img/LOGOMYSIPMA.png')); ?>" rel="icon">
 
@@ -16,7 +16,6 @@
   <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css')); ?>" rel="stylesheet">
   <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css')); ?>" rel="stylesheet">
   <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/aos/aos.css')); ?>" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
   <link href="<?php echo e(asset('frontend/Nexa/assets/css/main2.css')); ?>" rel="stylesheet">
   <link href="<?php echo e(asset('css/user-theme.css')); ?>" rel="stylesheet">
@@ -30,8 +29,8 @@
     }
 
     .logo-glow:hover {
-      filter: brightness(170%);
-      transform: scale(1.02);
+        filter: brightness(170%);
+        transform: scale(1.02);
     }
 
     @media (min-width: 1200px) {
@@ -89,17 +88,16 @@
       overflow-x: hidden;
     }
 
-    /* Mesh gradient background (distinct from profile) */
+    /* Animated Gradient Background (instead of particles dark) */
     body::before {
       content: '';
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
       z-index: 0;
-      background:
-        radial-gradient(ellipse at 15% 30%, rgba(16,185,129,.12) 0%, transparent 50%),
-        radial-gradient(ellipse at 85% 70%, rgba(98,226,255,.08) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, rgba(16,185,129,.06) 0%, transparent 50%);
+      background: radial-gradient(ellipse at 20% 50%, rgba(16,185,129,.12) 0%, transparent 50%),
+                  radial-gradient(ellipse at 80% 20%, rgba(98,226,255,.08) 0%, transparent 50%),
+                  radial-gradient(ellipse at 50% 80%, rgba(16,185,129,.06) 0%, transparent 50%);
       pointer-events: none;
     }
 
@@ -124,19 +122,19 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
       min-height: calc(100vh - 80px);
-      padding: 24px 10px;
+      padding: 20px;
     }
 
-    /* ── Settings Card ── */
+    /* ── Profile Card: Premium Identity Card ── */
     .profile-card {
       background: var(--surface) !important;
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(255,255,255,.07);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,.08);
       border-radius: 24px;
-      box-shadow: 0 30px 80px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05);
+      box-shadow: 0 30px 80px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.06);
       padding: 0;
       color: #fff;
       width: 100%;
@@ -216,327 +214,92 @@
       text-transform: uppercase;
     }
 
-    /* ── Pill Tabs ── */
-    .tab-nav {
-      display: flex;
-      gap: 6px;
-      margin: 20px 24px 0;
-      padding: 4px;
-      background: rgba(255,255,255,.05);
-      border-radius: 12px;
+    /* ── Card Body ── */
+    .profile-card-body {
+      padding: 20px 28px 24px;
     }
 
-    .tab-button {
-      flex: 1;
-      background: none;
-      border: none;
-      color: rgba(255,255,255,.55);
-      padding: 10px 16px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 13px;
-      border-radius: 10px;
-      transition: all .25s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      letter-spacing: .3px;
-    }
-
-    .tab-button i {
-      font-size: 15px;
-    }
-
-    .tab-button:hover {
-      color: rgba(255,255,255,.8);
-      background: rgba(255,255,255,.04);
-    }
-
-    .tab-button.active {
-      color: #fff;
-      background: rgba(16,185,129,.35);
-      box-shadow: 0 2px 8px rgba(16,185,129,.2);
-    }
-
-    .tab-panel {
-      display: none;
-      padding: 16px 24px 20px;
-    }
-
-    .tab-panel.active {
-      display: block;
-    }
-
-    .tab-panel > h3 {
-      color: #6ee7b7 !important;
-      font-size: 16px;
-      margin: 0 0 16px;
-      text-align: left;
-      font-weight: 700;
-      letter-spacing: -.2px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .tab-panel > h3 i {
-      color: #10b981;
-      font-size: 18px;
-    }
-
-    /* ── Form Sections ── */
-    .form-section {
-      background: var(--surface-soft);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 16px 18px;
-      margin-bottom: 12px;
-    }
-
-    /* Avatar section */
-    .avatar-section {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    #avatarPreviu {
-      width: 76px;
-      height: 76px;
-      border-radius: 14px;
-      background: rgba(255,255,255,.06);
-      border: 2px dashed rgba(16,185,129,.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(255,255,255,.45);
-      font-size: 10px;
-      overflow: hidden;
-      text-align: center;
-      padding: 4px;
-      flex-shrink: 0;
-      transition: border-color .2s;
-    }
-
-    #avatarPreviu img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 12px;
-    }
-
-    .avatar-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .custom-file-label {
-      background: rgba(16,185,129,.2);
-      color: #6ee7b7;
-      padding: 7px 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all .25s;
-      display: inline-block;
-      text-align: center;
-      font-size: 13px;
-      border: 1px solid rgba(16,185,129,.25);
-    }
-
-    .custom-file-label:hover {
-      background: rgba(16,185,129,.3);
-      transform: translateY(-1px);
-    }
-
-    #avatarInput {
-      display: none;
-    }
-
-    .avatar-hint {
-      color: rgba(255,255,255,.35);
-      font-size: 11px;
-      margin: 0;
-    }
-
-    /* Form rows */
-    .form-row {
+    .profile-info-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px 14px;
+      gap: 10px 16px;
     }
 
-    .form-row.single {
-      grid-template-columns: 1fr;
-    }
-
-    .form-group {
+    .profile-info-item {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 2px;
+      padding: 8px 12px;
+      background: var(--surface-soft);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      transition: background .2s, border-color .2s;
     }
 
-    .form-group label {
-      color: rgba(255,255,255,.65);
+    .profile-info-item:hover {
+      background: rgba(255,255,255,.07);
+      border-color: rgba(16,185,129,.15);
+    }
+
+    .profile-info-item.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .profile-info-item .info-icon {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: rgba(255,255,255,.45);
       font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: .4px;
     }
 
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-      background: rgba(255,255,255,.9) !important;
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 8px;
-      padding: 7px 12px;
-      color: #111827;
-      font-size: 14px;
-      transition: all .2s;
-      font-family: 'Montserrat', sans-serif;
-      width: 100% !important;
-      box-sizing: border-box !important;
-    }
-
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
-      outline: none;
-      border-color: #10b981;
-      box-shadow: 0 0 0 3px rgba(16,185,129,.15);
-      background: rgba(255,255,255,1) !important;
-    }
-
-    .form-group input:read-only {
-      background: rgba(255,255,255,.5) !important;
-      color: rgba(17,24,39,.5);
-      cursor: not-allowed;
-      border-color: transparent;
-    }
-
-    /* ── Password Section ── */
-    .password-section {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .password-input-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .password-input-wrapper input {
-      width: 100%;
-      padding-right: 36px;
-    }
-
-    .password-toggle-btn {
-      position: absolute;
-      right: 10px;
-      background: none;
-      border: none;
-      color: rgba(255,255,255,.4);
-      cursor: pointer;
-      font-size: 15px;
-      padding: 4px;
-      transition: color .2s;
-    }
-
-    .password-toggle-btn:hover {
+    .profile-info-item .info-icon i {
+      font-size: 13px;
       color: #10b981;
     }
 
-    .strength-indicator {
-      font-size: 12px;
-      font-weight: 600;
-      margin-top: 2px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .profile-info-item .info-value {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      margin: 0;
+      padding-left: 20px;
     }
 
-    .strength-bar {
-      flex: 1;
-      height: 4px;
-      border-radius: 4px;
-      background: rgba(255,255,255,.1);
-      overflow: hidden;
+    /* ── Card Footer / Action ── */
+    .profile-card-action {
+      padding: 0 28px 24px;
+      text-align: center;
     }
 
-    .strength-bar-fill {
-      height: 100%;
-      border-radius: 4px;
-      width: 0%;
-      transition: width .3s, background .3s;
-    }
-
-    .strength-text {
-      font-size: 11px;
-      min-width: 50px;
-      text-align: right;
-    }
-
-    .strength-text.weak { color: #f87171; }
-    .strength-text.medium { color: #fbbf24; }
-    .strength-text.strong { color: #6ee7b7; }
-    .strength-text.very-strong { color: #10b981; }
-
-    /* ── Submit Buttons ── */
-    .submit-row {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 8px;
-    }
-
-    .btn-primary {
+    .profile-card-action button {
       background: linear-gradient(135deg, #10b981, #059669) !important;
       color: #fff;
       padding: 10px 32px !important;
       border: none;
-      border-radius: 10px;
+      border-radius: 999px;
       font-weight: 600;
       font-size: 14px;
-      transition: all .3s ease;
       cursor: pointer;
+      transition: all .3s ease;
       box-shadow: 0 6px 20px rgba(16,185,129,.25);
       letter-spacing: .3px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
     }
 
-    .btn-primary:hover {
-      transform: translateY(-2px);
+    .profile-card-action button:hover {
+      transform: translateY(-3px);
       box-shadow: 0 10px 30px rgba(16,185,129,.35);
     }
 
-    .btn-secondary {
-      background: rgba(255,255,255,.08);
-      color: rgba(255,255,255,.7);
-      padding: 10px 24px !important;
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 14px;
-      transition: all .25s;
-      cursor: pointer;
+    .profile-card-action button i {
+      margin-right: 6px;
     }
 
-    .btn-secondary:hover {
-      background: rgba(255,255,255,.12);
-      color: #fff;
-    }
-
-    /* ── Notifications ── */
     #statusMsg {
-      margin: 0 24px 16px;
+      margin: 0 28px 20px;
       padding: 10px 16px;
       border-radius: 10px;
       text-align: center;
@@ -547,19 +310,19 @@
 
     #statusMsg.success {
       display: block;
-      background: rgba(16,185,129,.12);
-      border: 1px solid rgba(16,185,129,.25);
+      background: rgba(16,185,129,.15);
+      border: 1px solid rgba(16,185,129,.3);
       color: #6ee7b7;
     }
 
     #statusMsg.error {
       display: block;
-      background: rgba(239,68,68,.12);
-      border: 1px solid rgba(239,68,68,.25);
+      background: rgba(239,68,68,.15);
+      border: 1px solid rgba(239,68,68,.3);
       color: #fca5a5;
     }
 
-/* Footer Styling */
+    /* Footer Styling */
     #footer {
       position: relative;
       z-index: 100;
@@ -644,59 +407,37 @@
     }
 
     @media (max-width: 768px) {
-      .profile-layout {
+      .profile-display-layout {
         flex-direction: column;
-        gap: 8px;
+        gap: 10px;
         align-items: center;
       }
 
-      .profile-left {
+      .profile-display-left {
         flex: 0 0 auto;
       }
 
-      .profile-right {
+      .profile-display-right {
         width: 100%;
       }
 
       .profile-card {
-        padding: 12px;
-      }
-
-      .tab-nav {
-        flex-wrap: wrap;
-      }
-
-      .button-container {
-        flex-wrap: wrap;
+        padding: 16px;
       }
     }
-
     [data-bs-theme="light"] body { background: var(--bg); color: var(--text); }
     [data-bs-theme="light"] .header { background: rgba(255,255,255,0.95) !important; }
     [data-bs-theme="light"] h1, [data-bs-theme="light"] h2, [data-bs-theme="light"] h3, [data-bs-theme="light"] h4 { color: #111827; }
     [data-bs-theme="light"] body::before { opacity: 0.6; }
     [data-bs-theme="light"] #particle-canvas { display: none !important; }
-    [data-bs-theme="light"] .profile-card { background: #0f2d22 !important; color: #fff !important; backdrop-filter: blur(20px) !important; border-color: rgba(255,255,255,.1) !important; box-shadow: 0 20px 60px rgba(0,0,0,.3) !important; }
+    [data-bs-theme="light"] .profile-card { background: #0f2d22 !important; color: #fff !important; backdrop-filter: blur(16px) !important; border-color: rgba(255,255,255,.1) !important; box-shadow: 0 20px 60px rgba(0,0,0,.3) !important; }
     [data-bs-theme="light"] .profile-card-cover { background: linear-gradient(135deg, rgba(16,185,129,.2), rgba(98,226,255,.1)) !important; border-bottom-color: rgba(255,255,255,.06) !important; }
     [data-bs-theme="light"] .profile-card-cover .profile-name { color: #fff !important; }
     [data-bs-theme="light"] .profile-card-cover .profile-role-badge { background: rgba(16,185,129,.25) !important; border-color: rgba(16,185,129,.4) !important; color: #6ee7b7 !important; }
-    [data-bs-theme="light"] .tab-nav { background: rgba(255,255,255,.08) !important; }
-    [data-bs-theme="light"] .tab-button { color: rgba(255,255,255,.5) !important; }
-    [data-bs-theme="light"] .tab-button:hover { color: rgba(255,255,255,.8) !important; background: rgba(255,255,255,.06) !important; }
-    [data-bs-theme="light"] .tab-button.active { color: #fff !important; background: #10b981 !important; box-shadow: 0 2px 8px rgba(16,185,129,.5) !important; }
-    [data-bs-theme="light"] .tab-panel > h3 { color: #6ee7b7 !important; }
-    [data-bs-theme="light"] .tab-panel > h3 i { color: #6ee7b7 !important; }
-    [data-bs-theme="light"] .form-section { background: #1b3d30 !important; border-color: rgba(255,255,255,.08) !important; }
-    [data-bs-theme="light"] #avatarPreviu { background: rgba(255,255,255,.06) !important; border-color: rgba(16,185,129,.4) !important; color: rgba(255,255,255,.5) !important; }
-    [data-bs-theme="light"] .custom-file-label { background: rgba(16,185,129,.2) !important; color: #6ee7b7 !important; border-color: rgba(16,185,129,.3) !important; }
-    [data-bs-theme="light"] .custom-file-label:hover { background: rgba(16,185,129,.28) !important; }
-    [data-bs-theme="light"] .form-group label { color: rgba(255,255,255,.6) !important; }
-    [data-bs-theme="light"] .form-group input, [data-bs-theme="light"] .form-group select { background: #fff !important; border-color: #d1d5db !important; color: #111827 !important; }
-    [data-bs-theme="light"] .form-group input:read-only { background: #f3f4f6 !important; color: #9ca3af !important; }
-    [data-bs-theme="light"] .password-toggle-btn { color: rgba(255,255,255,.5) !important; }
-    [data-bs-theme="light"] .password-toggle-btn:hover { color: #6ee7b7 !important; }
-    [data-bs-theme="light"] .btn-secondary { background: rgba(255,255,255,.1) !important; color: rgba(255,255,255,.7) !important; border-color: rgba(255,255,255,.15) !important; }
-    [data-bs-theme="light"] .btn-secondary:hover { background: rgba(255,255,255,.16) !important; color: #fff !important; }
+    [data-bs-theme="light"] .profile-info-item { background: #1b3d30 !important; border-color: rgba(255,255,255,.08) !important; }
+    [data-bs-theme="light"] .profile-info-item:hover { background: #234a3a !important; border-color: rgba(16,185,129,.4) !important; }
+    [data-bs-theme="light"] .profile-info-item .info-icon { color: rgba(255,255,255,.5) !important; }
+    [data-bs-theme="light"] .profile-info-item .info-value { color: #fff !important; }
     [data-bs-theme="light"] .btn-logout { color: #374151 !important; border-color: rgba(0,0,0,.2) !important; }
     [data-bs-theme="light"] .btn-logout:hover { background: #e5e7eb !important; color: #111827 !important; }
     [data-bs-theme="light"] .text-white-50 { color: rgba(255,255,255,.5) !important; }
@@ -747,7 +488,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
 </style>
 </head>
 
-<body class="index-page">
+<body class="profile-page">
 
   <header id="header" class="header d-flex align-items-center sticky-top"
     style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
@@ -779,14 +520,17 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
                class="<?php echo e(request()->routeIs('borang.inden*') ? 'active' : ''); ?>">Borang Inden</a></li>
           <?php endif; ?>
           <?php if(Auth::user()->hasPermission('penerimaan_inden')): ?>
-          <li><a href="<?php echo e(route('borang.penerimaan')); ?>" class="<?php echo e(request()->routeIs('borang.penerimaan') ? 'active' : ''); ?>">Penerimaan</a></li>
+          <li><a href="<?php echo e(route('borang.penerimaan')); ?>"
+              class="<?php echo e(request()->routeIs('borang.penerimaan') ? 'active' : ''); ?>">Penerimaan</a></li>
           <?php endif; ?>
           <?php if(Auth::user()->hasPermission('penilaian_prestasi')): ?>
-          <li><a href="<?php echo e(route('user.penilaian_prestasi')); ?>" class="<?php echo e(request()->routeIs('user.penilaian_prestasi') ? 'active' : ''); ?>">Penilaian Prestasi</a></li>
+          <li><a href="<?php echo e(route('user.penilaian_prestasi')); ?>"
+              class="<?php echo e(request()->routeIs('user.penilaian_prestasi') ? 'active' : ''); ?>">Penilaian Prestasi</a></li>
           <?php endif; ?>
-          <li class="d-xl-none"><a href="<?php echo e(route('profile')); ?>" class="<?php echo e(request()->routeIs('profile') ? 'active' : ''); ?>">Profil</a></li>
+          <li class="d-xl-none"><a href="<?php echo e(route('profile')); ?>"
+              class="<?php echo e(request()->routeIs('profile') ? 'active' : ''); ?>">Profil</a></li>
           <li class="d-xl-none"><a href="#" id="navLogoutBtn" class="text-danger">Log Keluar</a></li>
-          </ul>
+        </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
@@ -825,12 +569,13 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
       </div>
     </div>
   </header>
-  
+
+
     <main>
     <div id="particle-canvas"></div>
     <div class="container profile-view-container">
 
-<div class="profile-card">
+      <div class="profile-card">
 
         <!-- Header / Cover -->
         <div class="profile-card-cover">
@@ -838,130 +583,52 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
             <img src="<?php echo e($avatarUrl); ?>" alt="Avatar" class="avatar-img">
           </div>
           <h2 class="profile-name"><?php echo e(Auth::user()->name); ?></h2>
-          <span class="profile-role-badge"><?php echo e(Auth::user()->effectiveRoleName()); ?></span>
+          <span class="profile-role-badge"><?php echo e($roleName); ?></span>
         </div>
 
-        <div class="tab-nav">
-          <button class="tab-button active" onclick="switchTab('profil', this)"><i class="fas fa-user"></i> Profil</button>
-          <button class="tab-button" onclick="switchTab('laluan', this)"><i class="fas fa-lock"></i> Kata Laluan</button>
-        </div>
+        <!-- Body -->
+        <div class="profile-card-body">
+          <div class="profile-info-grid">
 
-        <div id="panel-profil" class="tab-panel active">
-          <h3><i class="fas fa-pen"></i> Kemaskini Profil</h3>
+            <div class="profile-info-item">
+              <span class="info-icon"><i class="bi bi-envelope-fill"></i> Emel</span>
+              <p class="info-value" id="displayEmail"><?php echo e(Auth::user()->email); ?></p>
+            </div>
 
-          <div class="form-section">
-            <div class="avatar-section">
-              <div id="avatarPreviu">(Tiada gambar dipilih)</div>
-              <div class="avatar-actions">
-                <label for="avatarInput" class="custom-file-label"><i class="fas fa-camera me-1"></i>Pilih Gambar</label>
-                <p class="avatar-hint">Format: JPG, PNG. Saiz maks: 2MB</p>
-              </div>
-              <input type="file" id="avatarInput" accept="image/*" onchange="previewAvatar(event)">
+            <div class="profile-info-item">
+              <span class="info-icon"><i class="bi bi-building"></i> Institusi</span>
+              <p class="info-value" id="displayInstitusi"><?php echo e($institutionName); ?></p>
             </div>
-          </div>
 
-          <div class="form-section">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Nama</label>
-                <input type="text" id="namaInput" placeholder="cth: Ahmad bin Ali">
-              </div>
-              <div class="form-group">
-                <label>Emel</label>
-                <input type="email" id="emailInput" placeholder="emel@contoh.com" readonly>
-              </div>
+            <div class="profile-info-item">
+              <span class="info-icon"><i class="bi bi-briefcase-fill"></i> Jawatan</span>
+              <p class="info-value" id="displayJawatan"><?php echo e($positionName); ?></p>
             </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Institusi</label>
-                <input type="text" id="institusiInput" value="<?php echo e(Auth::user()->institution->name ?? '-'); ?>" readonly>
-              </div>
-              <div class="form-group">
-                <label>Jawatan</label>
-                <input type="text" id="jawatanInput" readonly>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Peranan</label>
-                <input type="text" id="perananInput" readonly>
-              </div>
-              <div class="form-group">
-                <label>Telefon</label>
-                <input type="tel" id="telefonInput" placeholder="cth: 0123456789">
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Negeri</label>
-                <select id="stateSelect">
-                  <option value="">-- Pilih Negeri --</option>
-                  <?php $__currentLoopData = $states ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $state): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <option value="<?php echo e($state->id); ?>" data-state="<?php echo e($state->id); ?>"><?php echo e($state->name); ?></option>
-                  <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Daerah</label>
-                <select id="districtSelect">
-                  <option value="">-- Pilih Daerah --</option>
-                  <?php $__currentLoopData = $districts ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $district): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <option value="<?php echo e($district->id); ?>" data-state="<?php echo e($district->state_id); ?>"><?php echo e($district->name); ?></option>
-                  <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                </select>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Poskod</label>
-                <input type="text" id="postcodeInput" placeholder="cth: 46050">
-              </div>
-            </div>
-          </div>
 
-          <div class="submit-row">
-            <button class="btn-primary" onclick="handleUpdateProfile()"><i class="fas fa-check"></i> Simpan</button>
+            <div class="profile-info-item">
+              <span class="info-icon"><i class="bi bi-shield-fill-check"></i> Peranan</span>
+              <p class="info-value" id="displayPeranan"><?php echo e($roleName); ?></p>
+            </div>
+
+            <div class="profile-info-item">
+              <span class="info-icon"><i class="bi bi-telephone-fill"></i> Telefon</span>
+              <p class="info-value" id="displayTelefon"><?php echo e(Auth::user()->phone_number ?? '-'); ?></p>
+            </div>
+
+            <div class="profile-info-item">
+              <span class="info-icon"><i class="bi bi-geo-alt-fill"></i> Negeri</span>
+              <p class="info-value" id="displayAlamat"><?php echo e($stateName ?: '-'); ?></p>
+            </div>
+
           </div>
         </div>
 
-        <div id="panel-laluan" class="tab-panel">
-          <h3><i class="fas fa-key"></i> Tukar Kata Laluan</h3>
-
-          <div class="form-section password-section">
-            <div class="form-group">
-              <label>Kata Laluan Asal</label>
-              <div class="password-input-wrapper">
-                <input type="password" id="oldPass" placeholder="Masukkan kata laluan semasa">
-                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('oldPass')"><i class="fas fa-eye"></i></button>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Kata Laluan Baru</label>
-              <div class="password-input-wrapper">
-                <input type="password" id="newPass" oninput="checkStrength(this.value)" placeholder="Minimum 8 aksara">
-                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('newPass')"><i class="fas fa-eye"></i></button>
-              </div>
-              <div class="strength-indicator">
-                <div class="strength-bar"><div id="strengthBarFill" class="strength-bar-fill"></div></div>
-                <span id="strengthText" class="strength-text">-</span>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Sahkan Kata Laluan</label>
-              <div class="password-input-wrapper">
-                <input type="password" id="confirmPass" placeholder="Taip semula kata laluan baru">
-                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('confirmPass')"><i class="fas fa-eye"></i></button>
-              </div>
-            </div>
-          </div>
-
-          <div class="submit-row">
-            <button class="btn-primary" onclick="handleSetPassword()"><i class="fas fa-save"></i> Tetapkan</button>
-          </div>
+        <!-- Action -->
+        <div class="profile-card-action">
+          <button onclick="goBackToForm()"><i class="bi bi-pencil-square"></i> Kemaskini Profil</button>
         </div>
 
+        <!-- Notification -->
         <div id="statusMsg"></div>
 
       </div>
@@ -970,9 +637,6 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
   <script>
     /* Particle Network Logic */
     !function(a){var b="object"==typeof self&&self.self===self&&self||"object"==typeof global&&global.global===global&&global;"function"==typeof define&&define.amd?define(["exports"],function(c){b.ParticleNetwork=a(b,c)}):"object"==typeof module&&module.exports?module.exports=a(b,{}):b.ParticleNetwork=a(b,{})}(function(a,b){var c=function(a){this.canvas=a.canvas,this.g=a.g,this.particleColor=a.options.particleColor,this.x=Math.random()*this.canvas.width,this.y=Math.random()*this.canvas.height,this.velocity={x:(Math.random()-.5)*a.options.velocity,y:(Math.random()-.5)*a.options.velocity}};return c.prototype.update=function(){(this.x>this.canvas.width+20||this.x<-20)&&(this.velocity.x=-this.velocity.x),(this.y>this.canvas.height+20||this.y<-20)&&(this.velocity.y=-this.velocity.y),this.x+=this.velocity.x,this.y+=this.velocity.y},c.prototype.h=function(){this.g.beginPath(),this.g.fillStyle=this.particleColor,this.g.globalAlpha=.7,this.g.arc(this.x,this.y,1.5,0,2*Math.PI),this.g.fill()},b=function(a,b){this.i=a,this.i.size={width:this.i.offsetWidth,height:this.i.offsetHeight},b=void 0!==b?b:{},this.options={particleColor:void 0!==b.particleColor?b.particleColor:"#fff",background:void 0!==b.background?b.background:"#1a252f",interactive:void 0!==b.interactive?b.interactive:!0,velocity:this.setVelocity(b.speed),density:this.j(b.density)},this.init()},b.prototype.init=function(){this.k=document.createElement("div"),this.i.appendChild(this.k),this.l(this.k,{position:"absolute",top:0,left:0,bottom:0,right:0,"z-index":1}),this.l(this.k,{background:this.options.background}),this.canvas=document.createElement("canvas"),this.i.appendChild(this.canvas),this.g=this.canvas.getContext("2d"),this.canvas.width=this.i.size.width,this.canvas.height=this.i.size.height,this.l(this.canvas,{"z-index":"5",position:"relative"}),this.o=[];for(var a=0;a<this.canvas.width*this.canvas.height/ this.options.density;a++)this.o.push(new c(this));requestAnimationFrame(this.update.bind(this))},b.prototype.update=function(){this.g.clearRect(0,0,this.canvas.width,this.canvas.height);for(var a=0;a<this.o.length;a++){this.o[a].update(),this.o[a].h();for(var b=this.o.length-1;b>a;b--){var c=Math.sqrt(Math.pow(this.o[a].x-this.o[b].x,2)+Math.pow(this.o[a].y-this.o[b].y,2));c>120||(this.g.beginPath(),this.g.strokeStyle=this.options.particleColor,this.g.globalAlpha=(120-c)/120,this.g.lineWidth=.7,this.g.moveTo(this.o[a].x,this.o[a].y),this.g.lineTo(this.o[b].x,this.o[b].y),this.g.stroke())}}requestAnimationFrame(this.update.bind(this))},b.prototype.setVelocity=function(a){return"fast"===a?1:"slow"===a?.33:0.66},b.prototype.j=function(a){return"high"===a?5e3:1e4},b.prototype.l=function(a,b){for(var c in b)a.style[c]=b[c]},b});
-
-    // Variable untuk track status message timeout
-    let statusTimeout = null;
 
     // Initialize particles after DOM is ready
     function initializeParticles() {
@@ -987,7 +651,6 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
           density: '8000'
         });
       } else {
-        // Retry if dimensions aren't available yet
         setTimeout(initializeParticles, 100);
       }
     }
@@ -998,350 +661,19 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
       initializeParticles();
     }
 
-    // Load existing profile data on page load
-    function loadProfileData() {
-      fetch('<?php echo e(route("profile.me")); ?>')
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('namaInput').value = data.name || '';
-          document.getElementById('emailInput').value = data.email || '';
-          // Institusi is display-only, pre-populated from PHP
-          document.getElementById('jawatanInput').value = data.position_name || '';
-          document.getElementById('perananInput').value = (data.username || '').replace(/\b\w/g, c => c.toUpperCase());
-          document.getElementById('telefonInput').value = data.phone_number || '';
-          document.getElementById('postcodeInput').value = data.postcode || '';
-          populateDistricts(data.district_id, data.state_id);
-
-          // Display avatar if exists
-          if (data.avatar_url) {
-            document.getElementById('avatarPreviu').innerHTML = '<img src="' + data.avatar_url + '" alt="Current Avatar">';
-          }
-        })
-        .catch(err => console.log('Error loading profile:', err));
-    }
-
-    // Filter districts by selected state (cascading)
-    function populateDistricts(selectedDistrictId, selectedStateId) {
-      const stateSel = document.getElementById('stateSelect');
-      const districtSel = document.getElementById('districtSelect');
-
-      function refresh() {
-        const stateId = stateSel.value;
-        const options = Array.from(districtSel.options);
-        const visible = stateId
-          ? options.filter(opt => opt.dataset.state === stateId)
-          : options.filter(opt => opt.value !== '');
-        options.forEach(opt => {
-          opt.hidden = stateId
-            ? opt.dataset.state !== stateId
-            : opt.value === '';
-        });
-        if (!visible.some(opt => opt.selected)) {
-          districtSel.value = visible.length ? visible[0].value : '';
-        }
-      }
-
-      if (selectedStateId) stateSel.value = selectedStateId;
-      refresh();
-      if (selectedDistrictId) districtSel.value = selectedDistrictId;
-
-      if (typeof districtSel._wired === 'undefined') {
-        stateSel.addEventListener('change', refresh);
-        districtSel._wired = true;
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', loadProfileData);
-
-    if (typeof AOS !== 'undefined') {
-      AOS.init();
-    }
-
-    function switchTab(id, button) {
-      // Hide all panels
-      document.getElementById('panel-profil').classList.remove('active');
-      document.getElementById('panel-laluan').classList.remove('active');
-      
-      // Remove active class from all buttons
-      document.querySelectorAll('.tab-button').forEach(btn => {
-        btn.classList.remove('active');
-      });
-
-      // Show selected panel
-      document.getElementById('panel-' + id).classList.add('active');
-      
-      // Add active class to clicked button
-      button.classList.add('active');
-    }
-
-    function previewAvatar(e) {
-      const file = e.target.files[0];
-      const previewDiv = document.getElementById('avatarPreviu');
-      
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          previewDiv.innerHTML = '<img src="' + event.target.result + '" alt="Avatar Preview">';
-        };
-        reader.readAsDataURL(file);
-      } else {
-        previewDiv.textContent = '(Tiada gambar dipilih)';
-      }
+    function goBackToForm() {
+      window.location.href = "<?php echo e(route('profile.edit')); ?>";
     }
 
     function showStatus(msg, type = 'info') {
       const statusDiv = document.getElementById('statusMsg');
-      
-      // Clear existing timeout jika ada
-      if (statusTimeout) {
-        clearTimeout(statusTimeout);
-      }
-      
       statusDiv.textContent = msg;
       statusDiv.className = type;
       
-      // Set timeout 6 detik (6000ms) sebelum hilang
-      statusTimeout = setTimeout(() => {
+      setTimeout(() => {
         statusDiv.textContent = '';
         statusDiv.className = '';
-        statusTimeout = null;
-      }, 6000);
-    }
-
-    function togglePasswordVisibility(inputId) {
-      const input = document.getElementById(inputId);
-      const button = event.target.closest('.password-toggle-btn');
-      const icon = button.querySelector('i');
-      
-      if (input.type === 'password') {
-        input.type = 'text';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-      } else {
-        input.type = 'password';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
-      }
-    }
-
-    function validatePassword(password) {
-  const missingRequirements = [];
-  
-  if (password.length < 8) {
-    missingRequirements.push('8 aksara');
-  }
-  if (!/[a-z]/.test(password)) {
-    missingRequirements.push('1 huruf kecil');
-  }
-  if (!/[A-Z]/.test(password)) {
-    missingRequirements.push('1 huruf besar');
-  }
-  if (!/[0-9]/.test(password)) {
-    missingRequirements.push('1 angka');
-  }
-  if (!/[!@#$%^&*]/.test(password)) {
-    missingRequirements.push('1 simbol (!@#$%^&*)');
-  }
-  
-  // Jika tiada error, pulangkan array kosong
-  if (missingRequirements.length === 0) {
-    return [];
-  }
-  
-  // Gabungkan senarai kekurangan dengan perkataan 'Sekurang-kurangnya' di hadapan
-  return [`Sekurang-kurangnya ${missingRequirements.join(', ')}`];
-}
-
-    function checkStrength(val) {
-      const strengthText = document.getElementById('strengthText');
-      const barFill = document.getElementById('strengthBarFill');
-      let strength = 'Lemah';
-      let cls = 'weak';
-      let pct = 15;
-
-      if (val.length >= 8) {
-        strength = 'Sederhana';
-        cls = 'medium';
-        pct = 45;
-      }
-      if (val.length >= 10 && /[0-9]/.test(val) && /[A-Z]/.test(val) && /[a-z]/.test(val)) {
-        strength = 'Kuat';
-        cls = 'strong';
-        pct = 75;
-      }
-      if (/[!@#$%^&*]/.test(val) && /[0-9]/.test(val) && /[A-Z]/.test(val) && /[a-z]/.test(val)) {
-        strength = 'Sangat Kuat';
-        cls = 'very-strong';
-        pct = 100;
-      }
-
-      strengthText.textContent = strength;
-      strengthText.className = 'strength-text ' + cls;
-      barFill.style.width = pct + '%';
-      const colors = { weak: '#f87171', medium: '#fbbf24', strong: '#6ee7b7', 'very-strong': '#10b981' };
-      barFill.style.background = colors[cls] || '#f87171';
-    }
-
-    function handleUpdateProfile() {
-      const nama = document.getElementById('namaInput').value.trim();
-      const telefon = document.getElementById('telefonInput').value.trim();
-      const avatarFile = document.getElementById('avatarInput').files[0];
-      
-      if (!nama) {
-        showStatus('Sila isi nama!', 'error');
-        return;
-      }
-      if (!telefon) {
-        showStatus('Sila isi no. telefon!', 'error');
-        return;
-      }
-
-      // If avatar file is selected, upload it first
-      if (avatarFile) {
-        const formData = new FormData();
-        formData.append('avatar', avatarFile);
-        formData.append('_token', '<?php echo e(csrf_token()); ?>');
-
-        fetch('<?php echo e(route("profile.avatar")); ?>', {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
-          },
-          body: formData
-        })
-        .then(response => {
-          if (!response.ok) {
-            return response.text().then(text => {
-              throw new Error('HTTP ' + response.status + ': ' + text.substring(0, 100));
-            });
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (!data.success) {
-            showStatus(data.message || 'Gagal memuat naik gambar.', 'error');
-            return;
-          }
-          // After avatar upload succeeds, update profile info
-          updateProfileInfo(nama, telefon);
-        })
-        .catch(err => {
-          console.error('Avatar upload error:', err);
-          showStatus('Ralat memuat naik gambar: ' + err.message, 'error');
-        });
-      } else {
-        // No avatar selected, just update profile info
-        updateProfileInfo(nama, telefon);
-      }
-    }
-
-    function updateProfileInfo(nama, telefon) {
-      const email = document.getElementById('emailInput').value.trim();
-      fetch('<?php echo e(route("profile.update")); ?>', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
-        },
-        body: JSON.stringify({
-          name: nama,
-          email: email,
-          phone_number: telefon,
-          postcode: document.getElementById('postcodeInput').value.trim(),
-          district_id: document.getElementById('districtSelect').value,
-          state_id: document.getElementById('stateSelect').value
-        })
-      })
-      .then(response => {
-        if (!response.ok) {
-          return response.json().then(err => { throw new Error(err.message || 'Ralat pelayan'); });
-        }
-        return response.json();
-      })
-      .then(data => {
-        if (data.success) {
-          showStatus('Profil berjaya dikemaskini.', 'success');
-          
-          // Redirect to profile view page after 1 second
-          setTimeout(function() {
-            window.location.href = "<?php echo e(route('profile')); ?>";
-          }, 1000);
-        } else {
-          showStatus(data.message || 'Gagal mengemas kini profil.', 'error');
-        }
-      })
-      .catch(err => {
-        showStatus('Ralat mengemas kini profil: ' + err.message, 'error');
-      });
-    }
-
-    function handleSetPassword() {
-      const oldPass = document.getElementById('oldPass').value;
-      const newPass = document.getElementById('newPass').value;
-      const confirmPass = document.getElementById('confirmPass').value;
-      
-      if (!oldPass) {
-        showStatus('Sila masukkan kata laluan asal!', 'error');
-        return;
-      }
-      if (!newPass) {
-        showStatus('Sila masukkan kata laluan baru!', 'error');
-        return;
-      }
-      if (oldPass === newPass) {
-        showStatus('Kata laluan baru mesti berbeza dari yang lama!', 'error');
-        return;
-      }
-      if (newPass !== confirmPass) {
-        showStatus('Kata laluan tidak sepadan!', 'error');
-        return;
-      }
-      
-      const validationErrors = validatePassword(newPass);
-      if (validationErrors.length > 0) {
-        showStatus('Kata laluan tidak memenuhi syarat: ' + validationErrors.join(', '), 'error');
-        return;
-      }
-
-      // Send password change request to server
-      fetch('<?php echo e(route("profile.password")); ?>', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
-        },
-        body: JSON.stringify({
-          current_password: oldPass,
-          password: newPass,
-          password_confirmation: confirmPass
-        })
-      })
-      .then(response => {
-        if (!response.ok) {
-          return response.json().then(err => { throw new Error(err.errors?.current_password?.[0] || err.message || 'Ralat pelayan'); });
-        }
-        return response.json();
-      })
-      .then(data => {
-        if (data.success) {
-          showStatus('Kata laluan berjaya ditukar.', 'success');
-          
-          // Reset form
-          document.getElementById('oldPass').value = '';
-          document.getElementById('newPass').value = '';
-          document.getElementById('confirmPass').value = '';
-          document.getElementById('strengthText').textContent = 'Kekuatan: -';
-          document.getElementById('strengthText').className = 'strength-indicator';
-        } else {
-          showStatus(data.errors?.current_password?.[0] || data.message || 'Gagal menukar kata laluan.', 'error');
-        }
-      })
-      .catch(err => {
-        showStatus('Ralat menukar kata laluan: ' + err.message, 'error');
-      });
+      }, 3000);
     }
   </script>
 
@@ -1355,7 +687,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
           <i class="bi bi-geo-alt icon"></i>
           <div class="address">
             <h4>Alamat</h4>
-            <p>Ibu Pejabat Penjara Malaysia<br>Kajang–Semenyih<br>By Pass 43000 Kajang, Selangor</p>
+            <p>Ibu Pejabat Penjara Malaysia<br>Kajangâ€“Semenyih<br>By Pass 43000 Kajang, Selangor</p>
           </div>
         </div>
         <div class="col-lg-3 col-md-6 d-flex">
@@ -1390,7 +722,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         <p>Jabatan Penjara Malaysia tidak bertanggungjawab terhadap sebarang kehilangan atau kerosakan yang dialami kerana menggunakan maklumat yang dicapai dalam laman ini.</p>
       </div><br>
       <p>
-        <span>Hak Cipta Terpelihara</span> ©<strong class="px-1 sitename">2026 MySIPMa</strong> 
+        <span>Hak Cipta Terpelihara</span> Â©<strong class="px-1 sitename">2026 MySIPMa</strong> 
         <span>Kolaborasi Bersama <a href="https://pmj.mypolycc.edu.my" target="_blank">Politeknik Mersing</a></span>
       </p>
     </div>
@@ -1452,5 +784,4 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
   </script>
 </body>
 </html>
-
-<?php /**PATH C:\laragon\www\MySIPMA_2\resources\views/update.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\laragon\www\MySIPMA_2\resources\views/profile.blade.php ENDPATH**/ ?>

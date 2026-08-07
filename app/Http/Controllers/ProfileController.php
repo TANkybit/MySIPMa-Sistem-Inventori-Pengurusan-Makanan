@@ -35,6 +35,9 @@ class ProfileController extends Controller
         }
 
         return response()->json([
+            'state_id' => $user->institution?->state_id,
+            'district_id' => $user->institution?->district_id,
+            'postcode' => $user->institution?->postcode,
             'name' => $user->name,
             'email' => $user->email,
             'username' => $user->effectiveRoleName(),
@@ -85,6 +88,7 @@ class ProfileController extends Controller
             'positionName' => $positionName,
             'roleName' => $roleName,
             'fullAddress' => $fullAddress,
+            'stateName' => $user->institution?->state?->name ?? '-',
         ]);
     }
 
@@ -95,6 +99,8 @@ class ProfileController extends Controller
         $institutions = \App\Models\Institution::orderBy('name')->get();
         $positions = \App\Models\Position::orderBy('name')->get();
         $roles = \App\Models\Role::orderBy('role_name')->get();
+        $states = \App\Models\State::orderBy('name')->get();
+        $districts = \App\Models\District::orderBy('name')->get();
 
         $pendingApprovals = \App\Http\Controllers\DashboardController::pendingApprovalCount(Auth::user()->institution_id);
         $pendingPenerimaan = \App\Models\Order::where('status', 'In Progress')->where('institution_id', Auth::user()->institution_id)->count();
@@ -107,6 +113,8 @@ class ProfileController extends Controller
             'institutions' => $institutions,
             'positions' => $positions,
             'roles' => $roles,
+            'states' => $states,
+            'districts' => $districts,
         ]);
     }
 
@@ -130,6 +138,9 @@ class ProfileController extends Controller
             'phone_number' => 'nullable|string|max:20',
             'institution_id' => 'nullable|integer',
             'position_id' => 'nullable|integer',
+            'postcode' => 'nullable|string|max:10',
+            'district_id' => 'nullable|exists:districts,id',
+            'state_id' => 'nullable|exists:states,id',
         ]);
 
         $data = [
@@ -151,6 +162,22 @@ class ProfileController extends Controller
         }
 
         $user->update($data);
+
+        if ($user->institution) {
+            $instData = [];
+            if ($request->filled('postcode')) {
+                $instData['postcode'] = $request->postcode;
+            }
+            if ($request->filled('district_id')) {
+                $instData['district_id'] = $request->district_id;
+            }
+            if ($request->filled('state_id')) {
+                $instData['state_id'] = $request->state_id;
+            }
+            if (!empty($instData)) {
+                $user->institution->update($instData);
+            }
+        }
 
         if ($request->expectsJson()) {
             return response()->json(['success' => 'Profil berjaya dikemaskini']);
