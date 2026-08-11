@@ -12,10 +12,14 @@ class ItemController extends Controller
     public function search(Request $request)
     {
         $search = trim((string) $request->input('q', ''));
+        $categoryId = $request->input('category_id');
 
         $items = Item::query()
             ->leftJoin('uom', 'items.uom_id', '=', 'uom.id')
             ->select(['items.id', 'items.name', 'uom.code as uom_code', 'items.price_per_unit'])
+            ->when($categoryId !== null && $categoryId !== '', function ($query) use ($categoryId) {
+                $query->where('items.category_id', (int) $categoryId);
+            })
             ->when($search !== '', function ($query) use ($search) {
                 $query->where('items.name', 'like', "%{$search}%");
             })

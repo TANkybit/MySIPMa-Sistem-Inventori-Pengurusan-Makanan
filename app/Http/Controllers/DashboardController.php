@@ -1456,6 +1456,7 @@ class DashboardController extends Controller
                 'order_items.ordered_quantity',
                 'order_items.received_quantity',
                 'items.name',
+                'items.category_id',
                 DB::raw("COALESCE(uom.code, 'Unit') as unit"),
             ])
             ->get()
@@ -1464,6 +1465,7 @@ class DashboardController extends Controller
                 'item_id' => $i->item_id,
                 'name' => $i->name,
                 'unit' => $i->unit,
+                'category_id' => $i->category_id,
                 'ordered_qty' => (float) $i->ordered_quantity,
                 'received_qty' => (float) $i->received_quantity,
             ]);
