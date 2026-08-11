@@ -227,7 +227,17 @@ class ProfileController extends Controller
     {
         $request->validate([
             'current_password' => 'required',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => [
+                'required', 'string', 'min:8', 'confirmed',
+                'regex:/[a-z]/',
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
+                'regex:/[!@#$%^&*]/',
+            ],
+        ], [
+            'password.regex' => 'Kata laluan mesti mengandungi sekurang-kurangnya 8 aksara, 1 huruf kecil, 1 huruf besar, 1 nombor dan 1 simbol',
+            'password.min' => 'Kata laluan mesti mengandungi sekurang-kurangnya 8 aksara',
+            'password.confirmed' => 'Pengesahan kata laluan tidak sepadan',
         ]);
 
         $user = Auth::user();

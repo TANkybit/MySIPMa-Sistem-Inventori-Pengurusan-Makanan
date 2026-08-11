@@ -394,7 +394,7 @@
       border: 1px solid rgba(255,255,255,.1);
       border-radius: 8px;
       padding: 7px 12px;
-      color: #111827;
+      color: rgb(0,0,0);
       font-size: 14px;
       transition: all .2s;
       font-family: 'Montserrat', sans-serif;
@@ -413,8 +413,15 @@
 
     .form-group input:read-only {
       background: rgba(255,255,255,.5) !important;
-      color: rgba(17,24,39,.5);
+      color: rgb(0,0,0);
       cursor: not-allowed;
+      border-color: transparent;
+    }
+
+    /* Match Institusi field's faded look for Negeri/Daerah/Poskod */
+    #stateSelect, #districtSelect, #postcodeInput {
+      background: rgba(255,255,255,.5) !important;
+      color: rgb(0,0,0);
       border-color: transparent;
     }
 
@@ -441,7 +448,7 @@
       right: 10px;
       background: none;
       border: none;
-      color: rgba(255,255,255,.4);
+      color: #6b7280;
       cursor: pointer;
       font-size: 15px;
       padding: 4px;
@@ -691,10 +698,11 @@
     [data-bs-theme="light"] .custom-file-label { background: rgba(16,185,129,.2) !important; color: #6ee7b7 !important; border-color: rgba(16,185,129,.3) !important; }
     [data-bs-theme="light"] .custom-file-label:hover { background: rgba(16,185,129,.28) !important; }
     [data-bs-theme="light"] .form-group label { color: rgba(255,255,255,.6) !important; }
-    [data-bs-theme="light"] .form-group input, [data-bs-theme="light"] .form-group select { background: #fff !important; border-color: #d1d5db !important; color: #111827 !important; }
-    [data-bs-theme="light"] .form-group input:read-only { background: #f3f4f6 !important; color: #9ca3af !important; }
-    [data-bs-theme="light"] .password-toggle-btn { color: rgba(255,255,255,.5) !important; }
-    [data-bs-theme="light"] .password-toggle-btn:hover { color: #6ee7b7 !important; }
+    [data-bs-theme="light"] .form-group input, [data-bs-theme="light"] .form-group select { background: #fff !important; border-color: #d1d5db !important; color: rgb(0,0,0) !important; }
+    [data-bs-theme="light"] .form-group input:read-only { background: #f3f4f6 !important; color: rgb(0,0,0) !important; }
+    [data-bs-theme="light"] #stateSelect, [data-bs-theme="light"] #districtSelect, [data-bs-theme="light"] #postcodeInput { background: #f3f4f6 !important; color: rgb(0,0,0) !important; border-color: transparent !important; }
+    [data-bs-theme="light"] .password-toggle-btn { color: #6b7280 !important; }
+    [data-bs-theme="light"] .password-toggle-btn:hover { color: #10b981 !important; }
     [data-bs-theme="light"] .btn-secondary { background: rgba(255,255,255,.1) !important; color: rgba(255,255,255,.7) !important; border-color: rgba(255,255,255,.15) !important; }
     [data-bs-theme="light"] .btn-secondary:hover { background: rgba(255,255,255,.16) !important; color: #fff !important; }
     [data-bs-theme="light"] .btn-logout { color: #374151 !important; border-color: rgba(0,0,0,.2) !important; }
@@ -1135,7 +1143,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
     missingRequirements.push('1 huruf besar');
   }
   if (!/[0-9]/.test(password)) {
-    missingRequirements.push('1 angka');
+    missingRequirements.push('1 nombor');
   }
   if (!/[!@#$%^&*]/.test(password)) {
     missingRequirements.push('1 simbol (!@#$%^&*)');
@@ -1186,11 +1194,11 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
       const avatarFile = document.getElementById('avatarInput').files[0];
       
       if (!nama) {
-        showStatus('Sila isi nama!', 'error');
+        showStatus('Sila isi nama', 'error');
         return;
       }
       if (!telefon) {
-        showStatus('Sila isi no. telefon!', 'error');
+        showStatus('Sila isi no. telefon', 'error');
         return;
       }
 
@@ -1281,19 +1289,19 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
       const confirmPass = document.getElementById('confirmPass').value;
       
       if (!oldPass) {
-        showStatus('Sila masukkan kata laluan asal!', 'error');
+        showStatus('Sila masukkan kata laluan asal', 'error');
         return;
       }
       if (!newPass) {
-        showStatus('Sila masukkan kata laluan baru!', 'error');
+        showStatus('Sila masukkan kata laluan baru', 'error');
         return;
       }
       if (oldPass === newPass) {
-        showStatus('Kata laluan baru mesti berbeza dari yang lama!', 'error');
+        showStatus('Kata laluan baru mesti berbeza dari yang lama', 'error');
         return;
       }
       if (newPass !== confirmPass) {
-        showStatus('Kata laluan tidak sepadan!', 'error');
+        showStatus('Kata laluan tidak sepadan', 'error');
         return;
       }
       
