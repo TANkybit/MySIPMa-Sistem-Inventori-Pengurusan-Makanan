@@ -1310,7 +1310,7 @@ class PrisonSystem {
                 height: 200
             },
             colors: ['#ffc107', '#198754', '#dc3545'],
-            labels: ['Menunggu', 'Disahkan', 'Ditolak'],
+            labels: ['Menunggu', 'Disahkan', 'Pembetulan'],
             plotOptions: {
                 pie: {
                     donut: {
@@ -3309,7 +3309,7 @@ class PrisonSystem {
         const order = window.prisonData.inden.find(o => o.id === id);
         if (order) {
             order.status = 'rejected';
-            this.showNotification(`Inden ${order.number} telah ditolak`, 'danger');
+            this.showNotification(`Inden ${order.number} telah ditandakan sebagai Pembetulan`, 'danger');
 
             // Refresh the page if we're on orders page
             if (this.currentPage === 'inden' || this.currentPage === 'pengesahan') {

@@ -270,7 +270,7 @@ class DashboardController extends Controller
                 'Pending' => 'Menunggu',
                 'In Progress' => 'Dalam Proses',
                 'Completed' => 'Selesai',
-                'Rejected' => 'Ditolak',
+                'Rejected' => 'Pembetulan',
                 default => $o->status,
             };
 
@@ -619,7 +619,7 @@ class DashboardController extends Controller
                     'Menunggu' => $statusCounts['Pending'] ?? 0,
                     'Sedang Diproses' => $statusCounts['In Progress'] ?? 0,
                     'Selesai' => $statusCounts['Completed'] ?? 0,
-                    'Ditolak' => $statusCounts['Rejected'] ?? 0,
+                    'Pembetulan' => $statusCounts['Rejected'] ?? 0,
                 ];
 
                 // 2. Top 5 Items Ordered (Highest Quantity)
@@ -832,7 +832,7 @@ class DashboardController extends Controller
 
     public function editBorangInden(Order $order)
     {
-        $readOnly = $order->status !== 'Pending';
+        $readOnly = !in_array($order->status, ['Pending', 'Rejected']);
         return $this->borangIndenView($order, $readOnly);
     }
 
@@ -1241,7 +1241,7 @@ class DashboardController extends Controller
 
         $message = $statusVal === 1 
             ? 'Inden berjaya disahkan dan status ditukar kepada In Progress.' 
-            : 'Inden berjaya ditolak.';
+            : 'Inden berjaya ditandakan sebagai Pembetulan.';
 
         return redirect()
             ->route('user.pengesahan.inden')
@@ -2216,12 +2216,12 @@ class DashboardController extends Controller
             ->orderBy('i.name')
             ->get();
 
-        $sixMonthsAgo = now()->subMonths(6)->startOfMonth();
+        $twelveMonthsAgo = now()->subMonths(12)->startOfMonth();
         $usageRaw = DB::table('order_items as oi')
             ->join('orders as o', 'oi.order_id', '=', 'o.id')
             ->where('o.institution_id', $instId)
             ->whereNotIn('o.status', ['Cancelled', 'Rejected', 'Draft'])
-            ->where('o.order_date', '>=', $sixMonthsAgo)
+            ->where('o.order_date', '>=', $twelveMonthsAgo)
             ->select(
                 'oi.item_id',
                 DB::raw('YEAR(o.order_date) as yr'),
@@ -2239,7 +2239,7 @@ class DashboardController extends Controller
 
         $monthLabels = [];
         $monthIndex = [];
-        for ($i = 5; $i >= 0; $i--) {
+        for ($i = 11; $i >= 0; $i--) {
             $m = now()->subMonths($i);
             $monthLabels[] = $m->format('M Y');
             $monthIndex[] = $m->format('Y-m');
@@ -2253,41 +2253,55 @@ class DashboardController extends Controller
                 $monthlyData[] = $usageByItem[$key] ?? 0;
             }
 
+            // Outlier guard: clamp any month that is absurdly higher than the
+            // median of the non-zero months (likely a data-entry/typo order),
+            // so one rogue row can't swing the level/trend/floor.
+            $nonZero = array_values(array_filter($monthlyData, fn ($v) => $v > 0));
+            if (count($nonZero) > 1) {
+                sort($nonZero);
+                $median = $nonZero[(int) floor((count($nonZero) - 1) / 2)];
+                $cap = max($median * 8, 1);
+                foreach ($monthlyData as $idx => $val) {
+                    if ($val > $cap) {
+                        $monthlyData[$idx] = $cap;
+                    }
+                }
+            }
+
             $avgMonthly = array_sum($monthlyData) / max(count($monthlyData), 1);
             $stock = (float) ($item->current_quantity ?? 0);
 
             $n = count($monthlyData);
-            if ($n > 1 && array_sum($monthlyData) > 0) {
-                $x = range(1, $n);
-                $sumX = array_sum($x);
-                $sumY = array_sum($monthlyData);
-                $sumXY = 0;
-                $sumX2 = 0;
-                for ($i = 0; $i < $n; $i++) {
-                    $sumXY += $x[$i] * $monthlyData[$i];
-                    $sumX2 += $x[$i] * $x[$i];
-                }
-                $denom = ($n * $sumX2 - $sumX * $sumX);
-                if ($denom != 0) {
-                    $slope = ($n * $sumXY - $sumX * $sumY) / $denom;
-                    $intercept = ($sumY - $slope * $sumX) / $n;
-                } else {
-                    $slope = 0;
-                    $intercept = $avgMonthly;
-                }
-            } else {
-                $slope = 0;
-                $intercept = $avgMonthly;
-            }
+
+            // Holt's linear trend (double exponential smoothing):
+            // level = recent baseline, trend = current growth/decline.
+            // Weights recent months more than the old linear least-squares fit.
+            $alpha = 0.5; // level smoothing
+            $beta  = 0.3; // trend smoothing
 
             $forecast = [];
-            $floor = $avgMonthly * 0.3;
-            for ($i = 1; $i <= 3; $i++) {
-                $val = max($floor, $slope * ($n + $i) + $intercept);
-                $forecast[] = round($val, 1);
+
+            if ($n >= 2 && abs(array_sum($monthlyData)) > 0) {
+                $level = (float) $monthlyData[0];
+                $trend = (float) ($monthlyData[1] - $monthlyData[0]);
+                for ($t = 1; $t < $n; $t++) {
+                    $prevLevel = $level;
+                    $level = $alpha * $monthlyData[$t] + (1 - $alpha) * ($prevLevel + $trend);
+                    $trend = $beta * ($level - $prevLevel) + (1 - $beta) * $trend;
+                }
+                for ($i = 1; $i <= 3; $i++) {
+                    $forecast[] = round(max(0, $level + $trend * $i), 1);
+                }
+            } elseif ($n >= 1) {
+                // Not enough history for smoothing — flat projection.
+                $forecast = array_fill(0, 3, round($avgMonthly, 1));
+            } else {
+                $forecast = [0, 0, 0];
             }
 
-            $predictedMonthly = max($avgMonthly, 0.001);
+            $predictedMonthly = $forecast[0] > 0
+                ? $forecast[0]
+                : max($avgMonthly, 0.001);
             $monthsUntilEmpty = $stock / $predictedMonthly;
 
             $willLastYear = $monthsUntilEmpty >= 12;
@@ -2319,7 +2333,6 @@ class DashboardController extends Controller
                 'status' => $status,
                 'statusText' => $statusText,
                 'forecast' => $forecast,
-                'slope' => round($slope, 2),
                 'history' => $monthlyData,
             ];
         }
@@ -2342,11 +2355,17 @@ class DashboardController extends Controller
             'willLast' => count(array_filter($predictions, fn($p) => $p['willLastYear'])),
         ];
 
+        $forecastLabels = [];
+        for ($i = 1; $i <= 3; $i++) {
+            $forecastLabels[] = now()->addMonths($i)->format('M Y');
+        }
+
         return [
             'top5' => $top5,
             'bottom5' => $bottom5,
             'summary' => $summary,
-            'forecastLabels' => ['Bulan 1', 'Bulan 2', 'Bulan 3'],
+            'monthLabels' => $monthLabels,
+            'forecastLabels' => $forecastLabels,
         ];
     }
 

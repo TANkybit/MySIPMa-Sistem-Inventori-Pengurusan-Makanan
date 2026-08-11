@@ -412,19 +412,27 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
 
   <!-- Logout Confirmation Modal -->
   <div class="modal fade" id="logoutConfirmModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-      <div class="modal-content" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;">
-        <div class="modal-body text-center py-4">
-          <i class="bi bi-box-arrow-right fs-1 text-danger mb-3 d-block"></i>
-          <h5 class="fw-bold mb-2">Log Keluar</h5>
-          <p class="text-muted small mb-4">Anda pasti ingin log keluar?</p>
-          <div class="d-flex gap-2 justify-content-center">
-            <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Batal</button>
-            <form method="POST" action="<?php echo e(route('logout')); ?>" id="logoutForm">
-              <?php echo csrf_field(); ?>
-              <button type="submit" class="btn btn-danger px-4">Log Keluar</button>
-            </form>
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background:linear-gradient(165deg,#101910,#070907);border:1px solid rgba(124,179,66,.22);border-radius:20px;box-shadow:0 18px 48px rgba(0,0,0,.55),0 0 32px rgba(124,179,66,.1);position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:15%;right:15%;height:2px;background:linear-gradient(90deg,transparent,#7CB342,transparent);border-radius:0 0 4px 4px;"></div>
+        <div class="modal-header" style="border:none;padding:20px 24px 4px;position:relative;">
+          <div class="d-flex align-items-center gap-2">
+            <div style="width:36px;height:36px;background:rgba(124,179,66,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="bi bi-box-arrow-right" style="font-size:1rem;color:#7CB342;"></i>
+            </div>
+            <h5 class="modal-title fw-bold mb-0" style="color:#C5E1A5;font-size:1rem;">Log Keluar</h5>
           </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup" style="filter:brightness(0.5);transition:all .3s;font-size:.75rem;" onmouseover="this.style.filter='brightness(1)';this.style.transform='rotate(90deg) scale(1.15)'" onmouseout="this.style.filter='brightness(0.5)';this.style.transform=''"></button>
+        </div>
+        <div class="modal-body" style="padding:12px 24px;position:relative;">
+          <p class="mb-0" style="color:#f3f7f3;font-size:.95rem;">Adakah anda pasti ingin log keluar dari sistem ini?</p>
+        </div>
+        <div class="modal-footer" style="border:none;padding:6px 24px 20px;position:relative;gap:.5rem;">
+          <button type="button" class="btn btn-sm px-4" data-bs-dismiss="modal" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#f3f7f3;border-radius:50px;font-weight:600;font-size:.8rem;transition:all .3s;" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">Batal</button>
+          <form method="POST" action="<?php echo e(route('logout')); ?>" id="logoutForm">
+            <?php echo csrf_field(); ?>
+            <button type="submit" class="btn btn-sm px-4" style="background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;border:none;border-radius:50px;font-weight:600;font-size:.8rem;transition:all .3s;box-shadow:0 4px 14px rgba(192,57,43,.25);" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px rgba(192,57,43,.4)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(192,57,43,.25)'"><i class="bi bi-box-arrow-right me-1"></i>Log Keluar</button>
+          </form>
         </div>
       </div>
     </div>

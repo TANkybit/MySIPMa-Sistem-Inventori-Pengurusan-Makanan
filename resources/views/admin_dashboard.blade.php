@@ -785,7 +785,7 @@
                                 <button class="btn btn-sm btn-outline-primary">Semua</button>
                                 <button class="btn btn-sm btn-outline-warning">Menunggu</button>
                                 <button class="btn btn-sm btn-outline-success">Disahkan</button>
-                                <button class="btn btn-sm btn-outline-danger">Ditolak</button>
+                                <button class="btn btn-sm btn-outline-danger">Pembetulan</button>
                             </div>
                         </div>
                         <div class="card-body">
@@ -826,7 +826,7 @@
                                                     <span class="fw-bold">12</span>
                                                 </div>
                                                 <div class="d-flex justify-content-between">
-                                                    <span>Ditolak</span>
+                                                    <span>Pembetulan</span>
                                                     <span class="fw-bold">2</span>
                                                 </div>
                                             </div>
@@ -865,7 +865,7 @@
                                         <option value="Pending">Menunggu</option>
                                         <option value="In Progress">Dalam Proses</option>
                                         <option value="Completed">Selesai</option>
-                                        <option value="Rejected">Ditolak</option>
+                                        <option value="Rejected">Pembetulan</option>
                                     </select>
                                 </div>
                                 <div class="col-lg-2 col-md-4">
@@ -3170,14 +3170,14 @@
                     'Pending':     '<span class="badge bg-warning text-dark">Menunggu</span>',
                     'In Progress': '<span class="badge bg-info">Dalam Proses</span>',
                     'Completed':   '<span class="badge bg-success">Selesai</span>',
-                    'Rejected':    '<span class="badge bg-danger">Ditolak</span>',
+                    'Rejected':    '<span class="badge bg-danger">Pembetulan</span>',
                 };
                 return map[status] || `<span class="badge bg-secondary">${status}</span>`;
             }
 
             function getApprovalBadge(val) {
                 if (val === 1) return '<span class="badge bg-success">Disahkan</span>';
-                if (val === 2) return '<span class="badge bg-danger">Ditolak</span>';
+                if (val === 2) return '<span class="badge bg-danger">Pembetulan</span>';
                 return '<span class="badge bg-secondary">Belum Disahkan</span>';
             }
 

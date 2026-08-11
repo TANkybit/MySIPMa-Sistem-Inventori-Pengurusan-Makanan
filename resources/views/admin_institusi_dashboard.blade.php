@@ -270,7 +270,7 @@
                                                                 'Pending' => 'Menunggu',
                                                                 'In Progress' => 'Dalam Proses',
                                                                 'Completed' => 'Selesai',
-                                                                'Rejected' => 'Ditolak',
+                                                                'Rejected' => 'Pembetulan',
                                                                 default => $order->status
                                                             };
                                                         @endphp
@@ -850,7 +850,7 @@
                         new Chart(ctxStatus, {
                             type: 'doughnut',
                             data: {
-                                labels: ['Menunggu', 'Dalam Proses', 'Selesai', 'Ditolak'],
+                                labels: ['Menunggu', 'Dalam Proses', 'Selesai', 'Pembetulan'],
                                 datasets: [{
                                     data: [
                                         dashboardData.order_status['Pending'] || 0,

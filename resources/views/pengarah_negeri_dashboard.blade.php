@@ -296,7 +296,7 @@
                                                                     'Pending' => 'Menunggu',
                                                                     'In Progress' => 'Sedang Diproses',
                                                                     'Completed' => 'Selesai',
-                                                                    'Rejected' => 'Ditolak',
+                                                                    'Rejected' => 'Pembetulan',
                                                                     'Cancelled' => 'Dibatalkan',
                                                                     default => $order->status
                                                                 };
@@ -378,7 +378,7 @@
                                                                 'Pending' => 'Menunggu',
                                                                 'In Progress' => 'Sedang Diproses',
                                                                 'Completed' => 'Selesai',
-                                                                'Rejected' => 'Ditolak',
+                                                                'Rejected' => 'Pembetulan',
                                                                 'Cancelled' => 'Dibatalkan',
                                                                 default => $order->status
                                                             };
