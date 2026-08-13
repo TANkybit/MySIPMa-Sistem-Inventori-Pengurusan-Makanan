@@ -6,10 +6,10 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Penilaian Prestasi Pembekal - MySIPMa</title>
-  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 
-  <link rel="icon" type="image/png" href="{{ asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png') }}">
-  <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png') }}">
+  <link rel="icon" type="image/png" href="<?php echo e(asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png')); ?>">
+  <link rel="apple-touch-icon" sizes="180x180" href="<?php echo e(asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png')); ?>">
 
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
@@ -17,10 +17,10 @@
     href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Montserrat:wght@300;400;500;600;700;800;900&display=swap"
     rel="stylesheet">
 
-  <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/css/main2.css') }}" rel="stylesheet">
-  <link href="{{ asset('css/user-theme.css') }}" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/css/main2.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('css/user-theme.css')); ?>" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
 
@@ -117,7 +117,7 @@
       .text-white-50:hover { color: #10b981 !important; }
     }
   </style>
-  <link href="{{ asset('css/design.css') }}?v=3" rel="stylesheet">
+  <link href="<?php echo e(asset('css/design.css')); ?>?v=3" rel="stylesheet">
 <style>
 body.mobile-nav-active { background: #000 !important; }
 body.mobile-nav-active .navmenu { background: #000 !important; }
@@ -134,53 +134,55 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
     style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
     <div class="container position-relative d-flex align-items-center justify-content-between">
       <a href="#" class="logo-glow d-flex align-items-center" id="logoLogoutTrigger">
-        <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" style="height: 55px; width: auto;" alt="MySIPMa logo">
+        <img src="<?php echo e(asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png')); ?>" style="height: 55px; width: auto;" alt="MySIPMa logo">
       </a>
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="{{ route('user.dashboard') }}">Papan Pemuka</a></li>
-          <li><a href="{{ route('user.senarai.inden') }}">Senarai Inden</a></li>
-          <li><a href="{{ route('user.inventori') }}">Inventori</a></li>
-          @if(Auth::user()->hasPermission('pengesahan_inden'))
-          <li><a href="{{ route('user.pengesahan.inden') }}">Pengesahan Inden</a></li>
-          @endif
-          @if(Auth::user()->hasPermission('borang_inden'))
-          <li><a href="{{ route('borang.inden') }}">Borang Inden</a></li>
-          @endif
-          @if(Auth::user()->hasPermission('penerimaan_inden'))
-          <li><a href="{{ route('borang.penerimaan') }}">Penerimaan</a></li>
-          @endif
-          @if(Auth::user()->hasPermission('penilaian_prestasi'))
-          <li><a href="{{ route('user.penilaian_prestasi') }}" class="active">Penilaian Prestasi</a></li>
-          @endif
-          <li class="d-xl-none"><a href="{{ route('profile') }}">Profil</a></li>
+          <li><a href="<?php echo e(route('user.dashboard')); ?>">Papan Pemuka</a></li>
+          <li><a href="<?php echo e(route('user.senarai.inden')); ?>">Senarai Inden</a></li>
+          <li><a href="<?php echo e(route('user.inventori')); ?>">Inventori</a></li>
+          <?php if(Auth::user()->hasPermission('pengesahan_inden')): ?>
+          <li><a href="<?php echo e(route('user.pengesahan.inden')); ?>">Pengesahan Inden</a></li>
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('borang_inden')): ?>
+          <li><a href="<?php echo e(route('borang.inden')); ?>">Borang Inden</a></li>
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('penerimaan_inden')): ?>
+          <li><a href="<?php echo e(route('borang.penerimaan')); ?>">Penerimaan</a></li>
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('penilaian_prestasi')): ?>
+          <li><a href="<?php echo e(route('user.penilaian_prestasi')); ?>" class="active">Penilaian Prestasi</a></li>
+          <?php endif; ?>
+          <li class="d-xl-none"><a href="<?php echo e(route('profile')); ?>">Profil</a></li>
           <li class="d-xl-none"><a href="#" id="navLogoutBtn" class="text-danger">Log Keluar</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
       <div class="d-none d-xl-flex align-items-center gap-3">
-        @if(Auth::user()->hasPermission('pengesahan_inden'))
-        <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3"
+        <?php if(Auth::user()->hasPermission('pengesahan_inden')): ?>
+        <a href="<?php echo e(route('user.pengesahan.inden')); ?>" class="position-relative text-white fs-5 me-3"
           style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''">
           <i class="bi bi-bell-fill"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
-            {{ $pendingApprovals ?? 0 }}
+            <?php echo e($pendingApprovals ?? 0); ?>
+
           </span>
         </a>
-        @endif
-        @if(Auth::user()->hasPermission('penerimaan_inden'))
-        <a href="{{ route('borang.penerimaan') }}" class="position-relative text-white fs-5 me-3"
+        <?php endif; ?>
+        <?php if(Auth::user()->hasPermission('penerimaan_inden')): ?>
+        <a href="<?php echo e(route('borang.penerimaan')); ?>" class="position-relative text-white fs-5 me-3"
           style="transition: color 0.3s;" onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color=''">
           <i class="bi bi-truck"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
-            {{ $pendingPenerimaan ?? 0 }}
+            <?php echo e($pendingPenerimaan ?? 0); ?>
+
           </span>
         </a>
-        @endif
+        <?php endif; ?>
         <button class="btn btn-icon" id="themeToggle" style="background:none;border:none;color:var(--text);font-size:1.2rem;padding:4px 8px"><i class="bi bi-moon-fill"></i></button>
-        <a href="{{ route('profile') }}" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''"><i class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}</a>
+        <a href="<?php echo e(route('profile')); ?>" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''"><i class="bi bi-person-circle me-2"></i><?php echo e(Auth::user()->name ?? 'Pengguna'); ?></a>
         <button type="button" class="btn btn-custom btn-logout btn-sm px-3 py-2" id="desktopLogoutBtn"><i class="bi bi-box-arrow-right me-2"></i>Log Keluar</button>
       </div>
     </div>
@@ -201,12 +203,12 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
 
           <div class="card-form">
             <form id="evaluationForm">
-              @csrf
+              <?php echo csrf_field(); ?>
 
               <!-- Institution Label -->
               <div class="mb-4">
                 <label class="form-label-custom">Institusi</label>
-                <div class="fw-bold fs-5">{{ $institution->name ?? '-' }}</div>
+                <div class="fw-bold fs-5"><?php echo e($institution->name ?? '-'); ?></div>
               </div>
 
               <!-- Syarikat + Tarikh Penilaian -->
@@ -215,14 +217,14 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
                   <label class="form-label-custom">Syarikat</label>
                   <select class="form-select" name="supplier_id" id="supplierSelect" required>
                     <option value="">Pilih Syarikat</option>
-                    @foreach($suppliers as $s)
-                      <option value="{{ $s->id }}">{{ $s->company_name }}</option>
-                    @endforeach
+                    <?php $__currentLoopData = $suppliers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                      <option value="<?php echo e($s->id); ?>"><?php echo e($s->company_name); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                   </select>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label-custom">Tarikh Penilaian</label>
-                  <input type="text" class="form-control date-input" name="evaluation_date" id="evalDate" value="{{ date('d/m/Y') }}" placeholder="dd/mm/yyyy" required>
+                  <input type="text" class="form-control date-input" name="evaluation_date" id="evalDate" value="<?php echo e(date('d/m/Y')); ?>" placeholder="dd/mm/yyyy" required>
                 </div>
               </div>
 
@@ -263,11 +265,11 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
                 </div>
                 <div class="col-md-6">
                   <label class="form-label-custom">Nama Penilai</label>
-                  <input type="text" class="form-control" name="evaluator_name" value="{{ Auth::user()->name }}" readonly>
+                  <input type="text" class="form-control" name="evaluator_name" value="<?php echo e(Auth::user()->name); ?>" readonly>
                 </div>
               </div>
 
-              <input type="hidden" name="institution_id" value="{{ $institution->id ?? '' }}">
+              <input type="hidden" name="institution_id" value="<?php echo e($institution->id ?? ''); ?>">
               <input type="hidden" name="order_count" id="orderCountInput" value="0">
 
               <!-- Criteria Table -->
@@ -366,7 +368,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
                   <div class="summary-card h-100">
                     <div class="mb-3">
                       <label class="form-label-custom">Pegawai Penilai</label>
-                      <input type="text" class="form-control bg-transparent" name="evaluator_name" value="{{ Auth::user()->name }}" readonly>
+                      <input type="text" class="form-control bg-transparent" name="evaluator_name" value="<?php echo e(Auth::user()->name); ?>" readonly>
                     </div>
                     <div>
                       <label class="form-label-custom">Ulasan / Catatan</label>
@@ -427,8 +429,8 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         </div>
         <div class="modal-footer" style="border:none;padding:6px 24px 20px;position:relative;gap:.5rem;">
           <button type="button" class="btn btn-sm px-4" data-bs-dismiss="modal" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#f3f7f3;border-radius:50px;font-weight:600;font-size:.8rem;transition:all .3s;" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">Batal</button>
-          <form method="POST" action="{{ route('logout') }}" id="logoutForm">
-            @csrf
+          <form method="POST" action="<?php echo e(route('logout')); ?>" id="logoutForm">
+            <?php echo csrf_field(); ?>
             <button type="submit" class="btn btn-sm px-4" style="background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;border:none;border-radius:50px;font-weight:600;font-size:.8rem;transition:all .3s;box-shadow:0 4px 14px rgba(192,57,43,.25);" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px rgba(192,57,43,.4)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(192,57,43,.25)'"><i class="bi bi-box-arrow-right me-1"></i>Log Keluar</button>
           </form>
         </div>
@@ -438,7 +440,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="{{ asset('frontend/Nexa/assets/js/mobile-nav.js') }}"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/js/mobile-nav.js')); ?>"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ms.js"></script>
 
@@ -565,7 +567,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo e(csrf_token()); ?>',
             'Accept': 'application/json'
           },
           body: JSON.stringify({ supplier_id: supplierId, order_date_from: dateFrom, order_date_to: dateTo })
@@ -693,7 +695,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
           const response = await fetch('/evaluations', {
             method: 'POST',
             headers: {
-              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}',
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo e(csrf_token()); ?>',
               'Accept': 'application/json'
             },
             body: formData
@@ -737,4 +739,4 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
   </script>
 
 </body>
-</html>
+</html><?php /**PATH C:\laragon\www\MySIPMA_2\resources\views/user_penilaian_prestasi.blade.php ENDPATH**/ ?>

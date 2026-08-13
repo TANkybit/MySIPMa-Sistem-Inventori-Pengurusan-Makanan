@@ -704,19 +704,25 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
   <!-- Logout confirmation modal -->
   <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="logoutConfirmModalLabel"><i class="bi bi-box-arrow-right me-2"></i>Log Keluar</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      <div class="modal-content" style="background:linear-gradient(165deg,#101910,#070907);border:1px solid rgba(124,179,66,.22);border-radius:20px;box-shadow:0 18px 48px rgba(0,0,0,.55),0 0 32px rgba(124,179,66,.1);position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:15%;right:15%;height:2px;background:linear-gradient(90deg,transparent,#7CB342,transparent);border-radius:0 0 4px 4px;"></div>
+        <div class="modal-header" style="border:none;padding:20px 24px 4px;position:relative;">
+          <div class="d-flex align-items-center gap-2">
+            <div style="width:36px;height:36px;background:rgba(124,179,66,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="bi bi-box-arrow-right" style="font-size:1rem;color:#7CB342;"></i>
+            </div>
+            <h5 class="modal-title fw-bold mb-0" id="logoutConfirmModalLabel" style="color:#C5E1A5;font-size:1rem;">Log Keluar</h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup" style="filter:brightness(0.5);transition:all .3s;font-size:.75rem;" onmouseover="this.style.filter='brightness(1)';this.style.transform='rotate(90deg) scale(1.15)'" onmouseout="this.style.filter='brightness(0.5)';this.style.transform=''"></button>
         </div>
-        <div class="modal-body">
-          <p class="mb-0">Adakah anda pasti ingin log keluar dari sistem?</p>
+        <div class="modal-body" style="padding:12px 24px;position:relative;">
+          <p class="mb-0" style="color:#f3f7f3;font-size:.95rem;">Adakah anda pasti ingin log keluar dari sistem ini?</p>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-cancel btn-sm px-3" data-bs-dismiss="modal">Batal</button>
+        <div class="modal-footer" style="border:none;padding:6px 24px 20px;position:relative;gap:.5rem;">
+          <button type="button" class="btn btn-sm px-4" data-bs-dismiss="modal" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#f3f7f3;border-radius:50px;font-weight:600;font-size:.8rem;transition:all .3s;" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">Batal</button>
           <form action="{{ route('logout') }}" method="POST" id="logoutForm" class="d-inline">
             @csrf
-            <button type="submit" class="btn btn-danger btn-sm px-3"><i class="bi bi-box-arrow-right me-1"></i>Log Keluar</button>
+            <button type="submit" class="btn btn-sm px-4" style="background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;border:none;border-radius:50px;font-weight:600;font-size:.8rem;transition:all .3s;box-shadow:0 4px 14px rgba(192,57,43,.25);" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px rgba(192,57,43,.4)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(192,57,43,.25)'"><i class="bi bi-box-arrow-right me-1"></i>Log Keluar</button>
           </form>
         </div>
       </div>

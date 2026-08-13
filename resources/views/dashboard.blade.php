@@ -758,7 +758,7 @@
                                 <button class="btn btn-sm btn-outline-primary">Semua</button>
                                 <button class="btn btn-sm btn-outline-warning">Menunggu</button>
                                 <button class="btn btn-sm btn-outline-success">Disahkan</button>
-                                <button class="btn btn-sm btn-outline-danger">Ditolak</button>
+                                <button class="btn btn-sm btn-outline-danger">Pembetulan</button>
                             </div>
                         </div>
                         <div class="card-body">
@@ -799,7 +799,7 @@
                                                     <span class="fw-bold">12</span>
                                                 </div>
                                                 <div class="d-flex justify-content-between">
-                                                    <span>Ditolak</span>
+                                                    <span>Pembetulan</span>
                                                     <span class="fw-bold">2</span>
                                                 </div>
                                             </div>

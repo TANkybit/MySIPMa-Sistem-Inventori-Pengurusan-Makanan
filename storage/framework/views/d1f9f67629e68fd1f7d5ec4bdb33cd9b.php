@@ -5,19 +5,19 @@
   <script>document.documentElement.setAttribute('data-bs-theme',localStorage.getItem('theme')||'light')</script>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Pengesahan Inden - MySIPMa</title>
+  <title>Senarai Inden - MySIPMa</title>
 
-  <link rel="icon" type="image/png" href="{{ asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png') }}">
-  <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png') }}">
+  <link rel="icon" type="image/png" href="<?php echo e(asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png')); ?>">
+  <link rel="apple-touch-icon" sizes="180x180" href="<?php echo e(asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png')); ?>">
 
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-  <link href="{{ asset('frontend/Nexa/assets/css/main2.css') }}" rel="stylesheet">
-  <link href="{{ asset('css/user-theme.css') }}" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('frontend/Nexa/assets/css/main2.css')); ?>" rel="stylesheet">
+  <link href="<?php echo e(asset('css/user-theme.css')); ?>" rel="stylesheet">
   
   <!-- DataTables CSS -->
   <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
@@ -57,208 +57,6 @@
     .logo-glow:hover {
       filter: brightness(170%);
       transform: scale(1.02);
-    }
-
-    /* Penjara2 styled modal components */
-    .modal-content-custom {
-      background: rgba(36, 36, 36, 0.95) !important;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-radius: 12px !important;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(0, 212, 170, 0.2) !important;
-      color: #ffffff;
-    }
-
-    .modal-header-custom {
-      border-bottom: none !important;
-      padding: 20px 20px 0 20px !important;
-    }
-
-    .modal-body-custom {
-      padding: 20px 40px 30px 40px !important;
-    }
-
-    .modal-body-custom h1 {
-      font-size: 28px;
-      font-weight: 600;
-      margin-bottom: 20px;
-      text-align: center;
-      color: #00d4aa;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .radio-group {
-      margin-bottom: 30px;
-      padding: 20px;
-      background: rgba(0, 212, 170, 0.05);
-      border-radius: 8px;
-      border-left: 3px solid #008870;
-    }
-
-    .radio-option {
-      display: flex;
-      align-items: center;
-      margin-bottom: 12px;
-      cursor: pointer;
-      font-size: 15px;
-      color: #ffffff;
-    }
-
-    .radio-option input[type="radio"] {
-      appearance: none;
-      -webkit-appearance: none;
-      width: 20px;
-      height: 20px;
-      border: 2px solid #008870;
-      border-radius: 50%;
-      margin-right: 12px;
-      cursor: pointer;
-      background-color: transparent;
-      transition: all 0.3s ease;
-    }
-
-    .radio-option input[type="radio"]:hover {
-      box-shadow: 0 0 10px rgba(0, 212, 170, 0.5);
-    }
-
-    .radio-option input[type="radio"]:checked {
-      background-color: #008870;
-      box-shadow: inset 0 0 0 3px #242424, 0 0 10px rgba(0, 212, 170, 0.7);
-    }
-
-    .input-section {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 30px;
-    }
-
-    .label-text {
-      font-weight: 600;
-      color: #00d4aa;
-      text-transform: uppercase;
-      font-size: 12px;
-      letter-spacing: 0.5px;
-      margin-bottom: 10px;
-    }
-
-    .modal-body-custom textarea {
-      background-color: #1a1a1a;
-      color: #ffffff;
-      padding: 12px;
-      border: 1px solid #444;
-      border-radius: 6px;
-      resize: vertical;
-      min-height: 100px;
-      font-family: 'Roboto', sans-serif;
-      transition: border-color 0.3s ease;
-      width: 100%;
-    }
-
-    .modal-body-custom textarea:focus {
-      outline: none;
-      border-color: #00d4aa;
-      box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
-    }
-
-    .modal-body-custom textarea::placeholder {
-      color: #666;
-    }
-
-    .checkbox-section {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: 30px;
-      font-size: 13px;
-      line-height: 1.6;
-      padding: 20px;
-      background: rgba(0, 212, 170, 0.05);
-      border-radius: 8px;
-      border-left: 3px solid #008870;
-    }
-
-    .checkbox-section input[type="checkbox"] {
-      appearance: none;
-      -webkit-appearance: none;
-      width: 20px;
-      height: 20px;
-      border: 2px solid #008870;
-      border-radius: 4px;
-      margin-right: 12px;
-      margin-top: 2px;
-      cursor: pointer;
-      background-color: transparent;
-      transition: all 0.3s ease;
-      flex-shrink: 0;
-    }
-
-    .checkbox-section input[type="checkbox"]:hover {
-      box-shadow: 0 0 10px rgba(0, 212, 170, 0.5);
-    }
-
-    .checkbox-section input[type="checkbox"]:checked {
-      background-color: #008870;
-      box-shadow: inset 0 0 0 2px #242424, 0 0 10px rgba(0, 212, 170, 0.7);
-    }
-
-    .checkbox-section input[type="checkbox"]:checked::after {
-      content: '✓';
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #242424;
-      font-weight: bold;
-    }
-
-    .translation {
-      color: #aaa;
-      font-style: italic;
-      display: block;
-      margin-top: 8px;
-      font-size: 12px;
-    }
-
-    .btn-submit-custom {
-      padding: 12px 35px;
-      font-size: 13px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      background-color: transparent;
-      border: 2px solid #008870;
-      color: #00d4aa;
-      cursor: pointer;
-      border-radius: 6px;
-      transition: all 0.3s ease;
-    }
-
-    .btn-submit-custom:hover {
-      background-color: #008870;
-      color: #ffffff;
-      box-shadow: 0 0 15px rgba(0, 212, 170, 0.4);
-      transform: translateY(-2px);
-    }
-
-    .btn-cancel-custom {
-      padding: 12px 35px;
-      font-size: 13px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      background-color: transparent;
-      border: 2px solid #555;
-      color: #aaa;
-      cursor: pointer;
-      border-radius: 6px;
-      transition: all 0.3s ease;
-      margin-right: 10px;
-    }
-
-    .btn-cancel-custom:hover {
-      background-color: #555;
-      color: #ffffff;
-      transform: translateY(-2px);
     }
 
     .dashboard-container {
@@ -331,14 +129,6 @@
       border-color: #fff;
     }
 
-    .btn-action {
-      border-radius: 999px;
-      padding: 5px 12px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-right: 5px;
-    }
-
     /* Dark Mode DataTables Overrides */
     div.dataTables_wrapper div.dataTables_length label,
     div.dataTables_wrapper div.dataTables_filter label,
@@ -350,9 +140,9 @@
         border-color: var(--border) !important;
     }
     .table-dark-custom th {
-        background: linear-gradient(135deg, #065f46, #047857) !important;
-        color: #fff !important;
-        border-bottom: 2px solid var(--border) !important;
+      background: linear-gradient(135deg, #065f46, #047857) !important;
+      color: #fff !important;
+      border-bottom: 2px solid var(--border) !important;
     }
     .table-dark-custom td {
         background-color: transparent !important;
@@ -402,9 +192,6 @@
     [data-bs-theme="light"] .page-item .page-link { background:#fff !important; border-color:#e5e7eb !important; color:#374151 !important; }
     [data-bs-theme="light"] .page-item.active .page-link { background:#10b981 !important; border-color:#10b981 !important; color:#fff !important; }
     [data-bs-theme="light"] .form-control-sm,[data-bs-theme="light"] .form-select-sm { background:#fff !important; border-color:#d1d5db !important; color:#111827 !important; }
-    [data-bs-theme="light"] .modal-content-custom { background:rgba(255,255,255,.95) !important; color:#111827; border-color:#e5e7eb; }
-    [data-bs-theme="light"] .radio-option { color:#111827; }
-    [data-bs-theme="light"] .modal-body-custom textarea { background-color:#fff; color:#111827; }
     [data-bs-theme="light"] #header { background:rgba(255,255,255,.8) !important; border-bottom:1px solid #e5e7eb !important; }
     [data-bs-theme="light"] .dropdown-menu { background:#fff; border-color:#e5e7eb; color:#111827; }
     [data-bs-theme="light"] .dropdown-item { color:#374151; }
@@ -427,7 +214,7 @@
     [data-bs-theme="light"] #logoutConfirmModal .btn-cancel { background:#f3f4f6; border-color:#d1d5db; color:#374151; }
     [data-bs-theme="light"] #logoutConfirmModal .btn-cancel:hover { background:#e5e7eb; }
   </style>
-  <link href="{{ asset('css/design.css') }}?v=3" rel="stylesheet">
+  <link href="<?php echo e(asset('css/design.css')); ?>?v=3" rel="stylesheet">
 
 <style>
 body.mobile-nav-active { background: #000 !important; }
@@ -442,27 +229,27 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
   <header id="header" class="header d-flex align-items-center sticky-top" style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
     <div class="container position-relative d-flex align-items-center justify-content-between">
       <a href="#" class="logo-glow d-flex align-items-center" id="logoLogoutTrigger">
-        <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" style="height: 55px; width: auto;" alt="MySIPMa logo">
+        <img src="<?php echo e(asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png')); ?>" style="height: 55px; width: auto;" alt="MySIPMa logo">
       </a>
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="{{ route('user.dashboard') }}" class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Papan Pemuka</a></li>
-          <li><a href="{{ route('user.senarai.inden') }}" class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
-          <li><a href="{{ route('user.inventori') }}" class="{{ request()->routeIs('user.inventori') ? 'active' : '' }}">Inventori</a></li>
-          @if(Auth::user()->hasPermission('pengesahan_inden'))
-          <li><a href="{{ route('user.pengesahan.inden') }}" class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
-          @endif
-          @if(Auth::user()->hasPermission('borang_inden'))
-          <li><a href="{{ route('borang.inden') }}" class="{{ request()->routeIs('borang.inden*') ? 'active' : '' }}">Borang Inden</a></li>
-          @endif
-          @if(Auth::user()->hasPermission('penerimaan_inden'))
-          <li><a href="{{ route('borang.penerimaan') }}" class="{{ request()->routeIs('borang.penerimaan') ? 'active' : '' }}">Penerimaan</a></li>
-          @endif
-          @if(Auth::user()->hasPermission('penilaian_prestasi'))
-          <li><a href="{{ route('user.penilaian_prestasi') }}" class="{{ request()->routeIs('user.penilaian_prestasi') ? 'active' : '' }}">Penilaian Prestasi</a></li>
-          @endif
-          <li class="d-xl-none"><a href="{{ route('profile') }}" class="{{ request()->routeIs('profile') ? 'active' : '' }}">Profil</a></li>
+          <li><a href="<?php echo e(route('user.dashboard')); ?>" class="<?php echo e(request()->routeIs('user.dashboard') ? 'active' : ''); ?>">Papan Pemuka</a></li>
+          <li><a href="<?php echo e(route('user.senarai.inden')); ?>" class="<?php echo e(request()->routeIs('user.senarai.inden') ? 'active' : ''); ?>">Senarai Inden</a></li>
+          <li><a href="<?php echo e(route('user.inventori')); ?>" class="<?php echo e(request()->routeIs('user.inventori') ? 'active' : ''); ?>">Inventori</a></li>
+          <?php if(Auth::user()->hasPermission('pengesahan_inden')): ?>
+          <li><a href="<?php echo e(route('user.pengesahan.inden')); ?>" class="<?php echo e(request()->routeIs('user.pengesahan.inden') ? 'active' : ''); ?>">Pengesahan Inden</a></li>
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('borang_inden')): ?>
+          <li><a href="<?php echo e(route('borang.inden')); ?>" class="<?php echo e(request()->routeIs('borang.inden*') ? 'active' : ''); ?>">Borang Inden</a></li>
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('penerimaan_inden')): ?>
+          <li><a href="<?php echo e(route('borang.penerimaan')); ?>" class="<?php echo e(request()->routeIs('borang.penerimaan') ? 'active' : ''); ?>">Penerimaan</a></li>
+          <?php endif; ?>
+          <?php if(Auth::user()->hasPermission('penilaian_prestasi')): ?>
+          <li><a href="<?php echo e(route('user.penilaian_prestasi')); ?>" class="<?php echo e(request()->routeIs('user.penilaian_prestasi') ? 'active' : ''); ?>">Penilaian Prestasi</a></li>
+          <?php endif; ?>
+          <li class="d-xl-none"><a href="<?php echo e(route('profile')); ?>" class="<?php echo e(request()->routeIs('profile') ? 'active' : ''); ?>">Profil</a></li>
           <li class="d-xl-none"><a href="#" id="navLogoutBtn" class="text-danger">Log Keluar</a></li>
           </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -470,28 +257,28 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
 
       <div class="d-none d-xl-flex align-items-center gap-3">
         <!-- Notification Bell -->
-        @if(Auth::user()->hasPermission('pengesahan_inden'))
-        <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''">
+        <?php if(Auth::user()->hasPermission('pengesahan_inden')): ?>
+        <a href="<?php echo e(route('user.pengesahan.inden')); ?>" class="position-relative text-white fs-5 me-3" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''">
           <i class="bi bi-bell-fill"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
-            {{ $pendingApprovals ?? 0 }}
+            <?php echo e($pendingApprovals ?? 0); ?>
+
             <span class="visually-hidden">Inden belum disah</span>
           </span>
         </a>
-        @endif
-        @if(Auth::user()->hasPermission('penerimaan_inden'))
-        <a href="{{ route('borang.penerimaan') }}" class="position-relative text-white fs-5 me-3" style="transition: color 0.3s;" onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color=''">
+        <?php endif; ?>
+        <?php if(Auth::user()->hasPermission('penerimaan_inden')): ?>
+        <a href="<?php echo e(route('borang.penerimaan')); ?>" class="position-relative text-white fs-5 me-3" style="transition: color 0.3s;" onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color=''">
           <i class="bi bi-truck"></i>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
-            {{ $pendingPenerimaan ?? 0 }}
+            <?php echo e($pendingPenerimaan ?? 0); ?>
+
             <span class="visually-hidden">Penerimaan belum diproses</span>
           </span>
         </a>
-        @endif
+        <?php endif; ?>
         <button class="btn btn-icon" id="themeToggle" style="background:none;border:none;color:var(--text);font-size:1.2rem;padding:4px 8px"><i class="bi bi-moon-fill"></i></button>
-        <a href="{{ route('profile') }}" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''">
-          <i class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}
-        </a>
+        <a href="<?php echo e(route('profile')); ?>" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''"><i class="bi bi-person-circle me-2"></i><?php echo e(Auth::user()->name ?? 'Pengguna'); ?></a>
         <button type="button" class="btn btn-custom btn-logout btn-sm px-3 py-2" id="desktopLogoutBtn"><i class="bi bi-box-arrow-right me-2"></i>Log Keluar</button>
       </div>
     </div>
@@ -501,27 +288,23 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
     <div class="container" data-aos="fade-up">
       
       <div class="dashboard-header text-center">
-        <h1>Pengesahan Inden</h1>
-        <p class="muted">Senarai borang inden yang sedang menanti tindakan pengesahan daripada anda.</p>
+        <h1>Senarai Inden</h1>
+        <p class="muted">Paparan rekod semua borang inden yang telah dihantar.</p>
       </div>
-
-      @if (session('success'))
-        <div class="alert alert-success border-0 rounded-4 mb-4">
-          {{ session('success') }}
-        </div>
-      @endif
 
       <div class="row justify-content-center">
         <div class="col-lg-10">
+          <div class="mb-3" style="color:var(--text);font-size:14px;font-weight:500;">
+            <i class="bi bi-building me-1"></i> Institusi: <span class="text-success"><?php echo e($institutionName ?? '-'); ?></span>
+          </div>
           <div class="card-table">
             <div class="table-responsive">
-              <table id="pengesahanIndenTable" class="table table-dark-custom w-100">
+              <table id="senaraiIndenTable" class="table table-dark-custom w-100">
                 <thead>
                   <tr>
                     <th>Bil</th>
                     <th>No. Inden</th>
                     <th>Tarikh</th>
-                    <th>Institusi</th>
                     <th>Pembekal</th>
                     <th>Jumlah</th>
                     <th>Status</th>
@@ -529,24 +312,41 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
                   </tr>
                 </thead>
                 <tbody>
-                  @forelse (($pendingOrders ?? collect()) as $order)
+                  <?php $__empty_1 = true; $__currentLoopData = ($orders ?? collect()); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <?php
+                      $orderBadge = match ($order->order_status) {
+                          'Completed' => 'bg-success',
+                          'In Progress' => 'bg-info text-dark',
+                          'Pending' => 'bg-warning text-dark',
+                          'Rejected' => 'bg-danger',
+                          default => 'bg-secondary',
+                      };
+                      $statusLabel = match ($order->order_status) {
+                          'Completed' => 'Selesai',
+                          'In Progress' => 'Dalam Proses',
+                          'Pending' => 'Menunggu',
+                          'Rejected' => 'Pembetulan',
+                          default => $order->order_status ?? '-',
+                      };
+                    ?>
                     <tr>
-                      <td>{{ $loop->iteration }}</td>
-                      <td><a href="{{ route('borang.inden.show', $order->id) }}" class="text-decoration-none fw-bold" style="color:#10b981;">{{ $order->order_no }}</a></td>
-                      <td>{{ $order->order_date ? \Carbon\Carbon::parse($order->order_date)->format('d/m/Y') : '-' }}</td>
-                      <td>{{ $order->institution_name ?? '-' }}</td>
-                      <td>{{ $order->supplier_name ?? '-' }}</td>
-                      <td>RM {{ number_format((float) $order->total_amount, 2) }}</td>
-                      <td><span class="badge bg-warning text-dark">Menunggu Pengesahan</span></td>
+                      <td><?php echo e($loop->iteration); ?></td>
+                      <td><a href="<?php echo e(Auth::user()->hasPermission('borang_inden') ? route('borang.inden.edit', $order->id) : route('borang.inden.show', $order->id)); ?>" class="text-success fw-semibold text-decoration-none"><?php echo e($order->order_no); ?></a></td>
+                      <td><?php echo e($order->order_date ? \Carbon\Carbon::parse($order->order_date)->format('d/m/Y') : '-'); ?></td>
+                      <td><a href="#" class="text-info text-decoration-none" data-bs-toggle="modal" data-bs-target="#supplierModal<?php echo e($order->id); ?>"><?php echo e($order->supplier_name ?? '-'); ?></a></td>
+                      <td>RM <?php echo e(number_format((float) $order->total_amount, 2)); ?></td>
+                      <td><span class="badge <?php echo e($orderBadge); ?>"><?php echo e($statusLabel); ?></span></td>
                       <td>
-                        <button type="button" class="btn btn-sm btn-success btn-action btn-open-approval-modal" data-order-id="{{ $order->id }}" data-order-no="{{ $order->order_no }}" data-bs-toggle="modal" data-bs-target="#approvalModal"><i class="bi bi-check-circle"></i> Sahkan</button>
+                        <?php if($order->order_status === 'Completed'): ?>
+                          <a href="<?php echo e(route('borang.penerimaan.cetak', $order->id)); ?>" target="_blank" class="btn-link-action"><i class="bi bi-printer me-1"></i>Cetak Penerimaan</a>
+                        <?php endif; ?>
                       </td>
                     </tr>
-                  @empty
+                  <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
-                      <td colspan="8" class="text-center text-white-50 py-4">Tiada inden yang menunggu pengesahan.</td>
+                      <td colspan="7" class="text-center text-white-50 py-4">Tiada rekod inden ditemui.</td>
                     </tr>
-                  @endforelse
+                  <?php endif; ?>
                 </tbody>
               </table>
             </div>
@@ -561,17 +361,53 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
     <p class="mb-0 text-white-50"><small>&copy; 2026 MySIPMa. Hak Cipta Terpelihara.</small></p>
   </footer>
 
+  <?php $__currentLoopData = ($orders ?? collect()); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+  <?php if($order->supplier_name): ?>
+  <div class="modal fade" id="supplierModal<?php echo e($order->id); ?>" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background:linear-gradient(160deg,#0f140f,#080a08);border:1px solid rgba(124,179,66,.2);border-radius:20px;box-shadow:0 18px 48px rgba(0,0,0,.5),0 0 32px rgba(124,179,66,.08);position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:15%;right:15%;height:2px;background:linear-gradient(90deg,transparent,#7CB342,transparent);border-radius:0 0 4px 4px;"></div>
+        <div class="modal-header" style="border:none;padding:20px 24px 4px;position:relative;">
+          <div class="d-flex align-items-center gap-2">
+            <div style="width:36px;height:36px;background:rgba(124,179,66,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="bi bi-building" style="font-size:1rem;color:#7CB342;"></i>
+            </div>
+            <h5 class="modal-title fw-bold mb-0" style="color:#C5E1A5;font-size:1rem;">Maklumat Pembekal</h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter:brightness(0.5);transition:all .3s;font-size:.75rem;" onmouseover="this.style.filter='brightness(1)';this.style.transform='rotate(90deg) scale(1.15)'" onmouseout="this.style.filter='brightness(0.5)';this.style.transform=''"></button>
+        </div>
+        <div class="modal-body" style="padding:12px 24px 8px;position:relative;">
+          <div style="background:rgba(124,179,66,.04);border:1px solid rgba(124,179,66,.1);border-radius:12px;padding:4px 14px;">
+            <table class="table table-borderless mb-0">
+              <tr><td style="width:110px;padding:6px 0;vertical-align:middle;"><span style="display:inline-flex;align-items:center;gap:6px;color:#7CB342;font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:.03em;"><span style="width:3px;height:12px;background:#7CB342;border-radius:2px;display:inline-block;"></span>Nama Syarikat</span></td><td style="font-weight:500;padding:6px 0;vertical-align:middle;color:#f3f7f3;"><?php echo e($order->supplier_name); ?></td></tr>
+              <tr><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;"><span style="display:inline-flex;align-items:center;gap:6px;color:#7CB342;font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:.03em;"><span style="width:3px;height:12px;background:#7CB342;border-radius:2px;display:inline-block;"></span>Contact Person</span></td><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;color:#f3f7f3;"><?php echo e($order->supplier_contact ?? '-'); ?></td></tr>
+              <tr><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;"><span style="display:inline-flex;align-items:center;gap:6px;color:#7CB342;font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:.03em;"><span style="width:3px;height:12px;background:#7CB342;border-radius:2px;display:inline-block;"></span>Emel</span></td><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;color:#f3f7f3;word-break:break-all;"><?php echo e($order->supplier_email ?? '-'); ?></td></tr>
+              <tr><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;"><span style="display:inline-flex;align-items:center;gap:6px;color:#7CB342;font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:.03em;"><span style="width:3px;height:12px;background:#7CB342;border-radius:2px;display:inline-block;"></span>No. Telefon</span></td><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;color:#f3f7f3;"><?php echo e($order->supplier_phone ?? '-'); ?></td></tr>
+              <tr><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;"><span style="display:inline-flex;align-items:center;gap:6px;color:#7CB342;font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:.03em;"><span style="width:3px;height:12px;background:#7CB342;border-radius:2px;display:inline-block;"></span>Alamat</span></td><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;color:#f3f7f3;"><?php echo e($order->supplier_address ?? '-'); ?></td></tr>
+              <tr><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;"><span style="display:inline-flex;align-items:center;gap:6px;color:#7CB342;font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:.03em;"><span style="width:3px;height:12px;background:#7CB342;border-radius:2px;display:inline-block;"></span>Poskod</span></td><td style="padding:6px 0;border-top:1px solid rgba(124,179,66,.08);vertical-align:middle;color:#f3f7f3;"><?php echo e($order->supplier_postcode ?? '-'); ?></td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer" style="border:none;padding:4px 24px 16px;position:relative;">
+          <button type="button" class="btn btn-sm px-4 py-1.5" data-bs-dismiss="modal" style="background:linear-gradient(135deg,#7CB342,#558B2F);color:#fff;border:none;border-radius:50px;font-weight:600;font-size:0.8rem;transition:all .3s;box-shadow:0 4px 14px rgba(124,179,66,.2);" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px rgba(124,179,66,.35)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(124,179,66,.2)'">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
+  <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
   <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="{{ asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ asset('frontend/Nexa/assets/js/mobile-nav.js') }}"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js')); ?>"></script>
+  <script src="<?php echo e(asset('frontend/Nexa/assets/js/mobile-nav.js')); ?>"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
   
   <script>
     $(document).ready(function() {
-        @if(($pendingOrders ?? collect())->isNotEmpty())
-        $('#pengesahanIndenTable').DataTable({
+        <?php if(($orders ?? collect())->isNotEmpty()): ?>
+        $('#senaraiIndenTable').DataTable({
             pageLength: 5,
             pagingType: 'full_numbers',
             lengthChange: true,
@@ -594,47 +430,12 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
                 }
             }
         });
-        @endif
-
-        const approvalBaseUrl = "{{ url('/user/pengesahan-inden') }}";
-        const approvalForm = document.getElementById('approvalConfirmForm');
-        const approvalOrderNo = document.getElementById('approvalOrderNo');
-
-        document.querySelectorAll('.btn-open-approval-modal').forEach(button => {
-            button.addEventListener('click', function() {
-                const orderId = this.dataset.orderId;
-                const orderNo = this.dataset.orderNo;
-
-                if (approvalForm && orderId) {
-                    approvalForm.action = `${approvalBaseUrl}/${orderId}/sahkan`;
-                }
-
-                if (approvalOrderNo) {
-                    approvalOrderNo.textContent = orderNo || 'Tidak diketahui';
-                }
-            });
-        });
-
-        $('#ulasanTextarea').on('input', function() {
-            const text = $(this).val().trim();
-            const words = text ? text.split(/\s+/).filter(w => w.length > 0) : [];
-            const count = words.length;
-            $('#ulasanWordCount').text(count + ' / 250 patah perkataan');
-            if (count > 250) {
-                $('#ulasanWordWarning').show();
-                $('#ulasanWordCount').addClass('text-danger');
-            } else {
-                $('#ulasanWordWarning').hide();
-                $('#ulasanWordCount').removeClass('text-danger');
-            }
-        });
+        <?php endif; ?>
     });
   </script>
-
-  @include('Penjara2.approval')
-    <script src="{{ asset('js/table-download-pdf.js') }}"></script>
-    <script src="{{ asset('js/session-timeout.js') }}"></script>
-  <script src="{{ asset('js/user-theme.js') }}"></script>
+    <script src="<?php echo e(asset('js/table-download-pdf.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/session-timeout.js')); ?>"></script>
+  <script src="<?php echo e(asset('js/user-theme.js')); ?>"></script>
 
   <!-- Logout confirmation modal -->
   <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel" aria-hidden="true">
@@ -655,8 +456,8 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         </div>
         <div class="modal-footer" style="border:none;padding:6px 24px 20px;position:relative;gap:.5rem;">
           <button type="button" class="btn btn-sm px-4" data-bs-dismiss="modal" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#f3f7f3;border-radius:50px;font-weight:600;font-size:.8rem;transition:all .3s;" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">Batal</button>
-          <form action="{{ route('logout') }}" method="POST" id="logoutForm" class="d-inline">
-            @csrf
+          <form action="<?php echo e(route('logout')); ?>" method="POST" id="logoutForm" class="d-inline">
+            <?php echo csrf_field(); ?>
             <button type="submit" class="btn btn-sm px-4" style="background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;border:none;border-radius:50px;font-weight:600;font-size:.8rem;transition:all .3s;box-shadow:0 4px 14px rgba(192,57,43,.25);" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px rgba(192,57,43,.4)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(192,57,43,.25)'"><i class="bi bi-box-arrow-right me-1"></i>Log Keluar</button>
           </form>
         </div>
@@ -677,3 +478,4 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
   </script>
 </body>
 </html>
+<?php /**PATH C:\laragon\www\MySIPMA_2\resources\views/senarai_inden.blade.php ENDPATH**/ ?>

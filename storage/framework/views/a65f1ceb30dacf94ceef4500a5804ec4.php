@@ -405,7 +405,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
                       <div class="col-1">${item.unit || 'Unit'}</div>
                       <div class="col-1">${item.ordered_qty}</div>
                       <div class="col-2">
-                        <input type="number" name="items[${item.id}][received_qty]" class="form-control received-qty" value="${item.received_qty || 0}" min="0" step="1" style="min-height:38px;" data-ordered="${item.ordered_qty}">
+                        <input type="number" name="items[${item.id}][received_qty]" class="form-control received-qty" value="${item.ordered_qty}" min="0" step="1" style="min-height:38px;" data-ordered="${item.ordered_qty}">
                         <input type="hidden" name="items[${item.id}][item_id]" value="${item.item_id}">
                         <input type="hidden" name="items[${item.id}][ordered_qty]" value="${item.ordered_qty}">
                         <div class="qty-alert text-danger small mt-1" style="display:none;"></div>

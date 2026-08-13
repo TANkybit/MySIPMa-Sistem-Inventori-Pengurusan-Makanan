@@ -1640,7 +1640,7 @@ const DataHelpers = {
             'tidak_aktif': 'Tidak Aktif',
             'pending': 'Menunggu',
             'approved': 'Disahkan',
-            'rejected': 'Ditolak',
+            'rejected': 'Pembetulan',
             'active': 'Aktif',
             'inactive': 'Tidak Aktif',
             'maintenance': 'Penyelenggaraan'

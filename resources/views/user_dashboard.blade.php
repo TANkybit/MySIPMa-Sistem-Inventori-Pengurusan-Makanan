@@ -681,6 +681,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
                 <div style="position:relative;height:260px;">
                   <canvas id="forecastChart"></canvas>
                 </div>
+                <div id="forecastDataNote" class="mt-2" style="display:none;color:var(--text);opacity:.65;font-size:.8rem;"></div>
               </div>
             </div>
           </div>
@@ -862,6 +863,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
   <script src="{{ asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
   <script src="{{ asset('frontend/Nexa/assets/js/mobile-nav.js') }}"></script>
     <script src="{{ asset('js/session-timeout.js') }}"></script>
@@ -1027,22 +1029,69 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
       var top5 = predictions.top5 || [];
       if (top5.length === 0) return;
 
-      var labels = predictions.forecastLabels || ['Bulan 1', 'Bulan 2', 'Bulan 3'];
+      var historyLabels = predictions.monthLabels || [];
+      var forecastLabels = predictions.forecastLabels || ['Ramalan 1', 'Ramalan 2', 'Ramalan 3'];
+      var labels = historyLabels.concat(forecastLabels);
+
       var chartColors = ['#10b981', '#38bdf8', '#f59e0b', '#8b5cf6', '#f472b6'];
 
+      // Stable per-item colour keyed by item id so an item keeps its colour
+      // even when the sorted order in the chart changes between visits.
+      function colorForItem(id) {
+        return chartColors[(id - 1) % chartColors.length];
+      }
+
+      // Determine y-axis title from the top item's unit.
+      var unitLabel = (top5[0] && top5[0].uom) ? 'Kuantiti (' + top5[0].uom + ')' : 'Kuantiti';
+      var mixedUnitWarning = top5.some(function(item, i) {
+        return i > 0 && item.uom && item.uom !== top5[0].uom;
+      });
+      if (mixedUnitWarning) unitLabel = 'Kuantiti';
+
+      var sparseCount = 0;
       var datasets = top5.map(function(item, i) {
+        var color = colorForItem(item.id);
+        var history = (item.history || []).slice();
+        while (history.length < historyLabels.length) history.push(null);
+
+        var forecast = (item.forecast || []).slice();
+        while (forecast.length < forecastLabels.length) forecast.push(null);
+
+        // Fewer than 2 months of real usage means the forecast is mostly noise.
+        var monthsWithUsage = (item.history || []).filter(function(v) { return v > 0; }).length;
+        if (monthsWithUsage < 2) sparseCount++;
+
         return {
           label: item.name,
-          data: item.forecast,
-          borderColor: chartColors[i % chartColors.length],
-          backgroundColor: chartColors[i % chartColors.length] + '20',
+          data: history.concat(forecast),
+          borderColor: color,
+          backgroundColor: color + '20',
           fill: false,
           tension: 0.3,
           borderWidth: 2.5,
           pointRadius: 4,
           pointHoverRadius: 6,
+          segment: {
+            // Dashed from the history/forecast boundary onwards, like the
+            // contract chart's limit line.
+            borderDash: function(ctx) {
+              return ctx.p1DataIndex >= historyLabels.length ? [6, 4] : undefined;
+            },
+          },
         };
       });
+
+      var dataNote = document.getElementById('forecastDataNote');
+      if (dataNote && top5.length > 0) {
+        if (sparseCount === top5.length) {
+          dataNote.style.display = 'block';
+          dataNote.textContent = 'Tiada data pesanan mencukupi (kurang 2 bulan) untuk ramalan yang bermakna.';
+        } else if (sparseCount > 0) {
+          dataNote.style.display = 'block';
+          dataNote.textContent = 'Nota: ' + sparseCount + ' daripada ' + top5.length +
+            ' item dipaparkan tidak mempunyai data pesanan mencukupi — ramalannya hanya anggaran.';
+        }
+      }
 
       new Chart(fCtx, {
         type: 'line',
@@ -1056,23 +1105,61 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
           plugins: {
             legend: {
               position: 'bottom',
-              labels: { color: textColor, usePointStyle: true, padding: 16, font: { size: 11 } },
+              labels: {
+                color: textColor,
+                usePointStyle: true,
+                padding: 12,
+                font: { size: 11 },
+              },
+            },
+            annotation: {
+              annotations: {
+                forecastStart: {
+                  type: 'line',
+                  xMin: historyLabels.length,
+                  xMax: historyLabels.length,
+                  borderColor: 'rgba(255,255,255,0.55)',
+                  borderWidth: 1.5,
+                  borderDash: [5, 4],
+                  label: {
+                    display: true,
+                    content: 'RAMALAN',
+                    position: 'start',
+                    color: '#111827',
+                    backgroundColor: '#f59e0b',
+                    font: { weight: 'bold', size: 10 },
+                    padding: { x: 6, y: 3 },
+                    borderRadius: 4,
+                  },
+                },
+              },
             },
             tooltip: {
               callbacks: {
                 label: function(ctx) {
-                  return ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) + ' unit';
+                  return ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) + ' ' + (top5[0].uom || 'unit');
                 },
               },
             },
           },
           scales: {
             x: {
-              ticks: { color: textColor, font: { size: 11 } },
+              ticks: {
+                color: textColor,
+                font: { size: 11 },
+                maxRotation: 40,
+                minRotation: 0,
+              },
               grid: { color: gridColor },
             },
             y: {
               beginAtZero: true,
+              title: {
+                display: true,
+                text: unitLabel,
+                color: textColor,
+                font: { size: 11, weight: 'bold' },
+              },
               ticks: { color: textColor, font: { size: 11 } },
               grid: { color: gridColor },
             },
@@ -1085,19 +1172,25 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
   <!-- Logout confirmation modal -->
   <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="logoutConfirmModalLabel"><i class="bi bi-box-arrow-right me-2"></i>Log Keluar</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      <div class="modal-content" style="background:linear-gradient(165deg,#101910,#070907);border:1px solid rgba(124,179,66,.22);border-radius:20px;box-shadow:0 18px 48px rgba(0,0,0,.55),0 0 32px rgba(124,179,66,.1);position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:15%;right:15%;height:2px;background:linear-gradient(90deg,transparent,#7CB342,transparent);border-radius:0 0 4px 4px;"></div>
+        <div class="modal-header" style="border:none;padding:20px 24px 4px;position:relative;">
+          <div class="d-flex align-items-center gap-2">
+            <div style="width:36px;height:36px;background:rgba(124,179,66,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="bi bi-box-arrow-right" style="font-size:1rem;color:#7CB342;"></i>
+            </div>
+            <h5 class="modal-title fw-bold mb-0" id="logoutConfirmModalLabel" style="color:#C5E1A5;font-size:1rem;">Log Keluar</h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup" style="filter:brightness(0.5);transition:all .3s;font-size:.75rem;" onmouseover="this.style.filter='brightness(1)';this.style.transform='rotate(90deg) scale(1.15)'" onmouseout="this.style.filter='brightness(0.5)';this.style.transform=''"></button>
         </div>
-        <div class="modal-body">
-          <p class="mb-0">Adakah anda pasti ingin log keluar dari sistem?</p>
+        <div class="modal-body" style="padding:12px 24px;position:relative;">
+          <p class="mb-0" style="color:#f3f7f3;font-size:.95rem;">Adakah anda pasti ingin log keluar dari sistem ini?</p>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-cancel btn-sm px-3" data-bs-dismiss="modal">Batal</button>
+        <div class="modal-footer" style="border:none;padding:6px 24px 20px;position:relative;gap:.5rem;">
+          <button type="button" class="btn btn-sm px-4" data-bs-dismiss="modal" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#f3f7f3;border-radius:50px;font-weight:600;font-size:.8rem;transition:all .3s;" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">Batal</button>
           <form action="{{ route('logout') }}" method="POST" id="logoutForm" class="d-inline">
             @csrf
-            <button type="submit" class="btn btn-danger btn-sm px-3"><i class="bi bi-box-arrow-right me-1"></i>Log Keluar</button>
+            <button type="submit" class="btn btn-sm px-4" style="background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;border:none;border-radius:50px;font-weight:600;font-size:.8rem;transition:all .3s;box-shadow:0 4px 14px rgba(192,57,43,.25);" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px rgba(192,57,43,.4)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(192,57,43,.25)'"><i class="bi bi-box-arrow-right me-1"></i>Log Keluar</button>
           </form>
         </div>
       </div>
