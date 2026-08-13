@@ -783,6 +783,8 @@ class DashboardController extends Controller
                 'u.code as uom_code',
                 'ci.unit_price',
                 'ci.estimated_quantity',
+                'ci.muster_rate',
+                'ci.muster_basis',
                 'cl.contract_limit',
                 'cl.used_quantity'
             )
@@ -804,6 +806,7 @@ class DashboardController extends Controller
         $items = $items->map(function ($item) use ($orderedQty) {
             $estQty = (float) ($item->estimated_quantity ?? 0);
             $ordered = (float) ($orderedQty->get($item->id)->total_ordered ?? 0);
+
             return [
                 'id' => $item->id,
                 'item_id' => $item->item_id,
@@ -816,6 +819,8 @@ class DashboardController extends Controller
                 'ceiling_group_remaining' => $item->contract_limit !== null
                     ? (float) max(0, $item->contract_limit - ($item->used_quantity ?? 0))
                     : null,
+                'muster_rate' => $item->muster_rate !== null ? (float) $item->muster_rate : null,
+                'muster_basis' => $item->muster_basis ?: 'ditolak_parol',
             ];
         });
 
@@ -823,6 +828,89 @@ class DashboardController extends Controller
             'items' => $items,
             'ceiling_remaining' => $ceiling ? (float) max(0, $ceiling->remaining) : null,
         ]);
+    }
+
+    public function updateContractItemMusterRate(Request $request, $contractItem)
+    {
+        $user = Auth::user();
+        $isPegawaiStor = $user && strtoupper($user->getPositionCode()) === 'PS';
+        abort_unless($isPegawaiStor, 403);
+
+        $validated = $request->validate([
+            'muster_rate' => ['nullable', 'numeric', 'min:0', 'max:999999.999999'],
+            'muster_basis' => ['required', 'in:ditolak_parol,khas'],
+        ]);
+
+        DB::table('contract_items')->where('id', $contractItem)->update([
+            'muster_rate' => $validated['muster_rate'],
+            'muster_basis' => $validated['muster_basis'],
+            'updated_at' => now(),
+            'updated_by' => Auth::id(),
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function getPrismSuggestions(Request $request, $contractId)
+    {
+        $request->validate([
+            'tarikh_pesanan' => ['required', 'string'],
+            'muster_ditolak_parol' => ['required', 'numeric', 'min:0'],
+            'muster_khas_daging' => ['required', 'numeric', 'min:0'],
+        ]);
+
+        try {
+            $date = Carbon::createFromFormat('d/m/Y', $request->tarikh_pesanan);
+        } catch (\Throwable $e) {
+            $date = Carbon::parse($request->tarikh_pesanan);
+        }
+
+        $cycle = $date->isoWeek() % 2 === 1 ? 'M1-3' : 'M2-4';
+        // Carbon: 0 Sunday to 6 Saturday, matching the imported PRISM scale.
+        $day = $date->dayOfWeek;
+        $institutionId = DB::table('contracts')->where('id', $contractId)->value('institution_id');
+        abort_unless($institutionId && ($institutionId === Auth::user()->institution_id || Auth::user()->role_id === 1), 403);
+        $rules = DB::table('prism_diet_rules')
+            ->where('institution_id', $institutionId)
+            ->where('week_cycle', $cycle)
+            ->where('day_of_week', $day)
+            ->get()
+            ->keyBy(fn ($rule) => $this->normalisePrismItemName($rule->item_name));
+        $items = DB::table('contract_items as ci')
+            ->join('items as i', 'ci.item_id', '=', 'i.id')
+            ->where('ci.contract_id', $contractId)
+            ->select('ci.id', 'i.name')
+            ->get();
+
+        $normalMuster = (float) $request->muster_ditolak_parol;
+        $specialMuster = (float) $request->muster_khas_daging;
+        $suggestions = [];
+        foreach ($items as $item) {
+            $rule = $rules->get($this->normalisePrismItemName($item->name));
+            if (!$rule) continue;
+            $muster = $rule->muster_basis === 'khas' ? $specialMuster : $normalMuster;
+            $quantity = $rule->unit === 'g'
+                ? ($muster * (float) $rule->rate_per_person) / 1000
+                : $muster * (float) $rule->rate_per_person;
+            $suggestions[$item->id] = [
+                'quantity' => $rule->unit === 'g' ? ceil($quantity * 1000) / 1000 : ceil($quantity),
+                'basis' => $rule->muster_basis,
+                'source' => 'PRISM ' . $cycle,
+            ];
+        }
+
+        return response()->json(['cycle' => $cycle, 'suggestions' => $suggestions]);
+    }
+
+    private function normalisePrismItemName(string $name): string
+    {
+        $name = strtolower(trim($name));
+        $name = str_replace(
+            ['telor', 'ikan basah ', ' (fresh fish)', 'kembung', 'nanas mauritius', 'kobis panjang', 'petola', 'daging lembu/kerbau (beku)'],
+            ['telur', '', '', 'kembong', 'nenas mauritius', 'kobis cina panjang', 'ketola', 'daging lembu'],
+            $name
+        );
+        return preg_replace('/[^a-z0-9]+/u', '', $name);
     }
 
     public function lihatBorangInden(Order $order)

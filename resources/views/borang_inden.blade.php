@@ -250,6 +250,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
     $inden = optional($indenHeader ?? null);
     $isReadOnly = $readOnly ?? false;
     $isAdminHQ = Auth::user()->role_id == 1 || Auth::user()->role?->role_name === 'admin hq';
+    $canManageMusterRates = strtoupper(Auth::user()->getPositionCode()) === 'PS';
     $fieldState = $isReadOnly ? 'readonly' : '';
     $formatTarikh = function ($value) {
       if (!$value) return '';
@@ -506,6 +507,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
           <div>
             <h2 class="h4 mb-1">Ringkasan Muster</h2>
             <p class="muted mb-0">Masukkan mana-mana nilai untuk mendapatkan pengiraan secara automatik berdasarkan formula Muster Penuh − Parol = Muster Ditolak Parol.</p>
+            <p class="small text-info mb-0 mt-2"><i class="bi bi-lightbulb me-1"></i>Cadangan kuantiti pada Senarai Barang menggunakan kadar setiap item × muster. Cadangan tidak akan mengubah kuantiti anda sehingga anda memilih untuk menggunakannya.</p>
           </div>
           <div class="chip">Langkah 2</div>
           <span class="small ms-3" id="draftStatus2" style="color:var(--muted);"></span>
@@ -528,7 +530,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
           </div>
           <div class="col-md-3">
             <label class="form-label">Muster Ditolak Parol <span class="text-danger">*</span></label>
-            <input class="form-control muster-input @error('muster_ditolak_parol') is-invalid @enderror" id="musterTolakParol" name="muster_ditolak_parol" type="number" min="0" step="1" value="{{ old('muster_ditolak_parol', $inden->muster_ditolak_parol ?? 0) }}" {{ $fieldState }} required>
+            <input class="form-control muster-input @error('muster_ditolak_parol') is-invalid @enderror" id="musterTolakParol" name="muster_ditolak_parol" type="number" min="0" step="1" value="{{ old('muster_ditolak_parol', $inden->muster_ditolak_parol ?? 0) }}" readonly required>
             @error('muster_ditolak_parol')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -592,6 +594,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
                   <th>Bil</th>
                   <th>Perihal Barang</th>
                   <th>Kuantiti Pesanan</th>
+                  <th>Cadangan Muster</th>
                   <th>Unit</th>
                   <th>Harga Seunit</th>
                   <th>Had Siling (RM)</th>
@@ -741,6 +744,23 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
   </div>
 </div>
 
+@if(false && $canManageMusterRates && !$isReadOnly)
+<div class="modal fade" id="musterRateModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:#11151f; border:1px solid rgba(255,255,255,.08); color:#e2e8f0;">
+      <div class="modal-header border-0"><h5 class="modal-title fw-bold">Tetapkan Kadar Muster</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <p class="small" style="color:var(--muted);">Kuantiti cadangan = kadar × muster, kemudian dibundarkan ke atas.</p>
+        <label class="form-label">Barang</label><select class="form-select mb-3" id="musterRateItem"></select>
+        <label class="form-label">Kadar per orang</label><input class="form-control mb-3" id="musterRateValue" type="number" min="0" step="0.000001" placeholder="Contoh: 0.100000">
+        <label class="form-label">Asas Muster</label><select class="form-select" id="musterRateBasis"><option value="ditolak_parol">Muster Ditolak Parol</option><option value="khas">Muster Khas (Daging)</option></select>
+      </div>
+      <div class="modal-footer border-0"><button class="btn btn-round btn-soft" type="button" data-bs-dismiss="modal">Batal</button><button class="btn btn-round btn-add" type="button" id="simpanKadarMusterBtn">Simpan Kadar</button></div>
+    </div>
+  </div>
+</div>
+@endif
+
 {{-- Delete Confirmation Modal --}}
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-sm">
@@ -769,6 +789,12 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
     <td data-order="0">
       <span class="item-qty-display"></span>
       <input class="form-control item-order-qty item-calc" type="number" min="1" step="1" value="0" style="display:none;">
+    </td>
+    <td data-order="0">
+      <span class="item-muster-suggestion text-info small">--</span>
+      <button class="btn btn-sm btn-outline-info ms-1 apply-muster-suggestion" type="button" title="Guna cadangan muster" style="display:none;">
+        <i class="bi bi-arrow-down-circle"></i>
+      </button>
     </td>
     <td data-order="">
       <span class="item-unit-display"></span>
@@ -943,10 +969,13 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
                 unit_price: ci.unit_price,
                 estimated_quantity: ci.estimated_quantity,
                 ordered_quantity: ci.ordered_quantity,
+                muster_rate: ci.muster_rate,
+                muster_basis: ci.muster_basis,
                 ceiling_limit_id: ci.ceiling_limit_id,
                 ceiling_group_remaining: ci.ceiling_group_remaining,
               }));
               updateCeilingAlert();
+              refreshPrismSuggestions();
               if (!contractItems || contractItems.length === 0) {
                 if (itemErr && itemErrText) {
                   itemErrText.textContent = 'Tiada item ditemui untuk kontrak ini.';
@@ -1048,11 +1077,13 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
             this.setCustomValidity('');
             updateTimeMinimum(this.value, localDate, now, timeInputs);
             updateDayName(this);
+            refreshPrismSuggestions();
           });
 
           input.addEventListener('change', function() {
             updateTimeMinimum(this.value, localDate, now, timeInputs);
             updateDayName(this);
+            refreshPrismSuggestions();
           });
         });
 
@@ -1193,17 +1224,13 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
           let khas = numberValue(khasEl);
           let exclusion = numberValue(exclusionEl);
 
-          if (changed === 'musterPenuh' || changed === 'parol') {
-            if (penuh > 0 && parol > 0) {
-              ditolak = Math.max(penuh - parol, 0);
-              ditolakEl.value = ditolak;
-            }
-          } else if (changed === 'musterTolakParol') {
-            if (penuh > 0 && ditolak > 0) {
-              parolEl.value = Math.max(penuh - ditolak, 0);
-            } else if (parol > 0 && ditolak > 0) {
-              penuhEl.value = parol + ditolak;
-            }
+          // Muster Ditolak Parol is a derived value. Once Muster Penuh is
+          // known, it must always remain equal to Muster Penuh - Parol.
+          if (penuh > 0) {
+            ditolak = Math.max(penuh - parol, 0);
+            ditolakEl.value = ditolak;
+          } else if (changed === 'musterTolakParol' && parol > 0 && ditolak > 0) {
+            penuhEl.value = parol + ditolak;
           }
 
           if (changed === 'musterKhas' && khas > 0) {
@@ -1235,6 +1262,8 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
             if (ditolak > 0 && khas > ditolak) { warnKhas?.classList.remove('d-none'); hasWarn = true; } else { warnKhas?.classList.add('d-none'); }
             if (hasWarn) { warnContainer.classList.remove('d-none'); } else { warnContainer.classList.add('d-none'); }
           }
+          refreshMusterSuggestions();
+          refreshPrismSuggestions();
         } finally {
           isUpdatingMuster = false;
         }
@@ -1313,6 +1342,135 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         updateCeilingAlert();
       }
 
+      function refreshMusterSuggestions() {
+        const normalMuster = numberValue(document.getElementById('musterTolakParol'));
+        const specialMuster = numberValue(document.getElementById('musterKhas'));
+
+        getItemRows().forEach(function (card) {
+          const rate = parseFloat(card.dataset.musterRate);
+          const basis = card.dataset.musterBasis;
+          const suggestionEl = card.querySelector('.item-muster-suggestion');
+          const applyButton = card.querySelector('.apply-muster-suggestion');
+          if (!suggestionEl || !applyButton) return;
+
+          const muster = basis === 'khas' ? specialMuster : normalMuster;
+          if (!Number.isFinite(rate) || rate <= 0 || muster <= 0) {
+            suggestionEl.textContent = rate > 0 ? '--' : 'Tidak dalam menu PRISM hari ini';
+            applyButton.style.display = 'none';
+            return;
+          }
+
+          const suggestedQty = Math.ceil(rate * muster);
+          card.dataset.musterSuggestedQty = suggestedQty;
+          suggestionEl.textContent = formatNumber(suggestedQty);
+          applyButton.style.display = isReadOnly ? 'none' : 'inline-block';
+        });
+      }
+
+      let prismSuggestionRequest = null;
+      function refreshPrismSuggestions() {
+        const contractId = document.getElementById('contractSelect')?.value;
+        const date = document.querySelector('input[name="tarikh_pesanan"]')?.value || '';
+        const normalMuster = numberValue(document.getElementById('musterTolakParol'));
+        const specialMuster = numberValue(document.getElementById('musterKhas'));
+        if (!contractId || !date || normalMuster <= 0) return;
+
+        const params = new URLSearchParams({ tarikh_pesanan: date, muster_ditolak_parol: normalMuster, muster_khas_daging: specialMuster });
+        prismSuggestionRequest?.abort?.();
+        prismSuggestionRequest = new AbortController();
+        fetch('{{ url("borang-inden/contract-items") }}/' + contractId + '/prism-suggestions?' + params, { signal: prismSuggestionRequest.signal })
+          .then(response => response.ok ? response.json() : Promise.reject())
+          .then(data => {
+            getItemRows().forEach(card => {
+              const suggestion = data.suggestions?.[card.querySelector('.item-contract-id').value];
+              const suggestionEl = card.querySelector('.item-muster-suggestion');
+              const applyButton = card.querySelector('.apply-muster-suggestion');
+              if (!suggestion || !suggestionEl || !applyButton) return;
+              card.dataset.musterSuggestedQty = suggestion.quantity;
+              suggestionEl.textContent = formatNumber(suggestion.quantity) + ' (' + suggestion.source + ')';
+              applyButton.style.display = isReadOnly ? 'none' : 'inline-block';
+            });
+          })
+          .catch(error => { if (error?.name !== 'AbortError') console.warn('PRISM suggestions unavailable.'); });
+      }
+
+      @if(false && $canManageMusterRates && !$isReadOnly)
+      (function wireMusterRateSettings() {
+        const openButton = document.getElementById('tetapkanKadarMusterBtn');
+        const modalElement = document.getElementById('musterRateModal');
+        const itemSelect = document.getElementById('musterRateItem');
+        const rateInput = document.getElementById('musterRateValue');
+        const basisSelect = document.getElementById('musterRateBasis');
+        const saveButton = document.getElementById('simpanKadarMusterBtn');
+        if (!openButton || !modalElement || !itemSelect || !rateInput || !basisSelect || !saveButton) return;
+
+        function selectedContractItem() {
+          return contractItems.find(item => String(item.id) === String(itemSelect.value));
+        }
+
+        function populateSettings() {
+          itemSelect.innerHTML = '<option value="">-- Pilih barang kontrak --</option>';
+          contractItems.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.id;
+            option.textContent = item.item_name;
+            itemSelect.appendChild(option);
+          });
+          rateInput.value = '';
+          basisSelect.value = 'ditolak_parol';
+        }
+
+        openButton.addEventListener('click', function () {
+          const contractId = document.getElementById('contractSelect')?.value;
+          if (!contractId) { alert('Sila pilih kontrak dahulu.'); return; }
+          fetch('{{ url("borang-inden/contract-items") }}/' + contractId)
+            .then(response => response.json())
+            .then(response => {
+              contractItems = response.items || [];
+              populateSettings();
+              new bootstrap.Modal(modalElement).show();
+            })
+            .catch(() => alert('Gagal memuat item kontrak.'));
+        });
+
+        itemSelect.addEventListener('change', function () {
+          const item = selectedContractItem();
+          rateInput.value = item?.muster_rate ?? '';
+          basisSelect.value = item?.muster_basis ?? 'ditolak_parol';
+        });
+
+        saveButton.addEventListener('click', function () {
+          const item = selectedContractItem();
+          if (!item) { alert('Sila pilih barang.'); return; }
+          const rate = rateInput.value.trim();
+          if (rate !== '' && (!Number.isFinite(Number(rate)) || Number(rate) < 0)) {
+            alert('Kadar mestilah nombor 0 atau lebih.'); return;
+          }
+          saveButton.disabled = true;
+          fetch('{{ url("borang-inden/contract-items") }}/' + item.id + '/muster-rate', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+            body: JSON.stringify({ muster_rate: rate === '' ? null : rate, muster_basis: basisSelect.value }),
+          })
+            .then(response => { if (!response.ok) throw new Error(); return response.json(); })
+            .then(() => {
+              item.muster_rate = rate === '' ? null : Number(rate);
+              item.muster_basis = basisSelect.value;
+              getItemRows().forEach(row => {
+                if (String(row.querySelector('.item-contract-id').value) === String(item.id)) {
+                  row.dataset.musterRate = item.muster_rate ?? '';
+                  row.dataset.musterBasis = item.muster_basis;
+                }
+              });
+              refreshMusterSuggestions();
+              bootstrap.Modal.getInstance(modalElement)?.hide();
+            })
+            .catch(() => alert('Kadar tidak dapat disimpan.'))
+            .finally(() => { saveButton.disabled = false; });
+        });
+      })();
+      @endif
+
       function initItemDataTable() {
         try {
           if (!window.jQuery || !$.fn.DataTable) return;
@@ -1361,6 +1519,14 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
           return;
         }
 
+        card.querySelector('.apply-muster-suggestion').addEventListener('click', function () {
+          const suggestedQty = Number(card.dataset.musterSuggestedQty);
+          if (!Number.isFinite(suggestedQty) || suggestedQty <= 0) return;
+          card.querySelector('.item-order-qty').value = suggestedQty;
+          card.querySelector('.item-qty-display').textContent = suggestedQty;
+          updateSummary();
+        });
+
         card.querySelector('.edit-item').addEventListener('click', function () {
           card.classList.add('editing');
           card.querySelector('.item-order-qty').value = card.querySelector('.item-qty-display').textContent;
@@ -1407,6 +1573,8 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         card.dataset.ceilingGroupRemaining = defaults.ceiling_group_remaining ?? '';
         card.dataset.estimatedQuantity = defaults.estimated_quantity ?? '';
         card.dataset.orderedQuantity = defaults.ordered_quantity ?? 0;
+        card.dataset.musterRate = defaults.muster_rate ?? '';
+        card.dataset.musterBasis = defaults.muster_basis ?? 'ditolak_parol';
         if (name) {
           card.querySelector('.item-name-display').textContent = name;
         }
@@ -1417,6 +1585,8 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         }
         wireItemCard(card);
         updateItemIndices();
+        refreshMusterSuggestions();
+        refreshPrismSuggestions();
         updateSummary();
       }
 
@@ -1465,6 +1635,8 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
                     unit_price: ci.unit_price,
                     estimated_quantity: ci.estimated_quantity,
                     ordered_quantity: ci.ordered_quantity,
+                    muster_rate: ci.muster_rate,
+                    muster_basis: ci.muster_basis,
                     ceiling_limit_id: ci.ceiling_limit_id,
                     ceiling_group_remaining: ci.ceiling_group_remaining,
                   };
@@ -1540,6 +1712,8 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
             ceiling_group_remaining: ci ? ci.ceiling_group_remaining : '',
             estimated_quantity: ci ? ci.estimated_quantity : '',
             ordered_quantity: ci ? ci.ordered_quantity : 0,
+            muster_rate: ci ? ci.muster_rate : '',
+            muster_basis: ci ? ci.muster_basis : 'ditolak_parol',
           });
           var mi = bootstrap.Modal.getInstance(document.getElementById('itemModal'));
           if (mi) mi.hide();
@@ -1942,6 +2116,8 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
                     unit_price: ci.unit_price,
                     estimated_quantity: ci.estimated_quantity,
                     ordered_quantity: ci.ordered_quantity,
+                    muster_rate: ci.muster_rate,
+                    muster_basis: ci.muster_basis,
                     ceiling_limit_id: ci.ceiling_limit_id,
                     ceiling_group_remaining: ci.ceiling_group_remaining,
                   }));
@@ -1957,9 +2133,13 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
                         row.dataset.ceilingGroupRemaining = ci.ceiling_group_remaining ?? '';
                         row.dataset.estimatedQuantity = ci.estimated_quantity ?? '';
                         row.dataset.orderedQuantity = ci.ordered_quantity ?? 0;
+                        row.dataset.musterRate = ci.muster_rate ?? '';
+                        row.dataset.musterBasis = ci.muster_basis ?? 'ditolak_parol';
                       }
                     });
                     updateSummary();
+                    refreshMusterSuggestions();
+                    refreshPrismSuggestions();
                   }
                 })
                 .catch(function () {});
