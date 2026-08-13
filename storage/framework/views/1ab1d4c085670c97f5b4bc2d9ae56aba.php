@@ -2,11 +2,13 @@
 <html lang="ms" data-bs-theme="light">
 
 <head>
-    <script>document.documentElement.setAttribute('data-bs-theme',localStorage.getItem('theme')||'light')</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Pengurusan Penjara - Admin Dashboard</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Sistem Pengurusan Penjara - Admin Papan Pemuka</title>
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <meta name="session-lifetime" content="<?php echo e(config('session.lifetime')); ?>">
+    <meta name="session-warning" content="<?php echo e(config('session-timeout.warning_time')); ?>">
+    <meta name="session-grace" content="<?php echo e(config('session-timeout.grace_period')); ?>">
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -30,7 +32,7 @@
     <link href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ asset('style.css') }}">
+    <link rel="stylesheet" href="<?php echo e(asset('style.css')); ?>">
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon"
@@ -45,7 +47,7 @@
             <div class="sidebar-header">
                 <a href="#" class="logo" data-page="home">
                     <div class="logo-icon">
-                        <img src="{{ asset('MySIPMa_logo_wWalls.png') }}" alt="MySIPMa Logo" height="50" class="me-2">
+                        <img src="<?php echo e(asset('MySIPMa_logo_wWalls.png')); ?>" alt="MySIPMa Logo" height="50" class="me-2">
                     </div>
                     <div class="logo-text">
                         <span class="fw-bold">MySIPMA</span>
@@ -60,11 +62,11 @@
             <!-- Sidebar Menu -->
             <nav class="sidebar-menu">
                 <ul class="nav flex-column">
-                    <li class="nav-title">MAIN</li>
+                    <li class="nav-title">UTAMA</li>
                     <li class="nav-item">
                         <a class="nav-link active" href="#" data-page="home">
                             <i class="fas fa-home"></i>
-                            <span>Dashboard</span>
+                            <span>Papan Pemuka</span>
                         </a>
                     </li>
 
@@ -112,6 +114,14 @@
                             <span>UOM</span>
                         </a>
                     </li>
+                    <li class="nav-title mt-4">PENGURUSAN INDEN</li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-page="inden">
+                            <i class="fas fa-file-invoice"></i>
+                            <span>Inden</span>
+                        </a>
+                    </li>
+
                     <li class="nav-title mt-4">LAPORAN</li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" data-page="laporan-prestasi">
@@ -131,10 +141,10 @@
             <!-- Sidebar Footer -->
             <div class="sidebar-footer">
                 <div class="user-profile">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()?->name ?? 'Pengarah HQ') }}&background=1a5632&color=fff&size=80"
-                        alt="{{ auth()->user()?->name ?? 'Pengarah HQ' }}" class="user-avatar">
+                    <img src="https://ui-avatars.com/api/?name=<?php echo e(urlencode(auth()->user()?->name ?? 'Pengarah HQ')); ?>&background=1a5632&color=fff&size=80"
+                        alt="<?php echo e(auth()->user()?->name ?? 'Pengarah HQ'); ?>" class="user-avatar">
                     <div class="user-info">
-                        <h6>{{ auth()->user()?->name ?? 'Pengarah HQ' }}</h6>
+                        <h6><?php echo e(auth()->user()?->name ?? 'Pengarah HQ'); ?></h6>
                         <small class="text-muted">Pentadbir Sistem</small>
                     </div>
                     <a href="#" class="logout-btn" id="logoutBtn">
@@ -154,22 +164,22 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="page-title">
-                        <h1 id="pageTitle">Dashboard</h1>
+                        <h1 id="pageTitle">Papan Pemuka</h1>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="#" data-page="home"><i class="fas fa-home"></i></a>
                                 </li>
-                                <li class="breadcrumb-item active" id="breadcrumbCurrent">Dashboard</li>
+                                <li class="breadcrumb-item active" id="breadcrumbCurrent">Papan Pemuka</li>
                             </ol>
                         </nav>
                     </div>
                 </div>
 
                 <div class="header-right">
-                    <!-- Search -->
-                    <div class="search-box">
-                        <input type="text" class="form-control" placeholder="Cari...">
+                    <div class="search-box position-relative">
+                        <input type="text" id="globalSearchInput" data-context="hq" data-filter-id="" class="form-control" placeholder="Cari Maklumat...">
                         <i class="fas fa-search"></i>
+                        <div id="globalSearchResults" class="global-search-dropdown d-none"></div>
                     </div>
 
                     <!-- Theme Toggle -->
@@ -207,53 +217,49 @@
                     <div class="dropdown notifications">
                         <button class="btn btn-icon" type="button" data-bs-toggle="dropdown">
                             <i class="fas fa-bell"></i>
-                            <span class="badge-notification">5</span>
+                            <?php if(($lowStockCount ?? collect($lowStockItems ?? [])->count()) > 0): ?>
+                                <span class="badge-notification"><?php echo e($lowStockCount ?? collect($lowStockItems ?? [])->count()); ?></span>
+                            <?php endif; ?>
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
                             <div class="dropdown-header">
                                 <h6>Pemberitahuan</h6>
-                                <a href="#" class="text-muted small">Tandai semua dibaca</a>
+                                <span class="text-muted small">Stok minimum</span>
                             </div>
                             <div class="dropdown-body">
-                                <a href="#" class="dropdown-item">
-                                    <div class="d-flex">
-                                        <div class="notification-icon bg-success">
-                                            <i class="fas fa-check"></i>
+                                <?php $__empty_1 = true; $__currentLoopData = collect($lowStockItems ?? [])->take(5); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $stockItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                    <a href="#" class="dropdown-item" data-page="bahan-mentah">
+                                        <div class="d-flex">
+                                            <div class="notification-icon bg-warning">
+                                                <i class="fas fa-exclamation"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6>Stok Minimum</h6>
+                                                <p class="mb-0">
+                                                    <?php echo e(data_get($stockItem, 'name')); ?>:
+                                                    <?php echo e(number_format((float) data_get($stockItem, 'stock', 0), 2)); ?>
+
+                                                    <?php echo e(data_get($stockItem, 'unit', 'Unit')); ?>
+
+                                                </p>
+                                                <small class="text-muted">
+                                                    Min:
+                                                    <?php echo e(number_format((float) data_get($stockItem, 'minStock', 0), 2)); ?>
+
+                                                    <?php echo e(data_get($stockItem, 'unit', 'Unit')); ?>
+
+                                                </small>
+                                            </div>
                                         </div>
-                                        <div class="flex-grow-1">
-                                            <h6>Inden Disahkan</h6>
-                                            <p class="mb-0">Inden #IN-2023-0456 telah disahkan</p>
-                                            <small class="text-muted">10 minit lalu</small>
-                                        </div>
+                                    </a>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                    <div class="dropdown-item text-muted">
+                                        Tiada bahan yang mencecah stok minimum.
                                     </div>
-                                </a>
-                                <a href="#" class="dropdown-item">
-                                    <div class="d-flex">
-                                        <div class="notification-icon bg-warning">
-                                            <i class="fas fa-exclamation"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <h6>Stok Rendah</h6>
-                                            <p class="mb-0">Bahan "Gula" hampir habis</p>
-                                            <small class="text-muted">1 jam lalu</small>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="#" class="dropdown-item">
-                                    <div class="d-flex">
-                                        <div class="notification-icon bg-info">
-                                            <i class="fas fa-user-plus"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <h6>Banduan Baru</h6>
-                                            <p class="mb-0">Banduan #INM-7823 didaftarkan</p>
-                                            <small class="text-muted">2 jam lalu</small>
-                                        </div>
-                                    </div>
-                                </a>
+                                <?php endif; ?>
                             </div>
                             <div class="dropdown-footer">
-                                <a href="#" class="text-primary">Lihat semua pemberitahuan</a>
+                                <a href="#" class="text-primary" data-page="bahan-mentah">Lihat inventori</a>
                             </div>
                         </div>
                     </div>
@@ -296,6 +302,17 @@
                                         <i class="fas fa-box me-1"></i> + Item
                                     </button>
                                 </div>
+                                <div class="col-6">
+                                    <button class="btn btn-sm btn-outline-danger w-100" data-page="item-list" onclick="setTimeout(() => document.getElementById('addUomBtn').click(), 200);">
+                                        <i class="fas fa-balance-scale me-1"></i> + UOM
+                                    </button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-sm btn-outline-primary w-100" data-page="bahan-mentah" onclick="setTimeout(() => document.getElementById('addMaterialBtn').click(), 200);">
+                                        <i class="fas fa-box-open me-1"></i> + Bahan
+                                    </button>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -303,10 +320,10 @@
                     <!-- User Menu -->
                     <div class="dropdown user-menu">
                         <button class="btn user-btn" type="button" data-bs-toggle="dropdown">
-                            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()?->name ?? 'Pengarah HQ') }}&background=1a5632&color=fff&size=40"
-                                alt="{{ auth()->user()?->name ?? 'Pengarah HQ' }}" class="user-img">
+                            <img src="https://ui-avatars.com/api/?name=<?php echo e(urlencode(auth()->user()?->name ?? 'Pengarah HQ')); ?>&background=1a5632&color=fff&size=40"
+                                alt="<?php echo e(auth()->user()?->name ?? 'Pengarah HQ'); ?>" class="user-img">
                             <span
-                                class="user-name d-none d-md-inline">{{ auth()->user()?->name ?? 'Pengarah HQ' }}</span>
+                                class="user-name d-none d-md-inline"><?php echo e(auth()->user()?->name ?? 'Pengarah HQ'); ?></span>
                             <i class="fas fa-chevron-down ms-2"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
@@ -336,12 +353,18 @@
             <div class="content-area">
                 <!-- Dashboard Page -->
                 <div class="page-content active" id="home-content">
+                    <?php echo $__env->make('partials.low_stock_notification', [
+                        'lowStockItems' => $lowStockItems ?? collect(),
+                        'lowStockCount' => $lowStockCount ?? null,
+                        'inventoryPage' => 'bahan-mentah',
+                    ], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+
                     <!-- Welcome Banner -->
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="welcome-banner">
                                 <div class="banner-content">
-                                    <h2>Selamat Datang, {{ auth()->user()?->name ?? 'Pengarah HQ' }}</h2>
+                                    <h2>Selamat Datang, <?php echo e(auth()->user()?->name ?? 'Pengarah HQ'); ?></h2>
                                     <p class="mb-0">Sistem Pengurusan Penjara terintegrasi untuk pengurusan banduan,
                                         institusi, dan operasi harian.</p>
                                 </div>
@@ -365,7 +388,7 @@
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
                                             <h6 class="mb-2">Jumlah Pembekal</h6>
-                                            <h2 class="mb-0" id="total-inmates">1,245</h2>
+                                            <h2 class="mb-0" id="total-inmates"><?php echo e($totalSuppliers ?? 0); ?></h2>
                                             <div class="stat-change up">
                                                 <i class="fas fa-arrow-up me-1"></i>
                                                 <span>5.2% dari bulan lepas</span>
@@ -388,7 +411,7 @@
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
                                             <h6 class="mb-2">Jumlah Institusi</h6>
-                                            <h2 class="mb-0" id="total-institutions">30</h2>
+                                            <h2 class="mb-0" id="total-institutions"><?php echo e($totalInstitutions ?? 0); ?></h2>
                                             <div class="stat-change up">
                                                 <i class="fas fa-arrow-up me-1"></i>
                                                 <span>2 baru bulan ini</span>
@@ -411,7 +434,7 @@
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
                                             <h6 class="mb-2">Senarai Item</h6>
-                                            <h2 class="mb-0" id="total-materials">156</h2>
+                                            <h2 class="mb-0" id="total-materials"><?php echo e($totalItems ?? 0); ?></h2>
                                             <div class="stat-change down">
                                                 <i class="fas fa-arrow-down me-1"></i>
                                                 <span>3.2% dari bulan lepas</span>
@@ -434,7 +457,7 @@
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
                                             <h6 class="mb-2">Menunggu Pengesahan</h6>
-                                            <h2 class="mb-0" id="pending-orders">24</h2>
+                                            <h2 class="mb-0" id="pending-orders"><?php echo e($pendingApprovals ?? 0); ?></h2>
                                             <div class="stat-change up">
                                                 <i class="fas fa-arrow-up me-1"></i>
                                                 <span>8 permintaan baru</span>
@@ -456,17 +479,25 @@
                     <div class="row mb-4 align-items-stretch">
                         <div class="col-lg-8 d-flex">
                             <div class="card w-100">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">Status Stok Bahan Mentah Mengikut Kategori</h5>
-                                    <small class="text-muted">Klik bar untuk lihat item dalam kategori</small>
-                                    <div class="card-actions">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="card-title mb-0">Status Stok Bahan Mentah Mengikut Kategori</h5>
+                                        <small class="text-muted">Klik bar untuk lihat item dalam kategori</small>
+                                    </div>
+                                    <div class="card-actions d-flex align-items-center">
+                                        <select id="stokInstitusiFilter" class="form-select form-select-sm me-2" style="width: auto;">
+                                            <option value="">Semua Institusi</option>
+                                            <?php $__currentLoopData = $institutions ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inst): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <option value="<?php echo e($inst->id); ?>"><?php echo e($inst->name); ?></option>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                        </select>
                                         <div class="dropdown">
                                             <button class="btn btn-sm btn-link" type="button" data-bs-toggle="dropdown">
                                                 <i class="fas fa-ellipsis-v"></i>
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item" href="#">Lihat Laporan</a></li>
-                                                <li><a class="dropdown-item" href="#">Eksport Data</a></li>
+                                                <li><a class="dropdown-item" href="#" data-page="laporan-bahan">Lihat Laporan</a></li>
+                                                <li><a class="dropdown-item" href="#" data-action="export-stock">Eksport Data</a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -499,7 +530,7 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table class="table table-hover" data-downloadable="false">
+                                        <table class="table table-hover">
                                             <thead>
                                                 <tr>
                                                     <th>Nama Item</th>
@@ -542,7 +573,7 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table class="table table-hover align-middle" data-downloadable="false">
+                                        <table class="table table-hover align-middle">
                                             <thead>
                                                 <tr>
                                                     <th>Item</th>
@@ -612,7 +643,7 @@
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <table class="table table-hover" data-downloadable="false">
+                                    <table class="table table-hover">
                                         <thead>
                                             <tr>
                                                 <th>Nama Item</th>
@@ -683,7 +714,7 @@
                                 <h5 class="card-title mb-0">Pengurusan Bahan Mentah</h5>
                                 <p class="text-muted mb-0">15 bahan aktif | Nilai Inventori: RM 45,230.00</p>
                             </div>
-                            <button class="btn btn-sm btn-primary" id="addMaterialBtn">
+                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal" id="addMaterialBtn">
                                 <i class="fas fa-plus me-1"></i>Tambah Bahan
                             </button>
                         </div>
@@ -811,56 +842,343 @@
                     </div>
                 </div>
 
+                <!-- ===== Inden Page ===== -->
+                <div class="page-content" id="inden-content">
+
+                    <!-- Filter Bar -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form class="row g-3 align-items-end" id="indenFilterForm">
+                                <div class="col-lg-4 col-md-6">
+                                    <label for="indenInstitusiFilter" class="form-label fw-semibold">
+                                        <i class="fas fa-building me-1 text-primary"></i>Pilih Institusi
+                                    </label>
+                                    <select id="indenInstitusiFilter" class="form-select">
+                                        <option value="">-- Semua Institusi --</option>
+                                        <?php $__currentLoopData = $institutions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inst): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($inst->id); ?>"><?php echo e($inst->name); ?></option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <label for="indenStatusFilter" class="form-label fw-semibold">
+                                        <i class="fas fa-filter me-1 text-primary"></i>Status Inden
+                                    </label>
+                                    <select id="indenStatusFilter" class="form-select">
+                                        <option value="">-- Semua Status --</option>
+                                        <option value="Pending">Menunggu</option>
+                                        <option value="In Progress">Dalam Proses</option>
+                                        <option value="Completed">Selesai</option>
+                                        <option value="Rejected">Ditolak</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-2 col-md-4">
+                                    <label for="indenDateFrom" class="form-label fw-semibold">Dari Tarikh</label>
+                                    <input type="date" id="indenDateFrom" class="form-control">
+                                </div>
+                                <div class="col-lg-2 col-md-4">
+                                    <label for="indenDateTo" class="form-label fw-semibold">Hingga Tarikh</label>
+                                    <input type="date" id="indenDateTo" class="form-control">
+                                </div>
+                                <div class="col-lg-1 col-md-4 d-flex gap-2">
+                                    <button type="button" class="btn btn-primary w-100" id="indenTapisBtn">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary w-100" id="indenResetBtn" title="Set Semula">
+                                        <i class="fas fa-redo"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Summary Cards -->
+                    <div class="row g-3 mb-4" id="indenSummaryCards">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card p-3 h-100 border-0 shadow-sm">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:50px;height:50px;background-color: rgba(26, 86, 50, 0.1);">
+                                        <i class="fas fa-file-invoice text-primary fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small text-uppercase fw-semibold">Jumlah Inden</div>
+                                        <div class="fw-bold fs-4" id="indenStatTotal">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card p-3 h-100 border-0 shadow-sm">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-warning bg-opacity-10" style="width:50px;height:50px;">
+                                        <i class="fas fa-clock text-warning fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small text-uppercase fw-semibold">Menunggu</div>
+                                        <div class="fw-bold fs-4" id="indenStatPending">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card p-3 h-100 border-0 shadow-sm">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-success bg-opacity-10" style="width:50px;height:50px;">
+                                        <i class="fas fa-check-circle text-success fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small text-uppercase fw-semibold">Selesai</div>
+                                        <div class="fw-bold fs-4" id="indenStatCompleted">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card p-3 h-100 border-0 shadow-sm">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-info bg-opacity-10" style="width:50px;height:50px;">
+                                        <i class="fas fa-dollar-sign text-info fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small text-uppercase fw-semibold">Jumlah Nilai (RM)</div>
+                                        <div class="fw-bold fs-4" id="indenStatAmount">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inden Table -->
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title mb-0"><i class="fas fa-list me-2"></i>Senarai Inden</h5>
+                                <p class="text-muted mb-0 small">Rekod pesanan/inden mengikut institusi terpilih</p>
+                            </div>
+                            <div id="indenLoadingBadge" class="d-none">
+                                <span class="badge bg-secondary"><i class="fas fa-spinner fa-spin me-1"></i>Memuatkan...</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle" id="inden-table">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Bil</th>
+                                            <th>No. Pesanan</th>
+                                            <th>Institusi</th>
+                                            <th>Pembekal</th>
+                                            <th>Tarikh Pesanan</th>
+                                            <th>Jumlah (RM)</th>
+                                            <th>Status</th>
+                                            <th>Tindakan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="inden-table-body">
+                                        <tr><td colspan="8" class="text-center text-muted py-4"><i class="fas fa-info-circle me-2"></i>Sila pilih institusi atau tekan Tapis untuk melihat data.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ===== End Inden Page ===== -->
+
                 <!-- Performance Reports Page (Laporan Prestasi) -->
                 <div class="page-content" id="laporan-prestasi-content">
                     <div class="row">
                         <div class="col-12">
-                            <div class="card mb-4">
-                                <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                                     <div>
-                                        <h5 class="card-title mb-0">Laporan Prestasi Sistem</h5>
-                                        <p class="text-muted mb-0">Prestasi Pembekal dan Ringkasan Inventori</p>
+                                        <h5 class="card-title mb-0 fw-bold">Ringkasan Prestasi Pembekal</h5>
+                                        <p class="text-muted small mb-0">Analisis data berdasarkan Borang BK-PSPK-09-03</p>
                                     </div>
-                                    <button class="btn btn-sm btn-outline-primary" id="exportPerformanceReportBtn">
-                                        <i class="fas fa-file-export me-1"></i>Eksport Laporan
-                                    </button>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-outline-secondary shadow-sm" id="exportPerformanceReportBtn">
+                                            <i class="fas fa-file-export me-1"></i>Eksport
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="card-body">
-                                    <div class="row mb-4 g-3">
-                                        <div class="col-md-4">
-                                            <div class="card bg-light border-0">
-                                                <div class="card-body text-center">
-                                                    <h6 class="text-muted mb-2">Penghantaran Tepat Masa</h6>
-                                                    <h3 class="mb-0 text-success">92.5%</h3>
-                                                </div>
+                                    <div class="row g-4 mb-4">
+                                        <div class="col-md-3">
+                                            <div class="p-3 rounded-3" style="background-color: #e8f5e9;">
+                                                <div class="text-muted small mb-1">Jumlah Penilaian</div>
+                                                <h3 class="mb-0 fw-bold text-success" id="statTotalEval">0</h3>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="card bg-light border-0">
-                                                <div class="card-body text-center">
-                                                    <h6 class="text-muted mb-2">Penolakan Kualiti Bahan</h6>
-                                                    <h3 class="mb-0 text-danger">3.1%</h3>
-                                                </div>
+                                        <div class="col-md-3">
+                                            <div class="p-3 rounded-3" style="background-color: #e3f2fd;">
+                                                <div class="text-muted small mb-1">Purata Prestasi (%)</div>
+                                                <h3 class="mb-0 fw-bold text-primary" id="statAvgPercentage">0%</h3>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="card bg-light border-0">
-                                                <div class="card-body text-center">
-                                                    <h6 class="text-muted mb-2">Kecekapan Inden</h6>
-                                                    <h3 class="mb-0 text-primary">88.4%</h3>
-                                                </div>
+                                        <div class="col-md-3">
+                                            <div class="p-3 rounded-3" style="background-color: #fff8e1;">
+                                                <div class="text-muted small mb-1">Rating Cemerlang</div>
+                                                <h3 class="mb-0 fw-bold" style="color: #f57f17;" id="statCemerlangCount">0</h3>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="p-3 rounded-3" style="background-color: #fce4ec;">
+                                                <div class="text-muted small mb-1">Rating Lemah</div>
+                                                <h3 class="mb-0 fw-bold text-danger" id="statLemahCount">0</h3>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-lg-6 mb-4 mb-lg-0">
-                                            <h6 class="fw-bold mb-3">Tred Prestasi (Indeks Bulanan)</h6>
+
+                                    <div class="row mb-4">
+                                        <div class="col-12">
+                                            <div class="d-flex align-items-center gap-2 mb-3 bg-light p-2 rounded">
+                                                <i class="fas fa-filter text-muted ms-2"></i>
+                                                <strong class="text-muted small me-2">Tapis Prestasi Keseluruhan:</strong>
+                                                <select id="prestasiTrendInstitusi" class="form-select form-select-sm" style="width: 250px;">
+                                                    <option value="">Semua Institusi</option>
+                                                    <?php $__currentLoopData = $institutions ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inst): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <option value="<?php echo e($inst->id); ?>"><?php echo e($inst->name); ?></option>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                </select>
+                                                <select id="prestasiTrendPembekal" class="form-select form-select-sm" style="width: 250px;">
+                                                    <option value="">Semua Pembekal</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-5">
+                                        <div class="col-lg-7">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <h6 class="fw-bold mb-0"><i class="fas fa-chart-line me-2 text-primary"></i>Tred Prestasi Keseluruhan</h6>
+                                                <span class="badge bg-primary" id="prestasiTrendYearBadge">Terbaru</span>
+                                            </div>
                                             <div id="performanceTrendChart" style="min-height: 300px;"></div>
                                         </div>
-                                        <div class="col-lg-6">
-                                            <h6 class="fw-bold mb-3">Prestasi Teratas Pembekal</h6>
-                                            <div id="supplierPerformanceChart" style="min-height: 300px;"></div>
+                                        <div class="col-lg-5">
+                                            <h6 class="fw-bold mb-3"><i class="fas fa-chart-pie me-2 text-success"></i>Taburan Rating Prestasi</h6>
+                                            <div id="performanceRatingChart" style="min-height: 300px;"></div>
                                         </div>
+                                    </div>
+
+                                    <hr class="my-4 opacity-25">
+
+                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                        <h6 class="fw-bold mb-0 d-flex align-items-center">
+                                            <i class="fas fa-list me-2 text-info"></i>Senarai Penilaian Prestasi
+                                        </h6>
+                                        <div class="d-flex gap-2">
+                                            <select id="senaraiPrestasiInstitusi" class="form-select form-select-sm" style="min-width: 150px;">
+                                                <option value="">Semua Institusi</option>
+                                                <?php $__currentLoopData = $institutions ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inst): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($inst->id); ?>"><?php echo e($inst->name); ?></option>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                            </select>
+                                            <select id="senaraiPrestasiPembekal" class="form-select form-select-sm" style="min-width: 150px;">
+                                                <option value="">Semua Pembekal</option>
+                                            </select>
+                                            <select id="senaraiPrestasiTahun" class="form-select form-select-sm" style="min-width: 120px;">
+                                                <option value="">Semua Tahun</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle border-top" id="performance-history-table" style="width: 100%">
+                                            <thead class="bg-light">
+                                                <tr>
+                                                    <th>Tarikh</th>
+                                                    <th>Pembekal</th>
+                                                    <th>Institusi</th>
+                                                    <th class="text-center" title="Kuantiti Bekalan">Ktiti</th>
+                                                    <th class="text-center" title="Masa Penghantaran">Masa</th>
+                                                    <th class="text-center" title="Harga Bekalan">Harga</th>
+                                                    <th class="text-center" title="Kualiti Bekalan">Kualiti</th>
+                                                    <th class="text-center" title="Kerjasama">Kerjasama</th>
+                                                    <th class="text-center">Skor (%)</th>
+                                                    <th class="text-center">Rating</th>
+                                                    <th class="text-center">Tindakan</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="performanceHistoryBody">
+                                                <!-- Populated by JS -->
+                                                <tr>
+                                                    <td colspan="11" class="text-center py-4 text-muted">
+                                                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                                        Memuat data penilaian...
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stock Report Page -->
+                <div class="page-content" id="laporan-bahan-content">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title mb-0">Laporan Stok Bahan Mentah</h5>
+                                <p class="text-muted mb-0">Ringkasan status stok bahan mentah mengikut kategori.</p>
+                            </div>
+                            <button class="btn btn-sm btn-outline-success" id="exportStockReportBtn">
+                                <i class="fas fa-file-export me-1"></i>Eksport Data Stok
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="row gy-4">
+                                <div class="col-lg-6">
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <h6 class="card-subtitle mb-2 text-muted">Jumlah Kategori</h6>
+                                            <h4 class="mb-0">5</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <h6 class="card-subtitle mb-2 text-muted">Item Kritikal</h6>
+                                            <h4 class="mb-0">3</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div id="stockStatusReportChart" style="min-height: 320px;"></div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Kategori</th>
+                                                    <th>Stok Semasa</th>
+                                                    <th>Stok Min</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Makanan Basah</td>
+                                                    <td>560</td>
+                                                    <td>120</td>
+                                                    <td><span class="badge bg-success">Stabil</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Makanan Kering</td>
+                                                    <td>430</td>
+                                                    <td>120</td>
+                                                    <td><span class="badge bg-warning">Awas</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Rempah Ratus</td>
+                                                    <td>210</td>
+                                                    <td>100</td>
+                                                    <td><span class="badge bg-danger">Kritis</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -1414,20 +1732,8 @@
                 <!-- Calendar Page -->
                 <div class="page-content" id="kalendar-content">
                     <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Kalendar Aktiviti</h5>
-                            <div class="btn-group">
-                                <button class="btn btn-sm btn-outline-primary" id="prevMonth">
-                                    <i class="fas fa-chevron-left"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-primary" id="nextMonth">
-                                    <i class="fas fa-chevron-right"></i>
-                                </button>
-                                <button class="btn btn-sm btn-primary" id="todayBtn">Hari Ini</button>
-                                <button class="btn btn-sm btn-outline-primary" id="addEventBtn">
-                                    <i class="fas fa-plus me-1"></i>Tambah Acara
-                                </button>
-                            </div>
+                        <div class="card-header">
+                            <h5 class="card-title mb-0"><i class="fas fa-calendar-alt me-2"></i>Kalendar Aktiviti</h5>
                         </div>
                         <div class="card-body">
                             <div id="fullCalendar"></div>
@@ -1498,7 +1804,9 @@
                             <select id="role-filter" class="form-select form-select-sm me-2" style="width: auto;">
                                 <option value="">Semua Peranan</option>
                                 <option value="admin">Admin</option>
-                                <option value="user">User</option>
+                                <option value="Pegawai Stor">Pegawai Stor</option>
+                                <option value="Pegawai Penerima">Pegawai Penerima</option>
+                                <option value="Pegawai Pengesah">Pegawai Pengesah</option>
                             </select>
                             <button class="btn btn-sm btn-primary" id="addAdminBtn" data-bs-toggle="modal" data-bs-target="#addAdminModal">
                                 <i class="fas fa-plus me-1"></i>Pendaftaran Baru
@@ -1585,7 +1893,7 @@
                                     <tr>
                                         <th>BIL</th>
                                         <th>Nama Syarikat</th>
-                                        <th>PIC</th>
+                                        <th>PIC <i class="fas fa-info-circle text-muted ms-1" style="cursor:help;" data-bs-toggle="tooltip" data-bs-placement="top" title="Orang untuk dihubungi"></i></th>
                                         <th>No. Telefon</th>
                                         <th>Emel</th>
                                         <th>Negeri</th>
@@ -1747,7 +2055,7 @@
                         <div class="card text-center h-100">
                             <div class="card-body">
                                 <div class="position-relative d-inline-block mb-3">
-                                    <img src="{{ auth()->user()?->image ? asset('storage/' . auth()->user()->image) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()?->name ?? 'Pengarah HQ') . '&background=1a5632&color=fff&size=150' }}"
+                                    <img src="<?php echo e(auth()->user()?->image ? asset('storage/' . auth()->user()->image) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()?->name ?? 'Pengarah HQ') . '&background=1a5632&color=fff&size=150'); ?>"
                                         alt="Profile Picture" class="rounded-circle img-thumbnail" id="profileAvatar"
                                         style="width: 150px; height: 150px; object-fit: cover;">
                                     <button
@@ -1757,7 +2065,8 @@
                                     </button>
                                     <input type="file" id="avatarInput" style="display: none;" accept="image/*">
                                 </div>
-                                <h4 class="mb-0" id="profileNameDisplay">{{ auth()->user()?->name ?? 'Pengarah HQ' }}
+                                <h4 class="mb-0" id="profileNameDisplay"><?php echo e(auth()->user()?->name ?? 'Pengarah HQ'); ?>
+
                                 </h4>
                                 <p class="text-muted">Pentadbir Sistem</p>
                                 <div class="d-grid gap-2">
@@ -1769,8 +2078,8 @@
                             <div class="card-footer bg-transparent border-0 pb-4">
                                 <div class="row text-center mb-3">
                                     <div class="col-6 border-end">
-                                        <h5 class="mb-0">{{ auth()->user()?->grade ?? 'N/A' }}</h5>
-                                        <small class="text-muted">Gred</small>
+                                        <h5 class="mb-0">Aktif</h5>
+                                        <small class="text-muted">Status</small>
                                     </div>
                                     <div class="col-6">
                                         <h5 class="mb-0">Aktif</h5>
@@ -1797,19 +2106,18 @@
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
                                         <span><i class="fas fa-envelope me-2 text-primary"></i>Email</span>
-                                        <span class="fw-medium">{{ auth()->user()?->email ?? 'pengarah.hq@gmail.com'
-                                            }}</span>
+                                        <span class="fw-medium"><?php echo e(auth()->user()?->email ?? 'pengarah.hq@gmail.com'); ?></span>
                                     </li>
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
-                                        <span><i class="fas fa-user-circle me-2 text-primary"></i>Nama</span>
-                                        <span class="fw-medium">{{ auth()->user()?->username ?? 'pengarah_hq' }}</span>
+                                        <span><i class="fas fa-phone me-2 text-primary"></i>No. Telefon</span>
+                                        <span class="fw-medium"><?php echo e(auth()->user()?->phone_number ?? '-'); ?></span>
                                     </li>
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
                                         <span><i class="fas fa-building me-2 text-primary"></i>Institusi</span>
                                         <span
-                                            class="fw-medium" id="displayProfileInstitution">{{ optional(($institutions ?? collect())->firstWhere('id', auth()->user()?->institution_id))->name ?? auth()->user()?->institution ?? 'Ibu Pejabat Penjara' }}</span>
+                                            class="fw-medium" id="displayProfileInstitution"><?php echo e(auth()->user()?->institution?->name ?? 'Ibu Pejabat Penjara'); ?></span>
                                     </li>
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
@@ -1830,30 +2138,23 @@
                                     id="btnCancelEdit">Batal</button>
                             </div>
                             <div class="card-body">
-                                <form id="formUpdateProfile" action="{{ route('profile.update') }}" method="POST">
-                                    @csrf
+                                <form id="formUpdateProfile" action="<?php echo e(route('profile.update')); ?>" method="POST">
+                                    <?php echo csrf_field(); ?>
                                     <div class="row mb-3">
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <label class="form-label">Nama Penuh</label>
                                             <input type="text" class="form-control" name="name"
-                                                value="{{ auth()->user()?->name }}" id="inputProfileName" required>
+                                                value="<?php echo e(auth()->user()?->name); ?>" id="inputProfileName" required>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <label class="form-label">Email</label>
                                             <input type="email" class="form-control" name="email"
-                                                value="{{ auth()->user()?->email }}" id="inputProfileEmail" required>
+                                                value="<?php echo e(auth()->user()?->email); ?>" id="inputProfileEmail" required>
                                         </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Username</label>
-                                            <input type="text" class="form-control" name="username"
-                                                value="{{ auth()->user()?->username }}" id="inputProfileUsername">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Gred</label>
-                                            <input type="text" class="form-control" name="grade"
-                                                value="{{ auth()->user()?->grade }}" id="inputProfileGrade">
+                                        <div class="col-md-4">
+                                            <label class="form-label">No. Telefon</label>
+                                            <input type="text" class="form-control" name="phone_number"
+                                                value="<?php echo e(auth()->user()?->phone_number); ?>" id="inputProfilePhone">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -1861,11 +2162,12 @@
                                             <label class="form-label">Institusi</label>
                                             <select class="form-select" name="institution_id" id="inputProfileInstitution">
                                                 <option value="">Pilih Institusi</option>
-                                                @foreach($institutions as $inst)
-                                                    <option value="{{ $inst->id }}" {{ (auth()->user()->institution_id == $inst->id) ? 'selected' : '' }}>
-                                                        {{ $inst->name }}
+                                                <?php $__currentLoopData = $institutions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inst): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($inst->id); ?>" <?php echo e((auth()->user()->institution_id == $inst->id) ? 'selected' : ''); ?>>
+                                                        <?php echo e($inst->name); ?>
+
                                                     </option>
-                                                @endforeach
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </select>
                                         </div>
                                     </div>
@@ -1892,9 +2194,9 @@
                                     Laluan</h5>
                             </div>
                             <div class="card-body">
-                                <form id="formChangePasswordStandalone" action="{{ route('profile.password') }}"
+                                <form id="formChangePasswordStandalone" action="<?php echo e(route('profile.password')); ?>"
                                     method="POST">
-                                    @csrf
+                                    <?php echo csrf_field(); ?>
                                     <div class="mb-3">
                                         <label class="form-label">Kata Laluan Semasa</label>
                                         <div class="input-group">
@@ -2223,7 +2525,7 @@
                                         <div class="fw-semibold" id="sdm-contact-person">-</div>
                                     </li>
                                     <li class="mb-3">
-                                        <div class="text-muted small"><i class="fas fa-envelope me-1 text-primary"></i>Email</div>
+                                        <div class="text-muted small"><i class="fas fa-envelope me-1 text-primary"></i>E-mel</div>
                                         <div><a id="sdm-email" href="#" class="text-decoration-none">-</a></div>
                                     </li>
                                     <li class="mb-0">
@@ -2408,17 +2710,22 @@
                     <h5 class="modal-title">Log Keluar</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
-                    <p>Adakah anda pasti ingin log keluar dari sistem?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-danger" id="confirmLogout">Log Keluar</button>
-                </div>
+                <form action="<?php echo e(route('logout')); ?>" method="POST" id="logoutForm">
+                    <?php echo csrf_field(); ?>
+                    <div class="modal-body">
+                        <p>Adakah anda pasti ingin log keluar dari sistem?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-danger">Log Keluar</button>
+                    </div>
+                </form>
             </div>
             </div>
         </div>
     </div>
+
+
 
     <!-- Add Supplier Modal -->
     <div class="modal fade" id="addSupplierModal" tabindex="-1">
@@ -2443,7 +2750,7 @@
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label class="form-label">Emel</label>
+                                <label class="form-label">E-mel</label>
                                 <input type="email" class="form-control" name="email" required>
                             </div>
                             <div class="col-md-6">
@@ -2547,9 +2854,11 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Unit (UOM)</label>
-                                <select class="form-select" name="uom" id="item_uom_select" required>
+                                <select class="form-select" name="uom_id" id="item_uom_select" required>
                                     <option value="">Pilih Unit</option>
-                                    <!-- Populated dynamically from database -->
+                                    <?php $__currentLoopData = $uoms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $uom): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($uom->id); ?>"><?php echo e($uom->code); ?></option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
                             </div>
                             <div class="col-md-4">
@@ -2642,15 +2951,351 @@
     <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
 
     <!-- Custom JavaScript -->
-    <script src="{{ asset('data.js') }}"></script>
+    <script src="<?php echo e(asset('data.js')); ?>"></script>
     <script>
         // Override hardcoded institutions with database data
         if (window.prisonData) {
-            window.prisonData.institutions = @json($institutions);
-        }
+            window.prisonData.institutions = <?php echo json_encode($institutions ?? [], 15, 512) ?>;
+            
+            <?php if(isset($rawMaterials)): ?>
+            // Override rawMaterials with database items for charts and materials table
+            window.prisonData.rawMaterials = <?php echo json_encode($rawMaterials, 15, 512) ?>;
+            <?php endif; ?>
+
+
+            <?php if(isset($suppliers)): ?>
+            window.prisonData.suppliers = <?php echo json_encode($suppliers, 15, 512) ?>;
+            <?php endif; ?>
+
+            <?php if(isset($positions)): ?>
+            window.prisonData.positions = <?php echo json_encode($positions, 15, 512) ?>;
+            <?php endif; ?>
+        } // end if (window.prisonData)
+
+        // ===== Global Search Logic for HQ Dashboard (SPA) =====
+        document.addEventListener('DOMContentLoaded', function() {
+            var searchInput = document.getElementById('globalSearchInput');
+            var searchResults = document.getElementById('globalSearchResults');
+            var searchTimeout;
+
+            if (!searchInput || !searchResults) return;
+
+            searchInput.addEventListener('input', function(e) {
+                clearTimeout(searchTimeout);
+                var query = e.target.value.trim();
+
+                if (query.length < 2) {
+                    searchResults.classList.add('d-none');
+                    return;
+                }
+
+                searchResults.classList.remove('d-none');
+                searchResults.innerHTML = '<div class="search-loading"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
+
+                searchTimeout = setTimeout(function() {
+                    var context = searchInput.dataset.context || 'hq';
+                    var filterId = searchInput.dataset.filterId || '';
+                    fetch('/api/global-search?q=' + encodeURIComponent(query) + '&context=' + context + '&filter_id=' + filterId, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                    .then(function(response) { return response.json(); })
+                    .then(function(data) {
+                        renderHQSearchResults(data.results);
+                    })
+                    .catch(function() {
+                        searchResults.innerHTML = '<div class="search-empty text-danger">Ralat carian. Cuba semula.</div>';
+                    });
+                }, 350);
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.classList.add('d-none');
+                }
+            });
+
+            searchInput.addEventListener('focus', function() {
+                if (this.value.trim().length >= 2) {
+                    searchResults.classList.remove('d-none');
+                }
+            });
+
+            function renderHQSearchResults(data) {
+                var html = '';
+                var hasResults = false;
+
+                var configs = [
+                    { key: 'users',        title: 'Senarai Pengguna',  icon: 'fa-users',        page: 'admin-list' },
+                    { key: 'items',        title: 'Item & Inventori',  icon: 'fa-box',          page: 'item-list' },
+                    { key: 'suppliers',    title: 'Pembekal',          icon: 'fa-truck',        page: 'supplier-list' },
+                    { key: 'orders',       title: 'Pesanan (Inden)',   icon: 'fa-file-invoice', page: 'inden' },
+                    { key: 'institutions', title: 'Institusi',         icon: 'fa-building',     page: 'institusi' }
+                ];
+
+                configs.forEach(function(config) {
+                    if (data[config.key] && data[config.key].length > 0) {
+                        hasResults = true;
+                        html += '<h6 class="search-category-title">' + config.title + '</h6>';
+                        data[config.key].forEach(function(item) {
+                            var term = (item.search_term || '').replace(/"/g, '&quot;');
+                            html += '<div class="search-result-item" onclick="hqSearchNavigate(\'' + config.page + '\', \'' + term.replace(/'/g, "\\'") + '\')" style="cursor:pointer;">'
+                                  + '<div class="search-result-icon"><i class="fas ' + config.icon + '"></i></div>'
+                                  + '<div class="search-result-content">'
+                                  + '<h6 class="mb-0 text-primary">' + item.title + '</h6>'
+                                  + '<small class="text-muted">' + item.subtitle + '</small>'
+                                  + '</div></div>';
+                        });
+                    }
+                });
+
+                if (!hasResults) {
+                    html = '<div class="search-empty">Tiada padanan dijumpai.</div>';
+                }
+
+                searchResults.innerHTML = html;
+            }
+        });
+
+        // HQ SPA Search Navigator
+        window.hqSearchNavigate = function(page, keyword) {
+            var sr = document.getElementById('globalSearchResults');
+            if (sr) sr.classList.add('d-none');
+
+            var link = document.querySelector('[data-page="' + page + '"]');
+            if (link) link.click();
+
+            var targetTableId = '';
+            if (page === 'admin-list') targetTableId = '#admin-list-table';
+            else if (page === 'item-list') targetTableId = '#item-list-table';
+            else if (page === 'supplier-list') targetTableId = '#supplier-list-table';
+            else if (page === 'inden') targetTableId = '#inden-table';
+            else if (page === 'institusi') targetTableId = '#institutions-table';
+
+            var attempts = 0;
+            var maxAttempts = 30; // 6 seconds total max polling
+
+            var highlightInterval = setInterval(function() {
+                var found = false;
+                
+                if (targetTableId && typeof $ !== 'undefined' && $.fn && $.fn.dataTable) {
+                    var tableWrapper = $(targetTableId);
+                    
+                    if (tableWrapper.length > 0 && $.fn.DataTable.isDataTable(targetTableId)) {
+                        var dtApi = tableWrapper.DataTable();
+                        
+                        // Proceed only if the table is populated
+                        if (dtApi.data().length > 0) {
+                            var searchKey = keyword.replace(/\s+/g, ' ').toLowerCase();
+                            var targetRowIdx = -1;
+
+                            // 1. Find the row index that matches the keyword
+                            dtApi.rows({ search: 'applied' }).every(function(rowIdx, tableLoop, rowLoop) {
+                                if (targetRowIdx !== -1) return; // already found
+                                
+                                var node = this.node();
+                                if (node) {
+                                    var rowText = $(node).text().replace(/\s+/g, ' ').toLowerCase();
+                                    if (rowText.indexOf(searchKey) >= 0) {
+                                        targetRowIdx = rowIdx;
+                                    }
+                                }
+                            });
+
+                            if (targetRowIdx !== -1) {
+                                found = true; // successfully located
+
+                                // 2. Determine which page the row is currently on
+                                var displayIndex = dtApi.rows({ order: 'current', search: 'applied' }).indexes().indexOf(targetRowIdx);
+                                var pageLength = dtApi.page.len();
+                                if (pageLength > 0 && displayIndex >= 0) {
+                                    var targetPage = Math.floor(displayIndex / pageLength);
+                                    
+                                    // 3. Switch to that page if not already there
+                                    if (dtApi.page() !== targetPage) {
+                                        dtApi.page(targetPage).draw(false);
+                                    }
+                                }
+
+                                // 4. Highlight the target row
+                                var tr = $(dtApi.row(targetRowIdx).node());
+                                if (tr.length > 0) {
+                                    var cells = tr.children('td');
+                                    var originalBg = cells.css('background-color') || '';
+                                    var originalBorder = cells.first().css('border-left') || '';
+                                    
+                                    cells.css({ 'background-color': '#fff3cd', 'transition': 'background-color 1s ease' });
+                                    cells.first().css({ 'border-left': '4px solid #ffc107' });
+                                    
+                                    setTimeout(function() {
+                                        cells.css({ 'background-color': originalBg, 'border-left': originalBorder });
+                                    }, 4000); // highlight for 4 seconds
+                                    
+                                    if (tr[0].scrollIntoView) {
+                                        tr[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                attempts++;
+                if (found || attempts >= maxAttempts) {
+                    clearInterval(highlightInterval);
+                }
+            }, 200);
+        };
+
+
+        // ===== INDEN PAGE LOGIC =====
+        document.addEventListener('DOMContentLoaded', function() {
+            let indenTable = null;
+
+            function initIndenTable() {
+                if ($.fn.DataTable.isDataTable('#inden-table')) {
+                    $('#inden-table').DataTable().destroy();
+                }
+                indenTable = $('#inden-table').DataTable({
+                    responsive: true,
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/ms.json',
+                        emptyTable: 'Tiada rekod inden dijumpai.',
+                        loadingRecords: 'Memuatkan...',
+                        zeroRecords: 'Tiada rekod yang sepadan dijumpai.'
+                    },
+                    order: [[3, 'desc']],
+                    columnDefs: [
+                        { orderable: false, targets: [7] }
+                    ]
+                });
+            }
+
+            function getStatusBadge(status) {
+                const map = {
+                    'Pending':     '<span class="badge bg-warning text-dark">Menunggu</span>',
+                    'In Progress': '<span class="badge bg-info">Dalam Proses</span>',
+                    'Completed':   '<span class="badge bg-success">Selesai</span>',
+                    'Rejected':    '<span class="badge bg-danger">Ditolak</span>',
+                };
+                return map[status] || `<span class="badge bg-secondary">${status}</span>`;
+            }
+
+            function getApprovalBadge(val) {
+                if (val === 1) return '<span class="badge bg-success">Disahkan</span>';
+                if (val === 2) return '<span class="badge bg-danger">Ditolak</span>';
+                return '<span class="badge bg-secondary">Belum Disahkan</span>';
+            }
+
+            function loadInden() {
+                const institutionId = document.getElementById('indenInstitusiFilter').value;
+                const status        = document.getElementById('indenStatusFilter').value;
+                const dateFrom      = document.getElementById('indenDateFrom').value;
+                const dateTo        = document.getElementById('indenDateTo').value;
+
+                document.getElementById('indenLoadingBadge').classList.remove('d-none');
+
+                const params = new URLSearchParams();
+                if (institutionId) params.append('institution_id', institutionId);
+                if (status)        params.append('status', status);
+                if (dateFrom)      params.append('date_from', dateFrom);
+                if (dateTo)        params.append('date_to', dateTo);
+
+                fetch('/api/hq/inden?' + params.toString(), {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('indenLoadingBadge').classList.add('d-none');
+
+                    // Update stat cards
+                    document.getElementById('indenStatTotal').textContent     = data.stats.total;
+                    document.getElementById('indenStatPending').textContent   = data.stats.pending;
+                    document.getElementById('indenStatCompleted').textContent = data.stats.completed;
+                    document.getElementById('indenStatAmount').textContent    = parseFloat(data.stats.total_amount).toLocaleString('ms-MY', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+                    // Rebuild table
+                    if ($.fn.DataTable.isDataTable('#inden-table')) {
+                        $('#inden-table').DataTable().destroy();
+                    }
+
+                    let rows = '';
+                    if (data.orders.length === 0) {
+                        rows = '<tr><td colspan="8" class="text-center text-muted py-4"><i class="fas fa-inbox me-2"></i>Tiada rekod inden dijumpai.</td></tr>';
+                        document.getElementById('inden-table-body').innerHTML = rows;
+                        initIndenTable();
+                        return;
+                    }
+
+                    data.orders.forEach((o, index) => {
+                        rows += `<tr>
+                            <td><span class="badge bg-light text-dark">${index + 1}</span></td>
+                            <td><span class="fw-medium">${o.order_no}</span></td>
+                            <td>${o.institution_name ?? '-'}</td>
+                            <td>${o.supplier_name ?? '-'}</td>
+                            <td>${o.order_date ?? '-'}</td>
+                            <td class="text-end">RM ${parseFloat(o.total_amount).toLocaleString('ms-MY', {minimumFractionDigits:2})}</td>
+                            <td>${getStatusBadge(o.order_status)}</td>
+                            <td>
+                                <a href="/borang-inden/${o.id}" class="btn btn-sm btn-outline-primary" title="Lihat Borang" target="_blank">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>`;
+                    });
+
+                    document.getElementById('inden-table-body').innerHTML = rows;
+                    initIndenTable();
+                })
+                .catch(err => {
+                    document.getElementById('indenLoadingBadge').classList.add('d-none');
+                    document.getElementById('inden-table-body').innerHTML = '<tr><td colspan="8" class="text-center text-danger py-4"><i class="fas fa-exclamation-triangle me-2"></i>Ralat semasa memuatkan data.</td></tr>';
+                    console.error('Inden fetch error:', err);
+                });
+            }
+
+            // Prevent form submit
+            const filterForm = document.getElementById('indenFilterForm');
+            if(filterForm) {
+                filterForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    loadInden();
+                });
+            }
+
+            // Tapis button
+            const btnTapis = document.getElementById('indenTapisBtn');
+            if(btnTapis) {
+                btnTapis.addEventListener('click', loadInden);
+            }
+
+            // Reset button
+            const btnReset = document.getElementById('indenResetBtn');
+            if(btnReset) {
+                btnReset.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.getElementById('indenInstitusiFilter').value = '';
+                    document.getElementById('indenStatusFilter').value    = '';
+                    document.getElementById('indenDateFrom').value        = '';
+                    document.getElementById('indenDateTo').value          = '';
+                    loadInden();
+                });
+            }
+
+            // Auto-load when switching to inden page (tap into SPA nav)
+            document.addEventListener('click', function(e) {
+                const link = e.target.closest('[data-page]');
+                if (link && link.getAttribute('data-page') === 'inden') {
+                    setTimeout(loadInden, 100);
+                }
+            });
+        });
+
+        // ===== END INDEN PAGE LOGIC =====
     </script>
-    <script src="{{ asset('script.js') }}"></script>
-    <script src="{{ asset('js/table-download.js') }}"></script>
+    <script src="<?php echo e(asset('script.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/table-download.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/session-timeout.js')); ?>"></script>
 </body>
 
 </html>
+<?php /**PATH C:\laragon\www\MySIPMa\resources\views/admin_dashboard.blade.php ENDPATH**/ ?>

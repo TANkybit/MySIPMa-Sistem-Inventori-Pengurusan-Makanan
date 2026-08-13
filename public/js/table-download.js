@@ -149,11 +149,19 @@
         toolbar.appendChild(button);
 
         // Find the nearest scrollable wrapper: either Bootstrap's .table-responsive class
-        // or any parent div with overflow-x set to scroll/auto (our custom scroll containers)
+        // or any parent div with overflow-x set to scroll/auto (our custom scroll containers).
+        // The walker stops at semantic layout boundaries (.card-body, .modal-body, .page-content)
+        // to prevent the toolbar from escaping into the top-level layout and appearing
+        // outside its containing card.
+        const BOUNDARY_CLASSES = ['card-body', 'modal-body', 'page-content', 'modal', 'content-area', 'main-content', 'wrapper'];
         const responsiveWrapper = table.closest('.table-responsive') ||
             (function () {
                 let el = table.parentNode;
                 while (el && el !== document.body) {
+                    // Stop at layout boundaries — never escape the containing card/section
+                    if (el.classList && BOUNDARY_CLASSES.some(cls => el.classList.contains(cls))) {
+                        return null;
+                    }
                     if (el.tagName === 'DIV') {
                         const ox = el.style.overflowX || window.getComputedStyle(el).overflowX;
                         if (ox === 'scroll' || ox === 'auto') return el;
