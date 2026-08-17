@@ -2,7 +2,7 @@
 <html lang="ms" data-bs-theme="light">
 
 <head>
-  <script>document.documentElement.setAttribute('data-bs-theme',localStorage.getItem('theme')||'light')</script>
+  <script>document.documentElement.setAttribute('data-bs-theme', localStorage.getItem('theme') || 'light')</script>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Borang Inden - MySIPMa</title>
@@ -10,7 +10,9 @@
   <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('frontend/Nexa/assets/img/LOGOMYSIPMA.png') }}">
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@500;700;800&display=swap"
+    rel="stylesheet">
   <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
   <link href="{{ asset('frontend/Nexa/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
   <link href="{{ asset('frontend/Nexa/assets/css/main2.css') }}" rel="stylesheet">
@@ -20,97 +22,553 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
   <style>
-    :root { --bg:#020204; --surface:#11151f; --surface-soft:#161a26; --surface-strong:#0c1119; --border:#2c333f; --text:#e2e8f0; --muted:#94a3b8; --accent:#10b981; --accent-soft:rgba(16,185,129,.16); }
-    body { background: radial-gradient(circle at top, rgba(255,255,255,.05) 0%, transparent 40%), linear-gradient(180deg,#020204 0%,#07090f 40%,#0b1018 100%); color: var(--text); font-family: "Roboto", sans-serif; }
-    h1,h2,h3,h4 { font-family: "Montserrat", sans-serif; color: #fff; }
-    .logo-glow { width: auto; height: auto; filter: brightness(150%); transition: all 0.3s ease; }
-    .logo-glow:hover { filter: brightness(170%); transform: scale(1.02); }
-    .page-shell { padding: 32px 0 56px; }
-    .card-box { background: var(--surface); border:1px solid var(--border); border-radius:24px; box-shadow:0 18px 48px rgba(0,0,0,.55); }
-    @media (min-width: 1200px) { .header .container > .logo-glow, .header .container > .d-xl-flex { position: relative; z-index: 2; }       .header .navmenu {
+    :root {
+      --bg: #020204;
+      --surface: #11151f;
+      --surface-soft: #161a26;
+      --surface-strong: #0c1119;
+      --border: #2c333f;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #10b981;
+      --accent-soft: rgba(16, 185, 129, .16);
+    }
+
+    body {
+      background: radial-gradient(circle at top, rgba(255, 255, 255, .05) 0%, transparent 40%), linear-gradient(180deg, #020204 0%, #07090f 40%, #0b1018 100%);
+      color: var(--text);
+      font-family: "Roboto", sans-serif;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: "Montserrat", sans-serif;
+      color: #fff;
+    }
+
+    .logo-glow {
+      width: auto;
+      height: auto;
+      filter: brightness(150%);
+      transition: all 0.3s ease;
+    }
+
+    .logo-glow:hover {
+      filter: brightness(170%);
+      transform: scale(1.02);
+    }
+
+    .page-shell {
+      padding: 32px 0 56px;
+    }
+
+    .card-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 18px 48px rgba(0, 0, 0, .55);
+    }
+
+    @media (min-width: 1200px) {
+
+      .header .container>.logo-glow,
+      .header .container>.d-xl-flex {
+        position: relative;
+        z-index: 2;
+      }
+
+      .header .navmenu {
         position: relative;
         flex: 1;
         text-align: center;
-      } }
-    .navmenu a { color: #ffffff !important; }
+      }
+    }
+
+    .navmenu a {
+      color: #ffffff !important;
+    }
+
     .navmenu a:hover,
-    .navmenu a.active { color: #10b981 !important; }
-    .text-white-50:hover { color: #10b981 !important; }
-    .hero, .section-card { padding:28px; }
-    .hero { margin-bottom:24px; }
-    .hero-title { font-size: clamp(2rem,4vw,3rem); font-weight:800; line-height:1.05; margin:10px 0 14px; }
-    .muted { color: var(--muted); line-height:1.7; }
-    .chip { background: rgba(255,255,255,.08); border-radius:999px; color: var(--text); font-size:.82rem; font-weight:700; padding:8px 12px; white-space:nowrap; border:1px solid rgba(255,255,255,.08); }
-    .section-head { align-items:flex-start; display:flex; justify-content:space-between; gap:12px; margin-bottom:18px; }
-    .form-label { color:#cbd5e1; font-size:.92rem; font-weight:700; margin-bottom:8px; }
-    .form-control,.form-select { background: #111827; border:1px solid rgba(255,255,255,.08); border-radius:14px; color: var(--text); min-height:48px; padding:12px 14px; }
-    textarea.form-control { min-height:110px; }
-    .form-control::placeholder, .form-select option { color: rgba(255,255,255,.35); opacity: 1; }
-    .form-control:focus,.form-select:focus { border-color: rgba(16,185,129,.45); box-shadow:0 0 0 .2rem rgba(16,185,129,.16); background: #111827; color: var(--text); }
-    .items-wrap { border:1px solid rgba(255,255,255,.08); border-radius:20px; overflow:hidden; }
-    .items-toolbar { align-items:center; background: #111827; border-bottom:1px solid rgba(255,255,255,.08); display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; padding:18px 20px; }
-    .item-card { border-bottom:1px solid rgba(255,255,255,.08); padding:20px; background: var(--surface-soft); }
-    .item-card:last-child { border-bottom:0; }
-    .item-card td { vertical-align:middle; }
-    .item-index { align-items:center; background: var(--accent); border-radius:999px; color:#0f172a; display:inline-flex; font-size:.8rem; font-weight:700; height:34px; justify-content:center; width:34px; }
-    .item-actions { align-items:center; display:flex; gap:10px; justify-content:space-between; margin-bottom:16px; }
-    .item-name-display, .item-qty-display, .item-unit-display, .item-price-display, .item-ceiling-display, .item-ceiling-unit-display, .item-total-display { display:inline; font-weight:500; color:var(--text); }
-    .item-card.editing .item-qty-display { display:none !important; }
-    .item-card.editing .item-order-qty { display:block !important; }
-    .item-card.editing .edit-item { display:none !important; }
-    .item-card.editing .save-item-qty { display:inline-flex !important; }
-    .item-card.editing .cancel-item-edit { display:inline-flex !important; }
-    [data-bs-theme="light"] .item-name-display, [data-bs-theme="light"] .item-qty-display, [data-bs-theme="light"] .item-unit-display, [data-bs-theme="light"] .item-price-display, [data-bs-theme="light"] .item-ceiling-display, [data-bs-theme="light"] .item-ceiling-unit-display, [data-bs-theme="light"] .item-total-display { color:#111827; }
-    .btn-round { border-radius:999px; font-weight:700; padding:10px 16px; }
-    .btn-add { background: var(--accent); border:0; color:#0f172a; }
-    .btn-soft { background: rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); color: var(--text); }
-    .btn-custom { background: var(--accent); color:#0f172a; border:0; border-radius:999px; padding:12px 24px; font-weight:700; text-decoration:none; transition:all .3s; }
-    .btn-custom:hover { background:#0ea5e9; color:#fff; transform:scale(1.05); }
-    .btn-logout { background:transparent; border:1px solid rgba(255,255,255,.2); color:#fff; }
-    .btn-logout:hover { background:rgba(255,255,255,.1); border-color:#fff; }
-    .totals-box { background: linear-gradient(180deg,#111827 0%,#0b1020 100%); border-radius:20px; color:#fff; padding:24px; }
-    .totals-box p { color: rgba(255,255,255,.78); }
-    .totals-row { align-items:center; display:flex; justify-content:space-between; margin-bottom:12px; }
-    .totals-row:last-child { border-top:1px solid rgba(255,255,255,.12); margin-top:14px; padding-top:14px; }
-    .action-row { align-items:center; display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; margin-top:24px; }
-    .borang-menu { display:grid; gap:12px; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom:24px; }
-    .borang-menu button { align-items:flex-start; background:var(--surface); border:1px solid var(--border); border-radius:18px; color:var(--text); display:flex; flex-direction:column; gap:6px; padding:16px; text-align:left; transition:all .2s ease; }
-    .borang-menu button.active, .borang-menu button:hover { border-color:rgba(16,185,129,.55); box-shadow:0 16px 36px rgba(16,185,129,.12); transform:translateY(-2px); }
-    .borang-menu button.active .menu-title { color:var(--accent); }
-    .borang-menu .menu-step { color:var(--accent); font-size:.78rem; font-weight:800; text-transform:uppercase; }
-    .borang-menu .menu-title { color:#fff; font-family:"Montserrat", sans-serif; font-weight:800; }
-    .borang-page { display:none; }
-    .borang-page.active { display:block; }
-    .borang-step-actions { align-items:center; display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; margin-top:24px; }
-    .word-helper { color: rgba(255,255,255,.55); display:flex; justify-content:flex-end; font-size:.82rem; margin-top:6px; }
-    .word-helper.text-danger { color:#f87171 !important; }
-    .date-format-hint { color:var(--muted); font-size:.8rem; margin-top:6px; }
-    .item-table-toolbar { align-items:center; display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; margin-bottom:16px; }
-    .item-table-toolbar .dataTables_length label, .item-table-toolbar .dataTables_filter label { color:var(--muted) !important; }
-    .item-table-toolbar .dataTables_filter { margin-left:auto; }
-    .dt-item-actions { display:flex; justify-content:flex-end; }
-    table.dataTable > thead > tr > th { border-bottom:1px solid rgba(255,255,255,.12) !important; }
-    table.dataTable > tbody > tr { background:transparent !important; }
-    .table-dark-custom { color:var(--text) !important; border-color:var(--border) !important; }
-    .table-dark-custom th { background:linear-gradient(135deg,#065f46,#047857) !important; color:#fff !important; }
-    .table-dark-custom td { background:transparent !important; border-bottom:1px solid rgba(255,255,255,.08) !important; color:#fff !important; vertical-align:middle; }
-    #itemDataTable td { white-space: normal; }
-    .dataTables_wrapper .page-link { background:var(--surface-soft) !important; border-color:var(--border) !important; color:var(--text) !important; }
-    .dataTables_wrapper .page-item.active .page-link { background:var(--accent) !important; border-color:var(--accent) !important; color:#0f172a !important; }
-    .dataTables_wrapper .form-select-sm, .dataTables_wrapper .form-control-sm { background:#111827 !important; border:1px solid rgba(255,255,255,.08) !important; color:var(--text) !important; }
-    .select2-container { width:100% !important; }
-    .select2-container--default .select2-selection--single { background:#111827; border:1px solid rgba(255,255,255,.08); border-radius:14px; color:var(--text); min-height:48px; padding:9px 12px; }
-    .select2-container--default .select2-selection--single .select2-selection__rendered { color:var(--text); line-height:28px; padding-left:0; }
-    .select2-container--default .select2-selection--single .select2-selection__arrow { height:46px; }
-    .select2-dropdown { background:#111827; border:1px solid rgba(255,255,255,.12); color:var(--text); }
-    .select2-search__field { background:#0b1020; border:1px solid rgba(255,255,255,.12) !important; color:var(--text); }
-    .select2-results__option--highlighted { background:var(--accent) !important; color:#0f172a !important; }
-    @media (max-width: 767.98px) { .hero,.section-card { padding:22px; } .section-head,.items-toolbar,.action-row { flex-direction:column; align-items:flex-start; } }
-    @media (max-width: 991.98px) { .borang-menu { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    @media (max-width: 575.98px) { .borang-menu { grid-template-columns: 1fr; } }
-    
+    .navmenu a.active {
+      color: #10b981 !important;
+    }
+
+    .text-white-50:hover {
+      color: #10b981 !important;
+    }
+
+    .hero,
+    .section-card {
+      padding: 28px;
+    }
+
+    .hero {
+      margin-bottom: 24px;
+    }
+
+    .hero-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      line-height: 1.05;
+      margin: 10px 0 14px;
+    }
+
+    .muted {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, .08);
+      border-radius: 999px;
+      color: var(--text);
+      font-size: .82rem;
+      font-weight: 700;
+      padding: 8px 12px;
+      white-space: nowrap;
+      border: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    .section-head {
+      align-items: flex-start;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      color: #cbd5e1;
+      font-size: .92rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .form-control,
+    .form-select {
+      background: #111827;
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 14px;
+      color: var(--text);
+      min-height: 48px;
+      padding: 12px 14px;
+    }
+
+    textarea.form-control {
+      min-height: 110px;
+    }
+
+    .form-control::placeholder,
+    .form-select option {
+      color: rgba(255, 255, 255, .35);
+      opacity: 1;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: rgba(16, 185, 129, .45);
+      box-shadow: 0 0 0 .2rem rgba(16, 185, 129, .16);
+      background: #111827;
+      color: var(--text);
+    }
+
+    .items-wrap {
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .items-toolbar {
+      align-items: center;
+      background: #111827;
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      padding: 18px 20px;
+    }
+
+    .item-card {
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+      padding: 20px;
+      background: var(--surface-soft);
+    }
+
+    .item-card:last-child {
+      border-bottom: 0;
+    }
+
+    .item-card td {
+      vertical-align: middle;
+    }
+
+    .item-index {
+      align-items: center;
+      background: var(--accent);
+      border-radius: 999px;
+      color: #0f172a;
+      display: inline-flex;
+      font-size: .8rem;
+      font-weight: 700;
+      height: 34px;
+      justify-content: center;
+      width: 34px;
+    }
+
+    .item-actions {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .item-name-display,
+    .item-qty-display,
+    .item-unit-display,
+    .item-price-display,
+    .item-ceiling-display,
+    .item-ceiling-unit-display,
+    .item-total-display {
+      display: inline;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .item-card.editing .item-qty-display {
+      display: none !important;
+    }
+
+    .item-card.editing .item-order-qty {
+      display: block !important;
+    }
+
+    .item-card.editing .edit-item {
+      display: none !important;
+    }
+
+    .item-card.editing .save-item-qty {
+      display: inline-flex !important;
+    }
+
+    .item-card.editing .cancel-item-edit {
+      display: inline-flex !important;
+    }
+
+    [data-bs-theme="light"] .item-name-display,
+    [data-bs-theme="light"] .item-qty-display,
+    [data-bs-theme="light"] .item-unit-display,
+    [data-bs-theme="light"] .item-price-display,
+    [data-bs-theme="light"] .item-ceiling-display,
+    [data-bs-theme="light"] .item-ceiling-unit-display,
+    [data-bs-theme="light"] .item-total-display {
+      color: #111827;
+    }
+
+    .btn-round {
+      border-radius: 999px;
+      font-weight: 700;
+      padding: 10px 16px;
+    }
+
+    .btn-add {
+      background: var(--accent);
+      border: 0;
+      color: #0f172a;
+    }
+
+    .btn-soft {
+      background: rgba(255, 255, 255, .07);
+      border: 1px solid rgba(255, 255, 255, .12);
+      color: var(--text);
+    }
+
+    .btn-custom {
+      background: var(--accent);
+      color: #0f172a;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 24px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all .3s;
+    }
+
+    .btn-custom:hover {
+      background: #0ea5e9;
+      color: #fff;
+      transform: scale(1.05);
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, .2);
+      color: #fff;
+    }
+
+    .btn-logout:hover {
+      background: rgba(255, 255, 255, .1);
+      border-color: #fff;
+    }
+
+    .totals-box {
+      background: linear-gradient(180deg, #111827 0%, #0b1020 100%);
+      border-radius: 20px;
+      color: #fff;
+      padding: 24px;
+    }
+
+    .totals-box p {
+      color: rgba(255, 255, 255, .78);
+    }
+
+    .totals-row {
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .totals-row:last-child {
+      border-top: 1px solid rgba(255, 255, 255, .12);
+      margin-top: 14px;
+      padding-top: 14px;
+    }
+
+    .action-row {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      margin-top: 24px;
+    }
+
+    .borang-menu {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-bottom: 24px;
+    }
+
+    .borang-menu button {
+      align-items: flex-start;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 16px;
+      text-align: left;
+      transition: all .2s ease;
+    }
+
+    .borang-menu button.active,
+    .borang-menu button:hover {
+      border-color: rgba(16, 185, 129, .55);
+      box-shadow: 0 16px 36px rgba(16, 185, 129, .12);
+      transform: translateY(-2px);
+    }
+
+    .borang-menu button.active .menu-title {
+      color: var(--accent);
+    }
+
+    .borang-menu .menu-step {
+      color: var(--accent);
+      font-size: .78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .borang-menu .menu-title {
+      color: #fff;
+      font-family: "Montserrat", sans-serif;
+      font-weight: 800;
+    }
+
+    .borang-page {
+      display: none;
+    }
+
+    .borang-page.active {
+      display: block;
+    }
+
+    .borang-step-actions {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      margin-top: 24px;
+    }
+
+    .word-helper {
+      color: rgba(255, 255, 255, .55);
+      display: flex;
+      justify-content: flex-end;
+      font-size: .82rem;
+      margin-top: 6px;
+    }
+
+    .word-helper.text-danger {
+      color: #f87171 !important;
+    }
+
+    .date-format-hint {
+      color: var(--muted);
+      font-size: .8rem;
+      margin-top: 6px;
+    }
+
+    .item-table-toolbar {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .item-table-toolbar .dataTables_length label,
+    .item-table-toolbar .dataTables_filter label {
+      color: var(--muted) !important;
+    }
+
+    .item-table-toolbar .dataTables_filter {
+      margin-left: auto;
+    }
+
+    .dt-item-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    table.dataTable>thead>tr>th {
+      border-bottom: 1px solid rgba(255, 255, 255, .12) !important;
+    }
+
+    table.dataTable>tbody>tr {
+      background: transparent !important;
+    }
+
+    .table-dark-custom {
+      color: var(--text) !important;
+      border-color: var(--border) !important;
+    }
+
+    .table-dark-custom th {
+      background: linear-gradient(135deg, #065f46, #047857) !important;
+      color: #fff !important;
+    }
+
+    .table-dark-custom td {
+      background: transparent !important;
+      border-bottom: 1px solid rgba(255, 255, 255, .08) !important;
+      color: #fff !important;
+      vertical-align: middle;
+    }
+
+    #itemDataTable td {
+      white-space: normal;
+    }
+
+    .dataTables_wrapper .page-link {
+      background: var(--surface-soft) !important;
+      border-color: var(--border) !important;
+      color: var(--text) !important;
+    }
+
+    .dataTables_wrapper .page-item.active .page-link {
+      background: var(--accent) !important;
+      border-color: var(--accent) !important;
+      color: #0f172a !important;
+    }
+
+    .dataTables_wrapper .form-select-sm,
+    .dataTables_wrapper .form-control-sm {
+      background: #111827 !important;
+      border: 1px solid rgba(255, 255, 255, .08) !important;
+      color: var(--text) !important;
+    }
+
+    .select2-container {
+      width: 100% !important;
+    }
+
+    .select2-container--default .select2-selection--single {
+      background: #111827;
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 14px;
+      color: var(--text);
+      min-height: 48px;
+      padding: 9px 12px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+      color: var(--text);
+      line-height: 28px;
+      padding-left: 0;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+      height: 46px;
+    }
+
+    .select2-dropdown {
+      background: #111827;
+      border: 1px solid rgba(255, 255, 255, .12);
+      color: var(--text);
+    }
+
+    .select2-search__field {
+      background: #0b1020;
+      border: 1px solid rgba(255, 255, 255, .12) !important;
+      color: var(--text);
+    }
+
+    .select2-results__option--highlighted {
+      background: var(--accent) !important;
+      color: #0f172a !important;
+    }
+
+    @media (max-width: 767.98px) {
+
+      .hero,
+      .section-card {
+        padding: 22px;
+      }
+
+      .section-head,
+      .items-toolbar,
+      .action-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 991.98px) {
+      .borang-menu {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 575.98px) {
+      .borang-menu {
+        grid-template-columns: 1fr;
+      }
+    }
+
     /* Disabled selects in read-only mode — keep dark theme */
-    select:disabled, input:disabled, textarea:disabled {
+    select:disabled,
+    input:disabled,
+    textarea:disabled {
       background: #111827 !important;
       color: var(--text) !important;
       opacity: 0.7;
@@ -118,142 +576,537 @@
     }
 
     /* Sleek Validation Styles */
-    .invalid-feedback { color: #f87171; font-size: 0.85rem; margin-top: 6px; font-weight: 500; display: none; }
-    .is-invalid + .invalid-feedback, .is-invalid ~ .invalid-feedback { display: block; }
-    .form-control.is-invalid, .form-select.is-invalid { border-color: #f87171 !important; box-shadow: 0 0 0 .2rem rgba(248,113,113,.16) !important; background-image: none !important; }
-    .was-validated .form-control:invalid, .was-validated .form-select:invalid { border-color: #f87171 !important; box-shadow: 0 0 0 .2rem rgba(248,113,113,.16) !important; }
-    .was-validated .form-control:invalid ~ .invalid-feedback, .was-validated .form-select:invalid ~ .invalid-feedback { display: block; }
-    .was-validated .form-control:valid, .was-validated .form-select:valid { border-color: var(--accent) !important; box-shadow: 0 0 0 .2rem rgba(16,185,129,.1) !important; }
+    .invalid-feedback {
+      color: #f87171;
+      font-size: 0.85rem;
+      margin-top: 6px;
+      font-weight: 500;
+      display: none;
+    }
+
+    .is-invalid+.invalid-feedback,
+    .is-invalid~.invalid-feedback {
+      display: block;
+    }
+
+    .form-control.is-invalid,
+    .form-select.is-invalid {
+      border-color: #f87171 !important;
+      box-shadow: 0 0 0 .2rem rgba(248, 113, 113, .16) !important;
+      background-image: none !important;
+    }
+
+    .was-validated .form-control:invalid,
+    .was-validated .form-select:invalid {
+      border-color: #f87171 !important;
+      box-shadow: 0 0 0 .2rem rgba(248, 113, 113, .16) !important;
+    }
+
+    .was-validated .form-control:invalid~.invalid-feedback,
+    .was-validated .form-select:invalid~.invalid-feedback {
+      display: block;
+    }
+
+    .was-validated .form-control:valid,
+    .was-validated .form-select:valid {
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 .2rem rgba(16, 185, 129, .1) !important;
+    }
 
     /* Auto-filled readonly field styling */
-    .field-auto-wrap { position: relative; }
+    .field-auto-wrap {
+      position: relative;
+    }
+
     .field-auto-wrap .form-control,
     .field-auto-wrap .form-select {
-      background-color: rgba(107,114,128,.08) !important;
+      background-color: rgba(107, 114, 128, .08) !important;
       border-style: dashed !important;
-      border-color: rgba(107,114,128,.3) !important;
-      color: rgba(107,114,128,.7) !important;
+      border-color: rgba(107, 114, 128, .3) !important;
+      color: rgba(107, 114, 128, .7) !important;
       cursor: default !important;
     }
-    .field-auto-wrap .form-control::placeholder { color: rgba(107,114,128,.4); }
-    .field-auto-badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      font-size: .65rem; font-weight: 600; text-transform: uppercase; letter-spacing: .5px;
-      color: rgba(107,114,128,.6); margin-bottom: 5px;
+
+    .field-auto-wrap .form-control::placeholder {
+      color: rgba(107, 114, 128, .4);
     }
-    .field-auto-badge i { font-size: .7rem; }
+
+    .field-auto-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: .65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: rgba(107, 114, 128, .6);
+      margin-bottom: 5px;
+    }
+
+    .field-auto-badge i {
+      font-size: .7rem;
+    }
+
     [data-bs-theme="dark"] .field-auto-wrap .form-control,
     [data-bs-theme="dark"] .field-auto-wrap .form-select {
-      background-color: rgba(255,255,255,.04) !important;
-      border-color: rgba(255,255,255,.15) !important;
-      color: rgba(255,255,255,.35) !important;
+      background-color: rgba(255, 255, 255, .04) !important;
+      border-color: rgba(255, 255, 255, .15) !important;
+      color: rgba(255, 255, 255, .35) !important;
     }
-    [data-bs-theme="dark"] .field-auto-badge { color: rgba(255,255,255,.35); }
+
+    [data-bs-theme="dark"] .field-auto-badge {
+      color: rgba(255, 255, 255, .35);
+    }
+
     [data-bs-theme="light"] .field-auto-wrap .form-control,
     [data-bs-theme="light"] .field-auto-wrap .form-select {
-      background-color: rgba(107,114,128,.06) !important;
-      border-color: rgba(107,114,128,.25) !important;
-      color: rgba(107,114,128,.55) !important;
+      background-color: rgba(107, 114, 128, .06) !important;
+      border-color: rgba(107, 114, 128, .25) !important;
+      color: rgba(107, 114, 128, .55) !important;
     }
-    [data-bs-theme="light"] .field-auto-badge { color: rgba(107,114,128,.5); }
-    @keyframes logoPulse { 0% { filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0,0,0,.8)) drop-shadow(1px 1px 0 rgba(0,0,0,.5)) drop-shadow(0 0 8px rgba(16,185,129,.3)); transform: scale(1); } 50% { filter: brightness(210%) drop-shadow(2px 3px 0 rgba(0,0,0,.9)) drop-shadow(1px 1px 0 rgba(0,0,0,.6)) drop-shadow(0 0 16px rgba(16,185,129,.6)) drop-shadow(0 0 30px rgba(16,185,129,.2)); transform: scale(1.03); } 100% { filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0,0,0,.8)) drop-shadow(1px 1px 0 rgba(0,0,0,.5)) drop-shadow(0 0 8px rgba(16,185,129,.3)); transform: scale(1); } }
-    @keyframes logoShine { 0% { filter: brightness(150%) drop-shadow(0 0 0 transparent); } 50% { filter: brightness(200%) drop-shadow(0 0 8px rgba(16,185,129,.5)); } 100% { filter: brightness(150%) drop-shadow(0 0 0 transparent); } }
-    [data-bs-theme="light"] .logo-glow img { filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0,0,0,.8)) drop-shadow(1px 1px 0 rgba(0,0,0,.5)) drop-shadow(-1px -1px 0 rgba(255,255,255,.4)) !important; animation: logoPulse 3s ease-in-out infinite; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    [data-bs-theme="light"] .logo-glow:hover img { filter: brightness(250%) drop-shadow(3px 4px 0 rgba(0,0,0,.9)) drop-shadow(2px 2px 0 rgba(0,0,0,.6)) drop-shadow(0 0 20px rgba(16,185,129,.6)) drop-shadow(0 0 40px rgba(16,185,129,.3)) !important; transform: scale(1.08) !important; animation: logoShine 1s ease-in-out infinite; }
-    [data-bs-theme="light"] .logo-glow { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    [data-bs-theme="light"] .logo-glow:hover { transform: scale(1.08) !important; }
+
+    [data-bs-theme="light"] .field-auto-badge {
+      color: rgba(107, 114, 128, .5);
+    }
+
+    @keyframes logoPulse {
+      0% {
+        filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0, 0, 0, .8)) drop-shadow(1px 1px 0 rgba(0, 0, 0, .5)) drop-shadow(0 0 8px rgba(16, 185, 129, .3));
+        transform: scale(1);
+      }
+
+      50% {
+        filter: brightness(210%) drop-shadow(2px 3px 0 rgba(0, 0, 0, .9)) drop-shadow(1px 1px 0 rgba(0, 0, 0, .6)) drop-shadow(0 0 16px rgba(16, 185, 129, .6)) drop-shadow(0 0 30px rgba(16, 185, 129, .2));
+        transform: scale(1.03);
+      }
+
+      100% {
+        filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0, 0, 0, .8)) drop-shadow(1px 1px 0 rgba(0, 0, 0, .5)) drop-shadow(0 0 8px rgba(16, 185, 129, .3));
+        transform: scale(1);
+      }
+    }
+
+    @keyframes logoShine {
+      0% {
+        filter: brightness(150%) drop-shadow(0 0 0 transparent);
+      }
+
+      50% {
+        filter: brightness(200%) drop-shadow(0 0 8px rgba(16, 185, 129, .5));
+      }
+
+      100% {
+        filter: brightness(150%) drop-shadow(0 0 0 transparent);
+      }
+    }
+
+    [data-bs-theme="light"] .logo-glow img {
+      filter: brightness(180%) drop-shadow(2px 3px 0 rgba(0, 0, 0, .8)) drop-shadow(1px 1px 0 rgba(0, 0, 0, .5)) drop-shadow(-1px -1px 0 rgba(255, 255, 255, .4)) !important;
+      animation: logoPulse 3s ease-in-out infinite;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    [data-bs-theme="light"] .logo-glow:hover img {
+      filter: brightness(250%) drop-shadow(3px 4px 0 rgba(0, 0, 0, .9)) drop-shadow(2px 2px 0 rgba(0, 0, 0, .6)) drop-shadow(0 0 20px rgba(16, 185, 129, .6)) drop-shadow(0 0 40px rgba(16, 185, 129, .3)) !important;
+      transform: scale(1.08) !important;
+      animation: logoShine 1s ease-in-out infinite;
+    }
+
+    [data-bs-theme="light"] .logo-glow {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    [data-bs-theme="light"] .logo-glow:hover {
+      transform: scale(1.08) !important;
+    }
 
     /* ── Light mode overrides ── */
-    [data-bs-theme="light"] body { background:#f8f9fa; color:#111827; }
-    [data-bs-theme="light"] h1,[data-bs-theme="light"] h2,[data-bs-theme="light"] h3,[data-bs-theme="light"] h4 { color:#111827; }
-    [data-bs-theme="light"] .muted { color:#6b7280; }
-    [data-bs-theme="light"] .card-box { background:#fff; border-color:#e5e7eb; box-shadow:0 4px 12px rgba(0,0,0,.08); }
-    [data-bs-theme="light"] .form-label { color:#374151; }
-    [data-bs-theme="light"] .form-control,[data-bs-theme="light"] .form-select { background:#fff; border-color:#d1d5db; color:#111827; }
-    [data-bs-theme="light"] .form-control::placeholder,[data-bs-theme="light"] .form-select option { color:#9ca3af; }
-    [data-bs-theme="light"] .form-control:focus,[data-bs-theme="light"] .form-select:focus { background:#fff; color:#111827; border-color:#10b981; box-shadow:0 0 0 .2rem rgba(16,185,129,.15); }
-    [data-bs-theme="light"] .form-select option { color:#111827; background:#fff; }
-    [data-bs-theme="light"] textarea.form-control { min-height:110px; }
-    [data-bs-theme="light"] .chip { background:#f3f4f6; border-color:#e5e7eb; color:#374151; }
-    [data-bs-theme="light"] .hero,[data-bs-theme="light"] .section-card { background:#fff; }
-    [data-bs-theme="light"] .btn-soft { background:#f3f4f6; border-color:#d1d5db; color:#374151; }
-    [data-bs-theme="light"] .btn-logout { border-color:#d1d5db; color:#374151; }
-    [data-bs-theme="light"] .btn-logout:hover { background:#f3f4f6; border-color:#9ca3af; }
-    [data-bs-theme="light"] .items-wrap { border-color:#e5e7eb; }
-    [data-bs-theme="light"] .items-toolbar { background:#fff; border-color:#e5e7eb; }
-    [data-bs-theme="light"] .item-card { background:#fff; border-color:#e5e7eb; }
-    [data-bs-theme="light"] .item-card td { color:#111827 !important; border-color:#e5e7eb !important; }
-    [data-bs-theme="light"] .totals-box { background:linear-gradient(180deg,#fff 0%,#f9fafb 100%); color:#111827; }
-    [data-bs-theme="light"] .totals-box p { color:#6b7280; }
-    [data-bs-theme="light"] .totals-row { border-color:#e5e7eb; }
-    [data-bs-theme="light"] .totals-row:last-child { border-color:#d1d5db; }
-    [data-bs-theme="light"] .word-helper { color:#6b7280; }
-    [data-bs-theme="light"] .date-format-hint { color:#6b7280; }
-    [data-bs-theme="light"] .borang-menu button { background:#fff; border-color:#e5e7eb; color:#374151; }
-    [data-bs-theme="light"] .borang-menu .menu-title { color:#111827; }
-    [data-bs-theme="light"] .table-dark-custom { color:#111827 !important; border-color:#e5e7eb !important; }
-    [data-bs-theme="light"] .table-dark-custom th { background:#f3f4f6 !important; color:#111827 !important; }
-    [data-bs-theme="light"] .table-dark-custom td { background:#fff !important; color:#111827 !important; border-color:#e5e7eb !important; }
-    [data-bs-theme="light"] table.dataTable > thead > tr > th { border-color:#e5e7eb !important; }
-    [data-bs-theme="light"] .dataTables_wrapper .page-link { background:#fff !important; border-color:#e5e7eb !important; color:#374151 !important; }
-    [data-bs-theme="light"] .dataTables_wrapper .page-item.active .page-link { background:#10b981 !important; border-color:#10b981 !important; color:#fff !important; }
-    [data-bs-theme="light"] .dataTables_wrapper .form-select-sm,[data-bs-theme="light"] .dataTables_wrapper .form-control-sm { background:#fff !important; border-color:#d1d5db !important; color:#111827 !important; }
-    [data-bs-theme="light"] .item-table-toolbar .dataTables_length label,[data-bs-theme="light"] .item-table-toolbar .dataTables_filter label { color:#6b7280 !important; }
-    [data-bs-theme="light"] select:disabled,[data-bs-theme="light"] input:disabled,[data-bs-theme="light"] textarea:disabled { background:#f3f4f6 !important; color:#9ca3af !important; -webkit-text-fill-color:#9ca3af; }
-    [data-bs-theme="light"] .select2-container--default .select2-selection--single { background:#fff; border-color:#d1d5db; color:#111827; }
-    [data-bs-theme="light"] .select2-container--default .select2-selection--single .select2-selection__rendered { color:#111827; }
-    [data-bs-theme="light"] .select2-dropdown { background:#fff; border-color:#d1d5db; color:#111827; }
-    [data-bs-theme="light"] .select2-results__option { color:#111827; }
-    [data-bs-theme="light"] .select2-results__option--highlighted { background:#10b981 !important; color:#fff !important; }
-    [data-bs-theme="light"] .select2-search__field { background:#fff; border-color:#d1d5db !important; color:#111827; }
-    [data-bs-theme="light"] .dropdown-menu { background:#fff; border-color:#e5e7eb; color:#111827; }
-    [data-bs-theme="light"] .dropdown-item { color:#374151; }
-    [data-bs-theme="light"] .dropdown-item:hover,[data-bs-theme="light"] .dropdown-item:focus { background:#f3f4f6; color:#111827; }
-    [data-bs-theme="light"] select option { color:#111827; background:#fff; }
-    [data-bs-theme="light"] .item-order-qty { background:#fff !important; color:#111827 !important; border-color:#d1d5db !important; }
-    [data-bs-theme="light"] .invalid-feedback { color:#dc2626; }
-    [data-bs-theme="light"] .was-validated .form-control:valid,[data-bs-theme="light"] .was-validated .form-select:valid { border-color:#10b981 !important; }
-    [data-bs-theme="light"] .was-validated .form-control:invalid,[data-bs-theme="light"] .was-validated .form-select:invalid { border-color:#f87171 !important; }
-    [data-bs-theme="light"] #header { background:rgba(255,255,255,.8) !important; border-bottom:1px solid #e5e7eb !important; }
-    .mobile-nav-toggle { font-size:24px; cursor:pointer; }
-    .mobile-nav-toggle.bi::before { color:#fff; }
-    [data-bs-theme="light"] .mobile-nav-toggle.bi::before { color:#111827; }
+    [data-bs-theme="light"] body {
+      background: #f8f9fa;
+      color: #111827;
+    }
+
+    [data-bs-theme="light"] h1,
+    [data-bs-theme="light"] h2,
+    [data-bs-theme="light"] h3,
+    [data-bs-theme="light"] h4 {
+      color: #111827;
+    }
+
+    [data-bs-theme="light"] .muted {
+      color: #6b7280;
+    }
+
+    [data-bs-theme="light"] .card-box {
+      background: #fff;
+      border-color: #e5e7eb;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+    }
+
+    [data-bs-theme="light"] .form-label {
+      color: #374151;
+    }
+
+    [data-bs-theme="light"] .form-control,
+    [data-bs-theme="light"] .form-select {
+      background: #fff;
+      border-color: #d1d5db;
+      color: #111827;
+    }
+
+    [data-bs-theme="light"] .form-control::placeholder,
+    [data-bs-theme="light"] .form-select option {
+      color: #9ca3af;
+    }
+
+    [data-bs-theme="light"] .form-control:focus,
+    [data-bs-theme="light"] .form-select:focus {
+      background: #fff;
+      color: #111827;
+      border-color: #10b981;
+      box-shadow: 0 0 0 .2rem rgba(16, 185, 129, .15);
+    }
+
+    [data-bs-theme="light"] .form-select option {
+      color: #111827;
+      background: #fff;
+    }
+
+    [data-bs-theme="light"] textarea.form-control {
+      min-height: 110px;
+    }
+
+    [data-bs-theme="light"] .chip {
+      background: #f3f4f6;
+      border-color: #e5e7eb;
+      color: #374151;
+    }
+
+    [data-bs-theme="light"] .hero,
+    [data-bs-theme="light"] .section-card {
+      background: #fff;
+    }
+
+    [data-bs-theme="light"] .btn-soft {
+      background: #f3f4f6;
+      border-color: #d1d5db;
+      color: #374151;
+    }
+
+    [data-bs-theme="light"] .btn-logout {
+      border-color: #d1d5db;
+      color: #374151;
+    }
+
+    [data-bs-theme="light"] .btn-logout:hover {
+      background: #f3f4f6;
+      border-color: #9ca3af;
+    }
+
+    [data-bs-theme="light"] .items-wrap {
+      border-color: #e5e7eb;
+    }
+
+    [data-bs-theme="light"] .items-toolbar {
+      background: #fff;
+      border-color: #e5e7eb;
+    }
+
+    [data-bs-theme="light"] .item-card {
+      background: #fff;
+      border-color: #e5e7eb;
+    }
+
+    [data-bs-theme="light"] .item-card td {
+      color: #111827 !important;
+      border-color: #e5e7eb !important;
+    }
+
+    [data-bs-theme="light"] .totals-box {
+      background: linear-gradient(180deg, #fff 0%, #f9fafb 100%);
+      color: #111827;
+    }
+
+    [data-bs-theme="light"] .totals-box p {
+      color: #6b7280;
+    }
+
+    [data-bs-theme="light"] .totals-row {
+      border-color: #e5e7eb;
+    }
+
+    [data-bs-theme="light"] .totals-row:last-child {
+      border-color: #d1d5db;
+    }
+
+    [data-bs-theme="light"] .word-helper {
+      color: #6b7280;
+    }
+
+    [data-bs-theme="light"] .date-format-hint {
+      color: #6b7280;
+    }
+
+    [data-bs-theme="light"] .borang-menu button {
+      background: #fff;
+      border-color: #e5e7eb;
+      color: #374151;
+    }
+
+    [data-bs-theme="light"] .borang-menu .menu-title {
+      color: #111827;
+    }
+
+    [data-bs-theme="light"] .table-dark-custom {
+      color: #111827 !important;
+      border-color: #e5e7eb !important;
+    }
+
+    [data-bs-theme="light"] .table-dark-custom th {
+      background: #f3f4f6 !important;
+      color: #111827 !important;
+    }
+
+    [data-bs-theme="light"] .table-dark-custom td {
+      background: #fff !important;
+      color: #111827 !important;
+      border-color: #e5e7eb !important;
+    }
+
+    [data-bs-theme="light"] table.dataTable>thead>tr>th {
+      border-color: #e5e7eb !important;
+    }
+
+    [data-bs-theme="light"] .dataTables_wrapper .page-link {
+      background: #fff !important;
+      border-color: #e5e7eb !important;
+      color: #374151 !important;
+    }
+
+    [data-bs-theme="light"] .dataTables_wrapper .page-item.active .page-link {
+      background: #10b981 !important;
+      border-color: #10b981 !important;
+      color: #fff !important;
+    }
+
+    [data-bs-theme="light"] .dataTables_wrapper .form-select-sm,
+    [data-bs-theme="light"] .dataTables_wrapper .form-control-sm {
+      background: #fff !important;
+      border-color: #d1d5db !important;
+      color: #111827 !important;
+    }
+
+    [data-bs-theme="light"] .item-table-toolbar .dataTables_length label,
+    [data-bs-theme="light"] .item-table-toolbar .dataTables_filter label {
+      color: #6b7280 !important;
+    }
+
+    [data-bs-theme="light"] select:disabled,
+    [data-bs-theme="light"] input:disabled,
+    [data-bs-theme="light"] textarea:disabled {
+      background: #f3f4f6 !important;
+      color: #9ca3af !important;
+      -webkit-text-fill-color: #9ca3af;
+    }
+
+    [data-bs-theme="light"] .select2-container--default .select2-selection--single {
+      background: #fff;
+      border-color: #d1d5db;
+      color: #111827;
+    }
+
+    [data-bs-theme="light"] .select2-container--default .select2-selection--single .select2-selection__rendered {
+      color: #111827;
+    }
+
+    [data-bs-theme="light"] .select2-dropdown {
+      background: #fff;
+      border-color: #d1d5db;
+      color: #111827;
+    }
+
+    [data-bs-theme="light"] .select2-results__option {
+      color: #111827;
+    }
+
+    [data-bs-theme="light"] .select2-results__option--highlighted {
+      background: #10b981 !important;
+      color: #fff !important;
+    }
+
+    [data-bs-theme="light"] .select2-search__field {
+      background: #fff;
+      border-color: #d1d5db !important;
+      color: #111827;
+    }
+
+    [data-bs-theme="light"] .dropdown-menu {
+      background: #fff;
+      border-color: #e5e7eb;
+      color: #111827;
+    }
+
+    [data-bs-theme="light"] .dropdown-item {
+      color: #374151;
+    }
+
+    [data-bs-theme="light"] .dropdown-item:hover,
+    [data-bs-theme="light"] .dropdown-item:focus {
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    [data-bs-theme="light"] select option {
+      color: #111827;
+      background: #fff;
+    }
+
+    [data-bs-theme="light"] .item-order-qty {
+      background: #fff !important;
+      color: #111827 !important;
+      border-color: #d1d5db !important;
+    }
+
+    [data-bs-theme="light"] .invalid-feedback {
+      color: #dc2626;
+    }
+
+    [data-bs-theme="light"] .was-validated .form-control:valid,
+    [data-bs-theme="light"] .was-validated .form-select:valid {
+      border-color: #10b981 !important;
+    }
+
+    [data-bs-theme="light"] .was-validated .form-control:invalid,
+    [data-bs-theme="light"] .was-validated .form-select:invalid {
+      border-color: #f87171 !important;
+    }
+
+    [data-bs-theme="light"] #header {
+      background: rgba(255, 255, 255, .8) !important;
+      border-bottom: 1px solid #e5e7eb !important;
+    }
+
+    .mobile-nav-toggle {
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .mobile-nav-toggle.bi::before {
+      color: #fff;
+    }
+
+    [data-bs-theme="light"] .mobile-nav-toggle.bi::before {
+      color: #111827;
+    }
 
     /* Mobile nav links */
-    .navmenu ul li a.text-danger { color:#f87171 !important; }
-    .navmenu ul li a.text-danger:hover { color:#ef4444 !important; }
-    [data-bs-theme="light"] .navmenu ul li a.text-danger { color:#dc2626 !important; }
+    .navmenu ul li a.text-danger {
+      color: #f87171 !important;
+    }
+
+    .navmenu ul li a.text-danger:hover {
+      color: #ef4444 !important;
+    }
+
+    [data-bs-theme="light"] .navmenu ul li a.text-danger {
+      color: #dc2626 !important;
+    }
 
     /* Logout confirmation modal */
-    #logoutConfirmModal .modal-content { background:var(--surface); border:1px solid var(--border); border-radius:20px; color:var(--text); }
-    [data-bs-theme="light"] #logoutConfirmModal .modal-content { background:#fff; border-color:#e5e7eb; color:#111827; }
-    #logoutConfirmModal .modal-header { border-bottom:1px solid var(--border); }
-    [data-bs-theme="light"] #logoutConfirmModal .modal-header { border-bottom-color:#e5e7eb; }
-    #logoutConfirmModal .modal-title { font-weight:700; }
-    #logoutConfirmModal .btn-cancel { background:rgba(255,255,255,.08); border:1px solid var(--border); color:var(--text); }
-    #logoutConfirmModal .btn-cancel:hover { background:rgba(255,255,255,.15); }
-    [data-bs-theme="light"] #logoutConfirmModal .btn-cancel { background:#f3f4f6; border-color:#d1d5db; color:#374151; }
-    [data-bs-theme="light"] #logoutConfirmModal .btn-cancel:hover { background:#e5e7eb; }
+    #logoutConfirmModal .modal-content {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text);
+    }
+
+    [data-bs-theme="light"] #logoutConfirmModal .modal-content {
+      background: #fff;
+      border-color: #e5e7eb;
+      color: #111827;
+    }
+
+    #logoutConfirmModal .modal-header {
+      border-bottom: 1px solid var(--border);
+    }
+
+    [data-bs-theme="light"] #logoutConfirmModal .modal-header {
+      border-bottom-color: #e5e7eb;
+    }
+
+    #logoutConfirmModal .modal-title {
+      font-weight: 700;
+    }
+
+    #logoutConfirmModal .btn-cancel {
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    #logoutConfirmModal .btn-cancel:hover {
+      background: rgba(255, 255, 255, .15);
+    }
+
+    [data-bs-theme="light"] #logoutConfirmModal .btn-cancel {
+      background: #f3f4f6;
+      border-color: #d1d5db;
+      color: #374151;
+    }
+
+    [data-bs-theme="light"] #logoutConfirmModal .btn-cancel:hover {
+      background: #e5e7eb;
+    }
   </style>
   <link href="{{ asset('css/design.css') }}?v=3" rel="stylesheet">
-<style>
-body.mobile-nav-active { background: #000 !important; }
-body.mobile-nav-active .navmenu { background: #000 !important; }
-body.mobile-nav-active .navmenu > ul { background: #000 !important; border: none !important; box-shadow: none !important; inset: 0 !important; border-radius: 0 !important; overflow: visible !important; padding-top: 60px !important; }
-body.mobile-nav-active #navmenu ul li a { color: #fff !important; }
-body.mobile-nav-active #navmenu ul li a:hover, body.mobile-nav-active #navmenu ul li a.active { color: #7CB342 !important; }
-body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-active footer { display: none !important; }
-</style>
+  <style>
+    body.mobile-nav-active {
+      background: #000 !important;
+    }
+
+    body.mobile-nav-active .navmenu {
+      background: #000 !important;
+    }
+
+    body.mobile-nav-active .navmenu>ul {
+      background: #000 !important;
+      border: none !important;
+      box-shadow: none !important;
+      inset: 0 !important;
+      border-radius: 0 !important;
+      overflow: visible !important;
+      padding-top: 60px !important;
+    }
+
+    body.mobile-nav-active #navmenu ul li a {
+      color: #fff !important;
+    }
+
+    body.mobile-nav-active #navmenu ul li a:hover,
+    body.mobile-nav-active #navmenu ul li a.active {
+      color: #7CB342 !important;
+    }
+
+    body.mobile-nav-active main,
+    body.mobile-nav-active #footer,
+    body.mobile-nav-active footer {
+      display: none !important;
+    }
+  </style>
 </head>
+
 <body>
   @php
     $inden = optional($indenHeader ?? null);
     $isReadOnly = $readOnly ?? false;
     $isAdminHQ = Auth::user()->role_id == 1 || Auth::user()->role?->role_name === 'admin hq';
+    $canManageMusterRates = strtoupper(Auth::user()->getPositionCode()) === 'PS';
     $fieldState = $isReadOnly ? 'readonly' : '';
     $formatTarikh = function ($value) {
-      if (!$value) return '';
-      if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', (string) $value)) return $value;
+      if (!$value)
+        return '';
+      if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', (string) $value))
+        return $value;
       try {
         return \Carbon\Carbon::parse($value)->format('d/m/Y');
       } catch (\Throwable $e) {
@@ -262,7 +1115,8 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
     };
   @endphp
 
-  <header id="header" class="header d-flex align-items-center sticky-top" style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
+  <header id="header" class="header d-flex align-items-center sticky-top"
+    style="background: rgba(2,2,4,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05);">
     <div class="container position-relative d-flex align-items-center justify-content-between">
       <a href="#" class="logo-glow d-flex align-items-center" id="logoLogoutTrigger">
         <img src="{{ asset('frontend/Nexa/assets/img/WORDINGMYSIPMA2.png') }}" style="height: 55px; width: auto;"
@@ -272,31 +1126,31 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
       <nav id="navmenu" class="navmenu">
         <ul>
           @if($isAdminHQ)
-          <li><a href="{{ route('admin.dashboard') }}"
-              class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a></li>
+            <li><a href="{{ route('admin.dashboard') }}"
+                class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a></li>
           @else
-          <li><a href="{{ route('user.dashboard') }}"
-              class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Papan Pemuka</a></li>
-          <li><a href="{{ route('user.senarai.inden') }}"
-              class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
-          <li><a href="{{ route('user.inventori') }}"
-              class="{{ request()->routeIs('user.inventori') ? 'active' : '' }}">Inventori</a></li>
+            <li><a href="{{ route('user.dashboard') }}"
+                class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}">Papan Pemuka</a></li>
+            <li><a href="{{ route('user.senarai.inden') }}"
+                class="{{ request()->routeIs('user.senarai.inden') ? 'active' : '' }}">Senarai Inden</a></li>
+            <li><a href="{{ route('user.inventori') }}"
+                class="{{ request()->routeIs('user.inventori') ? 'active' : '' }}">Inventori</a></li>
           @endif
           @if(Auth::user()->hasPermission('pengesahan_inden'))
-          <li><a href="{{ route('user.pengesahan.inden') }}"
-              class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
+            <li><a href="{{ route('user.pengesahan.inden') }}"
+                class="{{ request()->routeIs('user.pengesahan.inden') ? 'active' : '' }}">Pengesahan Inden</a></li>
           @endif
           @if(Auth::user()->hasPermission('borang_inden'))
-          <li><a href="{{ route('borang.inden') }}"
-              class="{{ request()->routeIs('borang.inden*') ? 'active' : '' }}">Borang Inden</a></li>
+            <li><a href="{{ route('borang.inden') }}"
+                class="{{ request()->routeIs('borang.inden*') ? 'active' : '' }}">Borang Inden</a></li>
           @endif
           @if(Auth::user()->hasPermission('penerimaan_inden'))
-          <li><a href="{{ route('borang.penerimaan') }}"
-              class="{{ request()->routeIs('borang.penerimaan') ? 'active' : '' }}">Penerimaan</a></li>
+            <li><a href="{{ route('borang.penerimaan') }}"
+                class="{{ request()->routeIs('borang.penerimaan') ? 'active' : '' }}">Penerimaan</a></li>
           @endif
           @if(Auth::user()->hasPermission('penilaian_prestasi'))
-          <li><a href="{{ route('user.penilaian_prestasi') }}"
-              class="{{ request()->routeIs('user.penilaian_prestasi') ? 'active' : '' }}">Penilaian Prestasi</a></li>
+            <li><a href="{{ route('user.penilaian_prestasi') }}"
+                class="{{ request()->routeIs('user.penilaian_prestasi') ? 'active' : '' }}">Penilaian Prestasi</a></li>
           @endif
           <li class="d-xl-none"><a href="{{ route('profile') }}"
               class="{{ request()->routeIs('profile') ? 'active' : '' }}">Profil</a></li>
@@ -307,498 +1161,634 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
 
       <div class="d-none d-xl-flex align-items-center gap-3">
         @if(Auth::user()->hasPermission('pengesahan_inden'))
-        <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3"
-          style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'"
-          onmouseout="this.style.color=''">
-          <i class="bi bi-bell-fill"></i>
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-            style="font-size: 0.65rem;">
-            {{ $pendingApprovals ?? 0 }}
-            <span class="visually-hidden">Inden belum disah</span>
-          </span>
-        </a>
+          <a href="{{ route('user.pengesahan.inden') }}" class="position-relative text-white fs-5 me-3"
+            style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''">
+            <i class="bi bi-bell-fill"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+              style="font-size: 0.65rem;">
+              {{ $pendingApprovals ?? 0 }}
+              <span class="visually-hidden">Inden belum disah</span>
+            </span>
+          </a>
         @endif
         @if(Auth::user()->hasPermission('penerimaan_inden'))
-        <a href="{{ route('borang.penerimaan') }}" class="position-relative text-white fs-5 me-3"
-          style="transition: color 0.3s;" onmouseover="this.style.color='#f59e0b'"
-          onmouseout="this.style.color=''">
-          <i class="bi bi-truck"></i>
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-            style="font-size: 0.65rem;">
-            {{ $pendingPenerimaan ?? 0 }}
-            <span class="visually-hidden">Penerimaan belum diproses</span>
-          </span>
-        </a>
+          <a href="{{ route('borang.penerimaan') }}" class="position-relative text-white fs-5 me-3"
+            style="transition: color 0.3s;" onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color=''">
+            <i class="bi bi-truck"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+              style="font-size: 0.65rem;">
+              {{ $pendingPenerimaan ?? 0 }}
+              <span class="visually-hidden">Penerimaan belum diproses</span>
+            </span>
+          </a>
         @endif
-        <button class="btn btn-icon" id="themeToggle" style="background:none;border:none;color:var(--text);font-size:1.2rem;padding:4px 8px"><i class="bi bi-moon-fill"></i></button>
-        <a href="{{ route('profile') }}" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'"
-          onmouseout="this.style.color=''"><i
+        <button class="btn btn-icon" id="themeToggle"
+          style="background:none;border:none;color:var(--text);font-size:1.2rem;padding:4px 8px"><i
+            class="bi bi-moon-fill"></i></button>
+        <a href="{{ route('profile') }}" class="text-white-50 text-decoration-none" style="transition: color 0.3s;"
+          onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''"><i
             class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}</a>
         <button type="button" class="btn btn-custom btn-logout btn-sm px-3 py-2" id="desktopLogoutBtn"><i
-              class="bi bi-box-arrow-right me-2"></i>Log Keluar</button>
+            class="bi bi-box-arrow-right me-2"></i>Log Keluar</button>
       </div>
     </div>
   </header>
   <main class="main">
-  <div class="container page-shell">
-    <div class="card-box hero">
-      <h1 class="hero-title">{{ $isReadOnly ? 'Lihat Borang Inden' : 'Borang Inden Digital' }}</h1>
-      <p class="muted mb-0">{{ $isReadOnly ? 'Paparan ini adalah mod lihat sahaja. Data dipaparkan terus daripada rekod inden yang dipilih.' : 'Halaman ini memaparkan data borang inden berdasarkan rekod pangkalan data.' }}</p>
-    </div>
-
-    @if (session('success'))
-      <div class="alert alert-success border-0 rounded-4 mb-4">
-        {{ session('success') }}
-      </div>
-    @endif
-
-    @if ($errors->any())
-      <div class="alert alert-danger border-0 rounded-4 mb-4">
-        <h5 class="alert-heading fw-bold mb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>Sila semak semula maklumat borang sebelum dihantar:</h5>
-        <ul class="mb-0 ps-3">
-          @foreach ($errors->all() as $error)
-            <li>{!! preg_replace('/^\[([^\]]+)\]\s*/', '<strong class="text-decoration-underline">[$1]</strong> ', e($error)) !!}</li>
-          @endforeach
-        </ul>
-      </div>
-    @endif
-
-    <!-- Client-side Error Alert Container (hidden by default) -->
-    <div id="clientErrorAlert" class="alert alert-danger border-0 rounded-4 mb-4 d-none">
-      <h5 class="alert-heading fw-bold mb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>Sila semak semula maklumat borang sebelum dihantar:</h5>
-      <ul id="clientErrorList" class="mb-0 ps-3"></ul>
-    </div>
-
-    <form id="borangIndenForm" method="POST" action="{{ route('borang.inden.store') }}">
-      @csrf
-      <div class="borang-menu" role="tablist" aria-label="Navigasi Borang Inden">
-        <button class="active" type="button" data-borang-target="maklumat" role="tab" aria-selected="true">
-          <span class="menu-step">Bahagian 1</span>
-          <span class="menu-title">Maklumat Pesanan</span>
-        </button>
-        <button type="button" data-borang-target="muster" role="tab" aria-selected="false">
-          <span class="menu-step">Bahagian 2</span>
-          <span class="menu-title">Ringkasan Muster</span>
-        </button>
-        <button type="button" data-borang-target="barang" role="tab" aria-selected="false">
-          <span class="menu-step">Bahagian 3</span>
-          <span class="menu-title">Senarai Barang</span>
-        </button>
-        <button type="button" data-borang-target="perakuan" role="tab" aria-selected="false">
-          <span class="menu-step">Bahagian 4</span>
-          <span class="menu-title">Perakuan Pembekal</span>
-        </button>
+    <div class="container page-shell">
+      <div class="card-box hero">
+        <h1 class="hero-title">{{ $isReadOnly ? 'Lihat Borang Inden' : 'Borang Inden Digital' }}</h1>
+        <p class="muted mb-0">
+          {{ $isReadOnly ? 'Paparan ini adalah mod lihat sahaja. Data dipaparkan terus daripada rekod inden yang dipilih.' : 'Halaman ini memaparkan data borang inden berdasarkan rekod pangkalan data.' }}
+        </p>
       </div>
 
-      <div class="borang-page active" data-borang-page="maklumat">
-      <div class="card-box section-card mb-4">
-        <div class="section-head">
-          <div>
-            <h2 class="h4 mb-1">Maklumat Pesanan</h2>
-            <p class="muted mb-0">Maklumat kepala borang daripada PDF disusun semula kepada satu seksyen yang lebih jelas.</p>
-          </div>
-          <div class="chip">Langkah 1</div>
-          <span class="small ms-3" id="draftStatus1" style="color:var(--muted);"></span>
-          <span class="small d-none ms-1" id="draftSavedIndicator1" style="color:var(--accent);"><i class="bi bi-check-circle-fill me-1"></i>Draf disimpan</span>
+      @if (session('success'))
+        <div class="alert alert-success border-0 rounded-4 mb-4">
+          {{ session('success') }}
         </div>
-        <div class="row g-4">
-          <div class="col-md-4">
-            <label class="form-label">No. Pesanan <span class="text-danger">*</span></label>
-            <input class="form-control @error('no_pesanan') is-invalid @enderror" id="noPesanan" name="no_pesanan" type="text" value="{{ old('no_pesanan', $inden->no_pesanan ?? '') }}" placeholder="Cth: SKPJ/PJ/BK/26/07/001" {{ $fieldState }} required>
-            @error('no_pesanan')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Pembekal <span class="text-danger">*</span></label>
-            @if($isReadOnly)
-              <input class="form-control" type="text" value="{{ $inden->nama_pembekal ?? '' }}" readonly>
-              <input type="hidden" name="supplier_id" value="{{ $inden->supplier_id ?? '' }}">
-            @else
-            <select class="form-select @error('supplier_id') is-invalid @enderror" name="supplier_id" id="supplierSelect" required>
-              <option value="">-- Pilih Pembekal --</option>
-              @foreach($suppliers as $sup)
-                <option value="{{ $sup->id }}" data-address="{{ $sup->address }}" data-postcode="{{ $sup->postcode }}" data-contact="{{ $sup->contact_person ?? $sup->company_name }}" {{ old('supplier_id', $inden->supplier_id ?? '') == $sup->id ? 'selected' : '' }}>{{ $sup->company_name }}</option>
-              @endforeach
-            </select>
-            @endif
-            @error('supplier_id')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Tarikh Pesanan <span class="text-danger">*</span></label>
-            <div class="d-flex align-items-center gap-2">
-              <input class="form-control date-input flex-grow-1 @error('tarikh_pesanan') is-invalid @enderror" name="tarikh_pesanan" type="text" inputmode="numeric" value="{{ $formatTarikh(old('tarikh_pesanan', $inden->tarikh_pesanan ?? now()->format('d/m/Y'))) }}" placeholder="dd/mm/yyyy" required>
-              <span id="tarikhDayName" class="badge bg-accent text-dark fs-6 px-3 py-2" style="background:#10b981; white-space:nowrap;">--</span>
-            </div>
-            <div class="date-format-hint">Format: dd/mm/yyyy</div>
-            @error('tarikh_pesanan')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Masa <span class="text-danger">*</span></label>
-            <input class="form-control @error('masa') is-invalid @enderror" name="masa" type="time" value="{{ old('masa', $inden->masa ?? '') }}" {{ $fieldState }} required>
-            @error('masa')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Sesi / Kod <span class="text-danger">*</span></label>
-            <select class="form-select @error('sesi_kod') is-invalid @enderror" name="sesi_kod" {{ $fieldState }} required>
-              <option value="">-- Pilih Sesi --</option>
-              <option value="M1" {{ old('sesi_kod', $inden->sesi_kod ?? '') === 'M1' ? 'selected' : '' }}>M1 - Sarapan Pagi</option>
-              <option value="M2" {{ old('sesi_kod', $inden->sesi_kod ?? '') === 'M2' ? 'selected' : '' }}>M2 - Makan Tengah Hari</option>
-              <option value="M3" {{ old('sesi_kod', $inden->sesi_kod ?? '') === 'M3' ? 'selected' : '' }}>M3 - Minum Petang</option>
-              <option value="M4" {{ old('sesi_kod', $inden->sesi_kod ?? '') === 'M4' ? 'selected' : '' }}>M4 - Makan Malam / Lain-lain</option>
-            </select>
-            @error('sesi_kod')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
-          <div class="col-md-6">
-            <div class="field-auto-badge"><i class="bi bi-lock-fill"></i> Diisi automatik</div>
-            <div class="field-auto-wrap">
-              <label class="form-label">Kepada (Institusi) <span class="text-danger">*</span></label>
-              @php
-                $selectedInst = $institutions->firstWhere('id', old('institution_id', $inden->institution_id ?? $userInstitutionId));
-              @endphp
-              <input class="form-control" type="text" value="{{ $selectedInst->name ?? 'N/A' }}" readonly>
-              <input type="hidden" name="institution_id" value="{{ old('institution_id', $inden->institution_id ?? $userInstitutionId) }}" id="institutionIdHidden" required>
-              <input type="hidden" id="institutionCode" value="{{ $selectedInst->code ?? '' }}">
-              <input type="hidden" id="institutionLocation" value="{{ $selectedInst->location_code ?? '' }}">
-            </div>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">No. Kontrak <span class="text-danger">*</span></label>
-            @if($isReadOnly)
-              <input class="form-control" type="text" value="{{ $inden->no_kontrak ?? '' }}" readonly>
-              <input type="hidden" name="contract_id" value="{{ $inden->contract_id ?? '' }}">
-            @else
-            <select class="form-select @error('contract_id') is-invalid @enderror" name="contract_id" id="contractSelect" required>
-              <option value="">-- Pilih Kontrak --</option>
-            </select>
-            <div id="contractError" class="d-none" style="color:#f87171;font-size:.82rem;margin-top:4px;font-weight:500;"><i class="bi bi-exclamation-circle-fill me-1"></i><span id="contractErrorText"></span></div>
-            @endif
-            @error('contract_id')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
-          <div class="col-12">
-            <label class="form-label">Alamat Pembekal <span class="text-danger">*</span></label>
-            <textarea class="form-control @error('alamat_pembekal') is-invalid @enderror" name="alamat_pembekal" placeholder="Masukkan alamat pembekal" {{ $fieldState }} required>{{ old('alamat_pembekal', trim(($inden->alamat_pembekal ?? '') . ' ' . ($inden->poskod_pembekal ?? ''))) }}</textarea>
-            @error('alamat_pembekal')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
+      @endif
+
+      @if ($errors->any())
+        <div class="alert alert-danger border-0 rounded-4 mb-4">
+          <h5 class="alert-heading fw-bold mb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>Sila semak semula
+            maklumat borang sebelum dihantar:</h5>
+          <ul class="mb-0 ps-3">
+            @foreach ($errors->all() as $error)
+              <li>
+                {!! preg_replace('/^\[([^\]]+)\]\s*/', '<strong class="text-decoration-underline">[$1]</strong> ', e($error)) !!}
+              </li>
+            @endforeach
+          </ul>
         </div>
-      </div>
-      <div class="borang-step-actions">
-        <span></span>
-        <button class="btn btn-round btn-add" type="button" data-borang-next="muster">Seterusnya</button>
-      </div>
+      @endif
+
+      <!-- Client-side Error Alert Container (hidden by default) -->
+      <div id="clientErrorAlert" class="alert alert-danger border-0 rounded-4 mb-4 d-none">
+        <h5 class="alert-heading fw-bold mb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>Sila semak semula
+          maklumat borang sebelum dihantar:</h5>
+        <ul id="clientErrorList" class="mb-0 ps-3"></ul>
       </div>
 
-      <div class="borang-page" data-borang-page="muster">
-      <div class="card-box section-card mb-4">
-        <div class="section-head">
-          <div>
-            <h2 class="h4 mb-1">Ringkasan Muster</h2>
-            <p class="muted mb-0">Masukkan mana-mana nilai untuk mendapatkan pengiraan secara automatik berdasarkan formula Muster Penuh − Parol = Muster Ditolak Parol.</p>
-          </div>
-          <div class="chip">Langkah 2</div>
-          <span class="small ms-3" id="draftStatus2" style="color:var(--muted);"></span>
-          <span class="small d-none ms-1" id="draftSavedIndicator2" style="color:var(--accent);"><i class="bi bi-check-circle-fill me-1"></i>Draf disimpan</span>
+      <form id="borangIndenForm" method="POST" action="{{ route('borang.inden.store') }}">
+        @csrf
+        <div class="borang-menu" role="tablist" aria-label="Navigasi Borang Inden">
+          <button class="active" type="button" data-borang-target="maklumat" role="tab" aria-selected="true">
+            <span class="menu-step">Bahagian 1</span>
+            <span class="menu-title">Maklumat Pesanan</span>
+          </button>
+          <button type="button" data-borang-target="muster" role="tab" aria-selected="false">
+            <span class="menu-step">Bahagian 2</span>
+            <span class="menu-title">Ringkasan Muster</span>
+          </button>
+          <button type="button" data-borang-target="barang" role="tab" aria-selected="false">
+            <span class="menu-step">Bahagian 3</span>
+            <span class="menu-title">Senarai Barang</span>
+          </button>
+          <button type="button" data-borang-target="perakuan" role="tab" aria-selected="false">
+            <span class="menu-step">Bahagian 4</span>
+            <span class="menu-title">Perakuan Pembekal</span>
+          </button>
         </div>
-        <div class="row g-4">
-          <div class="col-md-3">
-            <label class="form-label">Muster Penuh <span class="text-danger">*</span></label>
-            <input class="form-control muster-input @error('muster_penuh') is-invalid @enderror" id="musterPenuh" name="muster_penuh" type="number" min="0" step="1" value="{{ old('muster_penuh', $inden->muster_penuh ?? 0) }}" {{ $fieldState }} required>
-            @error('muster_penuh')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
-          <div class="col-md-3">
-            <label class="form-label">Parol <span class="text-danger">*</span></label>
-            <input class="form-control muster-input @error('parol') is-invalid @enderror" id="parol" name="parol" type="number" min="0" step="1" value="{{ old('parol', $inden->parol ?? 0) }}" {{ $fieldState }} required>
-            @error('parol')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
-          <div class="col-md-3">
-            <label class="form-label">Muster Ditolak Parol <span class="text-danger">*</span></label>
-            <input class="form-control muster-input @error('muster_ditolak_parol') is-invalid @enderror" id="musterTolakParol" name="muster_ditolak_parol" type="number" min="0" step="1" value="{{ old('muster_ditolak_parol', $inden->muster_ditolak_parol ?? 0) }}" {{ $fieldState }} required>
-            @error('muster_ditolak_parol')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
-          <div class="col-md-3">
-            <label class="form-label">Muster Khas (Daging) <span class="text-danger">*</span></label>
-            <input class="form-control muster-input @error('muster_khas_daging') is-invalid @enderror" id="musterKhas" name="muster_khas_daging" type="number" min="0" step="1" value="{{ old('muster_khas_daging', $inden->muster_khas_daging ?? 0) }}" {{ $fieldState }} required>
-            @error('muster_khas_daging')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
-          <input id="musterExclusion" type="hidden" value="0">
-          <div class="col-12">
-            <div id="musterWarnings" class="d-none" style="margin-top:8px;">
-              <div id="musterWarnParol" class="d-none" style="color:#f59e0b;font-size:.85rem;font-weight:600;margin-top:4px;"><i class="bi bi-exclamation-triangle-fill me-1"></i>Parol tidak sepatutnya melebihi Muster Penuh.</div>
-              <div id="musterWarnDitolak" class="d-none" style="color:#f59e0b;font-size:.85rem;font-weight:600;margin-top:4px;"><i class="bi bi-exclamation-triangle-fill me-1"></i>Muster Ditolak Parol tidak sepatutnya melebihi Muster Penuh.</div>
-              <div id="musterWarnKhas" class="d-none" style="color:#f59e0b;font-size:.85rem;font-weight:600;margin-top:4px;"><i class="bi bi-exclamation-triangle-fill me-1"></i>Muster Khas (Daging) tidak sepatutnya melebihi Muster Ditolak Parol.</div>
-            </div>
-          </div>
-        </div>
-        <div class="row g-3 mt-1 d-none">
-          <div class="col-md-4"><div class="card-box p-3"><small class="text-muted d-block">Jumlah Asas</small><strong id="baseMusterTotal">0</strong></div></div>
-          <div class="col-md-4"><div class="card-box p-3"><small class="text-muted d-block">Pelarasan Parol</small><strong id="parolAdjustment">0</strong></div></div>
-          <div class="col-md-4"><div class="card-box p-3"><small class="text-muted d-block">Anggaran Bilangan Akhir</small><strong id="finalMusterTotal">0</strong></div></div>
-        </div>
-      </div>
-      <div class="borang-step-actions">
-        <button class="btn btn-round btn-soft" type="button" data-borang-prev="maklumat">Kembali</button>
-        <button class="btn btn-round btn-add" type="button" data-borang-next="barang">Seterusnya</button>
-      </div>
-      </div>
 
-      <div class="borang-page" data-borang-page="barang">
-      <div class="card-box section-card mb-4">
-        <div class="section-head">
-          <div>
-            <h2 class="h4 mb-1">Senarai Barang</h2>
-            <p class="muted mb-0">Bahagian panjang dalam PDF dipermudahkan kepada item baris demi baris dengan kiraan automatik.</p>
-          </div>
-          <div class="chip">Langkah 3</div>
-          <span class="small ms-3" id="draftStatus3" style="color:var(--muted);"></span>
-          <span class="small d-none ms-1" id="draftSavedIndicator3" style="color:var(--accent);"><i class="bi bi-check-circle-fill me-1"></i>Draf disimpan</span>
-        </div>
-        <div class="items-wrap">
-          <div class="items-toolbar">
-            <div>
-              <h3 class="h5 mb-1">Item Pesanan</h3>
-              <p class="muted mb-0">Contoh barang daripada PDF: ikan basah, daging lembu, kobis, bawang, halia, kacang merah dan ubi kentang.</p>
-            </div>
-            @unless ($isReadOnly)
-            <button class="btn btn-round btn-add" type="button" id="tambahItemBtn"><i class="bi bi-plus-lg me-1"></i>Tambah Item</button>
-            @endunless
-          </div>
-          <div id="itemErrorAlert" class="alert alert-warning border-0 rounded-3 mb-0 mx-3 mt-3 d-none" style="font-size:.85rem;">
-            <i class="bi bi-exclamation-triangle-fill me-1"></i><span id="itemErrorText"></span>
-          </div>
-          <div class="p-3">
-            <table id="itemDataTable" class="table table-dark-custom w-100">
-              <thead>
-                <tr>
-                  <th>Bil</th>
-                  <th>Perihal Barang</th>
-                  <th>Kuantiti Pesanan</th>
-                  <th>Unit</th>
-                  <th>Harga Seunit</th>
-                  <th>Had Siling (RM)</th>
-                  <th>Had Siling (Unit)</th>
-                  <th>Jumlah Harga</th>
-                  <th>Tindakan</th>
-                </tr>
-              </thead>
-              <tbody id="itemList"></tbody>
-            </table>
-          </div>
-        </div>
-        <div class="totals-box mt-4">
-          <h2 class="h4 mb-3">Ringkasan Automatik</h2>
-          <p class="mb-4" style="color: rgba(255,255,255,.78);">Jumlah item, kuantiti dan harga dikira automatik untuk kurangkan pengiraan manual.</p>
-          <div class="totals-row"><span>Jumlah Item</span><strong id="summaryItemCount">0</strong></div>
-          <div class="totals-row"><span>Jumlah Kuantiti Pesanan</span><strong id="summaryOrderQty">0</strong></div>
-          <div class="totals-row d-none"><span>Jumlah Kuantiti Terima</span><strong id="summaryReceivedQty">0</strong></div>
-          <div class="totals-row"><span>Jumlah Harga</span><strong id="summaryGrandTotal">RM 0.00</strong></div>
-          <div class="totals-row" id="ceilingRow" style="display:none;"><span>Baki Siling Kontrak</span><strong id="ceilingDisplay">--</strong></div>
-          <div id="ceilingAlert" class="alert alert-warning border-0 rounded-4 mb-1 py-2 small" style="display:none;background:rgba(251,191,36,.15);color:#fbbf24;"></div>
-        </div>
-      </div>
-      <div class="borang-step-actions">
-        <button class="btn btn-round btn-soft" type="button" data-borang-prev="muster">Kembali</button>
-        <button class="btn btn-round btn-add" type="button" data-borang-next="perakuan">Seterusnya</button>
-      </div>
-      </div>
-
-      <div class="borang-page" data-borang-page="perakuan">
-      <div class="row g-4">
-        <div class="col-12">
-          <div class="card-box section-card h-100">
+        <div class="borang-page active" data-borang-page="maklumat">
+          <div class="card-box section-card mb-4">
             <div class="section-head">
               <div>
-                <h2 class="h4 mb-1">Perakuan Pembekal</h2>
-                <p class="muted mb-0">Nama, jawatan dan tarikh untuk pembekal, saksi dan penerima diasingkan dengan jelas.</p>
+                <h2 class="h4 mb-1">Maklumat Pesanan</h2>
+                <p class="muted mb-0">Maklumat kepala borang daripada PDF disusun semula kepada satu seksyen yang lebih
+                  jelas.</p>
               </div>
-              <div class="chip">Langkah 4</div>
+              <div class="chip">Langkah 1</div>
+              <span class="small ms-3" id="draftStatus1" style="color:var(--muted);"></span>
+              <span class="small d-none ms-1" id="draftSavedIndicator1" style="color:var(--accent);"><i
+                  class="bi bi-check-circle-fill me-1"></i>Draf disimpan</span>
             </div>
             <div class="row g-4">
-              <div class="col-md-6">
-                <div class="field-auto-badge"><i class="bi bi-lock-fill"></i> Diisi automatik</div>
-                <div class="field-auto-wrap">
-                  <label class="form-label">Disediakan Oleh</label>
-                  <input class="form-control" type="text" value="{{ old('disediakan_oleh', $inden->disediakan_oleh ?? Auth::user()->name ?? '') }}" placeholder="Nama pegawai yang diberi kuasa memesan" readonly>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="field-auto-badge"><i class="bi bi-lock-fill"></i> Diisi automatik</div>
-                <div class="field-auto-wrap">
-                  <label class="form-label">Jawatan / Cop</label>
-                  <input class="form-control" type="text" value="{{ old('jawatan_cop', $inden->jawatan_cop ?? ($userPositionName ? $userPositionName . ' Gred ' . $userGrade : '')) }}" readonly>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="field-auto-badge"><i class="bi bi-lock-fill"></i> Diisi automatik</div>
-                <div class="field-auto-wrap">
-                  <label class="form-label">Nama Wakil Pembekal <span class="text-danger">*</span></label>
-                  <input class="form-control" name="wakil_pembekal" type="text" value="{{ old('wakil_pembekal', $inden->wakil_pembekal ?? $inden->nama_pembekal ?? '') }}" placeholder="Akan diisi automatik" readonly required>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Tarikh Pembekal</label>
-                <input class="form-control date-input @error('tarikh_pembekal') is-invalid @enderror" name="tarikh_pembekal" type="text" inputmode="numeric" pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$" value="{{ $formatTarikh(old('tarikh_pembekal', $inden->tarikh_pembekal ?? now()->format('d/m/Y'))) }}" placeholder="dd/mm/yyyy" {{ $fieldState }} required>
-                <div class="date-format-hint">Format: dd/mm/yyyy</div>
-                @error('tarikh_pembekal')
+              <div class="col-md-4">
+                <label class="form-label">No. Pesanan <span class="text-danger">*</span></label>
+                <input class="form-control @error('no_pesanan') is-invalid @enderror" id="noPesanan" name="no_pesanan"
+                  type="text" value="{{ old('no_pesanan', $inden->no_pesanan ?? '') }}"
+                  placeholder="Cth: SKPJ/PJ/BK/26/07/001" {{ $fieldState }} required>
+                @error('no_pesanan')
                   <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
               </div>
-              <div class="col-md-6 d-none"><label class="form-label">Nama Saksi</label><input class="form-control" type="text" placeholder="Nama saksi"></div>
-              <div class="col-md-6 d-none"><label class="form-label">Nama Penerima</label><input class="form-control" type="text" placeholder="Nama penerima"></div>
-              <div class="col-md-6 d-none"><label class="form-label">Jawatan / Cop Saksi</label><input class="form-control" type="text" placeholder="Jawatan atau cop saksi"></div>
-              <div class="col-md-6 d-none"><label class="form-label">Jawatan / Cop Penerima</label><input class="form-control" type="text" placeholder="Jawatan atau cop penerima"></div>
-              <div class="col-md-6 d-none"><label class="form-label">Tarikh Saksi</label><input class="form-control" type="text" inputmode="numeric" placeholder="dd/mm/yyyy"></div>
-              <div class="col-md-6 d-none"><label class="form-label">Tarikh Penerima</label><input class="form-control" type="text" inputmode="numeric" placeholder="dd/mm/yyyy"></div>
+              <div class="col-md-4">
+                <label class="form-label">Pembekal <span class="text-danger">*</span></label>
+                @if($isReadOnly)
+                  <input class="form-control" type="text" value="{{ $inden->nama_pembekal ?? '' }}" readonly>
+                  <input type="hidden" name="supplier_id" value="{{ $inden->supplier_id ?? '' }}">
+                @else
+                  <select class="form-select @error('supplier_id') is-invalid @enderror" name="supplier_id"
+                    id="supplierSelect" required>
+                    <option value="">-- Pilih Pembekal --</option>
+                    @foreach($suppliers as $sup)
+                      <option value="{{ $sup->id }}" data-address="{{ $sup->address }}" data-postcode="{{ $sup->postcode }}"
+                        data-contact="{{ $sup->contact_person ?? $sup->company_name }}" {{ old('supplier_id', $inden->supplier_id ?? '') == $sup->id ? 'selected' : '' }}>{{ $sup->company_name }}</option>
+                    @endforeach
+                  </select>
+                @endif
+                @error('supplier_id')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Tarikh Pesanan <span class="text-danger">*</span></label>
+                <div class="d-flex align-items-center gap-2">
+                  <input class="form-control date-input flex-grow-1 @error('tarikh_pesanan') is-invalid @enderror"
+                    name="tarikh_pesanan" type="text" inputmode="numeric"
+                    value="{{ $formatTarikh(old('tarikh_pesanan', $inden->tarikh_pesanan ?? now()->format('d/m/Y'))) }}"
+                    placeholder="dd/mm/yyyy" required>
+                  <span id="tarikhDayName" class="badge bg-accent text-dark fs-6 px-3 py-2"
+                    style="background:#10b981; white-space:nowrap;">--</span>
+                </div>
+                <div class="date-format-hint">Format: dd/mm/yyyy</div>
+                @error('tarikh_pesanan')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Masa <span class="text-danger">*</span></label>
+                <input class="form-control @error('masa') is-invalid @enderror" name="masa" type="time"
+                  value="{{ old('masa', $inden->masa ?? '') }}" {{ $fieldState }} required>
+                @error('masa')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Sesi / Kod <span class="text-danger">*</span></label>
+                <select class="form-select @error('sesi_kod') is-invalid @enderror" name="sesi_kod" {{ $fieldState }}
+                  required>
+                  <option value="">-- Pilih Sesi --</option>
+                  <option value="M1" {{ old('sesi_kod', $inden->sesi_kod ?? '') === 'M1' ? 'selected' : '' }}>M1 - Sarapan
+                    Pagi</option>
+                  <option value="M2" {{ old('sesi_kod', $inden->sesi_kod ?? '') === 'M2' ? 'selected' : '' }}>M2 - Makan
+                    Tengah Hari</option>
+                  <option value="M3" {{ old('sesi_kod', $inden->sesi_kod ?? '') === 'M3' ? 'selected' : '' }}>M3 - Minum
+                    Petang</option>
+                  <option value="M4" {{ old('sesi_kod', $inden->sesi_kod ?? '') === 'M4' ? 'selected' : '' }}>M4 - Makan
+                    Malam / Lain-lain</option>
+                </select>
+                @error('sesi_kod')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+              <div class="col-md-6">
+                <div class="field-auto-badge"><i class="bi bi-lock-fill"></i> Diisi automatik</div>
+                <div class="field-auto-wrap">
+                  <label class="form-label">Kepada (Institusi) <span class="text-danger">*</span></label>
+                  @php
+                    $selectedInst = $institutions->firstWhere('id', old('institution_id', $inden->institution_id ?? $userInstitutionId));
+                  @endphp
+                  <input class="form-control" type="text" value="{{ $selectedInst->name ?? 'N/A' }}" readonly>
+                  <input type="hidden" name="institution_id"
+                    value="{{ old('institution_id', $inden->institution_id ?? $userInstitutionId) }}"
+                    id="institutionIdHidden" required>
+                  <input type="hidden" id="institutionCode" value="{{ $selectedInst->code ?? '' }}">
+                  <input type="hidden" id="institutionLocation" value="{{ $selectedInst->location_code ?? '' }}">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">No. Kontrak <span class="text-danger">*</span></label>
+                @if($isReadOnly)
+                  <input class="form-control" type="text" value="{{ $inden->no_kontrak ?? '' }}" readonly>
+                  <input type="hidden" name="contract_id" value="{{ $inden->contract_id ?? '' }}">
+                @else
+                  <select class="form-select @error('contract_id') is-invalid @enderror" name="contract_id"
+                    id="contractSelect" required>
+                    <option value="">-- Pilih Kontrak --</option>
+                  </select>
+                  <div id="contractError" class="d-none"
+                    style="color:#f87171;font-size:.82rem;margin-top:4px;font-weight:500;"><i
+                      class="bi bi-exclamation-circle-fill me-1"></i><span id="contractErrorText"></span></div>
+                @endif
+                @error('contract_id')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
               <div class="col-12">
-                <label class="form-label">Ulasan / Catatan Umum</label>
-                <textarea class="form-control ulasan-field @error('catatan_inden') is-invalid @enderror" name="catatan_inden" placeholder="Masukkan catatan tambahan jika perlu" data-max-words="250" {{ $fieldState }}>{{ old('catatan_inden', $inden->catatan_inden ?? '') }}</textarea>
-                <div class="word-helper"><span class="word-count">0</span>/250 patah perkataan</div>
-                @error('catatan_inden')
+                <label class="form-label">Alamat Pembekal <span class="text-danger">*</span></label>
+                <textarea class="form-control @error('alamat_pembekal') is-invalid @enderror" name="alamat_pembekal"
+                  placeholder="Masukkan alamat pembekal" {{ $fieldState }}
+                  required>{{ old('alamat_pembekal', trim(($inden->alamat_pembekal ?? '') . ' ' . ($inden->poskod_pembekal ?? ''))) }}</textarea>
+                @error('alamat_pembekal')
                   <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
               </div>
             </div>
           </div>
+          <div class="borang-step-actions">
+            <span></span>
+            <button class="btn btn-round btn-add" type="button" data-borang-next="muster">Seterusnya</button>
+          </div>
         </div>
-      </div>
 
-      <div class="action-row">
-        <div class="d-flex align-items-center gap-3">
-          <a href="{{ $isAdminHQ ? route('admin.dashboard') : route('user.dashboard') }}" class="btn btn-round btn-soft">Kembali ke Dashboard</a>
-          <span id="draftStatus" class="small" style="color:var(--muted);"></span>
-          <span id="draftSavedIndicator" class="small d-none" style="color:var(--accent);"><i class="bi bi-check-circle-fill me-1"></i>Draf disimpan</span>
+        <div class="borang-page" data-borang-page="muster">
+          <div class="card-box section-card mb-4">
+            <div class="section-head">
+              <div>
+                <h2 class="h4 mb-1">Ringkasan Muster</h2>
+                <p class="muted mb-0">Masukkan mana-mana nilai untuk mendapatkan pengiraan secara automatik berdasarkan
+                  formula Muster Penuh − Parol = Muster Ditolak Parol.</p>
+                <p class="small text-info mb-0 mt-2"><i class="bi bi-lightbulb me-1"></i>Cadangan kuantiti pada Senarai
+                  Barang menggunakan kadar setiap item × muster. Cadangan tidak akan mengubah kuantiti anda sehingga
+                  anda memilih untuk menggunakannya.</p>
+              </div>
+              <div class="chip">Langkah 2</div>
+              <span class="small ms-3" id="draftStatus2" style="color:var(--muted);"></span>
+              <span class="small d-none ms-1" id="draftSavedIndicator2" style="color:var(--accent);"><i
+                  class="bi bi-check-circle-fill me-1"></i>Draf disimpan</span>
+            </div>
+            <div class="row g-4">
+              <div class="col-md-3">
+                <label class="form-label">Muster Penuh <span class="text-danger">*</span></label>
+                <input class="form-control muster-input @error('muster_penuh') is-invalid @enderror" id="musterPenuh"
+                  name="muster_penuh" type="number" min="0" step="1"
+                  value="{{ old('muster_penuh', $inden->muster_penuh ?? 0) }}" {{ $fieldState }} required>
+                @error('muster_penuh')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Parol <span class="text-danger">*</span></label>
+                <input class="form-control muster-input @error('parol') is-invalid @enderror" id="parol" name="parol"
+                  type="number" min="0" step="1" value="{{ old('parol', $inden->parol ?? 0) }}" {{ $fieldState }}
+                  required>
+                @error('parol')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Muster Ditolak Parol <span class="text-danger">*</span></label>
+                <input class="form-control muster-input @error('muster_ditolak_parol') is-invalid @enderror"
+                  id="musterTolakParol" name="muster_ditolak_parol" type="number" min="0" step="1"
+                  value="{{ old('muster_ditolak_parol', $inden->muster_ditolak_parol ?? 0) }}" readonly required>
+                @error('muster_ditolak_parol')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Muster Khas (Daging) <span class="text-danger">*</span></label>
+                <input class="form-control muster-input @error('muster_khas_daging') is-invalid @enderror"
+                  id="musterKhas" name="muster_khas_daging" type="number" min="0" step="1"
+                  value="{{ old('muster_khas_daging', $inden->muster_khas_daging ?? 0) }}" {{ $fieldState }} required>
+                @error('muster_khas_daging')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+              <input id="musterExclusion" type="hidden" value="0">
+              <div class="col-12">
+                <div id="musterWarnings" class="d-none" style="margin-top:8px;">
+                  <div id="musterWarnParol" class="d-none"
+                    style="color:#f59e0b;font-size:.85rem;font-weight:600;margin-top:4px;"><i
+                      class="bi bi-exclamation-triangle-fill me-1"></i>Parol tidak sepatutnya melebihi Muster Penuh.
+                  </div>
+                  <div id="musterWarnDitolak" class="d-none"
+                    style="color:#f59e0b;font-size:.85rem;font-weight:600;margin-top:4px;"><i
+                      class="bi bi-exclamation-triangle-fill me-1"></i>Muster Ditolak Parol tidak sepatutnya melebihi
+                    Muster Penuh.</div>
+                  <div id="musterWarnKhas" class="d-none"
+                    style="color:#f59e0b;font-size:.85rem;font-weight:600;margin-top:4px;"><i
+                      class="bi bi-exclamation-triangle-fill me-1"></i>Muster Khas (Daging) tidak sepatutnya melebihi
+                    Muster Ditolak Parol.</div>
+                </div>
+              </div>
+            </div>
+            <div class="row g-3 mt-1 d-none">
+              <div class="col-md-4">
+                <div class="card-box p-3"><small class="text-muted d-block">Jumlah Asas</small><strong
+                    id="baseMusterTotal">0</strong></div>
+              </div>
+              <div class="col-md-4">
+                <div class="card-box p-3"><small class="text-muted d-block">Pelarasan Parol</small><strong
+                    id="parolAdjustment">0</strong></div>
+              </div>
+              <div class="col-md-4">
+                <div class="card-box p-3"><small class="text-muted d-block">Anggaran Bilangan Akhir</small><strong
+                    id="finalMusterTotal">0</strong></div>
+              </div>
+            </div>
+          </div>
+          <div class="borang-step-actions">
+            <button class="btn btn-round btn-soft" type="button" data-borang-prev="maklumat">Kembali</button>
+            <button class="btn btn-round btn-add" type="button" data-borang-next="barang">Seterusnya</button>
+          </div>
         </div>
-        <div class="d-flex flex-wrap gap-2 align-items-center">
-          @if($inden->inden_id)
-          <button class="btn btn-round btn-soft" type="button" onclick="window.open('{{ route('borang.inden.cetak', ['order' => $inden->inden_id]) }}', '_blank')">Cetak Ringkasan</button>
-          @endif
-          @unless ($isReadOnly)
-            <button class="btn btn-round btn-add" type="submit">Hantar</button>
-          @endunless
+
+        <div class="borang-page" data-borang-page="barang">
+          <div class="card-box section-card mb-4">
+            <div class="section-head">
+              <div>
+                <h2 class="h4 mb-1">Senarai Barang</h2>
+                <p class="muted mb-0">Bahagian panjang dalam PDF dipermudahkan kepada item baris demi baris dengan
+                  kiraan automatik.</p>
+              </div>
+              <div class="chip">Langkah 3</div>
+              <span class="small ms-3" id="draftStatus3" style="color:var(--muted);"></span>
+              <span class="small d-none ms-1" id="draftSavedIndicator3" style="color:var(--accent);"><i
+                  class="bi bi-check-circle-fill me-1"></i>Draf disimpan</span>
+            </div>
+            <div class="items-wrap">
+              <div class="items-toolbar">
+                <div>
+                  <h3 class="h5 mb-1">Item Pesanan</h3>
+                  <p class="muted mb-0">Contoh barang daripada PDF: ikan basah, daging lembu, kobis, bawang, halia,
+                    kacang merah dan ubi kentang.</p>
+                </div>
+                @unless ($isReadOnly)
+                  <button class="btn btn-round btn-add" type="button" id="tambahItemBtn"><i
+                      class="bi bi-plus-lg me-1"></i>Tambah Item</button>
+                @endunless
+              </div>
+              <div id="itemErrorAlert" class="alert alert-warning border-0 rounded-3 mb-0 mx-3 mt-3 d-none"
+                style="font-size:.85rem;">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i><span id="itemErrorText"></span>
+              </div>
+              <div class="p-3">
+                <table id="itemDataTable" class="table table-dark-custom w-100">
+                  <thead>
+                    <tr>
+                      <th>Bil</th>
+                      <th>Perihal Barang</th>
+                      <th>Kuantiti Pesanan</th>
+                      <th>Cadangan Muster</th>
+                      <th>Unit</th>
+                      <th>Harga Seunit</th>
+                      <th>Had Siling (RM)</th>
+                      <th>Had Siling (Unit)</th>
+                      <th>Jumlah Harga</th>
+                      <th>Tindakan</th>
+                    </tr>
+                  </thead>
+                  <tbody id="itemList"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="totals-box mt-4">
+              <h2 class="h4 mb-3">Ringkasan Automatik</h2>
+              <p class="mb-4" style="color: rgba(255,255,255,.78);">Jumlah item, kuantiti dan harga dikira automatik
+                untuk kurangkan pengiraan manual.</p>
+              <div class="totals-row"><span>Jumlah Item</span><strong id="summaryItemCount">0</strong></div>
+              <div class="totals-row"><span>Jumlah Kuantiti Pesanan</span><strong id="summaryOrderQty">0</strong></div>
+              <div class="totals-row d-none"><span>Jumlah Kuantiti Terima</span><strong
+                  id="summaryReceivedQty">0</strong></div>
+              <div class="totals-row"><span>Jumlah Harga</span><strong id="summaryGrandTotal">RM 0.00</strong></div>
+              <div class="totals-row" id="ceilingRow" style="display:none;"><span>Baki Siling Kontrak</span><strong
+                  id="ceilingDisplay">--</strong></div>
+              <div id="ceilingAlert" class="alert alert-warning border-0 rounded-4 mb-1 py-2 small"
+                style="display:none;background:rgba(251,191,36,.15);color:#fbbf24;"></div>
+            </div>
+          </div>
+          <div class="borang-step-actions">
+            <button class="btn btn-round btn-soft" type="button" data-borang-prev="muster">Kembali</button>
+            <button class="btn btn-round btn-add" type="button" data-borang-next="perakuan">Seterusnya</button>
+          </div>
         </div>
-      </div>
-      </div>
-    </form>
-  </div>
+
+        <div class="borang-page" data-borang-page="perakuan">
+          <div class="row g-4">
+            <div class="col-12">
+              <div class="card-box section-card h-100">
+                <div class="section-head">
+                  <div>
+                    <h2 class="h4 mb-1">Perakuan Pembekal</h2>
+                    <p class="muted mb-0">Nama, jawatan dan tarikh untuk pembekal, saksi dan penerima diasingkan dengan
+                      jelas.</p>
+                  </div>
+                  <div class="chip">Langkah 4</div>
+                </div>
+                <div class="row g-4">
+                  <div class="col-md-6">
+                    <div class="field-auto-badge"><i class="bi bi-lock-fill"></i> Diisi automatik</div>
+                    <div class="field-auto-wrap">
+                      <label class="form-label">Disediakan Oleh</label>
+                      <input class="form-control" type="text"
+                        value="{{ old('disediakan_oleh', $inden->disediakan_oleh ?? Auth::user()->name ?? '') }}"
+                        placeholder="Nama pegawai yang diberi kuasa memesan" readonly>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="field-auto-badge"><i class="bi bi-lock-fill"></i> Diisi automatik</div>
+                    <div class="field-auto-wrap">
+                      <label class="form-label">Jawatan / Cop</label>
+                      <input class="form-control" type="text"
+                        value="{{ old('jawatan_cop', $inden->jawatan_cop ?? ($userPositionName ? $userPositionName . ' Gred ' . $userGrade : '')) }}"
+                        readonly>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="field-auto-badge"><i class="bi bi-lock-fill"></i> Diisi automatik</div>
+                    <div class="field-auto-wrap">
+                      <label class="form-label">Nama Wakil Pembekal <span class="text-danger">*</span></label>
+                      <input class="form-control" name="wakil_pembekal" type="text"
+                        value="{{ old('wakil_pembekal', $inden->wakil_pembekal ?? $inden->nama_pembekal ?? '') }}"
+                        placeholder="Akan diisi automatik" readonly required>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Tarikh Pembekal</label>
+                    <input class="form-control date-input @error('tarikh_pembekal') is-invalid @enderror"
+                      name="tarikh_pembekal" type="text" inputmode="numeric"
+                      pattern="^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$"
+                      value="{{ $formatTarikh(old('tarikh_pembekal', $inden->tarikh_pembekal ?? now()->format('d/m/Y'))) }}"
+                      placeholder="dd/mm/yyyy" {{ $fieldState }} required>
+                    <div class="date-format-hint">Format: dd/mm/yyyy</div>
+                    @error('tarikh_pembekal')
+                      <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                  </div>
+                  <div class="col-md-6 d-none"><label class="form-label">Nama Saksi</label><input class="form-control"
+                      type="text" placeholder="Nama saksi"></div>
+                  <div class="col-md-6 d-none"><label class="form-label">Nama Penerima</label><input
+                      class="form-control" type="text" placeholder="Nama penerima"></div>
+                  <div class="col-md-6 d-none"><label class="form-label">Jawatan / Cop Saksi</label><input
+                      class="form-control" type="text" placeholder="Jawatan atau cop saksi"></div>
+                  <div class="col-md-6 d-none"><label class="form-label">Jawatan / Cop Penerima</label><input
+                      class="form-control" type="text" placeholder="Jawatan atau cop penerima"></div>
+                  <div class="col-md-6 d-none"><label class="form-label">Tarikh Saksi</label><input class="form-control"
+                      type="text" inputmode="numeric" placeholder="dd/mm/yyyy"></div>
+                  <div class="col-md-6 d-none"><label class="form-label">Tarikh Penerima</label><input
+                      class="form-control" type="text" inputmode="numeric" placeholder="dd/mm/yyyy"></div>
+                  <div class="col-12">
+                    <label class="form-label">Ulasan / Catatan Umum</label>
+                    <textarea class="form-control ulasan-field @error('catatan_inden') is-invalid @enderror"
+                      name="catatan_inden" placeholder="Masukkan catatan tambahan jika perlu" data-max-words="250" {{ $fieldState }}>{{ old('catatan_inden', $inden->catatan_inden ?? '') }}</textarea>
+                    <div class="word-helper"><span class="word-count">0</span>/250 patah perkataan</div>
+                    @error('catatan_inden')
+                      <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-row">
+            <div class="d-flex align-items-center gap-3">
+              <a href="{{ $isAdminHQ ? route('admin.dashboard') : route('user.dashboard') }}"
+                class="btn btn-round btn-soft">Kembali ke Dashboard</a>
+              <span id="draftStatus" class="small" style="color:var(--muted);"></span>
+              <span id="draftSavedIndicator" class="small d-none" style="color:var(--accent);"><i
+                  class="bi bi-check-circle-fill me-1"></i>Draf disimpan</span>
+            </div>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+              @if($inden->inden_id)
+                <button class="btn btn-round btn-soft" type="button"
+                  onclick="window.open('{{ route('borang.inden.cetak', ['order' => $inden->inden_id]) }}', '_blank')">Cetak
+                  Ringkasan</button>
+              @endif
+              @unless ($isReadOnly)
+                <button class="btn btn-round btn-add" type="submit">Hantar</button>
+              @endunless
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
 
   </main>
 
-{{-- Item Modal (Add / Edit) --}}
-<div class="modal fade" id="itemModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" style="background:#11151f; border:1px solid rgba(255,255,255,.08); color:#e2e8f0;">
-      <div class="modal-header border-0">
-        <h5 class="modal-title fw-bold" id="itemModalTitle">Tambah Item</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label">Nama Barang <span class="text-danger">*</span></label>
-          <select class="form-select" id="itemModalName">
-            <option value="">-- Pilih Barang --</option>
-          </select>
-          <div id="itemModalNameError" class="d-none" style="color:#f87171;font-size:.82rem;margin-top:4px;font-weight:500;"><i class="bi bi-exclamation-circle-fill me-1"></i><span></span></div>
+  {{-- Item Modal (Add / Edit) --}}
+  <div class="modal fade" id="itemModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background:#11151f; border:1px solid rgba(255,255,255,.08); color:#e2e8f0;">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold" id="itemModalTitle">Tambah Item</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
-        <div class="row g-3">
-          <div class="col-6">
-            <label class="form-label">Kuantiti <span class="text-danger">*</span></label>
-            <input class="form-control" id="itemModalQty" type="number" min="1" step="1" value="1">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Nama Barang <span class="text-danger">*</span></label>
+            <select class="form-select" id="itemModalName">
+              <option value="">-- Pilih Barang --</option>
+            </select>
+            <div id="itemModalNameError" class="d-none"
+              style="color:#f87171;font-size:.82rem;margin-top:4px;font-weight:500;"><i
+                class="bi bi-exclamation-circle-fill me-1"></i><span></span></div>
           </div>
-          <div class="col-6">
-            <label class="form-label">Unit</label>
-            <input class="form-control" id="itemModalUnit" type="text" readonly placeholder="Auto isi dari item">
+          <div class="row g-3">
+            <div class="col-6">
+              <label class="form-label">Kuantiti <span class="text-danger">*</span></label>
+              <input class="form-control" id="itemModalQty" type="number" min="1" step="1" value="1">
+            </div>
+            <div class="col-6">
+              <label class="form-label">Unit</label>
+              <input class="form-control" id="itemModalUnit" type="text" readonly placeholder="Auto isi dari item">
+            </div>
+          </div>
+          <div class="mb-3 mt-3">
+            <label class="form-label">Harga Seunit (RM)</label>
+            <input class="form-control" id="itemModalPrice" type="text" readonly placeholder="Auto isi dari item">
           </div>
         </div>
-        <div class="mb-3 mt-3">
-          <label class="form-label">Harga Seunit (RM)</label>
-          <input class="form-control" id="itemModalPrice" type="text" readonly placeholder="Auto isi dari item">
+        <div class="modal-footer border-0">
+          <button class="btn btn-round btn-soft" type="button" data-bs-dismiss="modal">Batal</button>
+          <button class="btn btn-round btn-add" type="button" id="itemModalSave">Simpan</button>
         </div>
-      </div>
-      <div class="modal-footer border-0">
-        <button class="btn btn-round btn-soft" type="button" data-bs-dismiss="modal">Batal</button>
-        <button class="btn btn-round btn-add" type="button" id="itemModalSave">Simpan</button>
       </div>
     </div>
   </div>
-</div>
 
-{{-- Delete Confirmation Modal --}}
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-sm">
-    <div class="modal-content" style="background:#11151f; border:1px solid rgba(255,255,255,.08); color:#e2e8f0;">
-      <div class="modal-body text-center py-4">
-        <i class="bi bi-exclamation-triangle-fill text-danger fs-1 mb-3 d-block"></i>
-        <h5 class="fw-bold mb-2">Pengesahan Padam</h5>
-        <p class="mb-0" style="color:var(--muted);">Anda pasti mahu memadam item ini?</p>
+  @if(false && $canManageMusterRates && !$isReadOnly)
+    <div class="modal fade" id="musterRateModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background:#11151f; border:1px solid rgba(255,255,255,.08); color:#e2e8f0;">
+          <div class="modal-header border-0">
+            <h5 class="modal-title fw-bold">Tetapkan Kadar Muster</h5><button type="button"
+              class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <p class="small" style="color:var(--muted);">Kuantiti cadangan = kadar × muster, kemudian dibundarkan ke atas.
+            </p>
+            <label class="form-label">Barang</label><select class="form-select mb-3" id="musterRateItem"></select>
+            <label class="form-label">Kadar per orang</label><input class="form-control mb-3" id="musterRateValue"
+              type="number" min="0" step="0.000001" placeholder="Contoh: 0.100000">
+            <label class="form-label">Asas Muster</label><select class="form-select" id="musterRateBasis">
+              <option value="ditolak_parol">Muster Ditolak Parol</option>
+              <option value="khas">Muster Khas (Daging)</option>
+            </select>
+          </div>
+          <div class="modal-footer border-0"><button class="btn btn-round btn-soft" type="button"
+              data-bs-dismiss="modal">Batal</button><button class="btn btn-round btn-add" type="button"
+              id="simpanKadarMusterBtn">Simpan Kadar</button></div>
+        </div>
       </div>
-      <div class="modal-footer border-0 justify-content-center">
-        <button class="btn btn-round btn-soft" type="button" data-bs-dismiss="modal">Batal</button>
-        <button class="btn btn-round" type="button" id="deleteConfirmBtn" style="background:#dc3545; color:#fff;">Padam</button>
+    </div>
+  @endif
+
+  {{-- Delete Confirmation Modal --}}
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content" style="background:#11151f; border:1px solid rgba(255,255,255,.08); color:#e2e8f0;">
+        <div class="modal-body text-center py-4">
+          <i class="bi bi-exclamation-triangle-fill text-danger fs-1 mb-3 d-block"></i>
+          <h5 class="fw-bold mb-2">Pengesahan Padam</h5>
+          <p class="mb-0" style="color:var(--muted);">Anda pasti mahu memadam item ini?</p>
+        </div>
+        <div class="modal-footer border-0 justify-content-center">
+          <button class="btn btn-round btn-soft" type="button" data-bs-dismiss="modal">Batal</button>
+          <button class="btn btn-round" type="button" id="deleteConfirmBtn"
+            style="background:#dc3545; color:#fff;">Padam</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<template id="itemTemplate">
-  <tr class="item-card">
-    <td><span class="item-index"></span></td>
-    <td data-order="">
-      <span class="item-name-display"></span>
-      <input class="item-contract-id" type="hidden" name="items[0][contract_item_id]">
-      <input type="hidden" class="item-name-hidden" name="items[0][name]">
-    </td>
-    <td data-order="0">
-      <span class="item-qty-display"></span>
-      <input class="form-control item-order-qty item-calc" type="number" min="1" step="1" value="0" style="display:none;">
-    </td>
-    <td data-order="">
-      <span class="item-unit-display"></span>
-      <input type="hidden" class="item-unit-hidden" name="items[0][unit]">
-    </td>
-    <td data-order="0">
-      <span class="item-price-display"></span>
-      <input type="hidden" class="item-unit-price-hidden" name="items[0][unitPrice]">
-    </td>
-    <td data-order="0">
-      <span class="item-ceiling-display">--</span>
-      <div class="item-ceiling-warning small text-danger fw-semibold mt-1" style="display:none;">
-        <i class="bi bi-exclamation-triangle-fill me-1"></i>Melebihi had siling!
-      </div>
-    </td>
-    <td data-order="0">
-      <span class="item-ceiling-unit-display">--</span>
-      <div class="item-ceiling-unit-warning small text-danger fw-semibold mt-1" style="display:none;">
-        <i class="bi bi-exclamation-triangle-fill me-1"></i>Melebihi had siling!
-      </div>
-    </td>
-    <td data-order="0"><span class="item-total-display">RM 0.00</span></td>
-    <td><div class="d-flex flex-wrap gap-1 item-actions">
-        <button class="btn btn-sm btn-outline-info edit-item" type="button" title="Edit"><i class="bi bi-pencil"></i></button>
-        <button class="btn btn-sm btn-success save-item-qty" type="button" title="Simpan" style="display:none;"><i class="bi bi-check"></i></button>
-        <button class="btn btn-sm btn-secondary cancel-item-edit" type="button" title="Batal" style="display:none;"><i class="bi bi-x"></i></button>
-        <button class="btn btn-sm btn-outline-danger remove-item" type="button" title="Padam"><i class="bi bi-trash"></i></button>
-      </div></td>
-  </tr>
-</template>
+  <template id="itemTemplate">
+    <tr class="item-card">
+      <td><span class="item-index"></span></td>
+      <td data-order="">
+        <span class="item-name-display"></span>
+        <input class="item-contract-id" type="hidden" name="items[0][contract_item_id]">
+        <input type="hidden" class="item-name-hidden" name="items[0][name]">
+      </td>
+      <td data-order="0">
+        <span class="item-qty-display"></span>
+        <input class="form-control item-order-qty item-calc" type="number" min="1" step="1" value="0"
+          style="display:none;">
+      </td>
+      <td data-order="0">
+        <span class="item-muster-suggestion text-info small">--</span>
+        <button class="btn btn-sm btn-outline-info ms-1 apply-muster-suggestion" type="button"
+          title="Guna cadangan muster" style="display:none;">
+          <i class="bi bi-arrow-down-circle"></i>
+        </button>
+      </td>
+      <td data-order="">
+        <span class="item-unit-display"></span>
+        <input type="hidden" class="item-unit-hidden" name="items[0][unit]">
+      </td>
+      <td data-order="0">
+        <span class="item-price-display"></span>
+        <input type="hidden" class="item-unit-price-hidden" name="items[0][unitPrice]">
+      </td>
+      <td data-order="0">
+        <span class="item-ceiling-display">--</span>
+        <div class="item-ceiling-warning small text-danger fw-semibold mt-1" style="display:none;">
+          <i class="bi bi-exclamation-triangle-fill me-1"></i>Melebihi had siling!
+        </div>
+      </td>
+      <td data-order="0">
+        <span class="item-ceiling-unit-display">--</span>
+        <div class="item-ceiling-unit-warning small text-danger fw-semibold mt-1" style="display:none;">
+          <i class="bi bi-exclamation-triangle-fill me-1"></i>Melebihi had siling!
+        </div>
+      </td>
+      <td data-order="0"><span class="item-total-display">RM 0.00</span></td>
+      <td>
+        <div class="d-flex flex-wrap gap-1 item-actions">
+          <button class="btn btn-sm btn-outline-info edit-item" type="button" title="Edit"><i
+              class="bi bi-pencil"></i></button>
+          <button class="btn btn-sm btn-success save-item-qty" type="button" title="Simpan" style="display:none;"><i
+              class="bi bi-check"></i></button>
+          <button class="btn btn-sm btn-secondary cancel-item-edit" type="button" title="Batal" style="display:none;"><i
+              class="bi bi-x"></i></button>
+          <button class="btn btn-sm btn-outline-danger remove-item" type="button" title="Padam"><i
+              class="bi bi-trash"></i></button>
+        </div>
+      </td>
+    </tr>
+  </template>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="{{ asset('frontend/Nexa/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
@@ -809,1072 +1799,1182 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ms.js"></script>
   <script>
-    (function () {
-      const itemList = document.getElementById('itemList');
-      const itemTemplate = document.getElementById('itemTemplate');
-      const musterInputs = document.querySelectorAll('.muster-input');
-      const form = document.getElementById('borangIndenForm');
-      const databaseItems = @json(old('items', $indenItems ?? []));
-      const isReadOnly = @json($isReadOnly);
-      let itemDataTable = null;
-      let isRestoringDraft = false;
-      let hasUnsavedChanges = false;
-      let autoSaveTimer = null;
-      let formSubmitAllowed = false;
-      let contractItems = [];
-      const AUTO_SAVE_MS = 60000;
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      (function () {
+        const itemList = document.getElementById('itemList');
+        const itemTemplate = document.getElementById('itemTemplate');
+        const musterInputs = document.querySelectorAll('.muster-input');
+        const form = document.getElementById('borangIndenForm');
+        const databaseItems = @json(old('items', $indenItems ?? []));
+        const isReadOnly = @json($isReadOnly);
+        let itemDataTable = null;
+        let isRestoringDraft = false;
+        let hasUnsavedChanges = false;
+        let autoSaveTimer = null;
+        let formSubmitAllowed = false;
+        let contractItems = [];
+        const AUTO_SAVE_MS = 60000;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-      const dayNames = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
-      function parseDateValue(value) {
-        if (!value) return null;
-        var d = new Date(value + 'T00:00:00');
-        return isNaN(d.getTime()) ? null : d;
-      }
-      function updateDayName(dateInput) {
-        var parsed = dateInput.type === 'date' ? parseDateValue(dateInput.value) : parseDisplayDate(dateInput.value);
-        var daySpan = document.getElementById('tarikhDayName');
-        if (daySpan && parsed) {
-          daySpan.textContent = dayNames[parsed.getDay()] || '--';
+        const dayNames = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
+        function parseDateValue(value) {
+          if (!value) return null;
+          var d = new Date(value + 'T00:00:00');
+          return isNaN(d.getTime()) ? null : d;
         }
-      }
-
-      if (isReadOnly) {
-        document.querySelectorAll('input, textarea').forEach((input) => {
-          if (input.name !== 'tarikh_pesanan') input.setAttribute('readonly', 'readonly');
-        });
-        document.querySelectorAll('select').forEach((select) => select.setAttribute('disabled', 'disabled'));
-      } else {
-        const supplierSelect = document.getElementById('supplierSelect');
-        const addressField = document.querySelector('textarea[name="alamat_pembekal"]');
-        const wakilField = document.querySelector('input[name="wakil_pembekal"]');
-        if (supplierSelect && addressField) {
-          function fillSupplierAddress() {
-            const selected = supplierSelect.options[supplierSelect.selectedIndex];
-            if (selected && selected.value) {
-              const addr = (selected.dataset.address || '').trim();
-              const postcode = (selected.dataset.postcode || '').trim();
-              addressField.value = addr + (addr && postcode ? ' ' : '') + postcode;
-              if (wakilField) wakilField.value = selected.dataset.contact || '';
-            }
+        function updateDayName(dateInput) {
+          var parsed = dateInput.type === 'date' ? parseDateValue(dateInput.value) : parseDisplayDate(dateInput.value);
+          var daySpan = document.getElementById('tarikhDayName');
+          if (daySpan && parsed) {
+            daySpan.textContent = dayNames[parsed.getDay()] || '--';
           }
-          supplierSelect.addEventListener('change', fillSupplierAddress);
         }
 
-        // Auto-generate No. Pesanan & load contracts (auto-gen commented out — user enters manually)
-        const instIdInput = document.getElementById('institutionIdHidden');
-        const contractSelect = document.getElementById('contractSelect');
-        const noPesananInput = document.getElementById('noPesanan');
+        if (isReadOnly) {
+          document.querySelectorAll('input, textarea').forEach((input) => {
+            if (input.name !== 'tarikh_pesanan') input.setAttribute('readonly', 'readonly');
+          });
+          document.querySelectorAll('select').forEach((select) => select.setAttribute('disabled', 'disabled'));
+        } else {
+          const supplierSelect = document.getElementById('supplierSelect');
+          const addressField = document.querySelector('textarea[name="alamat_pembekal"]');
+          const wakilField = document.querySelector('input[name="wakil_pembekal"]');
+          if (supplierSelect && addressField) {
+            function fillSupplierAddress() {
+              const selected = supplierSelect.options[supplierSelect.selectedIndex];
+              if (selected && selected.value) {
+                const addr = (selected.dataset.address || '').trim();
+                const postcode = (selected.dataset.postcode || '').trim();
+                addressField.value = addr + (addr && postcode ? ' ' : '') + postcode;
+                if (wakilField) wakilField.value = selected.dataset.contact || '';
+              }
+            }
+            supplierSelect.addEventListener('change', fillSupplierAddress);
+          }
 
-        function getInstId() { return instIdInput?.value || ''; }
+          // Auto-generate No. Pesanan & load contracts (auto-gen commented out — user enters manually)
+          const instIdInput = document.getElementById('institutionIdHidden');
+          const contractSelect = document.getElementById('contractSelect');
+          const noPesananInput = document.getElementById('noPesanan');
 
-        // function generateOrderNo() {
-        //   const instId = getInstId();
-        //   if (!instId) {
-        //     noPesananInput.value = '';
-        //     return;
-        //   }
-        //   fetch('{{ route("borang.inden.generate") }}?institution_id=' + instId)
-        //     .then(r => r.json())
-        //     .then(d => { if (d.success) noPesananInput.value = d.order_no; })
-        //     .catch(() => {});
-        // }
+          function getInstId() { return instIdInput?.value || ''; }
 
-        function loadContracts() {
-          const instId = getInstId();
-          const supId = document.getElementById('supplierSelect')?.value || '';
-          if (!contractSelect) return;
-          contractSelect.innerHTML = '<option value="">-- Pilih Kontrak --</option>';
-          const contractErr = document.getElementById('contractError');
-          const contractErrText = document.getElementById('contractErrorText');
-          if (contractErr) contractErr.classList.add('d-none');
-          if (!instId || !supId) return;
-          fetch('{{ route("borang.inden.contracts") }}?institution_id=' + instId + '&supplier_id=' + supId)
-            .then(r => r.json())
-            .then(contracts => {
-              if (!contracts || contracts.length === 0) {
+          // function generateOrderNo() {
+          //   const instId = getInstId();
+          //   if (!instId) {
+          //     noPesananInput.value = '';
+          //     return;
+          //   }
+          //   fetch('{{ route("borang.inden.generate") }}?institution_id=' + instId)
+          //     .then(r => r.json())
+          //     .then(d => { if (d.success) noPesananInput.value = d.order_no; })
+          //     .catch(() => {});
+          // }
+
+          function loadContracts() {
+            const instId = getInstId();
+            const supId = document.getElementById('supplierSelect')?.value || '';
+            if (!contractSelect) return;
+            contractSelect.innerHTML = '<option value="">-- Pilih Kontrak --</option>';
+            const contractErr = document.getElementById('contractError');
+            const contractErrText = document.getElementById('contractErrorText');
+            if (contractErr) contractErr.classList.add('d-none');
+            if (!instId || !supId) return;
+            fetch('{{ route("borang.inden.contracts") }}?institution_id=' + instId + '&supplier_id=' + supId)
+              .then(r => r.json())
+              .then(contracts => {
+                if (!contracts || contracts.length === 0) {
+                  if (contractErr && contractErrText) {
+                    contractErrText.textContent = 'Tiada kontrak ditemui untuk pembekal ini.';
+                    contractErr.classList.remove('d-none');
+                  }
+                  return;
+                }
+                contracts.forEach(c => {
+                  const opt = document.createElement('option');
+                  opt.value = c.id;
+                  opt.textContent = c.contract_no;
+                  opt.dataset.supplierId = c.supplier_id;
+                  contractSelect.appendChild(opt);
+                });
+                @if(!empty($inden) && $inden->contract_id)
+                  contractSelect.value = '{{ $inden->contract_id }}';
+                  contractSelect.dispatchEvent(new Event('change'));
+                @else
+                  if (contracts.length > 0) {
+                    contractSelect.value = contracts[0].id;
+                    contractSelect.dispatchEvent(new Event('change'));
+                  }
+                @endif
+            })
+              .catch(() => {
                 if (contractErr && contractErrText) {
-                  contractErrText.textContent = 'Tiada kontrak ditemui untuk pembekal ini.';
+                  contractErrText.textContent = 'Gagal memuat senarai kontrak. Sila semak sambungan internet.';
                   contractErr.classList.remove('d-none');
                 }
-                return;
-              }
-              contracts.forEach(c => {
-                const opt = document.createElement('option');
-                opt.value = c.id;
-                opt.textContent = c.contract_no;
-                opt.dataset.supplierId = c.supplier_id;
-                contractSelect.appendChild(opt);
               });
-              @if(!empty($inden) && $inden->contract_id)
-                contractSelect.value = '{{ $inden->contract_id }}';
-                contractSelect.dispatchEvent(new Event('change'));
-              @else
-                if (contracts.length > 0) {
-                  contractSelect.value = contracts[0].id;
-                  contractSelect.dispatchEvent(new Event('change'));
+          }
+
+          let contractCeilingRemaining = null;
+
+          function loadContractItems(contractId) {
+            if (!contractId) { contractItems = []; return; }
+            const itemErr = document.getElementById('itemErrorAlert');
+            const itemErrText = document.getElementById('itemErrorText');
+            if (itemErr) itemErr.classList.add('d-none');
+            fetch('{{ url("borang-inden/contract-items") }}/' + contractId)
+              .then(r => r.json())
+              .then(res => {
+                contractCeilingRemaining = res.ceiling_remaining;
+                contractItems = (res.items || []).map(ci => ({
+                  id: ci.id,
+                  item_name: ci.item_name,
+                  uom_code: ci.uom_code,
+                  unit_price: ci.unit_price,
+                  estimated_quantity: ci.estimated_quantity,
+                  ordered_quantity: ci.ordered_quantity,
+                  muster_rate: ci.muster_rate,
+                  muster_basis: ci.muster_basis,
+                  ceiling_limit_id: ci.ceiling_limit_id,
+                  ceiling_group_remaining: ci.ceiling_group_remaining,
+                }));
+                updateCeilingAlert();
+                refreshPrismSuggestions();
+                if (!contractItems || contractItems.length === 0) {
+                  if (itemErr && itemErrText) {
+                    itemErrText.textContent = 'Tiada item ditemui untuk kontrak ini.';
+                    itemErr.classList.remove('d-none');
+                  }
                 }
-              @endif
-            })
-            .catch(() => {
-              if (contractErr && contractErrText) {
-                contractErrText.textContent = 'Gagal memuat senarai kontrak. Sila semak sambungan internet.';
-                contractErr.classList.remove('d-none');
-              }
-            });
-        }
-
-        let contractCeilingRemaining = null;
-
-        function loadContractItems(contractId) {
-          if (!contractId) { contractItems = []; return; }
-          const itemErr = document.getElementById('itemErrorAlert');
-          const itemErrText = document.getElementById('itemErrorText');
-          if (itemErr) itemErr.classList.add('d-none');
-          fetch('{{ url("borang-inden/contract-items") }}/' + contractId)
-            .then(r => r.json())
-            .then(res => {
-              contractCeilingRemaining = res.ceiling_remaining;
-              contractItems = (res.items || []).map(ci => ({
-                id: ci.id,
-                item_name: ci.item_name,
-                uom_code: ci.uom_code,
-                unit_price: ci.unit_price,
-                estimated_quantity: ci.estimated_quantity,
-                ordered_quantity: ci.ordered_quantity,
-                ceiling_limit_id: ci.ceiling_limit_id,
-                ceiling_group_remaining: ci.ceiling_group_remaining,
-              }));
-              updateCeilingAlert();
-              if (!contractItems || contractItems.length === 0) {
+              })
+              .catch(() => {
+                contractItems = [];
+                contractCeilingRemaining = null;
+                updateCeilingAlert();
                 if (itemErr && itemErrText) {
-                  itemErrText.textContent = 'Tiada item ditemui untuk kontrak ini.';
+                  itemErrText.textContent = 'Gagal memuat senarai barang. Sila semak sambungan internet.';
                   itemErr.classList.remove('d-none');
                 }
-              }
-            })
-            .catch(() => {
-              contractItems = [];
-              contractCeilingRemaining = null;
-              updateCeilingAlert();
-              if (itemErr && itemErrText) {
-                itemErrText.textContent = 'Gagal memuat senarai barang. Sila semak sambungan internet.';
-                itemErr.classList.remove('d-none');
-              }
+              });
+          }
+
+          function getTotalOrderValue() {
+            const rows = getItemRows();
+            let total = 0;
+            rows.forEach(card => {
+              const qty = parseFloat(card.querySelector('.item-order-qty').value) || 0;
+              const price = parseFloat(card.querySelector('.item-unit-price-hidden').value) || 0;
+              total += qty * price;
             });
-        }
-
-        function getTotalOrderValue() {
-          const rows = getItemRows();
-          let total = 0;
-          rows.forEach(card => {
-            const qty = parseFloat(card.querySelector('.item-order-qty').value) || 0;
-            const price = parseFloat(card.querySelector('.item-unit-price-hidden').value) || 0;
-            total += qty * price;
-          });
-          return total;
-        }
-
-        function updateCeilingAlert() {
-          const alertEl = document.getElementById('ceilingAlert');
-          const ceilingRow = document.getElementById('ceilingRow');
-          const ceilingDisplay = document.getElementById('ceilingDisplay');
-          if (!alertEl || !ceilingRow || !ceilingDisplay) return;
-          if (contractCeilingRemaining === null || contractCeilingRemaining === undefined) {
-            ceilingRow.style.display = 'none';
-            alertEl.style.display = 'none';
-            return;
+            return total;
           }
-          const total = getTotalOrderValue();
-          ceilingRow.style.display = 'flex';
-          ceilingDisplay.textContent = formatCurrency(contractCeilingRemaining);
-          if (total > contractCeilingRemaining) {
-            const over = total - contractCeilingRemaining;
-            alertEl.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-1"></i> Jumlah nilai pesanan (RM ' + total.toFixed(2) + ') melebihi baki siling kontrak sebanyak RM ' + over.toFixed(2) + '.';
-            alertEl.style.display = 'block';
-          } else {
-            alertEl.style.display = 'none';
-          }
-        }
 
-        // Supplier change → reload contracts
-        if (supplierSelect) {
-          supplierSelect.addEventListener('change', function() {
-            loadContracts();
-            if (typeof fillSupplierAddress === 'function') fillSupplierAddress();
-            contractCeilingRemaining = null;
-            updateCeilingAlert();
-            if (!isRestoringDraft) {
-              if (itemDataTable) {
-                itemDataTable.clear().draw();
-              } else {
-                itemList.innerHTML = '';
-              }
-            }
-            if (!isRestoringDraft) updateSummary();
-          });
-        }
-
-        if (contractSelect) {
-          contractSelect.addEventListener('change', function() {
-            if (isRestoringDraft) return;
-            if (!this.value) {
-              contractCeilingRemaining = null;
-              updateCeilingAlert();
+          function updateCeilingAlert() {
+            const alertEl = document.getElementById('ceilingAlert');
+            const ceilingRow = document.getElementById('ceilingRow');
+            const ceilingDisplay = document.getElementById('ceilingDisplay');
+            if (!alertEl || !ceilingRow || !ceilingDisplay) return;
+            if (contractCeilingRemaining === null || contractCeilingRemaining === undefined) {
+              ceilingRow.style.display = 'none';
+              alertEl.style.display = 'none';
               return;
             }
-            loadContractItems(this.value);
-          });
-          contractSelect._prevValue = contractSelect.value;
-        }
-        // if (!noPesananInput.value) generateOrderNo(); // commented out — user enters manually
-        @if(!($savedDraft ?? null))
-        loadContracts();
-        @endif
+            const total = getTotalOrderValue();
+            ceilingRow.style.display = 'flex';
+            ceilingDisplay.textContent = formatCurrency(contractCeilingRemaining);
+            if (total > contractCeilingRemaining) {
+              const over = total - contractCeilingRemaining;
+              alertEl.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-1"></i> Jumlah nilai pesanan (RM ' + total.toFixed(2) + ') melebihi baki siling kontrak sebanyak RM ' + over.toFixed(2) + '.';
+              alertEl.style.display = 'block';
+            } else {
+              alertEl.style.display = 'none';
+            }
+          }
+
+          // Supplier change → reload contracts
+          if (supplierSelect) {
+            supplierSelect.addEventListener('change', function () {
+              loadContracts();
+              if (typeof fillSupplierAddress === 'function') fillSupplierAddress();
+              contractCeilingRemaining = null;
+              updateCeilingAlert();
+              if (!isRestoringDraft) {
+                if (itemDataTable) {
+                  itemDataTable.clear().draw();
+                } else {
+                  itemList.innerHTML = '';
+                }
+              }
+              if (!isRestoringDraft) updateSummary();
+            });
+          }
+
+          if (contractSelect) {
+            contractSelect.addEventListener('change', function () {
+              if (isRestoringDraft) return;
+              if (!this.value) {
+                contractCeilingRemaining = null;
+                updateCeilingAlert();
+                return;
+              }
+              loadContractItems(this.value);
+            });
+            contractSelect._prevValue = contractSelect.value;
+          }
+          // if (!noPesananInput.value) generateOrderNo(); // commented out — user enters manually
+          @if(!($savedDraft ?? null))
+            loadContracts();
+          @endif
         // Fill supplier address on load if pre-selected (edit mode)
         if (typeof fillSupplierAddress === 'function') fillSupplierAddress();
 
-        const dateInputs = document.querySelectorAll('.date-input');
-        const timeInputs = document.querySelectorAll('input[type="time"]');
-        const now = new Date();
-        const localDate = formatDateForDisplay(now);
+          const dateInputs = document.querySelectorAll('.date-input');
+          const timeInputs = document.querySelectorAll('input[type="time"]');
+          const now = new Date();
+          const localDate = formatDateForDisplay(now);
 
-        var todayStr = now.toISOString().slice(0, 10);
+          var todayStr = now.toISOString().slice(0, 10);
 
-        dateInputs.forEach(function (input) {
-          input.addEventListener('input', function () {
-            this.value = this.value.replace(/[^\d/]/g, '').slice(0, 10);
-            this.setCustomValidity('');
-            updateTimeMinimum(this.value, localDate, now, timeInputs);
-            updateDayName(this);
+          dateInputs.forEach(function (input) {
+            input.addEventListener('input', function () {
+              this.value = this.value.replace(/[^\d/]/g, '').slice(0, 10);
+              this.setCustomValidity('');
+              updateTimeMinimum(this.value, localDate, now, timeInputs);
+              updateDayName(this);
+              refreshPrismSuggestions();
+            });
+
+            input.addEventListener('change', function () {
+              updateTimeMinimum(this.value, localDate, now, timeInputs);
+              updateDayName(this);
+              refreshPrismSuggestions();
+            });
           });
 
-          input.addEventListener('change', function() {
-            updateTimeMinimum(this.value, localDate, now, timeInputs);
-            updateDayName(this);
+          dateInputs.forEach(function (input) {
+            if (!input.value) input.value = localDate;
+            input.dispatchEvent(new Event('change'));
+            updateDayName(input);
           });
-        });
 
-        dateInputs.forEach(function (input) {
-          if (!input.value) input.value = localDate;
-          input.dispatchEvent(new Event('change'));
-          updateDayName(input);
-        });
-
-        const localTime = now.toTimeString().substring(0, 5);
-        timeInputs.forEach(input => {
-          if (!input.value) input.value = localTime;
-        });
-
-        // ── Flatpickr date pickers ──
-        if (typeof flatpickr !== 'undefined') {
-          document.querySelectorAll('.date-input:not([readonly])').forEach(function (el) {
-            try {
-              flatpickr(el, {
-                dateFormat: 'd/m/Y',
-                allowInput: true,
-                locale: 'ms',
-                onChange: function (selectedDates, dateStr) {
-                  hasUnsavedChanges = true;
-                  triggerAutoSave();
-                  updateTimeMinimum(dateStr, localDate, now, timeInputs);
-                  updateDayName(el);
-                },
-              });
-            } catch (_e) {}
-          });
-        }
-      }
-
-      function numberValue(input) { return Number.parseFloat(input.value) || 0; }
-      function formatNumber(value) { return new Intl.NumberFormat('en-MY', { minimumFractionDigits: value % 1 === 0 ? 0 : 2, maximumFractionDigits: 2 }).format(value || 0); }
-      function formatCurrency(value) { return 'RM ' + new Intl.NumberFormat('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value || 0); }
-      function formatDateForDisplay(date) {
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        return `${day}/${month}/${date.getFullYear()}`;
-      }
-      function parseDisplayDate(value) {
-        const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value || '');
-        if (!match) return null;
-        const parsed = new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1]));
-        if (parsed.getFullYear() !== Number(match[3]) || parsed.getMonth() !== Number(match[2]) - 1 || parsed.getDate() !== Number(match[1])) return null;
-        parsed.setHours(0, 0, 0, 0);
-        return parsed;
-      }
-      function updateTimeMinimum(dateValue, localDate, now, timeInputs) {
-        var todayStr = now.toISOString().slice(0, 10);
-        var isToday = dateValue === localDate || dateValue === todayStr;
-        if (isToday) {
           const localTime = now.toTimeString().substring(0, 5);
-          timeInputs.forEach(t => t.setAttribute('min', localTime));
-        } else {
-          timeInputs.forEach(t => t.removeAttribute('min'));
-        }
-      }
-      function countWords(value) {
-        return (value.trim().match(/\S+/g) || []).length;
-      }
-      function updateWordCounter(textarea) {
-        const maxWords = Number(textarea.dataset.maxWords || 250);
-        const count = countWords(textarea.value);
-        const helper = textarea.parentElement.querySelector('.word-helper');
-        const counter = textarea.parentElement.querySelector('.word-count');
-        if (counter) counter.textContent = count;
-        if (helper) helper.classList.toggle('text-danger', count > maxWords);
-        textarea.setCustomValidity(count > maxWords ? `Ulasan tidak boleh melebihi ${maxWords} patah perkataan.` : '');
-      }
-      function wireUlasanCounter(scope = document) {
-        scope.querySelectorAll('.ulasan-field').forEach((textarea) => {
-          updateWordCounter(textarea);
-          textarea.addEventListener('input', () => updateWordCounter(textarea));
-        });
-      }
-      function showBorangPage(pageName) {
-        document.querySelectorAll('[data-borang-page]').forEach((page) => {
-          page.classList.toggle('active', page.dataset.borangPage === pageName);
-        });
-        document.querySelectorAll('[data-borang-target]').forEach((button) => {
-          const isActive = button.dataset.borangTarget === pageName;
-          button.classList.toggle('active', isActive);
-          button.setAttribute('aria-selected', isActive ? 'true' : 'false');
-        });
-      }
-      function validateVisiblePage(pageName) {
-        const page = document.querySelector(`[data-borang-page="${pageName}"]`);
-        if (!page) return true;
-        for (const field of page.querySelectorAll('input[required], textarea[required], select[required]')) {
-          if (field.offsetParent === null) continue;
-          if (!field.value.trim()) {
-            field.focus();
-            return false;
+          timeInputs.forEach(input => {
+            if (!input.value) input.value = localTime;
+          });
+
+          // ── Flatpickr date pickers ──
+          if (typeof flatpickr !== 'undefined') {
+            document.querySelectorAll('.date-input:not([readonly])').forEach(function (el) {
+              try {
+                flatpickr(el, {
+                  dateFormat: 'd/m/Y',
+                  allowInput: true,
+                  locale: 'ms',
+                  onChange: function (selectedDates, dateStr) {
+                    hasUnsavedChanges = true;
+                    triggerAutoSave();
+                    updateTimeMinimum(dateStr, localDate, now, timeInputs);
+                    updateDayName(el);
+                  },
+                });
+              } catch (_e) { }
+            });
           }
         }
-        return true;
-      }
 
-      function getItemRows() {
-        if (itemDataTable) {
-          return Array.from(itemDataTable.rows().nodes());
+        function numberValue(input) { return Number.parseFloat(input.value) || 0; }
+        function formatNumber(value) { return new Intl.NumberFormat('en-MY', { minimumFractionDigits: value % 1 === 0 ? 0 : 2, maximumFractionDigits: 2 }).format(value || 0); }
+        function formatCurrency(value) { return 'RM ' + new Intl.NumberFormat('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value || 0); }
+        function formatDateForDisplay(date) {
+          const day = String(date.getDate()).padStart(2, '0');
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          return `${day}/${month}/${date.getFullYear()}`;
+        }
+        function parseDisplayDate(value) {
+          const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value || '');
+          if (!match) return null;
+          const parsed = new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1]));
+          if (parsed.getFullYear() !== Number(match[3]) || parsed.getMonth() !== Number(match[2]) - 1 || parsed.getDate() !== Number(match[1])) return null;
+          parsed.setHours(0, 0, 0, 0);
+          return parsed;
+        }
+        function updateTimeMinimum(dateValue, localDate, now, timeInputs) {
+          var todayStr = now.toISOString().slice(0, 10);
+          var isToday = dateValue === localDate || dateValue === todayStr;
+          if (isToday) {
+            const localTime = now.toTimeString().substring(0, 5);
+            timeInputs.forEach(t => t.setAttribute('min', localTime));
+          } else {
+            timeInputs.forEach(t => t.removeAttribute('min'));
+          }
+        }
+        function countWords(value) {
+          return (value.trim().match(/\S+/g) || []).length;
+        }
+        function updateWordCounter(textarea) {
+          const maxWords = Number(textarea.dataset.maxWords || 250);
+          const count = countWords(textarea.value);
+          const helper = textarea.parentElement.querySelector('.word-helper');
+          const counter = textarea.parentElement.querySelector('.word-count');
+          if (counter) counter.textContent = count;
+          if (helper) helper.classList.toggle('text-danger', count > maxWords);
+          textarea.setCustomValidity(count > maxWords ? `Ulasan tidak boleh melebihi ${maxWords} patah perkataan.` : '');
+        }
+        function wireUlasanCounter(scope = document) {
+          scope.querySelectorAll('.ulasan-field').forEach((textarea) => {
+            updateWordCounter(textarea);
+            textarea.addEventListener('input', () => updateWordCounter(textarea));
+          });
+        }
+        function showBorangPage(pageName) {
+          document.querySelectorAll('[data-borang-page]').forEach((page) => {
+            page.classList.toggle('active', page.dataset.borangPage === pageName);
+          });
+          document.querySelectorAll('[data-borang-target]').forEach((button) => {
+            const isActive = button.dataset.borangTarget === pageName;
+            button.classList.toggle('active', isActive);
+            button.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          });
+        }
+        function validateVisiblePage(pageName) {
+          const page = document.querySelector(`[data-borang-page="${pageName}"]`);
+          if (!page) return true;
+          for (const field of page.querySelectorAll('input[required], textarea[required], select[required]')) {
+            if (field.offsetParent === null) continue;
+            if (!field.value.trim()) {
+              field.focus();
+              return false;
+            }
+          }
+          return true;
         }
 
-        return Array.from(itemList.querySelectorAll('.item-card'));
-      }
+        function getItemRows() {
+          if (itemDataTable) {
+            return Array.from(itemDataTable.rows().nodes());
+          }
 
-      function updateItemIndices() {
-        getItemRows().forEach((card, index) => {
-          card.querySelector('.item-index').textContent = index + 1;
-          card.querySelector('.item-contract-id').name = `items[${index}][contract_item_id]`;
-          card.querySelector('.item-name-hidden').name = `items[${index}][name]`;
-          card.querySelector('.item-unit-hidden').name = `items[${index}][unit]`;
-          card.querySelector('.item-order-qty').name = `items[${index}][orderQty]`;
-          card.querySelector('.item-unit-price-hidden').name = `items[${index}][unitPrice]`;
-        });
-      }
+          return Array.from(itemList.querySelectorAll('.item-card'));
+        }
 
-      let isUpdatingMuster = false;
+        function updateItemIndices() {
+          getItemRows().forEach((card, index) => {
+            card.querySelector('.item-index').textContent = index + 1;
+            card.querySelector('.item-contract-id').name = `items[${index}][contract_item_id]`;
+            card.querySelector('.item-name-hidden').name = `items[${index}][name]`;
+            card.querySelector('.item-unit-hidden').name = `items[${index}][unit]`;
+            card.querySelector('.item-order-qty').name = `items[${index}][orderQty]`;
+            card.querySelector('.item-unit-price-hidden').name = `items[${index}][unitPrice]`;
+          });
+        }
 
-      function updateMusterSummary(event) {
-        if (isUpdatingMuster) return;
-        isUpdatingMuster = true;
+        let isUpdatingMuster = false;
 
-        try {
-          const changed = event?.target?.id || '';
-          const penuhEl = document.getElementById('musterPenuh');
-          const parolEl = document.getElementById('parol');
-          const ditolakEl = document.getElementById('musterTolakParol');
-          const khasEl = document.getElementById('musterKhas');
-          const exclusionEl = document.getElementById('musterExclusion');
+        function updateMusterSummary(event) {
+          if (isUpdatingMuster) return;
+          isUpdatingMuster = true;
 
-          let penuh = numberValue(penuhEl);
-          let parol = numberValue(parolEl);
-          let ditolak = numberValue(ditolakEl);
-          let khas = numberValue(khasEl);
-          let exclusion = numberValue(exclusionEl);
+          try {
+            const changed = event?.target?.id || '';
+            const penuhEl = document.getElementById('musterPenuh');
+            const parolEl = document.getElementById('parol');
+            const ditolakEl = document.getElementById('musterTolakParol');
+            const khasEl = document.getElementById('musterKhas');
+            const exclusionEl = document.getElementById('musterExclusion');
 
-          if (changed === 'musterPenuh' || changed === 'parol') {
-            if (penuh > 0 && parol > 0) {
+            let penuh = numberValue(penuhEl);
+            let parol = numberValue(parolEl);
+            let ditolak = numberValue(ditolakEl);
+            let khas = numberValue(khasEl);
+            let exclusion = numberValue(exclusionEl);
+
+            // Muster Ditolak Parol is a derived value. Once Muster Penuh is
+            // known, it must always remain equal to Muster Penuh - Parol.
+            if (penuh > 0) {
               ditolak = Math.max(penuh - parol, 0);
               ditolakEl.value = ditolak;
-            }
-          } else if (changed === 'musterTolakParol') {
-            if (penuh > 0 && ditolak > 0) {
-              parolEl.value = Math.max(penuh - ditolak, 0);
-            } else if (parol > 0 && ditolak > 0) {
+            } else if (changed === 'musterTolakParol' && parol > 0 && ditolak > 0) {
               penuhEl.value = parol + ditolak;
             }
-          }
 
-          if (changed === 'musterKhas' && khas > 0) {
+            if (changed === 'musterKhas' && khas > 0) {
+              ditolak = numberValue(ditolakEl);
+              exclusion = ditolak > 0 ? Math.max(ditolak - khas, 0) : 0;
+              exclusionEl.value = exclusion;
+            }
+
+            penuh = numberValue(penuhEl);
+            parol = numberValue(parolEl);
             ditolak = numberValue(ditolakEl);
-            exclusion = ditolak > 0 ? Math.max(ditolak - khas, 0) : 0;
-            exclusionEl.value = exclusion;
-          }
+            khas = numberValue(khasEl);
+            exclusion = numberValue(exclusionEl);
 
-          penuh = numberValue(penuhEl);
-          parol = numberValue(parolEl);
-          ditolak = numberValue(ditolakEl);
-          khas = numberValue(khasEl);
-          exclusion = numberValue(exclusionEl);
+            if (ditolak > 0 && exclusion > 0 && changed !== 'musterKhas') {
+              khas = Math.max(ditolak - exclusion, 0);
+              khasEl.value = khas;
+            }
 
-          if (ditolak > 0 && exclusion > 0 && changed !== 'musterKhas') {
-            khas = Math.max(ditolak - exclusion, 0);
-            khasEl.value = khas;
+            // Muster warnings
+            const warnContainer = document.getElementById('musterWarnings');
+            const warnParol = document.getElementById('musterWarnParol');
+            const warnDitolak = document.getElementById('musterWarnDitolak');
+            const warnKhas = document.getElementById('musterWarnKhas');
+            if (warnContainer) {
+              let hasWarn = false;
+              if (penuh > 0 && parol > penuh) { warnParol?.classList.remove('d-none'); hasWarn = true; } else { warnParol?.classList.add('d-none'); }
+              if (penuh > 0 && ditolak > penuh) { warnDitolak?.classList.remove('d-none'); hasWarn = true; } else { warnDitolak?.classList.add('d-none'); }
+              if (ditolak > 0 && khas > ditolak) { warnKhas?.classList.remove('d-none'); hasWarn = true; } else { warnKhas?.classList.add('d-none'); }
+              if (hasWarn) { warnContainer.classList.remove('d-none'); } else { warnContainer.classList.add('d-none'); }
+            }
+            refreshMusterSuggestions();
+            refreshPrismSuggestions();
+          } finally {
+            isUpdatingMuster = false;
           }
-
-          // Muster warnings
-          const warnContainer = document.getElementById('musterWarnings');
-          const warnParol = document.getElementById('musterWarnParol');
-          const warnDitolak = document.getElementById('musterWarnDitolak');
-          const warnKhas = document.getElementById('musterWarnKhas');
-          if (warnContainer) {
-            let hasWarn = false;
-            if (penuh > 0 && parol > penuh) { warnParol?.classList.remove('d-none'); hasWarn = true; } else { warnParol?.classList.add('d-none'); }
-            if (penuh > 0 && ditolak > penuh) { warnDitolak?.classList.remove('d-none'); hasWarn = true; } else { warnDitolak?.classList.add('d-none'); }
-            if (ditolak > 0 && khas > ditolak) { warnKhas?.classList.remove('d-none'); hasWarn = true; } else { warnKhas?.classList.add('d-none'); }
-            if (hasWarn) { warnContainer.classList.remove('d-none'); } else { warnContainer.classList.add('d-none'); }
-          }
-        } finally {
-          isUpdatingMuster = false;
         }
-      }
 
-      function updateSummary() {
-        if (!isRestoringDraft) {
-          hasUnsavedChanges = true;
-          if (typeof triggerAutoSave === 'function') triggerAutoSave();
-        }
-        const cards = getItemRows();
-        let orderQtyTotal = 0, grandTotal = 0;
-        cards.forEach((card) => {
-          const orderQty = numberValue(card.querySelector('.item-order-qty'));
-          const unitPrice = numberValue(card.querySelector('.item-unit-price-hidden'));
-          const lineTotal = orderQty * unitPrice;
-          card._lineTotal = lineTotal;
-          card.querySelector('.item-total-display').textContent = formatCurrency(lineTotal);
-          orderQtyTotal += orderQty;
-          grandTotal += lineTotal;
-        });
-        var groups = {};
-        cards.forEach(function (card) {
-          var gid = card.dataset.ceilingGroupId;
-          if (gid && gid !== '') {
-            if (!groups[gid]) groups[gid] = [];
-            groups[gid].push(card);
+        function updateSummary() {
+          if (!isRestoringDraft) {
+            hasUnsavedChanges = true;
+            if (typeof triggerAutoSave === 'function') triggerAutoSave();
           }
-        });
-        cards.forEach(function (card) {
-          var gid = card.dataset.ceilingGroupId;
-          var groupRemaining = parseFloat(card.dataset.ceilingGroupRemaining) || 0;
-          var estQty = parseFloat(card.dataset.estimatedQuantity) || 0;
-          var orderedQty = parseFloat(card.dataset.orderedQuantity) || 0;
-          var ceilingDisplay = card.querySelector('.item-ceiling-display');
-          var ceilingWarning = card.querySelector('.item-ceiling-warning');
-          var ceilingUnitDisplay = card.querySelector('.item-ceiling-unit-display');
-          var ceilingUnitWarning = card.querySelector('.item-ceiling-unit-warning');
-          if (!ceilingDisplay) return;
+          const cards = getItemRows();
+          let orderQtyTotal = 0, grandTotal = 0;
+          cards.forEach((card) => {
+            const orderQty = numberValue(card.querySelector('.item-order-qty'));
+            const unitPrice = numberValue(card.querySelector('.item-unit-price-hidden'));
+            const lineTotal = orderQty * unitPrice;
+            card._lineTotal = lineTotal;
+            card.querySelector('.item-total-display').textContent = formatCurrency(lineTotal);
+            orderQtyTotal += orderQty;
+            grandTotal += lineTotal;
+          });
+          var groups = {};
+          cards.forEach(function (card) {
+            var gid = card.dataset.ceilingGroupId;
+            if (gid && gid !== '') {
+              if (!groups[gid]) groups[gid] = [];
+              groups[gid].push(card);
+            }
+          });
+          cards.forEach(function (card) {
+            var gid = card.dataset.ceilingGroupId;
+            var groupRemaining = parseFloat(card.dataset.ceilingGroupRemaining) || 0;
+            var estQty = parseFloat(card.dataset.estimatedQuantity) || 0;
+            var orderedQty = parseFloat(card.dataset.orderedQuantity) || 0;
+            var ceilingDisplay = card.querySelector('.item-ceiling-display');
+            var ceilingWarning = card.querySelector('.item-ceiling-warning');
+            var ceilingUnitDisplay = card.querySelector('.item-ceiling-unit-display');
+            var ceilingUnitWarning = card.querySelector('.item-ceiling-unit-warning');
+            if (!ceilingDisplay) return;
 
-          // RM fair-share ceiling
-          var rmExceeded = false;
-          if (gid && gid !== '' && groupRemaining > 0) {
-            var othersTotal = 0;
-            (groups[gid] || []).forEach(function (other) {
-              if (other !== card) othersTotal += other._lineTotal || 0;
-            });
-            var rmRemaining = Math.max(0, groupRemaining - othersTotal);
-            ceilingDisplay.textContent = formatCurrency(rmRemaining);
-            rmExceeded = (card._lineTotal || 0) > rmRemaining;
-            ceilingDisplay.style.color = rmExceeded ? '#f87171' : '';
-            ceilingWarning.style.display = rmExceeded ? 'block' : 'none';
-          } else {
-            ceilingDisplay.textContent = '--';
-            ceilingWarning.style.display = 'none';
-          }
-
-          // Unit ceiling
-          if (ceilingUnitDisplay) {
-            if (estQty > 0) {
-              var unitRemaining = Math.max(0, estQty - orderedQty);
-              ceilingUnitDisplay.textContent = formatNumber(unitRemaining) + ' / ' + formatNumber(estQty);
-              var orderQtyVal = numberValue(card.querySelector('.item-order-qty'));
-              var unitExceeded = orderQtyVal > unitRemaining;
-              ceilingUnitDisplay.style.color = unitExceeded ? '#f87171' : '';
-              ceilingUnitWarning.style.display = unitExceeded ? 'block' : 'none';
+            // RM fair-share ceiling
+            var rmExceeded = false;
+            if (gid && gid !== '' && groupRemaining > 0) {
+              var othersTotal = 0;
+              (groups[gid] || []).forEach(function (other) {
+                if (other !== card) othersTotal += other._lineTotal || 0;
+              });
+              var rmRemaining = Math.max(0, groupRemaining - othersTotal);
+              ceilingDisplay.textContent = formatCurrency(rmRemaining);
+              rmExceeded = (card._lineTotal || 0) > rmRemaining;
+              ceilingDisplay.style.color = rmExceeded ? '#f87171' : '';
+              ceilingWarning.style.display = rmExceeded ? 'block' : 'none';
             } else {
-              ceilingUnitDisplay.textContent = '--';
-              ceilingUnitWarning.style.display = 'none';
+              ceilingDisplay.textContent = '--';
+              ceilingWarning.style.display = 'none';
+            }
+
+            // Unit ceiling
+            if (ceilingUnitDisplay) {
+              if (estQty > 0) {
+                var unitRemaining = Math.max(0, estQty - orderedQty);
+                ceilingUnitDisplay.textContent = formatNumber(unitRemaining) + ' / ' + formatNumber(estQty);
+                var orderQtyVal = numberValue(card.querySelector('.item-order-qty'));
+                var unitExceeded = orderQtyVal > unitRemaining;
+                ceilingUnitDisplay.style.color = unitExceeded ? '#f87171' : '';
+                ceilingUnitWarning.style.display = unitExceeded ? 'block' : 'none';
+              } else {
+                ceilingUnitDisplay.textContent = '--';
+                ceilingUnitWarning.style.display = 'none';
+              }
+            }
+          });
+          document.getElementById('summaryItemCount').textContent = cards.length;
+          document.getElementById('summaryOrderQty').textContent = formatNumber(orderQtyTotal);
+          document.getElementById('summaryGrandTotal').textContent = formatCurrency(grandTotal);
+          updateCeilingAlert();
+        }
+
+        function refreshMusterSuggestions() {
+          const normalMuster = numberValue(document.getElementById('musterTolakParol'));
+          const specialMuster = numberValue(document.getElementById('musterKhas'));
+
+          getItemRows().forEach(function (card) {
+            const rate = parseFloat(card.dataset.musterRate);
+            const basis = card.dataset.musterBasis;
+            const suggestionEl = card.querySelector('.item-muster-suggestion');
+            const applyButton = card.querySelector('.apply-muster-suggestion');
+            if (!suggestionEl || !applyButton) return;
+
+            const muster = basis === 'khas' ? specialMuster : normalMuster;
+            if (!Number.isFinite(rate) || rate <= 0 || muster <= 0) {
+              suggestionEl.textContent = rate > 0 ? '--' : 'Tidak dalam menu PRISM hari ini';
+              applyButton.style.display = 'none';
+              return;
+            }
+
+            const suggestedQty = Math.ceil(rate * muster);
+            card.dataset.musterSuggestedQty = suggestedQty;
+            suggestionEl.textContent = formatNumber(suggestedQty);
+            applyButton.style.display = isReadOnly ? 'none' : 'inline-block';
+          });
+        }
+
+        let prismSuggestionRequest = null;
+        function refreshPrismSuggestions() {
+          const contractId = document.getElementById('contractSelect')?.value;
+          const date = document.querySelector('input[name="tarikh_pesanan"]')?.value || '';
+          const normalMuster = numberValue(document.getElementById('musterTolakParol'));
+          const specialMuster = numberValue(document.getElementById('musterKhas'));
+          if (!contractId || !date || normalMuster <= 0) return;
+
+          const params = new URLSearchParams({ tarikh_pesanan: date, muster_ditolak_parol: normalMuster, muster_khas_daging: specialMuster });
+          prismSuggestionRequest?.abort?.();
+          prismSuggestionRequest = new AbortController();
+          fetch('{{ url("borang-inden/contract-items") }}/' + contractId + '/prism-suggestions?' + params, { signal: prismSuggestionRequest.signal })
+            .then(response => response.ok ? response.json() : Promise.reject())
+            .then(data => {
+              getItemRows().forEach(card => {
+                const suggestion = data.suggestions?.[card.querySelector('.item-contract-id').value];
+                const suggestionEl = card.querySelector('.item-muster-suggestion');
+                const applyButton = card.querySelector('.apply-muster-suggestion');
+                if (!suggestion || !suggestionEl || !applyButton) return;
+                card.dataset.musterSuggestedQty = suggestion.quantity;
+                suggestionEl.textContent = formatNumber(suggestion.quantity) + ' (' + suggestion.source + ')';
+                applyButton.style.display = isReadOnly ? 'none' : 'inline-block';
+              });
+            })
+            .catch(error => { if (error?.name !== 'AbortError') console.warn('PRISM suggestions unavailable.'); });
+        }
+
+        @if(false && $canManageMusterRates && !$isReadOnly)
+          (function wireMusterRateSettings() {
+            const openButton = document.getElementById('tetapkanKadarMusterBtn');
+            const modalElement = document.getElementById('musterRateModal');
+            const itemSelect = document.getElementById('musterRateItem');
+            const rateInput = document.getElementById('musterRateValue');
+            const basisSelect = document.getElementById('musterRateBasis');
+            const saveButton = document.getElementById('simpanKadarMusterBtn');
+            if (!openButton || !modalElement || !itemSelect || !rateInput || !basisSelect || !saveButton) return;
+
+            function selectedContractItem() {
+              return contractItems.find(item => String(item.id) === String(itemSelect.value));
+            }
+
+            function populateSettings() {
+              itemSelect.innerHTML = '<option value="">-- Pilih barang kontrak --</option>';
+              contractItems.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.item_name;
+                itemSelect.appendChild(option);
+              });
+              rateInput.value = '';
+              basisSelect.value = 'ditolak_parol';
+            }
+
+            openButton.addEventListener('click', function () {
+              const contractId = document.getElementById('contractSelect')?.value;
+              if (!contractId) { alert('Sila pilih kontrak dahulu.'); return; }
+              fetch('{{ url("borang-inden/contract-items") }}/' + contractId)
+                .then(response => response.json())
+                .then(response => {
+                  contractItems = response.items || [];
+                  populateSettings();
+                  new bootstrap.Modal(modalElement).show();
+                })
+                .catch(() => alert('Gagal memuat item kontrak.'));
+            });
+
+            itemSelect.addEventListener('change', function () {
+              const item = selectedContractItem();
+              rateInput.value = item?.muster_rate ?? '';
+              basisSelect.value = item?.muster_basis ?? 'ditolak_parol';
+            });
+
+            saveButton.addEventListener('click', function () {
+              const item = selectedContractItem();
+              if (!item) { alert('Sila pilih barang.'); return; }
+              const rate = rateInput.value.trim();
+              if (rate !== '' && (!Number.isFinite(Number(rate)) || Number(rate) < 0)) {
+                alert('Kadar mestilah nombor 0 atau lebih.'); return;
+              }
+              saveButton.disabled = true;
+              fetch('{{ url("borang-inden/contract-items") }}/' + item.id + '/muster-rate', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                body: JSON.stringify({ muster_rate: rate === '' ? null : rate, muster_basis: basisSelect.value }),
+              })
+                .then(response => { if (!response.ok) throw new Error(); return response.json(); })
+                .then(() => {
+                  item.muster_rate = rate === '' ? null : Number(rate);
+                  item.muster_basis = basisSelect.value;
+                  getItemRows().forEach(row => {
+                    if (String(row.querySelector('.item-contract-id').value) === String(item.id)) {
+                      row.dataset.musterRate = item.muster_rate ?? '';
+                      row.dataset.musterBasis = item.muster_basis;
+                    }
+                  });
+                  refreshMusterSuggestions();
+                  bootstrap.Modal.getInstance(modalElement)?.hide();
+                })
+                .catch(() => alert('Kadar tidak dapat disimpan.'))
+                .finally(() => { saveButton.disabled = false; });
+            });
+          })();
+        @endif
+
+          function initItemDataTable() {
+            try {
+              if (!window.jQuery || !$.fn.DataTable) return;
+              if ($.fn.DataTable.isDataTable('#itemDataTable')) {
+                itemDataTable = $('#itemDataTable').DataTable();
+                return;
+              }
+
+              itemDataTable = $('#itemDataTable').DataTable({
+                pagingType: 'full_numbers',
+                pageLength: 5,
+                lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'Semua']],
+                language: {
+                  url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/ms.json',
+                  emptyTable: 'Tiada item pesanan.',
+                  lengthMenu: 'Papar _MENU_ rekod',
+                  search: 'Cari:',
+                  paginate: {
+                    first: "<i class='bi bi-chevron-double-left'></i>",
+                    previous: "<i class='bi bi-chevron-left'></i>",
+                    next: "<i class='bi bi-chevron-right'></i>",
+                    last: "<i class='bi bi-chevron-double-right'></i>"
+                  }
+                },
+                dom: '<"item-table-toolbar"<"dt-length-wrap"l><"dt-filter-wrap"f><"dt-item-actions">>' +
+                  '<"row"<"col-12"tr>>' +
+                  '<"row align-items-center mt-3"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                initComplete: function () {
+                  $('.dt-item-actions').html('');
+                }
+              });
+            } catch (e) {
+              console.error('DataTable init failed:', e);
             }
           }
-        });
-        document.getElementById('summaryItemCount').textContent = cards.length;
-        document.getElementById('summaryOrderQty').textContent = formatNumber(orderQtyTotal);
-        document.getElementById('summaryGrandTotal').textContent = formatCurrency(grandTotal);
-        updateCeilingAlert();
-      }
 
-      function initItemDataTable() {
-        try {
-          if (!window.jQuery || !$.fn.DataTable) return;
-          if ($.fn.DataTable.isDataTable('#itemDataTable')) {
-            itemDataTable = $('#itemDataTable').DataTable();
+        let deleteTargetRow = null;
+
+        function wireItemCard(card) {
+          card.querySelectorAll('.item-calc').forEach((input) => {
+            input.addEventListener('input', function () { updateSummary(); updateCeilingAlert(); });
+          });
+
+          if (isReadOnly) {
+            card.querySelectorAll('.edit-item, .remove-item, .save-item-qty, .cancel-item-edit').forEach((btn) => btn.classList.add('d-none'));
             return;
           }
 
-          itemDataTable = $('#itemDataTable').DataTable({
-            pagingType: 'full_numbers',
-            pageLength: 5,
-            lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, 'Semua']],
-            language: {
-              url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/ms.json',
-              emptyTable: 'Tiada item pesanan.',
-              lengthMenu: 'Papar _MENU_ rekod',
-              search: 'Cari:',
-              paginate: {
-                first: "<i class='bi bi-chevron-double-left'></i>",
-                previous: "<i class='bi bi-chevron-left'></i>",
-                next: "<i class='bi bi-chevron-right'></i>",
-                last: "<i class='bi bi-chevron-double-right'></i>"
-              }
-            },
-            dom: '<"item-table-toolbar"<"dt-length-wrap"l><"dt-filter-wrap"f><"dt-item-actions">>' +
-              '<"row"<"col-12"tr>>' +
-              '<"row align-items-center mt-3"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
-            initComplete: function () {
-                $('.dt-item-actions').html('');
-            }
+          card.querySelector('.apply-muster-suggestion').addEventListener('click', function () {
+            const suggestedQty = Number(card.dataset.musterSuggestedQty);
+            if (!Number.isFinite(suggestedQty) || suggestedQty <= 0) return;
+            card.querySelector('.item-order-qty').value = suggestedQty;
+            card.querySelector('.item-qty-display').textContent = suggestedQty;
+            updateSummary();
           });
-        } catch (e) {
-          console.error('DataTable init failed:', e);
+
+          card.querySelector('.edit-item').addEventListener('click', function () {
+            card.classList.add('editing');
+            card.querySelector('.item-order-qty').value = card.querySelector('.item-qty-display').textContent;
+            card.querySelector('.item-order-qty').focus();
+          });
+
+          card.querySelector('.save-item-qty').addEventListener('click', function () {
+            const qty = parseFloat(card.querySelector('.item-order-qty').value) || 0;
+            card.querySelector('.item-qty-display').textContent = qty;
+            card.classList.remove('editing');
+            updateSummary();
+            updateCeilingAlert();
+          });
+
+          card.querySelector('.cancel-item-edit').addEventListener('click', function () {
+            card.querySelector('.item-order-qty').value = card.querySelector('.item-qty-display').textContent;
+            card.classList.remove('editing');
+          });
+
+          card.querySelector('.remove-item').addEventListener('click', function () {
+            deleteTargetRow = card;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+          });
         }
+
+        function addItem(defaults = {}) {
+          const card = itemTemplate.content.firstElementChild.cloneNode(true);
+          const name = defaults.name || '';
+          const qty = defaults.orderQty ?? 0;
+          const unit = defaults.unit || 'Unit';
+          const price = defaults.unitPrice ?? 0;
+          const priceFormatted = formatCurrency(price);
+
+          card.querySelector('.item-contract-id').value = defaults.contract_item_id ?? '';
+          card.querySelector('.item-name-hidden').value = name;
+          card.querySelector('.item-name-display').textContent = name;
+          card.querySelector('.item-unit-hidden').value = unit;
+          card.querySelector('.item-unit-display').textContent = unit;
+          card.querySelector('.item-order-qty').value = qty;
+          card.querySelector('.item-qty-display').textContent = qty;
+          card.querySelector('.item-unit-price-hidden').value = price;
+          card.querySelector('.item-price-display').textContent = priceFormatted;
+          card.dataset.ceilingGroupId = defaults.ceiling_limit_id ?? '';
+          card.dataset.ceilingGroupRemaining = defaults.ceiling_group_remaining ?? '';
+          card.dataset.estimatedQuantity = defaults.estimated_quantity ?? '';
+          card.dataset.orderedQuantity = defaults.ordered_quantity ?? 0;
+          card.dataset.musterRate = defaults.muster_rate ?? '';
+          card.dataset.musterBasis = defaults.muster_basis ?? 'ditolak_parol';
+          if (name) {
+            card.querySelector('.item-name-display').textContent = name;
+          }
+          if (itemDataTable) {
+            itemDataTable.row.add(card).draw(false);
+          } else {
+            itemList.appendChild(card);
+          }
+          wireItemCard(card);
+          updateItemIndices();
+          refreshMusterSuggestions();
+          refreshPrismSuggestions();
+          updateSummary();
+        }
+
+        musterInputs.forEach((input) => input.addEventListener('input', (e) => updateMusterSummary(e)));
+        wireUlasanCounter();
+        initItemDataTable();
+
+        // Tambah Item button → populate modal then show.
+        // Always (re)load the item list for the currently selected contract so the
+        // "Pilih Barang" dropdown is never frozen empty by an earlier failed or
+        // skipped fetch.
+        var tambahBtn = document.getElementById('tambahItemBtn');
+        if (tambahBtn) {
+          var itemModalSelect = document.getElementById('itemModalName');
+          var itemModalElement = document.getElementById('itemModal');
+
+          function fillItemDropdown(items) {
+            itemModalSelect.innerHTML = '<option value="">-- Pilih Barang --</option>';
+            (items || []).forEach(function (ci) {
+              const opt = document.createElement('option');
+              opt.value = ci.id;
+              opt.textContent = ci.item_name;
+              opt.dataset.unit = ci.uom_code || 'Unit';
+              opt.dataset.price = ci.unit_price || 0;
+              itemModalSelect.appendChild(opt);
+            });
+            document.getElementById('itemModalQty').value = 1;
+            document.getElementById('itemModalUnit').value = '';
+            document.getElementById('itemModalPrice').value = '';
+            document.getElementById('itemModalNameError').classList.add('d-none');
+            bootstrap.Modal.getInstance(itemModalElement)?.hide?.();
+            var mi = new bootstrap.Modal(itemModalElement);
+            mi.show();
+          });
       }
 
-      let deleteTargetRow = null;
+    // Item Modal — Nama Barang dropdown auto-fills Unit + Harga
+    const itemModalNameSelect = document.getElementById('itemModalName');
+    if (itemModalNameSelect) {
+      itemModalNameSelect.addEventListener('change', function () {
+        const opt = this.options[this.selectedIndex];
+        const errEl = document.getElementById('itemModalNameError');
+        if (opt && opt.value) {
+          document.getElementById('itemModalUnit').value = opt.dataset.unit || '';
+          document.getElementById('itemModalPrice').value = opt.dataset.price ? formatCurrency(opt.dataset.price) : '';
+          errEl.classList.add('d-none');
+        } else {
+          document.getElementById('itemModalUnit').value = '';
+          document.getElementById('itemModalPrice').value = '';
+        }
+      });
+    }
 
-      function wireItemCard(card) {
-        card.querySelectorAll('.item-calc').forEach((input) => {
-          input.addEventListener('input', function() { updateSummary(); updateCeilingAlert(); });
-        });
+    // Item Modal Save — always adds a new row
+    document.getElementById('itemModalSave').addEventListener('click', function () {
+      try {
+        const select = document.getElementById('itemModalName');
+        const selectedOpt = select.options[select.selectedIndex];
+        const name = selectedOpt ? selectedOpt.textContent.trim() : '';
+        const contractItemId = selectedOpt ? selectedOpt.value : '';
+        const qty = parseFloat(document.getElementById('itemModalQty').value) || 0;
+        const unit = document.getElementById('itemModalUnit').value.trim();
+        const priceStr = document.getElementById('itemModalPrice').value.replace(/[^0-9.]/g, '');
+        const price = parseFloat(priceStr) || 0;
+        const errEl = document.getElementById('itemModalNameError');
 
-        if (isReadOnly) {
-          card.querySelectorAll('.edit-item, .remove-item, .save-item-qty, .cancel-item-edit').forEach((btn) => btn.classList.add('d-none'));
+        if (!contractItemId) {
+          errEl.querySelector('span').textContent = 'Sila pilih barang dari senarai.';
+          errEl.classList.remove('d-none');
+          select.focus();
           return;
         }
+        errEl.classList.add('d-none');
+        if (qty <= 0) { alert('Kuantiti mestilah lebih besar daripada 0.'); return; }
 
-        card.querySelector('.edit-item').addEventListener('click', function () {
-          card.classList.add('editing');
-          card.querySelector('.item-order-qty').value = card.querySelector('.item-qty-display').textContent;
-          card.querySelector('.item-order-qty').focus();
+        // Look up ceiling data from contractItems for this item
+        var ci = contractItems.find(function (c) { return String(c.id) === String(contractItemId); });
+        addItem({
+          contract_item_id: contractItemId,
+          name: name,
+          unit: unit,
+          orderQty: qty,
+          unitPrice: price,
+          ceiling_limit_id: ci ? ci.ceiling_limit_id : '',
+          ceiling_group_remaining: ci ? ci.ceiling_group_remaining : '',
+          estimated_quantity: ci ? ci.estimated_quantity : '',
+          ordered_quantity: ci ? ci.ordered_quantity : 0,
+          muster_rate: ci ? ci.muster_rate : '',
+          muster_basis: ci ? ci.muster_basis : 'ditolak_parol',
         });
-
-        card.querySelector('.save-item-qty').addEventListener('click', function () {
-          const qty = parseFloat(card.querySelector('.item-order-qty').value) || 0;
-          card.querySelector('.item-qty-display').textContent = qty;
-          card.classList.remove('editing');
-          updateSummary();
-          updateCeilingAlert();
-        });
-
-        card.querySelector('.cancel-item-edit').addEventListener('click', function () {
-          card.querySelector('.item-order-qty').value = card.querySelector('.item-qty-display').textContent;
-          card.classList.remove('editing');
-        });
-
-        card.querySelector('.remove-item').addEventListener('click', function () {
-          deleteTargetRow = card;
-          new bootstrap.Modal(document.getElementById('deleteModal')).show();
-        });
+        var mi = bootstrap.Modal.getInstance(document.getElementById('itemModal'));
+        if (mi) mi.hide();
+      } catch (e) {
+        console.error('Item modal save error:', e);
+        alert('Ralat semasa menyimpan item. Sila cuba semula.');
       }
+    });
 
-      function addItem(defaults = {}) {
-        const card = itemTemplate.content.firstElementChild.cloneNode(true);
-        const name = defaults.name || '';
-        const qty = defaults.orderQty ?? 0;
-        const unit = defaults.unit || 'Unit';
-        const price = defaults.unitPrice ?? 0;
-        const priceFormatted = formatCurrency(price);
-
-        card.querySelector('.item-contract-id').value = defaults.contract_item_id ?? '';
-        card.querySelector('.item-name-hidden').value = name;
-        card.querySelector('.item-name-display').textContent = name;
-        card.querySelector('.item-unit-hidden').value = unit;
-        card.querySelector('.item-unit-display').textContent = unit;
-        card.querySelector('.item-order-qty').value = qty;
-        card.querySelector('.item-qty-display').textContent = qty;
-        card.querySelector('.item-unit-price-hidden').value = price;
-        card.querySelector('.item-price-display').textContent = priceFormatted;
-        card.dataset.ceilingGroupId = defaults.ceiling_limit_id ?? '';
-        card.dataset.ceilingGroupRemaining = defaults.ceiling_group_remaining ?? '';
-        card.dataset.estimatedQuantity = defaults.estimated_quantity ?? '';
-        card.dataset.orderedQuantity = defaults.ordered_quantity ?? 0;
-        if (name) {
-          card.querySelector('.item-name-display').textContent = name;
-        }
+    // Delete confirmation
+    document.getElementById('deleteConfirmBtn').addEventListener('click', function () {
+      if (deleteTargetRow) {
         if (itemDataTable) {
-          itemDataTable.row.add(card).draw(false);
+          itemDataTable.row(deleteTargetRow).remove().draw(false);
         } else {
-          itemList.appendChild(card);
+          deleteTargetRow.remove();
         }
-        wireItemCard(card);
+        deleteTargetRow = null;
         updateItemIndices();
         updateSummary();
       }
+      bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+    });
 
-      musterInputs.forEach((input) => input.addEventListener('input', (e) => updateMusterSummary(e)));
-      wireUlasanCounter();
-      initItemDataTable();
+    document.querySelectorAll('[data-borang-target]').forEach((button) => {
+      button.addEventListener('click', () => showBorangPage(button.dataset.borangTarget));
+    });
 
-      // Tambah Item button → populate modal then show.
-      // Always (re)load the item list for the currently selected contract so the
-      // "Pilih Barang" dropdown is never frozen empty by an earlier failed or
-      // skipped fetch.
-      var tambahBtn = document.getElementById('tambahItemBtn');
-      if (tambahBtn) {
-        var itemModalSelect = document.getElementById('itemModalName');
-        var itemModalElement = document.getElementById('itemModal');
+    document.querySelectorAll('[data-borang-next], [data-borang-prev]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const targetPage = button.dataset.borangNext || button.dataset.borangPrev;
+        showBorangPage(targetPage);
+        window.scrollTo({ top: document.querySelector('.borang-menu').offsetTop - 90, behavior: 'smooth' });
+      });
+    });
 
-        function fillItemDropdown(items) {
-          itemModalSelect.innerHTML = '<option value="">-- Pilih Barang --</option>';
-          (items || []).forEach(function (ci) {
-            const opt = document.createElement('option');
-            opt.value = ci.id;
-            opt.textContent = ci.item_name;
-            opt.dataset.unit = ci.uom_code || 'Unit';
-            opt.dataset.price = ci.unit_price || 0;
-            itemModalSelect.appendChild(opt);
-          });
+    if (form) {
+      form.addEventListener('invalid', function (event) {
+        const page = event.target.closest('[data-borang-page]');
+        if (page) showBorangPage(page.dataset.borangPage);
+      }, true);
+    }
+
+    // Client-side Validation Handler
+    if (form && !isReadOnly) {
+      // Real-time input validation to remove is-invalid class as user types/interacts
+      form.querySelectorAll('input, textarea, select').forEach(input => {
+        input.addEventListener('input', function () {
+          if (this.value.trim() !== '') {
+            this.classList.remove('is-invalid');
+          }
+        });
+        input.addEventListener('change', function () {
+          if (this.value.trim() !== '') {
+            this.classList.remove('is-invalid');
+          }
+        });
+      });
+
+      // Sanitize leading zeros on number inputs when user finishes typing (blur)
+      form.addEventListener('blur', function (event) {
+        if (event.target && event.target.matches('input[type="number"], .muster-input, .item-calc')) {
+          const input = event.target;
+          let val = input.value.trim();
+          if (val !== '') {
+            const parsed = parseFloat(val);
+            if (!isNaN(parsed)) {
+              input.value = parsed;
+              // Trigger input event to update dynamic calculations and summaries
+              input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+          }
         }
+      }, true);
 
-        tambahBtn.addEventListener('click', function () {
-          document.getElementById('itemModalTitle').textContent = 'Tambah Item';
-          const contractSelect = document.getElementById('contractSelect');
-          const contractId = contractSelect ? contractSelect.value : '';
-
-          if (!contractId) {
-            itemModalSelect.innerHTML = '<option value="">-- Sila pilih kontrak dahulu --</option>';
-          } else {
-            itemModalSelect.innerHTML = '<option value="">Memuatkan barang…</option>';
-            fetch('{{ url("borang-inden/contract-items") }}/' + contractId)
-              .then(function (r) { return r.json(); })
-              .then(function (res) {
-                contractItems = (res.items || []).map(function (ci) {
-                  return {
-                    id: ci.id,
-                    item_name: ci.item_name,
-                    uom_code: ci.uom_code,
-                    unit_price: ci.unit_price,
-                    estimated_quantity: ci.estimated_quantity,
-                    ordered_quantity: ci.ordered_quantity,
-                    ceiling_limit_id: ci.ceiling_limit_id,
-                    ceiling_group_remaining: ci.ceiling_group_remaining,
-                  };
-                });
-                fillItemDropdown(contractItems);
-                if (contractItems.length === 0) {
-                  itemModalSelect.innerHTML = '<option value="">-- Tiada item bagi kontrak ini --</option>';
-                }
-              })
-              .catch(function () {
-                itemModalSelect.innerHTML = '<option value="">-- Gagal memuat barang --</option>';
-              });
-          }
-
-          document.getElementById('itemModalQty').value = 1;
-          document.getElementById('itemModalUnit').value = '';
-          document.getElementById('itemModalPrice').value = '';
-          document.getElementById('itemModalNameError').classList.add('d-none');
-          bootstrap.Modal.getInstance(itemModalElement)?.hide?.();
-          var mi = new bootstrap.Modal(itemModalElement);
-          mi.show();
-        });
-      }
-
-      // Item Modal — Nama Barang dropdown auto-fills Unit + Harga
-      const itemModalNameSelect = document.getElementById('itemModalName');
-      if (itemModalNameSelect) {
-        itemModalNameSelect.addEventListener('change', function () {
-          const opt = this.options[this.selectedIndex];
-          const errEl = document.getElementById('itemModalNameError');
-          if (opt && opt.value) {
-            document.getElementById('itemModalUnit').value = opt.dataset.unit || '';
-            document.getElementById('itemModalPrice').value = opt.dataset.price ? formatCurrency(opt.dataset.price) : '';
-            errEl.classList.add('d-none');
-          } else {
-            document.getElementById('itemModalUnit').value = '';
-            document.getElementById('itemModalPrice').value = '';
-          }
-        });
-      }
-
-      // Item Modal Save — always adds a new row
-      document.getElementById('itemModalSave').addEventListener('click', function () {
-        try {
-          const select = document.getElementById('itemModalName');
-          const selectedOpt = select.options[select.selectedIndex];
-          const name = selectedOpt ? selectedOpt.textContent.trim() : '';
-          const contractItemId = selectedOpt ? selectedOpt.value : '';
-          const qty = parseFloat(document.getElementById('itemModalQty').value) || 0;
-          const unit = document.getElementById('itemModalUnit').value.trim();
-          const priceStr = document.getElementById('itemModalPrice').value.replace(/[^0-9.]/g, '');
-          const price = parseFloat(priceStr) || 0;
-          const errEl = document.getElementById('itemModalNameError');
-
-          if (!contractItemId) {
-            errEl.querySelector('span').textContent = 'Sila pilih barang dari senarai.';
-            errEl.classList.remove('d-none');
-            select.focus();
-            return;
-          }
-          errEl.classList.add('d-none');
-          if (qty <= 0) { alert('Kuantiti mestilah lebih besar daripada 0.'); return; }
-
-          // Look up ceiling data from contractItems for this item
-          var ci = contractItems.find(function (c) { return String(c.id) === String(contractItemId); });
-          addItem({
-            contract_item_id: contractItemId,
-            name: name,
-            unit: unit,
-            orderQty: qty,
-            unitPrice: price,
-            ceiling_limit_id: ci ? ci.ceiling_limit_id : '',
-            ceiling_group_remaining: ci ? ci.ceiling_group_remaining : '',
-            estimated_quantity: ci ? ci.estimated_quantity : '',
-            ordered_quantity: ci ? ci.ordered_quantity : 0,
-          });
-          var mi = bootstrap.Modal.getInstance(document.getElementById('itemModal'));
-          if (mi) mi.hide();
-        } catch (e) {
-          console.error('Item modal save error:', e);
-          alert('Ralat semasa menyimpan item. Sila cuba semula.');
+      form.addEventListener('submit', function (event) {
+        if (itemDataTable) {
+          itemDataTable.page.len(-1).draw();
         }
-      });
+        updateItemIndices();
 
-      // Delete confirmation
-      document.getElementById('deleteConfirmBtn').addEventListener('click', function () {
-        if (deleteTargetRow) {
-          if (itemDataTable) {
-            itemDataTable.row(deleteTargetRow).remove().draw(false);
-          } else {
-            deleteTargetRow.remove();
+        // Ensure every item has a contract_item_id value (custom items use 0)
+        getItemRows().forEach(function (card) {
+          var cid = card.querySelector('.item-contract-id');
+          if (cid && (cid.value === '' || cid.value === undefined || cid.value === null)) {
+            cid.value = '0';
           }
-          deleteTargetRow = null;
-          updateItemIndices();
-          updateSummary();
-        }
-        bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
-      });
-
-      document.querySelectorAll('[data-borang-target]').forEach((button) => {
-        button.addEventListener('click', () => showBorangPage(button.dataset.borangTarget));
-      });
-
-      document.querySelectorAll('[data-borang-next], [data-borang-prev]').forEach((button) => {
-        button.addEventListener('click', () => {
-          const targetPage = button.dataset.borangNext || button.dataset.borangPrev;
-          showBorangPage(targetPage);
-          window.scrollTo({ top: document.querySelector('.borang-menu').offsetTop - 90, behavior: 'smooth' });
-        });
-      });
-
-      if (form) {
-        form.addEventListener('invalid', function (event) {
-          const page = event.target.closest('[data-borang-page]');
-          if (page) showBorangPage(page.dataset.borangPage);
-        }, true);
-      }
-
-      // Client-side Validation Handler
-      if (form && !isReadOnly) {
-        // Real-time input validation to remove is-invalid class as user types/interacts
-        form.querySelectorAll('input, textarea, select').forEach(input => {
-          input.addEventListener('input', function() {
-            if (this.value.trim() !== '') {
-              this.classList.remove('is-invalid');
-            }
-          });
-          input.addEventListener('change', function() {
-            if (this.value.trim() !== '') {
-              this.classList.remove('is-invalid');
-            }
-          });
         });
 
-        // Sanitize leading zeros on number inputs when user finishes typing (blur)
-        form.addEventListener('blur', function(event) {
-          if (event.target && event.target.matches('input[type="number"], .muster-input, .item-calc')) {
-            const input = event.target;
-            let val = input.value.trim();
-            if (val !== '') {
-              const parsed = parseFloat(val);
-              if (!isNaN(parsed)) {
-                input.value = parsed;
-                // Trigger input event to update dynamic calculations and summaries
-                input.dispatchEvent(new Event('input', { bubbles: true }));
-              }
-            }
-          }
-        }, true);
+        const clientErrorAlert = document.getElementById('clientErrorAlert');
+        const clientErrorList = document.getElementById('clientErrorList');
+        clientErrorList.innerHTML = '';
+        clientErrorAlert.classList.add('d-none');
 
-        form.addEventListener('submit', function (event) {
-          if (itemDataTable) {
-            itemDataTable.page.len(-1).draw();
-          }
-          updateItemIndices();
+        let isValid = true;
+        const errors = [];
 
-          // Ensure every item has a contract_item_id value (custom items use 0)
-          getItemRows().forEach(function (card) {
-            var cid = card.querySelector('.item-contract-id');
-            if (cid && (cid.value === '' || cid.value === undefined || cid.value === null)) {
-              cid.value = '0';
-            }
-          });
-
-          const clientErrorAlert = document.getElementById('clientErrorAlert');
-          const clientErrorList = document.getElementById('clientErrorList');
-          clientErrorList.innerHTML = '';
-          clientErrorAlert.classList.add('d-none');
-          
-          let isValid = true;
-          const errors = [];
-          
-          // 1. Check all standard required inputs in step 1 & step 4
-          const requiredInputs = form.querySelectorAll('input[required]:not(.item-calc):not(.item-name):not(.item-unit), textarea[required]');
-          requiredInputs.forEach(input => {
-            const labelText = input.previousElementSibling ? input.previousElementSibling.textContent.replace(' *', '').trim() : input.name;
-            const page = input.closest('[data-borang-page]');
-            const pageName = page ? page.dataset.borangPage : '';
-            const sectionPrefix = pageName === 'maklumat' ? '[Maklumat Pesanan] ' : pageName === 'perakuan' ? '[Perakuan Pembekal] ' : '';
-            if (!input.value.trim()) {
-              input.classList.add('is-invalid');
-              isValid = false;
-              errors.push(`${sectionPrefix}${labelText} wajib diisi.`);
-            } else {
-              input.classList.remove('is-invalid');
-            }
-          });
-
-          form.querySelectorAll('.date-input').forEach(input => {
-            const labelText = input.previousElementSibling ? input.previousElementSibling.textContent.replace(' *', '').trim() : input.name;
-            const page = input.closest('[data-borang-page]');
-            const pageName = page ? page.dataset.borangPage : '';
-            const sectionPrefix = pageName === 'maklumat' ? '[Maklumat Pesanan] ' : pageName === 'perakuan' ? '[Perakuan Pembekal] ' : '';
-            let parsedDate = null;
-            if (input.type === 'date') {
-              const val = input.value.trim();
-              if (val) parsedDate = new Date(val + 'T00:00:00');
-            } else {
-              parsedDate = parseDisplayDate(input.value.trim());
-            }
-            input.setCustomValidity('');
-            if (!parsedDate || isNaN(parsedDate.getTime())) {
-              input.classList.add('is-invalid');
-              input.setCustomValidity('Sila masukkan tarikh yang sah.');
-              isValid = false;
-              errors.push(`${sectionPrefix}${labelText} mesti diisi dengan tarikh yang sah.`);
-            } else if (parsedDate < today) {
-              input.classList.add('is-invalid');
-              input.setCustomValidity('Tarikh tidak boleh sebelum hari ini.');
-              isValid = false;
-              errors.push(`${sectionPrefix}${labelText} tidak boleh sebelum hari ini.`);
-            } else {
-              input.classList.remove('is-invalid');
-            }
-          });
-
-          form.querySelectorAll('.ulasan-field').forEach(textarea => {
-            updateWordCounter(textarea);
-            const maxWords = Number(textarea.dataset.maxWords || 250);
-            if (countWords(textarea.value) > maxWords) {
-              textarea.classList.add('is-invalid');
-              isValid = false;
-              errors.push('[Perakuan Pembekal] Ulasan / Catatan tidak boleh melebihi 250 patah perkataan.');
-            } else {
-              textarea.classList.remove('is-invalid');
-            }
-          });
-
-          // 2. Check muster inputs
-          musterInputs.forEach(input => {
-            const labelText = input.previousElementSibling ? input.previousElementSibling.textContent.replace(' *', '').trim() : input.name;
-            const val = Number(input.value);
-            if (input.value.trim() === '' || isNaN(val) || val < 0 || !Number.isInteger(val)) {
-              input.classList.add('is-invalid');
-              isValid = false;
-              errors.push(`[Ringkasan Muster] ${labelText} mestilah nombor bulat yang sah (0 atau lebih).`);
-            } else {
-              input.classList.remove('is-invalid');
-            }
-          });
-
-          // 3. Check dynamically added items
-          const itemCards = getItemRows();
-          if (itemCards.length === 0) {
+        // 1. Check all standard required inputs in step 1 & step 4
+        const requiredInputs = form.querySelectorAll('input[required]:not(.item-calc):not(.item-name):not(.item-unit), textarea[required]');
+        requiredInputs.forEach(input => {
+          const labelText = input.previousElementSibling ? input.previousElementSibling.textContent.replace(' *', '').trim() : input.name;
+          const page = input.closest('[data-borang-page]');
+          const pageName = page ? page.dataset.borangPage : '';
+          const sectionPrefix = pageName === 'maklumat' ? '[Maklumat Pesanan] ' : pageName === 'perakuan' ? '[Perakuan Pembekal] ' : '';
+          if (!input.value.trim()) {
+            input.classList.add('is-invalid');
             isValid = false;
-            errors.push('[Senarai Barang] Sila tambah sekurang-kurangnya satu item pesanan.');
+            errors.push(`${sectionPrefix}${labelText} wajib diisi.`);
           } else {
-            let hasItemError = false;
-            let hasZeroPrice = false;
-            let hasEmptyName = false;
-            const nameSet = new Set();
-            let hasDuplicate = false;
-            let hasCeilingExceeded = false;
-            itemCards.forEach((card) => {
-              const qtyInput = card.querySelector('.item-order-qty');
-              const qtyVal = Number(qtyInput.value);
-              if (qtyInput.value.trim() === '' || isNaN(qtyVal) || qtyVal <= 0) {
-                qtyInput.classList.add('is-invalid');
-                isValid = false;
-                hasItemError = true;
-              } else {
-                qtyInput.classList.remove('is-invalid');
-              }
-              const itemName = (card.querySelector('.item-name-hidden')?.value || '').trim();
-              if (!itemName) hasEmptyName = true;
-              const unitPrice = Number(card.querySelector('.item-unit-price-hidden')?.value) || 0;
-              if (unitPrice <= 0 && qtyVal > 0) hasZeroPrice = true;
-              const nameLower = itemName.toLowerCase();
-              if (nameLower) {
-                if (nameSet.has(nameLower)) hasDuplicate = true;
-                nameSet.add(nameLower);
-              }
-              // Check ceiling warnings
-              var ceilingWarn = card.querySelector('.item-ceiling-warning');
-              var ceilingUnitWarn = card.querySelector('.item-ceiling-unit-warning');
-              if ((ceilingWarn && ceilingWarn.style.display === 'block') ||
-                  (ceilingUnitWarn && ceilingUnitWarn.style.display === 'block')) {
-                hasCeilingExceeded = true;
-              }
-            });
-            
-            if (hasItemError) {
-              isValid = false;
-              errors.push('[Senarai Barang] Kuantiti pesanan untuk semua item mestilah lebih besar daripada 0.');
-            }
-            if (hasEmptyName) {
-              isValid = false;
-              errors.push('[Senarai Barang] Sila pilih nama barang untuk semua item melalui butang Edit.');
-            }
-            if (hasZeroPrice) {
-              isValid = false;
-              errors.push('[Senarai Barang] Terdapat item dengan harga seunit RM 0.00. Sila semak harga sebelum menghantar.');
-            }
-            if (hasDuplicate) {
-              isValid = false;
-              errors.push('[Senarai Barang] Terdapat item dengan nama yang sama. Sila pastikan setiap item mempunyai nama yang berbeza.');
-            }
-            if (hasCeilingExceeded) {
-              isValid = false;
-              errors.push('[Senarai Barang] Terdapat item yang melebihi had siling (RM atau Unit). Sila kurangkan kuantiti atau harga sebelum menghantar.');
-            }
-
-            // Check contract-level ceiling
-            var contractAlert = document.getElementById('ceilingAlert');
-            if (contractAlert && contractAlert.style.display === 'block') {
-              isValid = false;
-              errors.push('[Had Siling] Jumlah pesanan melebihi baki had siling kontrak. Sila kurangkan kuantiti atau harga sebelum menghantar.');
-            }
-          }
-          
-          if (!isValid) {
-            formSubmitAllowed = false;
-            event.preventDefault();
-            event.stopPropagation();
-            const firstInvalid = form.querySelector('.is-invalid');
-            const invalidPage = firstInvalid?.closest('[data-borang-page]');
-            if (invalidPage) showBorangPage(invalidPage.dataset.borangPage);
-            
-            // Build error list
-            errors.forEach(err => {
-              const li = document.createElement('li');
-              li.innerHTML = err.replace(/^\[([^\]]+)\]\s*/, '<strong class="text-decoration-underline">[$1]</strong> ');
-              clientErrorList.appendChild(li);
-            });
-            
-            clientErrorAlert.classList.remove('d-none');
-            clientErrorAlert.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            
-            form.classList.add('was-validated');
-          } else {
-            formSubmitAllowed = true;
-            form.classList.remove('was-validated');
+            input.classList.remove('is-invalid');
           }
         });
-      }
 
-      if (databaseItems.length) {
-        databaseItems.forEach((item) => addItem(item));
-      } else if (!isReadOnly) {
-        // For new orders, contract selection will load items
-      }
+        form.querySelectorAll('.date-input').forEach(input => {
+          const labelText = input.previousElementSibling ? input.previousElementSibling.textContent.replace(' *', '').trim() : input.name;
+          const page = input.closest('[data-borang-page]');
+          const pageName = page ? page.dataset.borangPage : '';
+          const sectionPrefix = pageName === 'maklumat' ? '[Maklumat Pesanan] ' : pageName === 'perakuan' ? '[Perakuan Pembekal] ' : '';
+          let parsedDate = null;
+          if (input.type === 'date') {
+            const val = input.value.trim();
+            if (val) parsedDate = new Date(val + 'T00:00:00');
+          } else {
+            parsedDate = parseDisplayDate(input.value.trim());
+          }
+          input.setCustomValidity('');
+          if (!parsedDate || isNaN(parsedDate.getTime())) {
+            input.classList.add('is-invalid');
+            input.setCustomValidity('Sila masukkan tarikh yang sah.');
+            isValid = false;
+            errors.push(`${sectionPrefix}${labelText} mesti diisi dengan tarikh yang sah.`);
+          } else if (parsedDate < today) {
+            input.classList.add('is-invalid');
+            input.setCustomValidity('Tarikh tidak boleh sebelum hari ini.');
+            isValid = false;
+            errors.push(`${sectionPrefix}${labelText} tidak boleh sebelum hari ini.`);
+          } else {
+            input.classList.remove('is-invalid');
+          }
+        });
 
-      (function initMuster() {
-        const ditolak = numberValue(document.getElementById('musterTolakParol'));
-        const khas = numberValue(document.getElementById('musterKhas'));
-        if (ditolak > 0 && khas > 0) {
-          document.getElementById('musterExclusion').value = Math.max(ditolak - khas, 0);
+        form.querySelectorAll('.ulasan-field').forEach(textarea => {
+          updateWordCounter(textarea);
+          const maxWords = Number(textarea.dataset.maxWords || 250);
+          if (countWords(textarea.value) > maxWords) {
+            textarea.classList.add('is-invalid');
+            isValid = false;
+            errors.push('[Perakuan Pembekal] Ulasan / Catatan tidak boleh melebihi 250 patah perkataan.');
+          } else {
+            textarea.classList.remove('is-invalid');
+          }
+        });
+
+        // 2. Check muster inputs
+        musterInputs.forEach(input => {
+          const labelText = input.previousElementSibling ? input.previousElementSibling.textContent.replace(' *', '').trim() : input.name;
+          const val = Number(input.value);
+          if (input.value.trim() === '' || isNaN(val) || val < 0 || !Number.isInteger(val)) {
+            input.classList.add('is-invalid');
+            isValid = false;
+            errors.push(`[Ringkasan Muster] ${labelText} mestilah nombor bulat yang sah (0 atau lebih).`);
+          } else {
+            input.classList.remove('is-invalid');
+          }
+        });
+
+        // 3. Check dynamically added items
+        const itemCards = getItemRows();
+        if (itemCards.length === 0) {
+          isValid = false;
+          errors.push('[Senarai Barang] Sila tambah sekurang-kurangnya satu item pesanan.');
+        } else {
+          let hasItemError = false;
+          let hasZeroPrice = false;
+          let hasEmptyName = false;
+          const nameSet = new Set();
+          let hasDuplicate = false;
+          let hasCeilingExceeded = false;
+          itemCards.forEach((card) => {
+            const qtyInput = card.querySelector('.item-order-qty');
+            const qtyVal = Number(qtyInput.value);
+            if (qtyInput.value.trim() === '' || isNaN(qtyVal) || qtyVal <= 0) {
+              qtyInput.classList.add('is-invalid');
+              isValid = false;
+              hasItemError = true;
+            } else {
+              qtyInput.classList.remove('is-invalid');
+            }
+            const itemName = (card.querySelector('.item-name-hidden')?.value || '').trim();
+            if (!itemName) hasEmptyName = true;
+            const unitPrice = Number(card.querySelector('.item-unit-price-hidden')?.value) || 0;
+            if (unitPrice <= 0 && qtyVal > 0) hasZeroPrice = true;
+            const nameLower = itemName.toLowerCase();
+            if (nameLower) {
+              if (nameSet.has(nameLower)) hasDuplicate = true;
+              nameSet.add(nameLower);
+            }
+            // Check ceiling warnings
+            var ceilingWarn = card.querySelector('.item-ceiling-warning');
+            var ceilingUnitWarn = card.querySelector('.item-ceiling-unit-warning');
+            if ((ceilingWarn && ceilingWarn.style.display === 'block') ||
+              (ceilingUnitWarn && ceilingUnitWarn.style.display === 'block')) {
+              hasCeilingExceeded = true;
+            }
+          });
+
+          if (hasItemError) {
+            isValid = false;
+            errors.push('[Senarai Barang] Kuantiti pesanan untuk semua item mestilah lebih besar daripada 0.');
+          }
+          if (hasEmptyName) {
+            isValid = false;
+            errors.push('[Senarai Barang] Sila pilih nama barang untuk semua item melalui butang Edit.');
+          }
+          if (hasZeroPrice) {
+            isValid = false;
+            errors.push('[Senarai Barang] Terdapat item dengan harga seunit RM 0.00. Sila semak harga sebelum menghantar.');
+          }
+          if (hasDuplicate) {
+            isValid = false;
+            errors.push('[Senarai Barang] Terdapat item dengan nama yang sama. Sila pastikan setiap item mempunyai nama yang berbeza.');
+          }
+          if (hasCeilingExceeded) {
+            isValid = false;
+            errors.push('[Senarai Barang] Terdapat item yang melebihi had siling (RM atau Unit). Sila kurangkan kuantiti atau harga sebelum menghantar.');
+          }
+
+          // Check contract-level ceiling
+          var contractAlert = document.getElementById('ceilingAlert');
+          if (contractAlert && contractAlert.style.display === 'block') {
+            isValid = false;
+            errors.push('[Had Siling] Jumlah pesanan melebihi baki had siling kontrak. Sila kurangkan kuantiti atau harga sebelum menghantar.');
+          }
         }
-      })();
-      updateMusterSummary();
-      updateSummary();
 
-      // ── Draft Save Feature ──────────────────────────────────────────────
-      const savedDraft = @json($savedDraft ?? null);
+        if (!isValid) {
+          formSubmitAllowed = false;
+          event.preventDefault();
+          event.stopPropagation();
+          const firstInvalid = form.querySelector('.is-invalid');
+          const invalidPage = firstInvalid?.closest('[data-borang-page]');
+          if (invalidPage) showBorangPage(invalidPage.dataset.borangPage);
 
-      function collectFormData() {
+          // Build error list
+          errors.forEach(err => {
+            const li = document.createElement('li');
+            li.innerHTML = err.replace(/^\[([^\]]+)\]\s*/, '<strong class="text-decoration-underline">[$1]</strong> ');
+            clientErrorList.appendChild(li);
+          });
+
+          clientErrorAlert.classList.remove('d-none');
+          clientErrorAlert.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+          form.classList.add('was-validated');
+        } else {
+          formSubmitAllowed = true;
+          form.classList.remove('was-validated');
+        }
+      });
+    }
+
+    if (databaseItems.length) {
+      databaseItems.forEach((item) => addItem(item));
+    } else if (!isReadOnly) {
+      // For new orders, contract selection will load items
+    }
+
+    (function initMuster() {
+      const ditolak = numberValue(document.getElementById('musterTolakParol'));
+      const khas = numberValue(document.getElementById('musterKhas'));
+      if (ditolak > 0 && khas > 0) {
+        document.getElementById('musterExclusion').value = Math.max(ditolak - khas, 0);
+      }
+    })();
+    updateMusterSummary();
+    updateSummary();
+
+    // ── Draft Save Feature ──────────────────────────────────────────────
+    const savedDraft = @json($savedDraft ?? null);
+
+    function collectFormData() {
+      return {
+        no_pesanan: document.getElementById('noPesanan')?.value || '',
+        contract_id: document.getElementById('contractSelect')?.value || '',
+        tarikh_pesanan: document.querySelector('input[name="tarikh_pesanan"]')?.value || '',
+        masa: document.querySelector('input[name="masa"]')?.value || '',
+        sesi_kod: document.querySelector('[name="sesi_kod"]')?.value || '',
+        institution_id: document.getElementById('institutionIdHidden')?.value || '',
+        supplier_id: document.getElementById('supplierSelect')?.value || '',
+        wakil_pembekal: document.querySelector('input[name="wakil_pembekal"]')?.value || '',
+        alamat_pembekal: document.querySelector('textarea[name="alamat_pembekal"]')?.value || '',
+        muster_khas_daging: document.getElementById('musterKhas')?.value || 0,
+        muster_ditolak_parol: document.getElementById('musterTolakParol')?.value || 0,
+        parol: document.getElementById('parol')?.value || 0,
+        muster_penuh: document.getElementById('musterPenuh')?.value || 0,
+        tarikh_pembekal: document.querySelector('input[name="tarikh_pembekal"]')?.value || '',
+        catatan_inden: document.querySelector('textarea[name="catatan_inden"]')?.value || '',
+        items: collectItemsData(),
+      };
+    }
+
+    function collectItemsData() {
+      return getItemRows().map(function (card) {
         return {
-          no_pesanan: document.getElementById('noPesanan')?.value || '',
-          contract_id: document.getElementById('contractSelect')?.value || '',
-          tarikh_pesanan: document.querySelector('input[name="tarikh_pesanan"]')?.value || '',
-          masa: document.querySelector('input[name="masa"]')?.value || '',
-          sesi_kod: document.querySelector('[name="sesi_kod"]')?.value || '',
-          institution_id: document.getElementById('institutionIdHidden')?.value || '',
-          supplier_id: document.getElementById('supplierSelect')?.value || '',
-          wakil_pembekal: document.querySelector('input[name="wakil_pembekal"]')?.value || '',
-          alamat_pembekal: document.querySelector('textarea[name="alamat_pembekal"]')?.value || '',
-          muster_khas_daging: document.getElementById('musterKhas')?.value || 0,
-          muster_ditolak_parol: document.getElementById('musterTolakParol')?.value || 0,
-          parol: document.getElementById('parol')?.value || 0,
-          muster_penuh: document.getElementById('musterPenuh')?.value || 0,
-          tarikh_pembekal: document.querySelector('input[name="tarikh_pembekal"]')?.value || '',
-          catatan_inden: document.querySelector('textarea[name="catatan_inden"]')?.value || '',
-          items: collectItemsData(),
+          contract_item_id: card.querySelector('.item-contract-id')?.value || '',
+          name: card.querySelector('.item-name-hidden')?.value || card.querySelector('.item-name-display')?.textContent || '',
+          unit: card.querySelector('.item-unit-hidden')?.value || card.querySelector('.item-unit-display')?.textContent || '',
+          orderQty: card.querySelector('.item-order-qty')?.value || 0,
+          unitPrice: card.querySelector('.item-unit-price-hidden')?.value || 0,
         };
-      }
+      });
+    }
 
-      function collectItemsData() {
-        return getItemRows().map(function (card) {
-          return {
-            contract_item_id: card.querySelector('.item-contract-id')?.value || '',
-            name: card.querySelector('.item-name-hidden')?.value || card.querySelector('.item-name-display')?.textContent || '',
-            unit: card.querySelector('.item-unit-hidden')?.value || card.querySelector('.item-unit-display')?.textContent || '',
-            orderQty: card.querySelector('.item-order-qty')?.value || 0,
-            unitPrice: card.querySelector('.item-unit-price-hidden')?.value || 0,
-          };
-        });
-      }
+    function showDraftToast(msg) {
+      var els = document.querySelectorAll('#draftSavedIndicator, #draftSavedIndicator1, #draftSavedIndicator2, #draftSavedIndicator3');
+      els.forEach(function (el) {
+        el.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>' + msg;
+        el.classList.remove('d-none');
+        clearTimeout(el._hideTimer);
+        el._hideTimer = setTimeout(function () { el.classList.add('d-none'); }, 4000);
+      });
+    }
 
-      function showDraftToast(msg) {
-        var els = document.querySelectorAll('#draftSavedIndicator, #draftSavedIndicator1, #draftSavedIndicator2, #draftSavedIndicator3');
-        els.forEach(function (el) {
-          el.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>' + msg;
-          el.classList.remove('d-none');
-          clearTimeout(el._hideTimer);
-          el._hideTimer = setTimeout(function () { el.classList.add('d-none'); }, 4000);
-        });
-      }
+    function setDraftStatusText(text) {
+      var els = document.querySelectorAll('#draftStatus, #draftStatus1, #draftStatus2, #draftStatus3');
+      els.forEach(function (el) { if (el) el.textContent = text; });
+    }
 
-      function setDraftStatusText(text) {
-        var els = document.querySelectorAll('#draftStatus, #draftStatus1, #draftStatus2, #draftStatus3');
-        els.forEach(function (el) { if (el) el.textContent = text; });
-      }
-
-      function saveDraft() {
-        var data = collectFormData();
-        fetch('{{ route("borang.inden.draft.save") }}', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-          body: JSON.stringify(data),
-        })
+    function saveDraft() {
+      var data = collectFormData();
+      fetch('{{ route("borang.inden.draft.save") }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        body: JSON.stringify(data),
+      })
         .then(function (r) { return r.json(); })
         .then(function (res) {
           if (res.success) {
@@ -1889,242 +2989,265 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
           console.error('Draft save failed', e);
           setDraftStatusText('Gagal menyimpan draf. Sila semak sambungan internet.');
         });
+    }
+
+    function populateItemRows(items) {
+      if (itemDataTable) {
+        itemDataTable.clear().draw();
+      } else {
+        itemList.innerHTML = '';
       }
-
-      function populateItemRows(items) {
-        if (itemDataTable) {
-          itemDataTable.clear().draw();
-        } else {
-          itemList.innerHTML = '';
-        }
-        if (items && items.length) {
-          items.forEach(function (item) { addItem(item); });
-        }
+      if (items && items.length) {
+        items.forEach(function (item) { addItem(item); });
       }
+    }
 
-      function loadContractsAndRestore(contractId, items) {
-        var instIdEl = document.getElementById('institutionIdHidden');
-        var supIdEl = document.getElementById('supplierSelect');
-        var instId = instIdEl ? instIdEl.value : '';
-        var supId = supIdEl ? supIdEl.value : '';
-        var contractSelect = document.getElementById('contractSelect');
-        contractSelect.innerHTML = '<option value="">-- Pilih Kontrak --</option>';
-        if (!instId || !supId) { isRestoringDraft = false; return; }
+    function loadContractsAndRestore(contractId, items) {
+      var instIdEl = document.getElementById('institutionIdHidden');
+      var supIdEl = document.getElementById('supplierSelect');
+      var instId = instIdEl ? instIdEl.value : '';
+      var supId = supIdEl ? supIdEl.value : '';
+      var contractSelect = document.getElementById('contractSelect');
+      contractSelect.innerHTML = '<option value="">-- Pilih Kontrak --</option>';
+      if (!instId || !supId) { isRestoringDraft = false; return; }
 
-        var url = '{{ route("borang.inden.contracts") }}?institution_id=' + encodeURIComponent(instId)
-                + '&supplier_id=' + encodeURIComponent(supId);
+      var url = '{{ route("borang.inden.contracts") }}?institution_id=' + encodeURIComponent(instId)
+        + '&supplier_id=' + encodeURIComponent(supId);
 
-        fetch(url)
-          .then(function (r) { return r.json(); })
-          .then(function (contracts) {
-            contracts.forEach(function (c) {
-              var opt = document.createElement('option');
-              opt.value = c.id;
-              opt.textContent = c.contract_no;
-              contractSelect.appendChild(opt);
-            });
-            if (contractId && Array.from(contractSelect.options).some(function (o) { return o.value == contractId; })) {
-              contractSelect.value = contractId;
-            } else if (contracts.length > 0) {
-              contractSelect.value = contracts[0].id;
-            }
-            // Fetch ceiling for selected contract
-            var selId = contractSelect.value;
-            if (selId) {
-              fetch('{{ url("borang-inden/contract-items") }}/' + selId)
-                .then(function (r) { return r.json(); })
-                .then(function (res) {
-                  contractCeilingRemaining = res.ceiling_remaining;
-                  contractItems = (res.items || []).map(ci => ({
-                    id: ci.id,
-                    item_name: ci.item_name,
-                    uom_code: ci.uom_code,
-                    unit_price: ci.unit_price,
-                    estimated_quantity: ci.estimated_quantity,
-                    ordered_quantity: ci.ordered_quantity,
-                    ceiling_limit_id: ci.ceiling_limit_id,
-                    ceiling_group_remaining: ci.ceiling_group_remaining,
-                  }));
-                  updateCeilingAlert();
-                  if (res.items) {
-                    var rows = getItemRows();
-                    res.items.forEach(function (ci) {
-                      var row = rows.find(function (r) {
-                        return r.querySelector('.item-contract-id').value == ci.id;
-                      });
-                      if (row) {
-                        row.dataset.ceilingGroupId = ci.ceiling_limit_id ?? '';
-                        row.dataset.ceilingGroupRemaining = ci.ceiling_group_remaining ?? '';
-                        row.dataset.estimatedQuantity = ci.estimated_quantity ?? '';
-                        row.dataset.orderedQuantity = ci.ordered_quantity ?? 0;
-                      }
-                    });
-                    updateSummary();
-                  }
-                })
-                .catch(function () {});
-            }
-            if (items) populateItemRows(items);
-            isRestoringDraft = false;
-            updateSummary();
-            updateMusterSummary();
-            wireUlasanCounter();
-          })
-          .catch(function () { isRestoringDraft = false; });
-      }
-
-      function restoreDraft(data) {
-        if (!data || isReadOnly) return;
-        isRestoringDraft = true;
-
-        function setField(name, val) {
-          var el = document.querySelector('[name="' + name + '"]');
-          if (el && val !== undefined && val !== null && val !== '') el.value = val;
-        }
-
-        setField('tarikh_pesanan', data.tarikh_pesanan);
-        if (data.tarikh_pesanan) {
-          var tpInput = document.querySelector('input[name="tarikh_pesanan"]');
-          if (tpInput) updateDayName(tpInput);
-        }
-        setField('masa', data.masa);
-        setField('sesi_kod', data.sesi_kod);
-        if (data.no_pesanan) {
-          var npInput = document.getElementById('noPesanan');
-          if (npInput) npInput.value = data.no_pesanan;
-        }
-        setField('wakil_pembekal', data.wakil_pembekal);
-        setField('alamat_pembekal', data.alamat_pembekal);
-        setField('muster_khas_daging', data.muster_khas_daging);
-        setField('muster_ditolak_parol', data.muster_ditolak_parol);
-        setField('parol', data.parol);
-        setField('muster_penuh', data.muster_penuh);
-        setField('tarikh_pembekal', data.tarikh_pembekal);
-        setField('catatan_inden', data.catatan_inden);
-
-        if (data.supplier_id) {
-          document.getElementById('supplierSelect').value = data.supplier_id;
-          // Fill supplier address / wakil inline (fillSupplierAddress is block-scoped and inaccessible)
-          var sel = document.getElementById('supplierSelect');
-          if (sel) {
-            var opt = sel.options[sel.selectedIndex];
-            if (opt && opt.value) {
-              var addrField = document.querySelector('textarea[name="alamat_pembekal"]');
-              if (addrField) {
-                var addr = (opt.dataset.address || '').trim();
-                var pcode = (opt.dataset.postcode || '').trim();
-                addrField.value = addr + (addr && pcode ? ' ' : '') + pcode;
-              }
-              var wakilField = document.querySelector('input[name="wakil_pembekal"]');
-              if (wakilField) wakilField.value = opt.dataset.contact || '';
-            }
+      fetch(url)
+        .then(function (r) { return r.json(); })
+        .then(function (contracts) {
+          contracts.forEach(function (c) {
+            var opt = document.createElement('option');
+            opt.value = c.id;
+            opt.textContent = c.contract_no;
+            contractSelect.appendChild(opt);
+          });
+          if (contractId && Array.from(contractSelect.options).some(function (o) { return o.value == contractId; })) {
+            contractSelect.value = contractId;
+          } else if (contracts.length > 0) {
+            contractSelect.value = contracts[0].id;
           }
-          loadContractsAndRestore(data.contract_id, data.items);
-        } else {
-          if (data.items) populateItemRows(data.items);
+          // Fetch ceiling for selected contract
+          var selId = contractSelect.value;
+          if (selId) {
+            fetch('{{ url("borang-inden/contract-items") }}/' + selId)
+              .then(function (r) { return r.json(); })
+              .then(function (res) {
+                contractCeilingRemaining = res.ceiling_remaining;
+                contractItems = (res.items || []).map(ci => ({
+                  id: ci.id,
+                  item_name: ci.item_name,
+                  uom_code: ci.uom_code,
+                  unit_price: ci.unit_price,
+                  estimated_quantity: ci.estimated_quantity,
+                  ordered_quantity: ci.ordered_quantity,
+                  muster_rate: ci.muster_rate,
+                  muster_basis: ci.muster_basis,
+                  ceiling_limit_id: ci.ceiling_limit_id,
+                  ceiling_group_remaining: ci.ceiling_group_remaining,
+                }));
+                updateCeilingAlert();
+                if (res.items) {
+                  var rows = getItemRows();
+                  res.items.forEach(function (ci) {
+                    var row = rows.find(function (r) {
+                      return r.querySelector('.item-contract-id').value == ci.id;
+                    });
+                    if (row) {
+                      row.dataset.ceilingGroupId = ci.ceiling_limit_id ?? '';
+                      row.dataset.ceilingGroupRemaining = ci.ceiling_group_remaining ?? '';
+                      row.dataset.estimatedQuantity = ci.estimated_quantity ?? '';
+                      row.dataset.orderedQuantity = ci.ordered_quantity ?? 0;
+                      row.dataset.musterRate = ci.muster_rate ?? '';
+                      row.dataset.musterBasis = ci.muster_basis ?? 'ditolak_parol';
+                    }
+                  });
+                  updateSummary();
+                  refreshMusterSuggestions();
+                  refreshPrismSuggestions();
+                }
+              })
+              .catch(function () { });
+          }
+          if (items) populateItemRows(items);
           isRestoringDraft = false;
           updateSummary();
           updateMusterSummary();
           wireUlasanCounter();
-        }
+        })
+        .catch(function () { isRestoringDraft = false; });
+    }
 
+    function restoreDraft(data) {
+      if (!data || isReadOnly) return;
+      isRestoringDraft = true;
+
+      function setField(name, val) {
+        var el = document.querySelector('[name="' + name + '"]');
+        if (el && val !== undefined && val !== null && val !== '') el.value = val;
+      }
+
+      setField('tarikh_pesanan', data.tarikh_pesanan);
+      if (data.tarikh_pesanan) {
+        var tpInput = document.querySelector('input[name="tarikh_pesanan"]');
+        if (tpInput) updateDayName(tpInput);
+      }
+      setField('masa', data.masa);
+      setField('sesi_kod', data.sesi_kod);
+      if (data.no_pesanan) {
+        var npInput = document.getElementById('noPesanan');
+        if (npInput) npInput.value = data.no_pesanan;
+      }
+      setField('wakil_pembekal', data.wakil_pembekal);
+      setField('alamat_pembekal', data.alamat_pembekal);
+      setField('muster_khas_daging', data.muster_khas_daging);
+      setField('muster_ditolak_parol', data.muster_ditolak_parol);
+      setField('parol', data.parol);
+      setField('muster_penuh', data.muster_penuh);
+      setField('tarikh_pembekal', data.tarikh_pembekal);
+      setField('catatan_inden', data.catatan_inden);
+
+      if (data.supplier_id) {
+        document.getElementById('supplierSelect').value = data.supplier_id;
+        // Fill supplier address / wakil inline (fillSupplierAddress is block-scoped and inaccessible)
+        var sel = document.getElementById('supplierSelect');
+        if (sel) {
+          var opt = sel.options[sel.selectedIndex];
+          if (opt && opt.value) {
+            var addrField = document.querySelector('textarea[name="alamat_pembekal"]');
+            if (addrField) {
+              var addr = (opt.dataset.address || '').trim();
+              var pcode = (opt.dataset.postcode || '').trim();
+              addrField.value = addr + (addr && pcode ? ' ' : '') + pcode;
+            }
+            var wakilField = document.querySelector('input[name="wakil_pembekal"]');
+            if (wakilField) wakilField.value = opt.dataset.contact || '';
+          }
+        }
+        loadContractsAndRestore(data.contract_id, data.items);
+      } else {
+        if (data.items) populateItemRows(data.items);
+        isRestoringDraft = false;
+        updateSummary();
+        updateMusterSummary();
+        wireUlasanCounter();
+      }
+
+      hasUnsavedChanges = false;
+      setDraftStatusText('Draf dipulihkan');
+    }
+
+    // ── Auto-save on any input (debounced 800ms) ──
+    var debounceTimer = null;
+    function triggerAutoSave() {
+      hasUnsavedChanges = true;
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(function () {
+        saveDraft();
+        debounceTimer = null;
+      }, 800);
+    }
+
+    if (!isReadOnly && form) {
+      form.querySelectorAll('input, textarea, select').forEach(function (el) {
+        el.addEventListener('input', triggerAutoSave);
+        el.addEventListener('change', triggerAutoSave);
+      });
+    }
+
+    // ── Fallback interval auto-save (60s) ──
+    if (!isReadOnly && form) {
+      autoSaveTimer = setInterval(function () {
+        if (hasUnsavedChanges) saveDraft();
+      }, AUTO_SAVE_MS);
+    }
+
+    // ── Save immediately when leaving the page ──
+    function saveDraftOnLeave() {
+      if (hasUnsavedChanges) {
+        var data = collectFormData();
+        fetch('{{ route("borang.inden.draft.save") }}', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+          body: JSON.stringify(data),
+          keepalive: true,
+        }).catch(function () { });
         hasUnsavedChanges = false;
-        setDraftStatusText('Draf dipulihkan');
       }
+    }
 
-      // ── Auto-save on any input (debounced 800ms) ──
-      var debounceTimer = null;
-      function triggerAutoSave() {
-        hasUnsavedChanges = true;
-        if (debounceTimer) clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(function () {
-          saveDraft();
-          debounceTimer = null;
-        }, 800);
-      }
+    if (!isReadOnly) {
+      window.addEventListener('beforeunload', saveDraftOnLeave);
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'hidden') saveDraftOnLeave();
+      });
+    }
 
-      if (!isReadOnly && form) {
-        form.querySelectorAll('input, textarea, select').forEach(function (el) {
-          el.addEventListener('input', triggerAutoSave);
-          el.addEventListener('change', triggerAutoSave);
-        });
-      }
+    // ── Load saved draft on page init ──
+    if (savedDraft && !isReadOnly) {
+      restoreDraft(savedDraft);
+    } else if (isReadOnly) {
+      setDraftStatusText('Mod lihatan sahaja');
+    }
 
-      // ── Fallback interval auto-save (60s) ──
-      if (!isReadOnly && form) {
-        autoSaveTimer = setInterval(function () {
-          if (hasUnsavedChanges) saveDraft();
-        }, AUTO_SAVE_MS);
-      }
-
-      // ── Save immediately when leaving the page ──
-      function saveDraftOnLeave() {
-        if (hasUnsavedChanges) {
-          var data = collectFormData();
-          fetch('{{ route("borang.inden.draft.save") }}', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-            body: JSON.stringify(data),
-            keepalive: true,
-          }).catch(function () {});
-          hasUnsavedChanges = false;
-        }
-      }
-
-      if (!isReadOnly) {
-        window.addEventListener('beforeunload', saveDraftOnLeave);
-        document.addEventListener('visibilitychange', function () {
-          if (document.visibilityState === 'hidden') saveDraftOnLeave();
-        });
-      }
-
-      // ── Load saved draft on page init ──
-      if (savedDraft && !isReadOnly) {
-        restoreDraft(savedDraft);
-      } else if (isReadOnly) {
-        setDraftStatusText('Mod lihatan sahaja');
-      }
-
-      // ── Clear draft on successful form submit ──
-      if (form && !isReadOnly) {
-        form.addEventListener('submit', function () {
-          if (!formSubmitAllowed) return;
-          // Clear draft from server after submission
-          fetch('{{ route("borang.inden.draft.delete") }}', {
-            method: 'DELETE',
-            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-          }).catch(function () {});
-          if (autoSaveTimer) clearInterval(autoSaveTimer);
-        });
-      }
-    })();
+    // ── Clear draft on successful form submit ──
+    if (form && !isReadOnly) {
+      form.addEventListener('submit', function () {
+        if (!formSubmitAllowed) return;
+        // Clear draft from server after submission
+        fetch('{{ route("borang.inden.draft.delete") }}', {
+          method: 'DELETE',
+          headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        }).catch(function () { });
+        if (autoSaveTimer) clearInterval(autoSaveTimer);
+      });
+    }
+    }) ();
   </script>
-    <script src="{{ asset('js/table-download-pdf.js') }}"></script>
-    <script src="{{ asset('js/session-timeout.js') }}"></script>
+  <script src="{{ asset('js/table-download-pdf.js') }}"></script>
+  <script src="{{ asset('js/session-timeout.js') }}"></script>
   <script src="{{ asset('js/user-theme.js') }}"></script>
 
   <!-- Logout confirmation modal -->
-  <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel" aria-hidden="true">
+  <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" style="background:linear-gradient(165deg,#101910,#070907);border:1px solid rgba(124,179,66,.22);border-radius:20px;box-shadow:0 18px 48px rgba(0,0,0,.55),0 0 32px rgba(124,179,66,.1);position:relative;overflow:hidden;">
-        <div style="position:absolute;top:0;left:15%;right:15%;height:2px;background:linear-gradient(90deg,transparent,#7CB342,transparent);border-radius:0 0 4px 4px;"></div>
+      <div class="modal-content"
+        style="background:linear-gradient(165deg,#101910,#070907);border:1px solid rgba(124,179,66,.22);border-radius:20px;box-shadow:0 18px 48px rgba(0,0,0,.55),0 0 32px rgba(124,179,66,.1);position:relative;overflow:hidden;">
+        <div
+          style="position:absolute;top:0;left:15%;right:15%;height:2px;background:linear-gradient(90deg,transparent,#7CB342,transparent);border-radius:0 0 4px 4px;">
+        </div>
         <div class="modal-header" style="border:none;padding:20px 24px 4px;position:relative;">
           <div class="d-flex align-items-center gap-2">
-            <div style="width:36px;height:36px;background:rgba(124,179,66,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <div
+              style="width:36px;height:36px;background:rgba(124,179,66,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
               <i class="bi bi-box-arrow-right" style="font-size:1rem;color:#7CB342;"></i>
             </div>
-            <h5 class="modal-title fw-bold mb-0" id="logoutConfirmModalLabel" style="color:#C5E1A5;font-size:1rem;">Log Keluar</h5>
+            <h5 class="modal-title fw-bold mb-0" id="logoutConfirmModalLabel" style="color:#C5E1A5;font-size:1rem;">Log
+              Keluar</h5>
           </div>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup" style="filter:brightness(0.5);transition:all .3s;font-size:.75rem;" onmouseover="this.style.filter='brightness(1)';this.style.transform='rotate(90deg) scale(1.15)'" onmouseout="this.style.filter='brightness(0.5)';this.style.transform=''"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"
+            style="filter:brightness(0.5);transition:all .3s;font-size:.75rem;"
+            onmouseover="this.style.filter='brightness(1)';this.style.transform='rotate(90deg) scale(1.15)'"
+            onmouseout="this.style.filter='brightness(0.5)';this.style.transform=''"></button>
         </div>
         <div class="modal-body" style="padding:12px 24px;position:relative;">
-          <p class="mb-0" style="color:#f3f7f3;font-size:.95rem;">Adakah anda pasti ingin log keluar dari sistem ini?</p>
+          <p class="mb-0" style="color:#f3f7f3;font-size:.95rem;">Adakah anda pasti ingin log keluar dari sistem ini?
+          </p>
         </div>
         <div class="modal-footer" style="border:none;padding:6px 24px 20px;position:relative;gap:.5rem;">
-          <button type="button" class="btn btn-sm px-4" data-bs-dismiss="modal" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#f3f7f3;border-radius:50px;font-weight:600;font-size:.8rem;transition:all .3s;" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">Batal</button>
+          <button type="button" class="btn btn-sm px-4" data-bs-dismiss="modal"
+            style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#f3f7f3;border-radius:50px;font-weight:600;font-size:.8rem;transition:all .3s;"
+            onmouseover="this.style.background='rgba(255,255,255,.12)'"
+            onmouseout="this.style.background='rgba(255,255,255,.06)'">Batal</button>
           <form action="{{ route('logout') }}" method="POST" id="logoutForm" class="d-inline">
             @csrf
-            <button type="submit" class="btn btn-sm px-4" style="background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;border:none;border-radius:50px;font-weight:600;font-size:.8rem;transition:all .3s;box-shadow:0 4px 14px rgba(192,57,43,.25);" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px rgba(192,57,43,.4)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(192,57,43,.25)'"><i class="bi bi-box-arrow-right me-1"></i>Log Keluar</button>
+            <button type="submit" class="btn btn-sm px-4"
+              style="background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;border:none;border-radius:50px;font-weight:600;font-size:.8rem;transition:all .3s;box-shadow:0 4px 14px rgba(192,57,43,.25);"
+              onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px rgba(192,57,43,.4)'"
+              onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(192,57,43,.25)'"><i
+                class="bi bi-box-arrow-right me-1"></i>Log Keluar</button>
           </form>
         </div>
       </div>
@@ -2143,4 +3266,5 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
     })();
   </script>
 </body>
+
 </html>

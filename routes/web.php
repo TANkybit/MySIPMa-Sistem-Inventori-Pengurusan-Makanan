@@ -176,6 +176,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/borang-inden/generate-number', [DashboardController::class, 'generateOrderNo'])->name('borang.inden.generate');
         Route::get('/borang-inden/contracts', [DashboardController::class, 'getContractsByInstitution'])->name('borang.inden.contracts');
         Route::get('/borang-inden/contract-items/{contract}', [DashboardController::class, 'getContractItems'])->name('borang.inden.contract-items');
+        Route::get('/borang-inden/contract-items/{contract}/prism-suggestions', [DashboardController::class, 'getPrismSuggestions'])->name('borang.inden.prism-suggestions');
+        Route::put('/borang-inden/contract-items/{contractItem}/muster-rate', [DashboardController::class, 'updateContractItemMusterRate'])->name('borang.inden.contract-items.muster-rate');
         Route::post('/borang-inden/draft', [DashboardController::class, 'saveDraft'])->name('borang.inden.draft.save');
         Route::get('/borang-inden/draft', [DashboardController::class, 'getDraft'])->name('borang.inden.draft.get');
         Route::delete('/borang-inden/draft', [DashboardController::class, 'deleteDraft'])->name('borang.inden.draft.delete');
