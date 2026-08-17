@@ -1093,15 +1093,7 @@
                                                     @endfor
                                                 </select>
                                             </div>
-                                            <div class="col-auto">
-                                                <label class="form-label small fw-semibold mb-1">Institusi</label>
-                                                <select id="filterEvalInstitution" class="form-select form-select-sm" style="min-width: 180px;">
-                                                    <option value="">Semua Institusi</option>
-                                                    @foreach($institutions ?? [] as $inst)
-                                                        <option value="{{ $inst->id }}">{{ $inst->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
+                                            {{-- Filter Institusi tidak diperlukan untuk Pengarah Institusi --}}
                                             <div class="col-auto">
                                                 <label class="form-label small fw-semibold mb-1">Pembekal</label>
                                                 <select id="filterEvalSupplier" class="form-select form-select-sm" style="min-width: 180px;">
@@ -1615,6 +1607,73 @@
             }
         }
 
+        // Render monthly stats table from data array
+        function renderMonthlyStatsHtml(data) {
+            let html = '';
+            data.forEach(item => {
+                let ratingBadge = '-';
+                if (item.rating === 'Cemerlang') {
+                    ratingBadge = '<span class="badge bg-success">Cemerlang</span>';
+                } else if (item.rating === 'Sederhana') {
+                    ratingBadge = '<span class="badge bg-warning text-dark">Sederhana</span>';
+                } else if (item.rating === 'Lemah') {
+                    ratingBadge = '<span class="badge bg-danger">Lemah</span>';
+                }
+                
+                html += `<tr>
+                    <td class="text-start fw-bold">${item.supplier_name}</td>
+                    <td class="fw-bold">${item.average !== null ? item.average + '%' : '-'}</td>
+                    <td>${ratingBadge}</td>
+                `;
+                
+                for (let m = 1; m <= 12; m++) {
+                    const val = item.monthly[m];
+                    if (val !== null && val !== undefined) {
+                        let textClass = 'text-muted';
+                        if (val >= 81) textClass = 'text-success fw-bold';
+                        else if (val >= 51) textClass = 'text-warning fw-bold';
+                        else textClass = 'text-danger fw-bold';
+                        
+                        html += `<td class="${textClass}">${val}%</td>`;
+                    } else {
+                        html += `<td>-</td>`;
+                    }
+                }
+                html += '</tr>';
+            });
+            return html;
+        }
+
+        // Build monthly stats from dummy evaluations (last month only)
+        function buildDummyMonthlyStats() {
+            const lastMonth = new Date();
+            lastMonth.setMonth(lastMonth.getMonth() - 1);
+            const monthIdx = lastMonth.getMonth() + 1; // 1-based
+
+            const grouped = {};
+            DUMMY_EVALUATIONS.forEach(ev => {
+                const name = ev.supplier?.company_name || '-';
+                if (!grouped[name]) {
+                    grouped[name] = { scores: [], monthly: {} };
+                    for (let m = 1; m <= 12; m++) grouped[name].monthly[m] = null;
+                }
+                grouped[name].scores.push(ev.percentage);
+                grouped[name].monthly[monthIdx] = ev.percentage;
+            });
+
+            return Object.entries(grouped).map(([name, info]) => ({
+                supplier_name: name,
+                average: info.scores.length > 0 ? Math.round(info.scores.reduce((a, b) => a + b, 0) / info.scores.length * 10) / 10 : null,
+                rating: (() => {
+                    const avg = info.scores.reduce((a, b) => a + b, 0) / info.scores.length;
+                    if (avg >= 81) return 'Cemerlang';
+                    if (avg >= 51) return 'Sederhana';
+                    return 'Lemah';
+                })(),
+                monthly: info.monthly,
+            }));
+        }
+
         // Load monthly stats trend table
         async function loadMonthlyStats(year) {
             const tableBody = document.getElementById('monthlyStatsTableBody');
@@ -1632,47 +1691,22 @@
                 const json = await res.json();
                 
                 if (json.success && json.data.length > 0) {
-                    let html = '';
-                    json.data.forEach(item => {
-                        let ratingBadge = '-';
-                        if (item.rating === 'Cemerlang') {
-                            ratingBadge = '<span class="badge bg-success">Cemerlang</span>';
-                        } else if (item.rating === 'Sederhana') {
-                            ratingBadge = '<span class="badge bg-warning text-dark">Sederhana</span>';
-                        } else if (item.rating === 'Lemah') {
-                            ratingBadge = '<span class="badge bg-danger">Lemah</span>';
-                        }
-                        
-                        html += `<tr>
-                            <td class="text-start fw-bold">${item.supplier_name}</td>
-                            <td class="fw-bold">${item.average !== null ? item.average + '%' : '-'}</td>
-                            <td>${ratingBadge}</td>
-                        `;
-                        
-                        for (let m = 1; m <= 12; m++) {
-                            const val = item.monthly[m];
-                            if (val !== null) {
-                                let textClass = 'text-muted';
-                                if (val >= 81) textClass = 'text-success fw-bold';
-                                else if (val >= 51) textClass = 'text-warning fw-bold';
-                                else textClass = 'text-danger fw-bold';
-                                
-                                html += `<td class="${textClass}">${val}%</td>`;
-                            } else {
-                                html += `<td>-</td>`;
-                            }
-                        }
-                        html += '</tr>';
-                    });
-                    tableBody.innerHTML = html;
+                    tableBody.innerHTML = renderMonthlyStatsHtml(json.data);
                 } else {
-                    tableBody.innerHTML = `
-                        <tr>
-                            <td colspan="15" class="py-4 text-muted">
-                                Tiada rekod data penilaian bagi tahun ${year}.
-                            </td>
-                        </tr>
-                    `;
+                    // No real data — show dummy data for current year only
+                    const currentYear = new Date().getFullYear();
+                    if (parseInt(year) === currentYear) {
+                        const dummyStats = buildDummyMonthlyStats();
+                        tableBody.innerHTML = renderMonthlyStatsHtml(dummyStats);
+                    } else {
+                        tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="15" class="py-4 text-muted">
+                                    Tiada rekod data penilaian bagi tahun ${year}.
+                                </td>
+                            </tr>
+                        `;
+                    }
                 }
             } catch (err) {
                 console.error('Error loading monthly stats:', err);
@@ -1712,13 +1746,16 @@
                 </div>`;
         }
 
-        // Dummy data for demonstration
+        // Dummy data for demonstration — last month only
+        const _lastMonthDate = new Date();
+        _lastMonthDate.setMonth(_lastMonthDate.getMonth() - 1);
+        const _lastMonthStr = _lastMonthDate.toISOString().slice(0, 7); // e.g. '2026-07'
         const DUMMY_EVALUATIONS = [
             {
                 id: 'dummy-1',
-                evaluation_date: '2026-06-15',
+                evaluation_date: _lastMonthStr + '-15',
                 supplier: { company_name: 'Syarikat Rempah Sdn. Bhd.' },
-                institution: { name: 'Penjara Kajang' },
+                institution: { name: '{{ optional($selectedInstitution)->name ?? "Penjara Kajang" }}' },
                 evaluator_name: '{{ Auth::user()->name }}',
                 criteria_quantity: 6, criteria_delivery: 5, criteria_price: 6, criteria_quality: 7, criteria_cooperation: 5,
                 total_score: 29, percentage: 82.9, performance_rating: 'Cemerlang', status: 'Verified',
@@ -1726,22 +1763,22 @@
             },
             {
                 id: 'dummy-2',
-                evaluation_date: '2026-05-20',
+                evaluation_date: _lastMonthStr + '-10',
                 supplier: { company_name: 'Pembekal Bahan Mentah Utama' },
-                institution: { name: 'Penjara Kajang' },
+                institution: { name: '{{ optional($selectedInstitution)->name ?? "Penjara Kajang" }}' },
                 evaluator_name: '{{ Auth::user()->name }}',
                 criteria_quantity: 4, criteria_delivery: 4, criteria_price: 5, criteria_quality: 4, criteria_cooperation: 4,
-                total_score: 21, percentage: 60.0, performance_rating: 'Sederhana', status: 'Pending',
+                total_score: 21, percentage: 60.0, performance_rating: 'Sederhana', status: 'Verified',
                 remarks: 'Kualiti boleh dipertingkatkan. Terdapat beberapa ketidakpadanan kuantiti.'
             },
             {
                 id: 'dummy-3',
-                evaluation_date: '2026-04-10',
+                evaluation_date: _lastMonthStr + '-05',
                 supplier: { company_name: 'Agro Supply Sdn. Bhd.' },
-                institution: { name: 'Penjara Kajang' },
+                institution: { name: '{{ optional($selectedInstitution)->name ?? "Penjara Kajang" }}' },
                 evaluator_name: '{{ Auth::user()->name }}',
                 criteria_quantity: 3, criteria_delivery: 2, criteria_price: 4, criteria_quality: 3, criteria_cooperation: 3,
-                total_score: 15, percentage: 42.9, performance_rating: 'Lemah', status: 'Pending',
+                total_score: 15, percentage: 42.9, performance_rating: 'Lemah', status: 'Verified',
                 remarks: 'Penghantaran lewat beberapa kali. Perlu tindakan segera.'
             }
         ];
@@ -2041,7 +2078,6 @@
             // Filter logic for Senarai Penilaian Prestasi
             function applyEvalFilters() {
                 const year = (document.getElementById('filterEvalYear')?.value || '').trim();
-                const instId = (document.getElementById('filterEvalInstitution')?.value || '').trim();
                 const suppId = (document.getElementById('filterEvalSupplier')?.value || '').trim();
 
                 const all = window._evalDataStore || [];
@@ -2050,10 +2086,6 @@
                     if (year) {
                         const evalYear = e.evaluation_date ? new Date(e.evaluation_date).getFullYear().toString() : '';
                         if (evalYear !== year) pass = false;
-                    }
-                    if (instId) {
-                        const eInstId = String(e.institution_id || (e.institution && e.institution.id) || '');
-                        if (eInstId !== instId) pass = false;
                     }
                     if (suppId) {
                         const eSuppId = String(e.supplier_id || (e.supplier && e.supplier.id) || '');
@@ -2064,7 +2096,7 @@
                 renderEvaluationsTable(filtered);
             }
 
-            ['filterEvalYear', 'filterEvalInstitution', 'filterEvalSupplier'].forEach(id => {
+            ['filterEvalYear', 'filterEvalSupplier'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('change', applyEvalFilters);
             });
@@ -2072,7 +2104,7 @@
             const clearBtn = document.getElementById('btnClearEvalFilter');
             if (clearBtn) {
                 clearBtn.addEventListener('click', function() {
-                    ['filterEvalYear', 'filterEvalInstitution', 'filterEvalSupplier'].forEach(id => {
+                    ['filterEvalYear', 'filterEvalSupplier'].forEach(id => {
                         const el = document.getElementById(id);
                         if (el) el.value = '';
                     });
