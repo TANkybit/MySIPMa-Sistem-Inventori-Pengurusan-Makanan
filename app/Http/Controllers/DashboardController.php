@@ -9,6 +9,7 @@ use App\Models\State;
 use App\Models\Supplier;
 use App\Models\OrderItem;
 use App\Models\BorangIndenDraft;
+use App\Services\DietSuggestionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -857,6 +858,9 @@ class DashboardController extends Controller
             'tarikh_pesanan' => ['required', 'string'],
             'muster_ditolak_parol' => ['required', 'numeric', 'min:0'],
             'muster_khas_daging' => ['required', 'numeric', 'min:0'],
+            'sesi_kod' => ['nullable', 'in:M1,M2,M3,M4'],
+            'diet_musters' => ['nullable', 'array'],
+            'diet_musters.*' => ['nullable', 'integer', 'min:0'],
         ]);
 
         try {
@@ -865,41 +869,39 @@ class DashboardController extends Controller
             $date = Carbon::parse($request->tarikh_pesanan);
         }
 
-        $cycle = $date->isoWeek() % 2 === 1 ? 'M1-3' : 'M2-4';
-        // Carbon: 0 Sunday to 6 Saturday, matching the imported PRISM scale.
-        $day = $date->dayOfWeek;
         $institutionId = DB::table('contracts')->where('id', $contractId)->value('institution_id');
         abort_unless($institutionId && ($institutionId === Auth::user()->institution_id || Auth::user()->role_id === 1), 403);
-        $rules = DB::table('prism_diet_rules')
-            ->where('institution_id', $institutionId)
-            ->where('week_cycle', $cycle)
-            ->where('day_of_week', $day)
-            ->get()
-            ->keyBy(fn ($rule) => $this->normalisePrismItemName($rule->item_name));
-        $items = DB::table('contract_items as ci')
-            ->join('items as i', 'ci.item_id', '=', 'i.id')
-            ->where('ci.contract_id', $contractId)
-            ->select('ci.id', 'i.name')
-            ->get();
+        // The diet scale is national. Supplier, contract, price and ceiling stay
+        // scoped to the selected institution through its contract.
+        $guideline = DB::table('diet_guideline_versions')
+            ->where('status', 'active')
+            ->where(function ($query) use ($date) {
+                $query->whereNull('effective_from')->orWhereDate('effective_from', '<=', $date->toDateString());
+            })
+            ->orderByDesc('effective_from')
+            ->first();
+        abort_unless($guideline, 422, 'Tiada garis panduan skala diet aktif untuk tarikh ini.');
 
         $normalMuster = (float) $request->muster_ditolak_parol;
-        $specialMuster = (float) $request->muster_khas_daging;
-        $suggestions = [];
-        foreach ($items as $item) {
-            $rule = $rules->get($this->normalisePrismItemName($item->name));
-            if (!$rule) continue;
-            $muster = $rule->muster_basis === 'khas' ? $specialMuster : $normalMuster;
-            $quantity = $rule->unit === 'g'
-                ? ($muster * (float) $rule->rate_per_person) / 1000
-                : $muster * (float) $rule->rate_per_person;
-            $suggestions[$item->id] = [
-                'quantity' => $rule->unit === 'g' ? ceil($quantity * 1000) / 1000 : ceil($quantity),
-                'basis' => $rule->muster_basis,
-                'source' => 'PRISM ' . $cycle,
-            ];
-        }
+        $allowedCategories = DB::table('diet_recipient_categories')->where('is_active', true)->pluck('code')->all();
+        $dietMusters = collect($request->input('diet_musters', []))
+            ->only($allowedCategories)
+            ->map(fn ($value) => max(0, (int) $value));
+        $classifiedTotal = $dietMusters->except('standard')->sum();
+        $dietMusters['standard'] = max(0, (int) $normalMuster - $classifiedTotal);
 
-        return response()->json(['cycle' => $cycle, 'suggestions' => $suggestions]);
+        $result = app(DietSuggestionService::class)->calculate(
+            $guideline,
+            (int) $contractId,
+            $date,
+            $request->input('sesi_kod', 'M1'),
+            $dietMusters->all()
+        );
+
+        return response()->json(array_merge($result, [
+            'guideline' => ['code' => $guideline->code, 'name' => $guideline->name],
+            'diet_musters' => $dietMusters,
+        ]));
     }
 
     private function normalisePrismItemName(string $name): string
@@ -960,6 +962,7 @@ class DashboardController extends Controller
                 'd.supplier_declaration_date as tarikh_pembekal',
                 'o.remarks as catatan_inden',
                 'oi.id as item_inden_id',
+                'oi.contract_item_id',
                 'it.name as nama_barang',
                 DB::raw("COALESCE(uom1.code, uom2.code, 'Unit') as unit"),
                 'oi.ordered_quantity as kuantiti_dipesan',
@@ -979,11 +982,23 @@ class DashboardController extends Controller
         }
 
         $mealLabels = ['M1' => 'Breakfast', 'M2' => 'Lunch', 'M3' => 'Tea / Evening Snack', 'M4' => 'Dinner / Supper'];
+        $dietMusters = DB::table('order_diet_musters as odm')
+            ->join('diet_recipient_categories as drc', 'drc.code', '=', 'odm.category_code')
+            ->where('odm.order_id', $order->id)
+            ->where('odm.headcount', '>', 0)
+            ->orderBy('drc.display_order')
+            ->get(['drc.name', 'odm.headcount']);
+        $dietSnapshots = DB::table('order_diet_calculation_snapshots')
+            ->where('order_id', $order->id)
+            ->orderBy('id')
+            ->get();
 
         $html = view('pdf.borang_inden', [
             'header' => $header,
             'items' => $items,
             'mealLabels' => $mealLabels,
+            'dietMusters' => $dietMusters,
+            'dietSnapshots' => $dietSnapshots,
         ])->render();
 
         $options = new Options();
@@ -1057,6 +1072,8 @@ class DashboardController extends Controller
             'muster_ditolak_parol' => ['required', 'integer', 'min:0'],
             'parol' => ['required', 'integer', 'min:0'],
             'muster_penuh' => ['required', 'integer', 'min:0'],
+            'diet_musters' => ['nullable', 'array'],
+            'diet_musters.*' => ['nullable', 'integer', 'min:0'],
             'tarikh_pembekal' => ['required', 'date'],
             'catatan_inden' => ['nullable', 'string', $maxUlasanWords],
             'items' => ['required', 'array', 'min:1'],
@@ -1108,6 +1125,18 @@ class DashboardController extends Controller
             'tarikh_pembekal.required'   => '[Perakuan Pembekal] Tarikh Pembekal wajib diisi.',
             'tarikh_pembekal.date'       => '[Perakuan Pembekal] Tarikh Pembekal mesti dalam format tarikh yang sah.',
         ]);
+
+        $allowedDietCategories = DB::table('diet_recipient_categories')->where('is_active', true)->pluck('code')->all();
+        $dietMusters = collect($validated['diet_musters'] ?? [])->only($allowedDietCategories)
+            ->map(fn ($value) => max(0, (int) $value));
+        $classifiedMuster = $dietMusters->except('standard')->sum();
+        if ($classifiedMuster > (int) $validated['muster_ditolak_parol']) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'diet_musters' => '[Ringkasan Muster] Jumlah kategori diet tidak boleh melebihi Muster Ditolak Parol.',
+            ]);
+        }
+        $dietMusters['standard'] = max(0, (int) $validated['muster_ditolak_parol'] - $classifiedMuster);
+        $validated['diet_musters'] = $dietMusters->all();
 
         $orderId = DB::transaction(function () use ($validated) {
             $today = now();
@@ -1202,6 +1231,16 @@ class DashboardController extends Controller
                 'updated_by' => Auth::id(),
             ]);
 
+            foreach (($validated['diet_musters'] ?? []) as $categoryCode => $headcount) {
+                DB::table('order_diet_musters')->insert([
+                    'order_id' => $orderId,
+                    'category_code' => $categoryCode,
+                    'headcount' => (int) $headcount,
+                    'created_at' => $today,
+                    'updated_at' => $today,
+                ]);
+            }
+
             foreach ($items as $item) {
                 $quantity = (float) ($item['orderQty'] ?? 0);
                 $unitPrice = (float) ($item['unitPrice'] ?? 0);
@@ -1248,6 +1287,43 @@ class DashboardController extends Controller
                     'updated_at' => $today,
                     'updated_by' => Auth::id(),
                 ]);
+            }
+
+            // Freeze the official calculation used at submission time so later
+            // guideline revisions do not alter the receiver/verifier audit trail.
+            $orderDate = Carbon::parse($validated['tarikh_pesanan']);
+            $guideline = DB::table('diet_guideline_versions')
+                ->where('status', 'active')
+                ->where(function ($query) use ($orderDate) {
+                    $query->whereNull('effective_from')->orWhereDate('effective_from', '<=', $orderDate->toDateString());
+                })
+                ->orderByDesc('effective_from')
+                ->first();
+
+            if ($guideline) {
+                $dietResult = app(DietSuggestionService::class)->calculate(
+                    $guideline,
+                    (int) $contractId,
+                    $orderDate,
+                    $validated['sesi_kod'],
+                    $validated['diet_musters'] ?? []
+                );
+                $source = $guideline->code . ' - ' . $dietResult['cycle'] . ' - ' . $validated['sesi_kod'];
+                foreach ($dietResult['requirements'] as $requirement) {
+                    DB::table('order_diet_calculation_snapshots')->insert([
+                        'order_id' => $orderId,
+                        'guideline_version_id' => $guideline->id,
+                        'contract_item_id' => $requirement['contract_item_id'],
+                        'diet_item_name' => $requirement['item_name'],
+                        'suggested_quantity' => $requirement['quantity'],
+                        'unit' => $requirement['unit'],
+                        'calculation' => $requirement['calculation'],
+                        'source' => $source,
+                        'menu_context' => json_encode($dietResult['menus'], JSON_UNESCAPED_UNICODE),
+                        'created_at' => $today,
+                        'updated_at' => $today,
+                    ]);
+                }
             }
 
             Approval::create([
@@ -1464,6 +1540,27 @@ class DashboardController extends Controller
         $userPositionName = optional(Auth::user()->position)->name;
         $userInstitutionId = Auth::user()->institution_id;
         $pendingPenerimaan = Order::where('status', 'In Progress')->where('institution_id', Auth::user()->institution_id)->count();
+        $dietCategories = DB::table('diet_recipient_categories')
+            ->where('is_active', true)
+            ->orderBy('display_order')
+            ->get();
+        $dietMusters = $order
+            ? DB::table('order_diet_musters')->where('order_id', $order->id)->pluck('headcount', 'category_code')
+            : collect();
+        $dietSnapshotRows = $order
+            ? DB::table('order_diet_calculation_snapshots')->where('order_id', $order->id)->orderBy('id')->get()
+            : collect();
+        $dietSnapshotSuggestions = $dietSnapshotRows
+            ->whereNotNull('contract_item_id')
+            ->mapWithKeys(fn ($row) => [(string) $row->contract_item_id => [
+                'quantity' => (float) $row->suggested_quantity,
+                'calculation' => $row->calculation,
+                'source' => $row->source,
+            ]]);
+        $dietSnapshotMenus = $dietSnapshotRows->isNotEmpty()
+            ? (json_decode($dietSnapshotRows->first()->menu_context ?: '{}', true) ?: [])
+            : [];
+        $dietSnapshotMissing = $dietSnapshotRows->whereNull('contract_item_id')->pluck('diet_item_name')->unique()->values();
 
         return view('borang_inden', [
             'indenHeader' => $indenHeader,
@@ -1476,6 +1573,11 @@ class DashboardController extends Controller
             'userGrade' => $userGrade,
             'userPositionName' => $userPositionName,
             'userInstitutionId' => $userInstitutionId,
+            'dietCategories' => $dietCategories,
+            'dietMusters' => $dietMusters,
+            'dietSnapshotSuggestions' => $dietSnapshotSuggestions,
+            'dietSnapshotMenus' => $dietSnapshotMenus,
+            'dietSnapshotMissing' => $dietSnapshotMissing,
             'mealSessions' => [
                 'M1' => 'Breakfast',
                 'M2' => 'Lunch',
@@ -2208,6 +2310,7 @@ class DashboardController extends Controller
         ]);
 
         $data['items'] = $request->input('items', []);
+        $data['diet_musters'] = $request->input('diet_musters', []);
 
         BorangIndenDraft::updateOrCreate(
             ['user_id' => Auth::id()],

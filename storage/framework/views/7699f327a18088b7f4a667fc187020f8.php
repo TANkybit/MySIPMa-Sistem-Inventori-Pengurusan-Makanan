@@ -165,49 +165,51 @@
 
 <div class="header">
   <h1>JABATAN PENJARA MALAYSIA</h1>
-  <div class="institution-name">{{ strtoupper($header->kepada_institusi) }}</div>
+  <div class="institution-name"><?php echo e(strtoupper($header->kepada_institusi)); ?></div>
   <div class="doc-title">PESANAN DAN PENERIMAAN CATUAN HARIAN</div>
 </div>
 
 <table class="info-table">
   <tr>
     <td class="label">No. Pesanan</td>
-    <td class="value">: {{ $header->no_pesanan }}</td>
+    <td class="value">: <?php echo e($header->no_pesanan); ?></td>
     <td class="label">No. Kontrak</td>
-    <td class="value">: {{ $header->no_kontrak ?? '-' }}</td>
+    <td class="value">: <?php echo e($header->no_kontrak ?? '-'); ?></td>
   </tr>
   <tr>
     <td class="label">Tarikh</td>
-    <td class="value">: {{ $header->tarikh_pesanan ? \Carbon\Carbon::parse($header->tarikh_pesanan)->format('d/m/Y') : '-' }}</td>
+    <td class="value">: <?php echo e($header->tarikh_pesanan ? \Carbon\Carbon::parse($header->tarikh_pesanan)->format('d/m/Y') : '-'); ?></td>
     <td class="label">Hari</td>
-    <td class="value">: {{ $header->tarikh_pesanan ? strtoupper(\Carbon\Carbon::parse($header->tarikh_pesanan)->isoFormat('dddd')) : '-' }}</td>
+    <td class="value">: <?php echo e($header->tarikh_pesanan ? strtoupper(\Carbon\Carbon::parse($header->tarikh_pesanan)->isoFormat('dddd')) : '-'); ?></td>
   </tr>
   <tr>
     <td class="label">Sesi</td>
     <td class="value" colspan="3">
-      : @php
+      : <?php
         $sessions = explode('/', $header->sesi_kod ?? '');
         $sessionNames = [];
         foreach ($sessions as $s) {
           $s = trim($s);
           if (isset($mealLabels[$s])) $sessionNames[] = $s . ' - ' . $mealLabels[$s];
         }
-      @endphp
-      {{ !empty($sessionNames) ? implode(' &nbsp;|&nbsp; ', $sessionNames) : '-' }}
+      ?>
+      <?php echo e(!empty($sessionNames) ? implode(' &nbsp;|&nbsp; ', $sessionNames) : '-'); ?>
+
     </td>
   </tr>
   <tr>
     <td class="label">Pembekal</td>
-    <td class="value" colspan="3">: {{ $header->nama_pembekal ?? '-' }}</td>
+    <td class="value" colspan="3">: <?php echo e($header->nama_pembekal ?? '-'); ?></td>
   </tr>
-  @if($header->alamat_pembekal)
+  <?php if($header->alamat_pembekal): ?>
   <tr>
     <td class="label">Alamat</td>
     <td class="value" colspan="3">
-      : {{ $header->alamat_pembekal }}{{ $header->poskod_pembekal ? ', ' . $header->poskod_pembekal : '' }}
+      : <?php echo e($header->alamat_pembekal); ?><?php echo e($header->poskod_pembekal ? ', ' . $header->poskod_pembekal : ''); ?>
+
     </td>
   </tr>
-  @endif
+  <?php endif; ?>
 </table>
 
 <table class="items-table" cellpadding="0" cellspacing="0">
@@ -224,68 +226,70 @@
     </tr>
   </thead>
   <tbody>
-    @php $grandTotal = 0; @endphp
-    @foreach($items as $idx => $item)
-    @php
+    <?php $grandTotal = 0; ?>
+    <?php $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+    <?php
       $lineTotal = (float)$item->kuantiti_dipesan * (float)$item->harga_seunit;
       $grandTotal += $lineTotal;
-    @endphp
+    ?>
     <tr>
-      <td class="col-bil">{{ $idx + 1 }}</td>
-      <td class="col-barang">{{ $item->nama_barang }}</td>
-      <td class="col-unit">{{ $item->unit }}</td>
-      <td class="col-qty">{{ number_format((float)$item->kuantiti_dipesan, 2) }}</td>
+      <td class="col-bil"><?php echo e($idx + 1); ?></td>
+      <td class="col-barang"><?php echo e($item->nama_barang); ?></td>
+      <td class="col-unit"><?php echo e($item->unit); ?></td>
+      <td class="col-qty"><?php echo e(number_format((float)$item->kuantiti_dipesan, 2)); ?></td>
       <td class="col-terima">________</td>
-      <td class="col-harga">{{ number_format((float)$item->harga_seunit, 2) }}</td>
-      <td class="col-jumlah">{{ number_format($lineTotal, 2) }}</td>
-      <td class="col-catatan">{{ $item->catatan_item ?? '' }}</td>
+      <td class="col-harga"><?php echo e(number_format((float)$item->harga_seunit, 2)); ?></td>
+      <td class="col-jumlah"><?php echo e(number_format($lineTotal, 2)); ?></td>
+      <td class="col-catatan"><?php echo e($item->catatan_item ?? ''); ?></td>
     </tr>
-    @endforeach
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
   </tbody>
   <tfoot>
     <tr class="total-row">
       <td colspan="6" style="text-align: right; font-weight: bold;">JUMLAH BESAR (RM)</td>
-      <td style="font-weight: bold; text-align: right;">{{ number_format($grandTotal, 2) }}</td>
+      <td style="font-weight: bold; text-align: right;"><?php echo e(number_format($grandTotal, 2)); ?></td>
       <td></td>
     </tr>
   </tfoot>
 </table>
 
-@if($header->catatan_inden)
+<?php if($header->catatan_inden): ?>
 <div style="margin-bottom: 10px; font-size: 9pt;">
-  <strong>Catatan:</strong> {{ $header->catatan_inden }}
-</div>
-@endif
+  <strong>Catatan:</strong> <?php echo e($header->catatan_inden); ?>
 
-@if(($dietMusters ?? collect())->isNotEmpty())
+</div>
+<?php endif; ?>
+
+<?php if(($dietMusters ?? collect())->isNotEmpty()): ?>
 <div class="diet-audit">
   <h3>Ringkasan Muster Mengikut Skala Diet</h3>
   <div>
-    @foreach($dietMusters as $muster)
-      {{ $muster->name }}: <strong>{{ number_format($muster->headcount) }}</strong>{{ !$loop->last ? ' | ' : '' }}
-    @endforeach
+    <?php $__currentLoopData = $dietMusters; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $muster): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+      <?php echo e($muster->name); ?>: <strong><?php echo e(number_format($muster->headcount)); ?></strong><?php echo e(!$loop->last ? ' | ' : ''); ?>
+
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
   </div>
 </div>
-@endif
+<?php endif; ?>
 
-@if(($dietSnapshots ?? collect())->isNotEmpty())
+<?php if(($dietSnapshots ?? collect())->isNotEmpty()): ?>
 <div class="diet-audit">
   <h3>Jejak Cadangan Kuantiti (Garis Panduan Rasmi)</h3>
   <table>
     <thead><tr><th>Item Diet</th><th>Cadangan</th><th>Asas Pengiraan</th><th>Sumber</th></tr></thead>
     <tbody>
-      @foreach($dietSnapshots as $snapshot)
+      <?php $__currentLoopData = $dietSnapshots; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $snapshot): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
       <tr>
-        <td>{{ $snapshot->diet_item_name }}{{ $snapshot->contract_item_id ? '' : ' (belum dipadankan kontrak)' }}</td>
-        <td>{{ rtrim(rtrim(number_format((float) $snapshot->suggested_quantity, 3, '.', ''), '0'), '.') }} {{ $snapshot->unit }}</td>
-        <td>{{ $snapshot->calculation }}</td>
-        <td>{{ $snapshot->source }}</td>
+        <td><?php echo e($snapshot->diet_item_name); ?><?php echo e($snapshot->contract_item_id ? '' : ' (belum dipadankan kontrak)'); ?></td>
+        <td><?php echo e(rtrim(rtrim(number_format((float) $snapshot->suggested_quantity, 3, '.', ''), '0'), '.')); ?> <?php echo e($snapshot->unit); ?></td>
+        <td><?php echo e($snapshot->calculation); ?></td>
+        <td><?php echo e($snapshot->source); ?></td>
       </tr>
-      @endforeach
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </tbody>
   </table>
 </div>
-@endif
+<?php endif; ?>
 
 <div class="cert-section">
   <p>Saya memperakui bahawa barang-barang tersebut telah dibekalkan mengikut penentuan/spesifikasi sebagaimana dalam kontrak.</p>
@@ -297,8 +301,8 @@
     <td>
       <div class="sig-title">Tandatangan Pembekal</div>
       <div class="sig-line"></div>
-      <div class="sig-label">Nama: {{ $header->wakil_pembekal ?? '___________________' }}</div>
-      <div class="sig-label">Tarikh: {{ $header->tarikh_pembekal ? \Carbon\Carbon::parse($header->tarikh_pembekal)->format('d/m/Y') : '________' }}</div>
+      <div class="sig-label">Nama: <?php echo e($header->wakil_pembekal ?? '___________________'); ?></div>
+      <div class="sig-label">Tarikh: <?php echo e($header->tarikh_pembekal ? \Carbon\Carbon::parse($header->tarikh_pembekal)->format('d/m/Y') : '________'); ?></div>
     </td>
     <td>
       <div class="sig-title">Tandatangan Saksi</div>
@@ -315,9 +319,9 @@
     <td>
       <div class="sig-title">Pegawai Penyedia</div>
       <div class="sig-line"></div>
-      <div class="sig-label">Nama: {{ $header->disediakan_oleh ?? '___________________' }}</div>
-      <div class="sig-label">Jawatan/Cop: {{ $header->jawatan_cop ?? '' }}{{ $header->jawatan_gred ? ' Gred ' . $header->jawatan_gred : '' }}</div>
-      <div class="sig-label">Tarikh: {{ $header->tarikh_pesanan ? \Carbon\Carbon::parse($header->tarikh_pesanan)->format('d/m/Y') : '________' }}</div>
+      <div class="sig-label">Nama: <?php echo e($header->disediakan_oleh ?? '___________________'); ?></div>
+      <div class="sig-label">Jawatan/Cop: <?php echo e($header->jawatan_cop ?? ''); ?><?php echo e($header->jawatan_gred ? ' Gred ' . $header->jawatan_gred : ''); ?></div>
+      <div class="sig-label">Tarikh: <?php echo e($header->tarikh_pesanan ? \Carbon\Carbon::parse($header->tarikh_pesanan)->format('d/m/Y') : '________'); ?></div>
     </td>
   </tr>
 </table>
@@ -325,17 +329,19 @@
 <table class="staff-info">
   <tr>
     <td class="staff-label">Disediakan oleh:</td>
-    <td>{{ $header->disediakan_oleh ?? '___________________' }}</td>
+    <td><?php echo e($header->disediakan_oleh ?? '___________________'); ?></td>
   </tr>
   <tr>
     <td class="staff-label">Jawatan:</td>
-    <td>{{ $header->jawatan_cop ?? '' }}{{ $header->jawatan_gred ? ' Gred ' . $header->jawatan_gred : '' }}</td>
+    <td><?php echo e($header->jawatan_cop ?? ''); ?><?php echo e($header->jawatan_gred ? ' Gred ' . $header->jawatan_gred : ''); ?></td>
   </tr>
 </table>
 
 <div class="footer-note">
-  Dokumen ini dijana secara automatik. {{ date('d/m/Y H:i') }}
+  Dokumen ini dijana secara automatik. <?php echo e(date('d/m/Y H:i')); ?>
+
 </div>
 
 </body>
 </html>
+<?php /**PATH C:\laragon\www\MySIPMA_2\resources\views\pdf\borang_inden.blade.php ENDPATH**/ ?>
