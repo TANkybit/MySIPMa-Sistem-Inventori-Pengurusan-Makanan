@@ -956,6 +956,12 @@ class DashboardController extends Controller
                 's.address as alamat_pembekal',
                 's.postcode as poskod_pembekal',
                 'd.supplier_rep_name as wakil_pembekal',
+                'd.muster_khas_daging',
+                'd.muster_ditolak_parol',
+                'd.parol',
+                'd.muster_penuh',
+                'd.receiver_date as tarikh_penerima',
+                'd.witness_date as tarikh_saksi',
                 'u.name as disediakan_oleh',
                 'p.name as jawatan_cop',
                 'p.grade as jawatan_gred',
@@ -1008,10 +1014,10 @@ class DashboardController extends Controller
 
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->setPaper('A4', 'landscape');
         $dompdf->render();
 
-        $filename = 'Pesanan_Penerimaan_Catuan_Harian_' . $header->no_pesanan . '.pdf';
+        $filename = 'Borang_Inden_' . $header->no_pesanan . '.pdf';
         return response($dompdf->output(), 200, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $filename . '"',
@@ -1798,6 +1804,11 @@ class DashboardController extends Controller
             ->leftJoin('items as it', 'oi.item_id', '=', 'it.id')
             ->leftJoin('uom as u', 'it.uom_id', '=', 'u.id')
             ->leftJoin('users as uu', 'd.received_by', '=', 'uu.id')
+            ->leftJoin('positions as up', 'uu.position_id', '=', 'up.id')
+            ->leftJoin('users as wu', 'd.witness_id', '=', 'wu.id')
+            ->leftJoin('positions as wp', 'wu.position_id', '=', 'wp.id')
+            ->leftJoin('users as cu', 'o.created_by', '=', 'cu.id')
+            ->leftJoin('positions as cp', 'cu.position_id', '=', 'cp.id')
             ->where('o.id', $order->id)
             ->select([
                 'o.id as order_id',
@@ -1806,11 +1817,31 @@ class DashboardController extends Controller
                 'o.total_amount',
                 'i.name as institution_name',
                 's.company_name as supplier_name',
+                's.address as supplier_address',
+                's.postcode as supplier_postcode',
                 'c.contract_no',
+                'd.delivery_date',
+                'd.delivery_time',
+                'd.delivery_session',
                 'd.receiver_date',
+                'd.supplier_declaration_date',
+                'd.supplier_rep_name',
+                'd.witness_date',
+                'd.muster_khas_daging',
+                'd.muster_ditolak_parol',
+                'd.parol',
+                'd.muster_penuh',
                 'd.status as penerimaan_status',
                 'd.remarks as penerimaan_catatan',
                 'uu.name as received_by_name',
+                'up.name as receiver_position',
+                'up.grade as receiver_grade',
+                'wu.name as witness_name',
+                'wp.name as witness_position',
+                'wp.grade as witness_grade',
+                'cu.name as prepared_by_name',
+                'cp.name as prepared_position',
+                'cp.grade as prepared_grade',
                 'oi.id as order_item_id',
                 'it.name as item_name',
                 DB::raw("COALESCE(u.code, 'Unit') as unit"),
@@ -1828,20 +1859,48 @@ class DashboardController extends Controller
             abort(404, 'Penerimaan tidak dijumpai');
         }
 
+        $first = $rows->first();
         $header = (object) [
-            'order_no' => $rows->first()->order_no,
-            'order_date' => $rows->first()->order_date,
-            'institution_name' => $rows->first()->institution_name,
-            'supplier_name' => $rows->first()->supplier_name,
-            'contract_no' => $rows->first()->contract_no,
-            'receiver_date' => $rows->first()->receiver_date,
-            'received_by_name' => $rows->first()->received_by_name,
-            'penerimaan_status' => $rows->first()->penerimaan_status,
-            'penerimaan_catatan' => $rows->first()->penerimaan_catatan,
-            'total_amount' => $rows->first()->total_amount,
+            'no_pesanan' => $first->order_no,
+            'tarikh_pesanan' => $first->order_date,
+            'kepada_institusi' => $first->institution_name,
+            'nama_pembekal' => $first->supplier_name,
+            'alamat_pembekal' => $first->supplier_address,
+            'poskod_pembekal' => $first->supplier_postcode,
+            'no_kontrak' => $first->contract_no,
+            'masa' => $first->delivery_time,
+            'sesi_kod' => $first->delivery_session,
+            'tarikh_pembekal' => $first->supplier_declaration_date,
+            'tarikh_penerima' => $first->receiver_date,
+            'tarikh_saksi' => $first->witness_date,
+            'wakil_pembekal' => $first->supplier_rep_name,
+            'disediakan_oleh' => $first->prepared_by_name,
+            'jawatan_cop' => $first->prepared_position,
+            'jawatan_gred' => $first->prepared_grade,
+            'muster_khas_daging' => $first->muster_khas_daging,
+            'muster_ditolak_parol' => $first->muster_ditolak_parol,
+            'parol' => $first->parol,
+            'muster_penuh' => $first->muster_penuh,
+            'received_by_name' => $first->received_by_name,
+            'receiver_position' => $first->receiver_position,
+            'receiver_grade' => $first->receiver_grade,
+            'witness_name' => $first->witness_name,
+            'witness_position' => $first->witness_position,
+            'witness_grade' => $first->witness_grade,
+            'catatan_inden' => $first->penerimaan_catatan,
         ];
 
-        $items = $rows->filter(fn($r) => $r->order_item_id !== null)->values();
+        $items = $rows->filter(fn($row) => $row->order_item_id !== null)->map(function ($row) {
+            return (object) [
+                'nama_barang' => $row->item_name,
+                'unit' => $row->unit,
+                'kuantiti_dipesan' => $row->ordered_quantity,
+                'kuantiti_diterima' => $row->received_quantity,
+                'harga_seunit' => $row->unit_price,
+                'jumlah_diterima' => $row->received_total_price,
+                'catatan_item' => $row->item_remarks,
+            ];
+        })->values();
 
         // Get replacement items for this order
         $replacements = DB::table('order_item_replace as oir')
@@ -1859,10 +1918,11 @@ class DashboardController extends Controller
             ])
             ->get();
 
-        $html = view('pdf.borang_penerimaan', [
+        $html = view('pdf.borang_inden', [
             'header' => $header,
             'items' => $items,
             'replacements' => $replacements,
+            'isReceipt' => true,
         ])->render();
 
         $options = new Options();
@@ -1872,7 +1932,7 @@ class DashboardController extends Controller
 
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->setPaper('A4', 'landscape');
         $dompdf->render();
         $pdfOutput = $dompdf->output();
         return response($pdfOutput, 200, [

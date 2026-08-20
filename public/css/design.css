@@ -326,7 +326,7 @@
 }
 
 /* ── 12. LOGOUT BUTTON ── */
-:root:root .btn-logout {
+:root:root .logout-icon-only {
   background: rgba(255, 255, 255, 0.06) !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   color: #f1f5f1 !important;
@@ -1099,3 +1099,23 @@
 :root:root body.mobile-nav-active .navmenu ul li a.active {
   color: #7CB342 !important;
 }
+
+/* Compact desktop logout for Pegawai Stor, Penerima and Pengesah pages. */
+:root:root .btn-logout {
+  align-items: center !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  flex: 0 0 42px !important;
+  font-size: 0 !important;
+  height: 42px !important;
+  justify-content: center !important;
+  min-width: 42px !important;
+  padding: 0 !important;
+  width: 42px !important;
+}
+:root:root .logout-icon-only i {
+  font-size: 1rem !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+}
+:root:root .logout-icon-only .logout-label { display: none !important; }

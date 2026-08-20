@@ -1,5 +1,9 @@
 (function () {
   var toggle = document.getElementById('themeToggle');
+  document.querySelectorAll('.logout-icon-only').forEach(function (button) {
+    button.setAttribute('title', 'Log Keluar');
+    button.setAttribute('aria-label', 'Log Keluar');
+  });
   if (!toggle) return;
 
   function applyTheme(theme) {

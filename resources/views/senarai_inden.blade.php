@@ -214,7 +214,7 @@
     [data-bs-theme="light"] #logoutConfirmModal .btn-cancel { background:#f3f4f6; border-color:#d1d5db; color:#374151; }
     [data-bs-theme="light"] #logoutConfirmModal .btn-cancel:hover { background:#e5e7eb; }
   </style>
-  <link href="{{ asset('css/design.css') }}?v=3" rel="stylesheet">
+  <link href="{{ asset('css/design.css') }}?v=4" rel="stylesheet">
 
 <style>
 body.mobile-nav-active { background: #000 !important; }
@@ -277,7 +277,7 @@ body.mobile-nav-active main, body.mobile-nav-active #footer, body.mobile-nav-act
         @endif
         <button class="btn btn-icon" id="themeToggle" style="background:none;border:none;color:var(--text);font-size:1.2rem;padding:4px 8px"><i class="bi bi-moon-fill"></i></button>
         <a href="{{ route('profile') }}" class="text-white-50 text-decoration-none" style="transition: color 0.3s;" onmouseover="this.style.color='#10b981'" onmouseout="this.style.color=''"><i class="bi bi-person-circle me-2"></i>{{ Auth::user()->name ?? 'Pengguna' }}</a>
-        <button type="button" class="btn btn-custom btn-logout btn-sm px-3 py-2" id="desktopLogoutBtn"><i class="bi bi-box-arrow-right me-2"></i>Log Keluar</button>
+        <button type="button" class="btn btn-custom btn-logout btn-sm px-3 py-2 {{ in_array(strtoupper(Auth::user()->getPositionCode()), ['PS','PR','PP'], true) ? 'logout-icon-only' : '' }}" id="desktopLogoutBtn" title="Log Keluar" aria-label="Log Keluar"><i class="bi bi-box-arrow-right me-2"></i><span class="logout-label">Log Keluar</span></button>
       </div>
     </div>
   </header>

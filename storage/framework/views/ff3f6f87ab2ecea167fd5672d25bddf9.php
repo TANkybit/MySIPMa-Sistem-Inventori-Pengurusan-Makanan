@@ -51,7 +51,7 @@
 </style>
 </head>
 <body>
-@php
+<?php
   $orderDate = $header->tarikh_pesanan ? \Carbon\Carbon::parse($header->tarikh_pesanan) : null;
   $sessionParts = array_map('trim', explode('/', (string) ($header->sesi_kod ?? '')));
   $sessions = implode('/', array_filter($sessionParts));
@@ -66,7 +66,7 @@
   $grandTotal = 0;
   $isReceipt = $isReceipt ?? false;
   $receivedGrandTotal = 0;
-@endphp
+?>
 
 <div class="document-code">
   ASAL<br>JABATAN PENJARA MALAYSIA
@@ -81,18 +81,20 @@
   <tr>
     <td class="supplier">
       <span class="label">KEPADA:</span>
-      <span class="supplier-name">{{ strtoupper($header->nama_pembekal ?? '-') }}</span>
-      {{ strtoupper($header->alamat_pembekal ?? '') }}
-      @if($header->poskod_pembekal)<br>{{ $header->poskod_pembekal }}@endif
+      <span class="supplier-name"><?php echo e(strtoupper($header->nama_pembekal ?? '-')); ?></span>
+      <?php echo e(strtoupper($header->alamat_pembekal ?? '')); ?>
+
+      <?php if($header->poskod_pembekal): ?><br><?php echo e($header->poskod_pembekal); ?><?php endif; ?>
     </td>
     <td class="institution">
       Sila bekalkan barang-barang berikut kepada:
-      <span class="institution-name">{{ strtoupper($header->kepada_institusi ?? '-') }}</span>
+      <span class="institution-name"><?php echo e(strtoupper($header->kepada_institusi ?? '-')); ?></span>
     </td>
     <td class="order-meta">
-      <strong>No. Pesanan:</strong> {{ $header->no_pesanan ?? '-' }}<br>
-      <strong>Tarikh:</strong> {{ $orderDate ? $orderDate->format('d/m/Y') : '-' }}<br>
-      <strong>No. Kontrak:</strong> {{ $header->no_kontrak ?? '-' }}
+      <strong>No. Pesanan:</strong> <?php echo e($header->no_pesanan ?? '-'); ?><br>
+      <strong>Tarikh:</strong> <?php echo e($orderDate ? $orderDate->format('d/m/Y') : '-'); ?><br>
+      <strong>No. Kontrak:</strong> <?php echo e($header->no_kontrak ?? '-'); ?>
+
     </td>
   </tr>
 </table>
@@ -100,11 +102,12 @@
 <table class="schedule">
   <tr>
     <td class="date">
-      Tarikh: {{ $orderDate ? $orderDate->format('d/m/Y') : '-' }}
-      @if($orderDate) ( {{ strtoupper($orderDate->locale('ms')->isoFormat('dddd')) }} ) @endif
-      @if($sessions) - {{ $sessions }} @endif
+      Tarikh: <?php echo e($orderDate ? $orderDate->format('d/m/Y') : '-'); ?>
+
+      <?php if($orderDate): ?> ( <?php echo e(strtoupper($orderDate->locale('ms')->isoFormat('dddd'))); ?> ) <?php endif; ?>
+      <?php if($sessions): ?> - <?php echo e($sessions); ?> <?php endif; ?>
     </td>
-    <td class="time">Masa: {{ $header->masa ? \Carbon\Carbon::parse($header->masa)->format('Hi') . ' Hrs' : '________ Hrs' }}</td>
+    <td class="time">Masa: <?php echo e($header->masa ? \Carbon\Carbon::parse($header->masa)->format('Hi') . ' Hrs' : '________ Hrs'); ?></td>
   </tr>
 </table>
 
@@ -132,8 +135,8 @@
     <tr><th>Kg.</th><th>Gm.</th><th>Kg.</th><th>Gm.</th></tr>
   </thead>
   <tbody>
-    @for($index = 0; $index < $rowCount; $index++)
-      @php
+    <?php for($index = 0; $index < $rowCount; $index++): ?>
+      <?php
         $item = $items->get($index);
         [$kg, $gm] = $item ? $splitQuantity($item->kuantiti_dipesan) : [null, null];
         [$receivedKg, $receivedGm] = ($item && $isReceipt) ? $splitQuantity($item->kuantiti_diterima ?? 0) : [null, null];
@@ -141,97 +144,101 @@
         $receivedTotal = ($item && $isReceipt) ? (float) ($item->jumlah_diterima ?? ((float) ($item->kuantiti_diterima ?? 0) * (float) $item->harga_seunit)) : null;
         $grandTotal += $lineTotal;
         if ($receivedTotal !== null) { $receivedGrandTotal += $receivedTotal; }
-      @endphp
+      ?>
       <tr>
-        <td class="description">{{ $item->nama_barang ?? '' }}</td>
-        <td class="number">{{ $item ? number_format($kg) : '-' }}</td>
-        <td class="number">{{ $item ? ($gm ? str_pad((string) $gm, 3, '0', STR_PAD_LEFT) : '-') : '-' }}</td>
-        <td class="number">{{ $item ? number_format((float) $item->harga_seunit, 2) : '-' }}</td>
-        <td class="number">{{ $item ? number_format($lineTotal, 3) : '-' }}</td>
-        <td class="description">{{ $item->nama_barang ?? '' }}</td>
-        <td class="number">{{ $isReceipt && $item ? number_format($receivedKg) : '' }}</td>
-        <td class="number">{{ $isReceipt && $item ? ($receivedGm ? str_pad((string) $receivedGm, 3, '0', STR_PAD_LEFT) : '-') : '' }}</td>
-        <td class="number">{{ $item ? number_format((float) $item->harga_seunit, 2) : '-' }}</td>
-        <td class="number">{{ $isReceipt && $item ? number_format($receivedTotal, 3) : '' }}</td>
-        <td class="remarks">{{ $item->catatan_item ?? '' }}</td>
+        <td class="description"><?php echo e($item->nama_barang ?? ''); ?></td>
+        <td class="number"><?php echo e($item ? number_format($kg) : '-'); ?></td>
+        <td class="number"><?php echo e($item ? ($gm ? str_pad((string) $gm, 3, '0', STR_PAD_LEFT) : '-') : '-'); ?></td>
+        <td class="number"><?php echo e($item ? number_format((float) $item->harga_seunit, 2) : '-'); ?></td>
+        <td class="number"><?php echo e($item ? number_format($lineTotal, 3) : '-'); ?></td>
+        <td class="description"><?php echo e($item->nama_barang ?? ''); ?></td>
+        <td class="number"><?php echo e($isReceipt && $item ? number_format($receivedKg) : ''); ?></td>
+        <td class="number"><?php echo e($isReceipt && $item ? ($receivedGm ? str_pad((string) $receivedGm, 3, '0', STR_PAD_LEFT) : '-') : ''); ?></td>
+        <td class="number"><?php echo e($item ? number_format((float) $item->harga_seunit, 2) : '-'); ?></td>
+        <td class="number"><?php echo e($isReceipt && $item ? number_format($receivedTotal, 3) : ''); ?></td>
+        <td class="remarks"><?php echo e($item->catatan_item ?? ''); ?></td>
       </tr>
-    @endfor
+    <?php endfor; ?>
   </tbody>
   <tfoot>
     <tr class="total-row">
       <td colspan="4" class="center">Jumlah Harga</td>
-      <td class="number">{{ number_format($grandTotal, 3) }}</td>
+      <td class="number"><?php echo e(number_format($grandTotal, 3)); ?></td>
       <td colspan="4" class="center">Jumlah Harga</td>
-      <td class="number">{{ $isReceipt ? number_format($receivedGrandTotal, 3) : '-' }}</td>
+      <td class="number"><?php echo e($isReceipt ? number_format($receivedGrandTotal, 3) : '-'); ?></td>
       <td></td>
     </tr>
   </tfoot>
 </table>
 
-@if($header->catatan_inden)
-  <div class="footnote"><strong>Catatan:</strong> {{ $header->catatan_inden }}</div>
-@endif
-@if($isReceipt && isset($replacements) && $replacements->isNotEmpty())
+<?php if($header->catatan_inden): ?>
+  <div class="footnote"><strong>Catatan:</strong> <?php echo e($header->catatan_inden); ?></div>
+<?php endif; ?>
+<?php if($isReceipt && isset($replacements) && $replacements->isNotEmpty()): ?>
   <div class="footnote"><strong>Barang gantian:</strong>
-    @foreach($replacements as $replacement)
-      {{ $replacement->item_name }} ({{ number_format((float) $replacement->quantity, 3) }} {{ $replacement->unit }}){{ !$loop->last ? '; ' : '' }}
-    @endforeach
-  </div>
-@endif
+    <?php $__currentLoopData = $replacements; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $replacement): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+      <?php echo e($replacement->item_name); ?> (<?php echo e(number_format((float) $replacement->quantity, 3)); ?> <?php echo e($replacement->unit); ?>)<?php echo e(!$loop->last ? '; ' : ''); ?>
 
-@php
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+  </div>
+<?php endif; ?>
+
+<?php
   $supplierDate = $header->tarikh_pembekal ? \Carbon\Carbon::parse($header->tarikh_pembekal)->format('d/m/Y') : '';
   $witnessDate = $header->tarikh_saksi ? \Carbon\Carbon::parse($header->tarikh_saksi)->format('d/m/Y') : $supplierDate;
   $receiverDate = $header->tarikh_penerima ? \Carbon\Carbon::parse($header->tarikh_penerima)->format('d/m/Y') : $supplierDate;
   $positionText = trim(($header->jawatan_cop ?? '') . ($header->jawatan_gred ? ' ' . $header->jawatan_gred : ''));
-@endphp
+?>
 <table class="approval">
   <tr class="approval-top">
     <td class="prepared">
-      Disediakan oleh&nbsp;&nbsp;: &nbsp;{{ strtoupper($header->disediakan_oleh ?? '') }}<br>
-      <span style="display:inline-block;width:24mm"></span>{{ strtoupper($positionText) }}<br>
-      Tarikh&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;{{ $orderDate ? $orderDate->format('d/m/Y') : '' }}
+      Disediakan oleh&nbsp;&nbsp;: &nbsp;<?php echo e(strtoupper($header->disediakan_oleh ?? '')); ?><br>
+      <span style="display:inline-block;width:24mm"></span><?php echo e(strtoupper($positionText)); ?><br>
+      Tarikh&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;<?php echo e($orderDate ? $orderDate->format('d/m/Y') : ''); ?>
+
     </td>
     <td class="muster">
-      MUSTER KHAS (DAGING) : {{ number_format((float) ($header->muster_khas_daging ?? 0)) }}<br>
-      MUSTER (DITOLAK DARI PAROL) : {{ number_format((float) ($header->muster_ditolak_parol ?? 0)) }}<br>
-      PAROL : {{ number_format((float) ($header->parol ?? 0)) }}<br>
-      MUSTER PENUH : {{ number_format((float) ($header->muster_penuh ?? 0)) }}
+      MUSTER KHAS (DAGING) : <?php echo e(number_format((float) ($header->muster_khas_daging ?? 0))); ?><br>
+      MUSTER (DITOLAK DARI PAROL) : <?php echo e(number_format((float) ($header->muster_ditolak_parol ?? 0))); ?><br>
+      PAROL : <?php echo e(number_format((float) ($header->parol ?? 0))); ?><br>
+      MUSTER PENUH : <?php echo e(number_format((float) ($header->muster_penuh ?? 0))); ?>
+
     </td>
     <td class="authority">
       <div class="signature-rule"></div>
       (Tandatangan Pegawai Yang diberi Kuasa Memesan)<br><br>
       Jawatan / Cop&nbsp;&nbsp;: <span class="field-line"></span><br>
-      Tarikh&nbsp;&nbsp;: <span class="field-line">{{ $orderDate ? $orderDate->format('d/m/Y') : '' }}</span>
+      Tarikh&nbsp;&nbsp;: <span class="field-line"><?php echo e($orderDate ? $orderDate->format('d/m/Y') : ''); ?></span>
     </td>
   </tr>
   <tr class="declaration">
     <td colspan="3">
       <div class="declaration-title">PERAKUAN PEMBEKAL</div>
-      <div class="declaration-text">Saya memperakui bahawa barang-barang tersebut diatas telah dibekalkan mengikut penentuan/spesifikasi sebagaimana dalam kontrak No. <span class="field-line">{{ $header->no_kontrak ?? '' }}</span></div>
+      <div class="declaration-text">Saya memperakui bahawa barang-barang tersebut diatas telah dibekalkan mengikut penentuan/spesifikasi sebagaimana dalam kontrak No. <span class="field-line"><?php echo e($header->no_kontrak ?? ''); ?></span></div>
       <table><tr>
-        <td style="width:50%">Tarikh&nbsp;&nbsp;: <span class="field-line">{{ $supplierDate }}</span></td>
+        <td style="width:50%">Tarikh&nbsp;&nbsp;: <span class="field-line"><?php echo e($supplierDate); ?></span></td>
         <td style="width:50%;text-align:right">Tandatangan Pembekal&nbsp;&nbsp;: <span class="field-line"></span><br>dan Cop&nbsp;&nbsp;: <span class="field-line"></span></td>
       </tr></table>
     </td>
   </tr>
   <tr>
-    <td colspan="3" class="declaration-text">Adalah disahkan bahawa barang-barang seperti diatas telah diterima dengan betul dan mematuhi penentuan sebagaimana dalam kontrak No. <span class="field-line">{{ $header->no_kontrak ?? '' }}</span><br>dan dikeluarkan untuk kegunaan serta-merta.</td>
+    <td colspan="3" class="declaration-text">Adalah disahkan bahawa barang-barang seperti diatas telah diterima dengan betul dan mematuhi penentuan sebagaimana dalam kontrak No. <span class="field-line"><?php echo e($header->no_kontrak ?? ''); ?></span><br>dan dikeluarkan untuk kegunaan serta-merta.</td>
   </tr>
   <tr class="acknowledgement">
     <td class="witness" colspan="2">
       Tandatangan Saksi&nbsp;&nbsp;: <span class="field-line"></span><br>
-      Nama&nbsp;&nbsp;: <span class="field-line">{{ $isReceipt ? ($header->witness_name ?? '') : '' }}</span><br>
-      Jawatan / Cop&nbsp;&nbsp;: <span class="field-line">{{ $isReceipt ? trim(($header->witness_position ?? '') . ' ' . ($header->witness_grade ?? '')) : '' }}</span><br>
-      Tarikh&nbsp;&nbsp;: <span class="field-line">{{ $witnessDate }}</span>
+      Nama&nbsp;&nbsp;: <span class="field-line"><?php echo e($isReceipt ? ($header->witness_name ?? '') : ''); ?></span><br>
+      Jawatan / Cop&nbsp;&nbsp;: <span class="field-line"><?php echo e($isReceipt ? trim(($header->witness_position ?? '') . ' ' . ($header->witness_grade ?? '')) : ''); ?></span><br>
+      Tarikh&nbsp;&nbsp;: <span class="field-line"><?php echo e($witnessDate); ?></span>
     </td>
     <td class="receiver">
       Tandatangan Penerima&nbsp;&nbsp;: <span class="field-line"></span><br>
-      Nama&nbsp;&nbsp;: <span class="field-line">{{ $isReceipt ? ($header->received_by_name ?? '') : '' }}</span><br>
-      Jawatan / Cop&nbsp;&nbsp;: <span class="field-line">{{ $isReceipt ? trim(($header->receiver_position ?? '') . ' ' . ($header->receiver_grade ?? '')) : '' }}</span><br>
-      Tarikh&nbsp;&nbsp;: <span class="field-line">{{ $receiverDate }}</span>
+      Nama&nbsp;&nbsp;: <span class="field-line"><?php echo e($isReceipt ? ($header->received_by_name ?? '') : ''); ?></span><br>
+      Jawatan / Cop&nbsp;&nbsp;: <span class="field-line"><?php echo e($isReceipt ? trim(($header->receiver_position ?? '') . ' ' . ($header->receiver_grade ?? '')) : ''); ?></span><br>
+      Tarikh&nbsp;&nbsp;: <span class="field-line"><?php echo e($receiverDate); ?></span>
     </td>
   </tr>
 </table>
 </body>
 </html>
+<?php /**PATH C:\laragon\www\MySIPMA_2\resources\views/pdf/borang_inden.blade.php ENDPATH**/ ?>
