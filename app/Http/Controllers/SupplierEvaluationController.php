@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\SupplierEvaluation;
 use App\Models\Order;
+use App\Models\Institution;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class SupplierEvaluationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         \Log::info('Evaluation API: Fetching index');
         
@@ -19,8 +20,23 @@ class SupplierEvaluationController extends Controller
         
         if ($user->landingRouteName() === 'pengarah.institusi.dashboard') {
             $query->where('institution_id', $user->institution_id);
+        } elseif ($user->landingRouteName() === 'pengarah.negeri.dashboard') {
+            $query->where('status', 'Verified');
+            $stateId = $user->institution?->state_id;
+            if ($stateId) {
+                $stateInstitutionIds = Institution::where('state_id', $stateId)->pluck('id');
+                $query->whereIn('institution_id', $stateInstitutionIds);
+            }
         } else {
             $query->where('status', 'Verified');
+        }
+
+        // Optional filters
+        if ($request->filled('institution_id')) {
+            $query->where('institution_id', $request->input('institution_id'));
+        }
+        if ($request->filled('supplier_id')) {
+            $query->where('supplier_id', $request->input('supplier_id'));
         }
         
         $evaluations = $query->orderBy('evaluation_date', 'desc')->get();
@@ -119,17 +135,32 @@ class SupplierEvaluationController extends Controller
         ]);
     }
 
-    public function getStats()
+    public function getStats(Request $request)
     {
         \Log::info('Evaluation API: Fetching stats');
         
         $user = Auth::user();
-        $query = new SupplierEvaluation();
+        $query = SupplierEvaluation::query();
         
         if ($user->landingRouteName() === 'pengarah.institusi.dashboard') {
-            $query = $query->where('institution_id', $user->institution_id);
+            $query->where('institution_id', $user->institution_id);
+        } elseif ($user->landingRouteName() === 'pengarah.negeri.dashboard') {
+            $query->where('status', 'Verified');
+            $stateId = $user->institution?->state_id;
+            if ($stateId) {
+                $stateInstitutionIds = Institution::where('state_id', $stateId)->pluck('id');
+                $query->whereIn('institution_id', $stateInstitutionIds);
+            }
         } else {
-            $query = $query->where('status', 'Verified');
+            $query->where('status', 'Verified');
+        }
+
+        // Optional filters
+        if ($request->filled('institution_id')) {
+            $query->where('institution_id', $request->input('institution_id'));
+        }
+        if ($request->filled('supplier_id')) {
+            $query->where('supplier_id', $request->input('supplier_id'));
         }
         
         $totalEvaluations = $query->count();
@@ -231,8 +262,23 @@ class SupplierEvaluationController extends Controller
 
         if ($user->landingRouteName() === 'pengarah.institusi.dashboard') {
             $query->where('institution_id', $user->institution_id);
+        } elseif ($user->landingRouteName() === 'pengarah.negeri.dashboard') {
+            $query->where('status', 'Verified');
+            $stateId = $user->institution?->state_id;
+            if ($stateId) {
+                $stateInstitutionIds = Institution::where('state_id', $stateId)->pluck('id');
+                $query->whereIn('institution_id', $stateInstitutionIds);
+            }
         } else {
             $query->where('status', 'Verified');
+        }
+
+        // Optional filters
+        if ($request->filled('institution_id')) {
+            $query->where('institution_id', $request->input('institution_id'));
+        }
+        if ($request->filled('supplier_id')) {
+            $query->where('supplier_id', $request->input('supplier_id'));
         }
         
         $evaluations = $query->get();
@@ -307,6 +353,13 @@ class SupplierEvaluationController extends Controller
 
         if ($user->landingRouteName() === 'pengarah.institusi.dashboard') {
             $query->where('institution_id', $user->institution_id);
+        } elseif ($user->landingRouteName() === 'pengarah.negeri.dashboard') {
+            $query->where('status', 'Verified');
+            $stateId = $user->institution?->state_id;
+            if ($stateId) {
+                $stateInstitutionIds = Institution::where('state_id', $stateId)->pluck('id');
+                $query->whereIn('institution_id', $stateInstitutionIds);
+            }
         } else {
             $query->where('status', 'Verified');
         }

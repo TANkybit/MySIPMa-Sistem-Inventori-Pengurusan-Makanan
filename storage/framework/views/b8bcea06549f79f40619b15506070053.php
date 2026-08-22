@@ -1,4 +1,4 @@
-@php
+<?php
     $activePage = $activePage ?? 'dashboard';
     $pageTitles = [
         'dashboard' => 'Papan Pemuka',
@@ -19,33 +19,33 @@
     $pageTitle = $pageTitles[$activePage] ?? 'Papan Pemuka';
     $currentRoute = $pageRoutes[$activePage] ?? 'pengarah.negeri.dashboard';
     $institutionQuery = request()->only('institution_id');
-@endphp
+?>
 
 <!DOCTYPE html>
 <html lang="ms">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $pageTitle }} Pengarah Negeri</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="session-lifetime" content="{{ config('session.lifetime') }}">
-    <meta name="session-warning" content="{{ config('session-timeout.warning_time') }}">
-    <meta name="session-grace" content="{{ config('session-timeout.grace_period') }}">
+    <title><?php echo e($pageTitle); ?> Pengarah Negeri</title>
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <meta name="session-lifetime" content="<?php echo e(config('session.lifetime')); ?>">
+    <meta name="session-warning" content="<?php echo e(config('session-timeout.warning_time')); ?>">
+    <meta name="session-grace" content="<?php echo e(config('session-timeout.grace_period')); ?>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.css">
-    <link rel="stylesheet" href="{{ asset('style.css') }}">
+    <link rel="stylesheet" href="<?php echo e(asset('style.css')); ?>">
 </head>
 <body>
     <div class="wrapper">
         <aside id="sidebar" class="sidebar">
             <div class="sidebar-header">
-                <a href="{{ route('pengarah.negeri.dashboard') }}" class="logo">
+                <a href="<?php echo e(route('pengarah.negeri.dashboard')); ?>" class="logo">
                     <div class="logo-icon">
-                        <img src="{{ asset('MySIPMa_logo_wWalls.png') }}" alt="MySIPMa Logo" height="50" class="me-2">
+                        <img src="<?php echo e(asset('MySIPMa_logo_wWalls.png')); ?>" alt="MySIPMa Logo" height="50" class="me-2">
                     </div>
                     <div class="logo-text">
                         <span class="fw-bold">MySIPMA</span>
@@ -61,7 +61,7 @@
                 <ul class="nav flex-column">
                     <li class="nav-title">UTAMA</li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.negeri.dashboard') ? 'active' : '' }}" href="{{ route('pengarah.negeri.dashboard', $institutionQuery) }}">
+                        <a class="nav-link <?php echo e(request()->routeIs('pengarah.negeri.dashboard') ? 'active' : ''); ?>" href="<?php echo e(route('pengarah.negeri.dashboard', $institutionQuery)); ?>">
                             <i class="fas fa-home"></i>
                             <span>Papan Pemuka</span>
                         </a>
@@ -69,19 +69,19 @@
                     
                     <li class="nav-title mt-4">PENGURUSAN DATA</li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.negeri.ringkasan') ? 'active' : '' }}" href="{{ route('pengarah.negeri.ringkasan', $institutionQuery) }}">
+                        <a class="nav-link <?php echo e(request()->routeIs('pengarah.negeri.ringkasan') ? 'active' : ''); ?>" href="<?php echo e(route('pengarah.negeri.ringkasan', $institutionQuery)); ?>">
                             <i class="fas fa-file-invoice"></i>
                             <span>Ringkasan Pesanan</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.negeri.inventori') ? 'active' : '' }}" href="{{ route('pengarah.negeri.inventori', $institutionQuery) }}">
+                        <a class="nav-link <?php echo e(request()->routeIs('pengarah.negeri.inventori') ? 'active' : ''); ?>" href="<?php echo e(route('pengarah.negeri.inventori', $institutionQuery)); ?>">
                             <i class="fas fa-boxes"></i>
                             <span>Inventori</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.negeri.stok_kritikal') ? 'active' : '' }}" href="{{ route('pengarah.negeri.stok_kritikal', $institutionQuery) }}">
+                        <a class="nav-link <?php echo e(request()->routeIs('pengarah.negeri.stok_kritikal') ? 'active' : ''); ?>" href="<?php echo e(route('pengarah.negeri.stok_kritikal', $institutionQuery)); ?>">
                             <i class="fas fa-exclamation-triangle"></i>
                             <span>Stok Kritikal</span>
                         </a>
@@ -89,13 +89,13 @@
 
                     <li class="nav-title mt-4">LAPORAN</li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.negeri.laporan_prestasi') ? 'active' : '' }}" href="{{ route('pengarah.negeri.laporan_prestasi') }}">
+                        <a class="nav-link <?php echo e(request()->routeIs('pengarah.negeri.laporan_prestasi') ? 'active' : ''); ?>" href="<?php echo e(route('pengarah.negeri.laporan_prestasi')); ?>">
                             <i class="fas fa-star"></i>
                             <span>Penilaian Prestasi</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('pengarah.negeri.profil') ? 'active' : '' }}" href="{{ route('pengarah.negeri.profil') }}">
+                        <a class="nav-link <?php echo e(request()->routeIs('pengarah.negeri.profil') ? 'active' : ''); ?>" href="<?php echo e(route('pengarah.negeri.profil')); ?>">
                             <i class="fas fa-user"></i>
                             <span>Profil Saya</span>
                         </a>
@@ -105,13 +105,13 @@
             
             <div class="sidebar-footer">
                 <div class="user-profile">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()?->name ?? 'Pengarah Negeri') }}&background=1a5632&color=fff&size=80" alt="{{ auth()->user()?->name ?? 'Pengarah Negeri' }}" class="user-avatar">
+                    <img src="https://ui-avatars.com/api/?name=<?php echo e(urlencode(auth()->user()?->name ?? 'Pengarah Negeri')); ?>&background=1a5632&color=fff&size=80" alt="<?php echo e(auth()->user()?->name ?? 'Pengarah Negeri'); ?>" class="user-avatar">
                     <div class="user-info">
-                        <h6>{{ auth()->user()?->name ?? 'Pengarah Negeri' }}</h6>
+                        <h6><?php echo e(auth()->user()?->name ?? 'Pengarah Negeri'); ?></h6>
                         <small class="text-muted">Pengarah Negeri</small>
                     </div>
-                    <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                        @csrf
+                    <form action="<?php echo e(route('logout')); ?>" method="POST" class="d-inline">
+                        <?php echo csrf_field(); ?>
                         <button type="submit" class="btn btn-icon text-danger" title="Log Keluar">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
@@ -127,18 +127,18 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="page-title">
-                        <h1>{{ $pageTitle }}</h1>
+                        <h1><?php echo e($pageTitle); ?></h1>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('pengarah.negeri.dashboard') }}"><i class="fas fa-home"></i></a></li>
-                                <li class="breadcrumb-item active">{{ $pageTitle }}</li>
+                                <li class="breadcrumb-item"><a href="<?php echo e(route('pengarah.negeri.dashboard')); ?>"><i class="fas fa-home"></i></a></li>
+                                <li class="breadcrumb-item active"><?php echo e($pageTitle); ?></li>
                             </ol>
                         </nav>
                     </div>
                 </div>
                 <div class="header-right">
                     <div class="search-box me-3 position-relative">
-                        <input type="text" id="globalSearchInput" data-context="negeri" data-filter-id="{{ optional($selectedState)->id }}" class="form-control" placeholder="Cari Maklumat...">
+                        <input type="text" id="globalSearchInput" data-context="negeri" data-filter-id="<?php echo e(optional($selectedState)->id); ?>" class="form-control" placeholder="Cari Maklumat...">
                         <i class="fas fa-search"></i>
                         <div id="globalSearchResults" class="global-search-dropdown d-none"></div>
                     </div>
@@ -151,38 +151,38 @@
             <div class="content-body">
                 <div class="container-fluid py-4">
                     
-                    @if(!in_array($activePage, ['profil', 'laporan-prestasi']))
+                    <?php if(!in_array($activePage, ['profil', 'laporan-prestasi'])): ?>
                     <!-- Always show filter on non-profile pages -->
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-body">
-                                    <form method="GET" action="{{ route($currentRoute) }}" class="row g-3 align-items-end">
+                                    <form method="GET" action="<?php echo e(route($currentRoute)); ?>" class="row g-3 align-items-end">
                                         <div class="col-lg-4 col-md-12">
                                             <label for="institution_id" class="form-label">Pilih Institusi</label>
                                             <select id="institution_id" name="institution_id" class="form-select">
-                                                <option value="">Semua Institusi ({{ optional($selectedState)->name }})</option>
-                                                @foreach($institutions as $inst)
-                                                    <option value="{{ $inst->id }}" {{ ($selectedInstitutionId ?? '') == $inst->id ? 'selected' : '' }}>{{ $inst->name }}</option>
-                                                @endforeach
+                                                <option value="">Semua Institusi (<?php echo e(optional($selectedState)->name); ?>)</option>
+                                                <?php $__currentLoopData = $institutions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inst): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($inst->id); ?>" <?php echo e(($selectedInstitutionId ?? '') == $inst->id ? 'selected' : ''); ?>><?php echo e($inst->name); ?></option>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </select>
                                         </div>
                                         <div class="col-lg-3 col-md-6">
                                             <label for="year" class="form-label">Tahun</label>
                                             <select id="year" name="year" class="form-select">
                                                 <option value="">Semua</option>
-                                                @for($y = now()->year; $y >= now()->year - 4; $y--)
-                                                    <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}</option>
-                                                @endfor
+                                                <?php for($y = now()->year; $y >= now()->year - 4; $y--): ?>
+                                                    <option value="<?php echo e($y); ?>" <?php echo e(request('year') == $y ? 'selected' : ''); ?>><?php echo e($y); ?></option>
+                                                <?php endfor; ?>
                                             </select>
                                         </div>
                                         <div class="col-lg-3 col-md-6">
                                             <label for="month" class="form-label">Bulan</label>
                                             <select id="month" name="month" class="form-select">
                                                 <option value="">Semua</option>
-                                                @foreach([1=>'Januari',2=>'Februari',3=>'Mac',4=>'April',5=>'Mei',6=>'Jun',7=>'Julai',8=>'Ogos',9=>'September',10=>'Oktober',11=>'November',12=>'Disember'] as $m => $label)
-                                                    <option value="{{ $m }}" {{ request('month') == $m ? 'selected' : '' }}>{{ $label }}</option>
-                                                @endforeach
+                                                <?php $__currentLoopData = [1=>'Januari',2=>'Februari',3=>'Mac',4=>'April',5=>'Mei',6=>'Jun',7=>'Julai',8=>'Ogos',9=>'September',10=>'Oktober',11=>'November',12=>'Disember']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $m => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($m); ?>" <?php echo e(request('month') == $m ? 'selected' : ''); ?>><?php echo e($label); ?></option>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </select>
                                         </div>
                                         <div class="col-lg-2 col-md-12">
@@ -194,41 +194,42 @@
                         </div>
                     </div>
 
-                    @include('partials.low_stock_notification', [
+                    <?php echo $__env->make('partials.low_stock_notification', [
                         'lowStockItems' => $lowStockItems ?? collect(),
                         'inventoryUrl' => route('pengarah.negeri.inventori', $institutionQuery),
-                    ])
+                    ], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
                     <div class="row g-3 mb-4">
                         <div class="col-lg-4 col-md-6">
                             <div class="card p-4 h-100">
                                 <h6 class="text-uppercase text-muted mb-3">Institusi Terpilih</h6>
                                 <h3 class="mb-0">
-                                    @if($selectedInstitutionId)
-                                        {{ $institutions->firstWhere('id', $selectedInstitutionId)->name ?? 'Tiada' }}
-                                    @else
-                                        Semua Institusi ({{ optional($selectedState)->name ?? '-' }})
-                                    @endif
+                                    <?php if($selectedInstitutionId): ?>
+                                        <?php echo e($institutions->firstWhere('id', $selectedInstitutionId)->name ?? 'Tiada'); ?>
+
+                                    <?php else: ?>
+                                        Semua Institusi (<?php echo e(optional($selectedState)->name ?? '-'); ?>)
+                                    <?php endif; ?>
                                 </h3>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
                             <div class="card p-4 h-100">
                                 <h6 class="text-uppercase text-muted mb-3">Jumlah Pesanan</h6>
-                                <h3 class="mb-0">{{ collect($orders ?? [])->count() }}</h3>
-                                <div class="small text-muted mt-2">Jumlah Item: <strong>{{ number_format($inventoryTotals['total_quantity'] ?? 0, 2) }}</strong> &nbsp;•&nbsp; Nilai: <strong>RM {{ number_format($inventoryTotals['total_value'] ?? 0, 2) }}</strong></div>
+                                <h3 class="mb-0"><?php echo e(collect($orders ?? [])->count()); ?></h3>
+                                <div class="small text-muted mt-2">Jumlah Item: <strong><?php echo e(number_format($inventoryTotals['total_quantity'] ?? 0, 2)); ?></strong> &nbsp;•&nbsp; Nilai: <strong>RM <?php echo e(number_format($inventoryTotals['total_value'] ?? 0, 2)); ?></strong></div>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
                             <div class="card p-4 h-100">
                                 <h6 class="text-uppercase text-muted mb-3">Jumlah Pembekal</h6>
-                                <h3 class="mb-0">{{ collect($suppliers ?? [])->count() }}</h3>
+                                <h3 class="mb-0"><?php echo e(collect($suppliers ?? [])->count()); ?></h3>
                             </div>
                         </div>
                     </div>
-                    @endif
+                    <?php endif; ?>
 
-                    @if($activePage === 'dashboard')
+                    <?php if($activePage === 'dashboard'): ?>
                         <div class="row g-4 mb-4">
                             <div class="col-lg-6">
                                 <div class="card h-100 shadow-sm border-0">
@@ -261,7 +262,7 @@
                                 <div class="card h-100 shadow-sm border-0">
                                     <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pb-2 pt-4 px-4">
                                         <h5 class="card-title fw-bold mb-0"><i class="fas fa-clock text-warning me-2"></i>5 Inden Terkini</h5>
-                                        <a href="{{ route('pengarah.negeri.ringkasan', $institutionQuery) }}" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
+                                        <a href="<?php echo e(route('pengarah.negeri.ringkasan', $institutionQuery)); ?>" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
                                     </div>
                                     <div class="card-body p-0">
                                         <div class="table-responsive">
@@ -275,17 +276,18 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @forelse(collect($orders)->take(5) as $order)
+                                                    <?php $__empty_1 = true; $__currentLoopData = collect($orders)->take(5); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                                     <tr>
-                                                        <td class="ps-4 fw-medium text-primary">{{ $order->order_no }}</td>
+                                                        <td class="ps-4 fw-medium text-primary"><?php echo e($order->order_no); ?></td>
                                                         <td>
-                                                            <div class="text-truncate" style="max-width: 150px;" title="{{ optional($order->institution)->name }}">
-                                                                {{ optional($order->institution)->name }}
+                                                            <div class="text-truncate" style="max-width: 150px;" title="<?php echo e(optional($order->institution)->name); ?>">
+                                                                <?php echo e(optional($order->institution)->name); ?>
+
                                                             </div>
                                                         </td>
-                                                        <td>{{ \Carbon\Carbon::parse($order->order_date)->format('d/m/Y') }}</td>
+                                                        <td><?php echo e(\Carbon\Carbon::parse($order->order_date)->format('d/m/Y')); ?></td>
                                                         <td class="pe-4">
-                                                            @php
+                                                            <?php
                                                                 $statusClass = match($order->status) {
                                                                     'Pending' => 'bg-warning',
                                                                     'In Progress' => 'bg-info',
@@ -301,15 +303,15 @@
                                                                     'Cancelled' => 'Dibatalkan',
                                                                     default => $order->status
                                                                 };
-                                                            @endphp
-                                                            <span class="badge {{ $statusClass }} rounded-pill">{{ $statusLabel }}</span>
+                                                            ?>
+                                                            <span class="badge <?php echo e($statusClass); ?> rounded-pill"><?php echo e($statusLabel); ?></span>
                                                         </td>
                                                     </tr>
-                                                    @empty
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                                     <tr>
                                                         <td colspan="4" class="text-center py-4 text-muted">Tiada pesanan terkini</td>
                                                     </tr>
-                                                    @endforelse
+                                                    <?php endif; ?>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -340,7 +342,7 @@
                                 </div>
                             </div>
                         </div>
-                    @elseif($activePage === 'ringkasan')
+                    <?php elseif($activePage === 'ringkasan'): ?>
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Ringkasan Pesanan</h5>
@@ -359,15 +361,15 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($orders as $order)
+                                            <?php $__currentLoopData = $orders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                 <tr>
-                                                    <td>{{ $order->id }}</td>
-                                                    <td>{{ $order->order_no }}</td>
-                                                    <td>{{ optional($order->institution)->name }}</td>
-                                                    <td>{{ $order->order_date }}</td>
-                                                    <td>{{ number_format($order->total_amount, 2) }}</td>
+                                                    <td><?php echo e($order->id); ?></td>
+                                                    <td><?php echo e($order->order_no); ?></td>
+                                                    <td><?php echo e(optional($order->institution)->name); ?></td>
+                                                    <td><?php echo e($order->order_date); ?></td>
+                                                    <td><?php echo e(number_format($order->total_amount, 2)); ?></td>
                                                     <td>
-                                                        @php
+                                                        <?php
                                                             $statusClass = match($order->status) {
                                                                 'Pending' => 'bg-warning',
                                                                 'In Progress' => 'bg-info',
@@ -383,18 +385,18 @@
                                                                 'Cancelled' => 'Dibatalkan',
                                                                 default => $order->status
                                                             };
-                                                        @endphp
-                                                        <span class="badge {{ $statusClass }} fs-6">{{ $statusLabel }}</span>
+                                                        ?>
+                                                        <span class="badge <?php echo e($statusClass); ?> fs-6"><?php echo e($statusLabel); ?></span>
                                                     </td>
-                                                    <td>{{ optional($order->supplier)->company_name }}</td>
+                                                    <td><?php echo e(optional($order->supplier)->company_name); ?></td>
                                                 </tr>
-                                            @endforeach
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
-                    @elseif($activePage === 'inventori')
+                    <?php elseif($activePage === 'inventori'): ?>
                         <div class="row g-3">
                             <div class="col-md-8">
                                 <div class="card">
@@ -404,23 +406,23 @@
                                                 <h5 class="card-title mb-0">Inventori Pesanan Mengikut Negeri</h5>
                                                 <p class="text-muted small mb-0">Lihat ringkasan item yang dipesan untuk negeri terpilih.</p>
                                             </div>
-                                            <form id="negeriInventoryFilterForm" method="GET" action="{{ route('pengarah.negeri.inventori') }}" class="d-flex gap-2 align-items-center">
-                                                @if(request('institution_id'))
-                                                    <input type="hidden" name="institution_id" value="{{ request('institution_id') }}" />
-                                                @endif
+                                            <form id="negeriInventoryFilterForm" method="GET" action="<?php echo e(route('pengarah.negeri.inventori')); ?>" class="d-flex gap-2 align-items-center">
+                                                <?php if(request('institution_id')): ?>
+                                                    <input type="hidden" name="institution_id" value="<?php echo e(request('institution_id')); ?>" />
+                                                <?php endif; ?>
                                                 <label class="mb-0 small text-muted">Tahun:</label>
                                                 <select name="year" id="negeriInventoryYear" class="form-select form-select-sm" style="width:120px;">
                                                     <option value="">Semua</option>
-                                                    @for($y = now()->year; $y >= now()->year - 5; $y--)
-                                                        <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}</option>
-                                                    @endfor
+                                                    <?php for($y = now()->year; $y >= now()->year - 5; $y--): ?>
+                                                        <option value="<?php echo e($y); ?>" <?php echo e(request('year') == $y ? 'selected' : ''); ?>><?php echo e($y); ?></option>
+                                                    <?php endfor; ?>
                                                 </select>
                                                 <label class="mb-0 small text-muted ms-2">Bulan:</label>
                                                 <select name="month" id="negeriInventoryMonth" class="form-select form-select-sm" style="width:140px;">
                                                     <option value="">Semua</option>
-                                                    @foreach([1=>'Jan',2=>'Feb',3=>'Mac',4=>'Apr',5=>'Mei',6=>'Jun',7=>'Jul',8=>'Ogo',9=>'Sep',10=>'Okt',11=>'Nov',12=>'Dis'] as $m => $label)
-                                                        <option value="{{ $m }}" {{ request('month') == $m ? 'selected' : '' }}>{{ $label }}</option>
-                                                    @endforeach
+                                                    <?php $__currentLoopData = [1=>'Jan',2=>'Feb',3=>'Mac',4=>'Apr',5=>'Mei',6=>'Jun',7=>'Jul',8=>'Ogo',9=>'Sep',10=>'Okt',11=>'Nov',12=>'Dis']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $m => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <option value="<?php echo e($m); ?>" <?php echo e(request('month') == $m ? 'selected' : ''); ?>><?php echo e($label); ?></option>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 </select>
                                             </form>
                                         </div>
@@ -434,13 +436,13 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @foreach($inventoryItems as $item)
+                                                    <?php $__currentLoopData = $inventoryItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                         <tr>
-                                                            <td>{{ optional($item->item)->name ?? 'Item tidak dijumpai' }}</td>
-                                                            <td>{{ number_format($item->total_ordered_quantity, 2) }}</td>
-                                                            <td>RM {{ number_format($item->total_ordered_price, 2) }}</td>
+                                                            <td><?php echo e(optional($item->item)->name ?? 'Item tidak dijumpai'); ?></td>
+                                                            <td><?php echo e(number_format($item->total_ordered_quantity, 2)); ?></td>
+                                                            <td>RM <?php echo e(number_format($item->total_ordered_price, 2)); ?></td>
                                                         </tr>
-                                                    @endforeach
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -453,30 +455,30 @@
                                         <h6 class="text-uppercase text-muted">Stok Kritikal</h6>
                                         <p class="small text-muted">5 item yang berada di bawah atau hampir minimum stok.</p>
                                         <div class="list-group list-group-flush small">
-                                            @forelse($lowStockItems->take(5) as $l)
+                                            <?php $__empty_1 = true; $__currentLoopData = $lowStockItems->take(5); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $l): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                                 <div class="list-group-item d-flex justify-content-between align-items-start">
                                                     <div>
-                                                        <div class="fw-medium">{{ $l['name'] }}</div>
-                                                        <div class="text-muted small">{{ $l['category'] ?? '-' }}</div>
+                                                        <div class="fw-medium"><?php echo e($l['name']); ?></div>
+                                                        <div class="text-muted small"><?php echo e($l['category'] ?? '-'); ?></div>
                                                     </div>
                                                     <div class="text-end">
-                                                        <div class="fw-bold">{{ $l['stock'] }}</div>
-                                                        <div class="text-muted small">Min: {{ $l['minStock'] }}</div>
+                                                        <div class="fw-bold"><?php echo e($l['stock']); ?></div>
+                                                        <div class="text-muted small">Min: <?php echo e($l['minStock']); ?></div>
                                                     </div>
                                                 </div>
-                                            @empty
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                                 <div class="list-group-item text-center text-muted">Tiada item kritikal.</div>
-                                            @endforelse
+                                            <?php endif; ?>
                                         </div>
                                         <div class="mt-3 text-end">
-                                            <a href="{{ route('pengarah.negeri.stok_kritikal', $institutionQuery) }}" class="btn btn-sm btn-outline-warning"><i class="fas fa-eye me-1"></i>Lihat Semua</a>
+                                            <a href="<?php echo e(route('pengarah.negeri.stok_kritikal', $institutionQuery)); ?>" class="btn btn-sm btn-outline-warning"><i class="fas fa-eye me-1"></i>Lihat Semua</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    @elseif($activePage === 'stok-kritikal')
-                        @php
+                    <?php elseif($activePage === 'stok-kritikal'): ?>
+                        <?php
                             $isExampleData = false;
                             if (isset($lowStockItems) && count($lowStockItems) > 0) {
                                 $firstItem = is_array($lowStockItems->first()) ? $lowStockItems->first() : (array) $lowStockItems->first();
@@ -495,9 +497,9 @@
                                 $item = (array)$i;
                                 return ($item['stockPercentage'] ?? 0) > 50;
                             })->count();
-                        @endphp
+                        ?>
 
-                        @if($isExampleData)
+                        <?php if($isExampleData): ?>
                             <div class="alert alert-info border-0 shadow-sm d-flex align-items-center gap-3 mb-4">
                                 <i class="fas fa-info-circle fa-2x text-info"></i>
                                 <div>
@@ -507,7 +509,7 @@
                                     </p>
                                 </div>
                             </div>
-                        @endif
+                        <?php endif; ?>
 
                         <!-- Summary Cards -->
                         <div class="row g-3 mb-4">
@@ -516,7 +518,7 @@
                                     <div class="card-body p-4 d-flex align-items-center justify-content-between">
                                         <div>
                                             <div class="text-uppercase small fw-bold text-muted mb-1">Jumlah Stok Kritikal</div>
-                                            <h2 class="fw-bold text-danger mb-0">{{ $totalCriticalCount }}</h2>
+                                            <h2 class="fw-bold text-danger mb-0"><?php echo e($totalCriticalCount); ?></h2>
                                         </div>
                                         <div class="rounded-circle bg-danger bg-opacity-10 p-3 text-danger">
                                             <i class="fas fa-exclamation-triangle fa-2x"></i>
@@ -529,7 +531,7 @@
                                     <div class="card-body p-4 d-flex align-items-center justify-content-between">
                                         <div>
                                             <div class="text-uppercase small fw-bold text-muted mb-1">Item Habis Stok</div>
-                                            <h2 class="fw-bold text-dark mb-0">{{ $outOfStockCount }}</h2>
+                                            <h2 class="fw-bold text-dark mb-0"><?php echo e($outOfStockCount); ?></h2>
                                         </div>
                                         <div class="rounded-circle bg-dark bg-opacity-10 p-3 text-dark">
                                             <i class="fas fa-times-circle fa-2x"></i>
@@ -542,7 +544,7 @@
                                     <div class="card-body p-4 d-flex align-items-center justify-content-between">
                                         <div>
                                             <div class="text-uppercase small fw-bold text-muted mb-1">Tahap Sangat Kritikal</div>
-                                            <h2 class="fw-bold text-danger mb-0">{{ $criticalStageCount }}</h2>
+                                            <h2 class="fw-bold text-danger mb-0"><?php echo e($criticalStageCount); ?></h2>
                                         </div>
                                         <div class="rounded-circle bg-danger bg-opacity-10 p-3 text-danger">
                                             <i class="fas fa-battery-quarter fa-2x"></i>
@@ -555,7 +557,7 @@
                                     <div class="card-body p-4 d-flex align-items-center justify-content-between">
                                         <div>
                                             <div class="text-uppercase small fw-bold text-muted mb-1">Tahap Amaran</div>
-                                            <h2 class="fw-bold text-warning mb-0">{{ $warningStageCount }}</h2>
+                                            <h2 class="fw-bold text-warning mb-0"><?php echo e($warningStageCount); ?></h2>
                                         </div>
                                         <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning">
                                             <i class="fas fa-battery-half fa-2x"></i>
@@ -590,8 +592,8 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @forelse($lowStockItems as $index => $item)
-                                                @php
+                                            <?php $__empty_1 = true; $__currentLoopData = $lowStockItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                                <?php
                                                     $itemArr = (array)$item;
                                                     $stock = (float)($itemArr['stock'] ?? 0);
                                                     $minStock = (float)($itemArr['minStock'] ?? 0);
@@ -608,68 +610,69 @@
                                                         $progressClass = 'bg-warning text-dark';
                                                         $badgeClass = 'bg-warning text-dark';
                                                     }
-                                                @endphp
+                                                ?>
                                                 <tr>
-                                                    <td class="text-center fw-medium">{{ $index + 1 }}</td>
+                                                    <td class="text-center fw-medium"><?php echo e($index + 1); ?></td>
                                                     <td>
-                                                        <div class="fw-semibold text-primary">{{ $itemArr['name'] ?? '-' }}</div>
-                                                        @if(!empty($itemArr['is_example']))
+                                                        <div class="fw-semibold text-primary"><?php echo e($itemArr['name'] ?? '-'); ?></div>
+                                                        <?php if(!empty($itemArr['is_example'])): ?>
                                                             <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-20" style="font-size:0.7rem;">Contoh Data</span>
-                                                        @endif
+                                                        <?php endif; ?>
                                                     </td>
                                                     <td>
-                                                        <span class="badge bg-light text-body border">{{ $itemArr['category'] ?? 'Tanpa Kategori' }}</span>
+                                                        <span class="badge bg-light text-body border"><?php echo e($itemArr['category'] ?? 'Tanpa Kategori'); ?></span>
                                                     </td>
                                                     <td class="text-center fw-bold fs-6">
-                                                        {{ number_format($stock, 2) }} <small class="text-muted fw-normal">{{ $unit }}</small>
+                                                        <?php echo e(number_format($stock, 2)); ?> <small class="text-muted fw-normal"><?php echo e($unit); ?></small>
                                                     </td>
                                                     <td class="text-center fw-medium text-muted">
-                                                        {{ number_format($minStock, 2) }} <small class="text-muted">{{ $unit }}</small>
+                                                        <?php echo e(number_format($minStock, 2)); ?> <small class="text-muted"><?php echo e($unit); ?></small>
                                                     </td>
                                                     <td>
                                                         <div class="d-flex align-items-center gap-2">
                                                             <div class="progress flex-grow-1" style="height: 10px;">
-                                                                <div class="progress-bar {{ $progressClass }} progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ min(100, max(5, $percentage)) }}%" aria-valuenow="{{ $percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                <div class="progress-bar <?php echo e($progressClass); ?> progress-bar-striped progress-bar-animated" role="progressbar" style="width: <?php echo e(min(100, max(5, $percentage))); ?>%" aria-valuenow="<?php echo e($percentage); ?>" aria-valuemin="0" aria-valuemax="100"></div>
                                                             </div>
-                                                            <span class="fw-bold small" style="min-width: 45px; text-align: right;">{{ $percentage }}%</span>
+                                                            <span class="fw-bold small" style="min-width: 45px; text-align: right;"><?php echo e($percentage); ?>%</span>
                                                         </div>
                                                     </td>
                                                     <td class="text-center">
-                                                        <span class="badge {{ $badgeClass }} rounded-pill px-3 py-2">
-                                                            @if($stock <= 0)
+                                                        <span class="badge <?php echo e($badgeClass); ?> rounded-pill px-3 py-2">
+                                                            <?php if($stock <= 0): ?>
                                                                 <i class="fas fa-times-circle me-1"></i>
-                                                            @elseif($percentage <= 50)
+                                                            <?php elseif($percentage <= 50): ?>
                                                                 <i class="fas fa-exclamation-circle me-1"></i>
-                                                            @else
+                                                            <?php else: ?>
                                                                 <i class="fas fa-exclamation-triangle me-1"></i>
-                                                            @endif
-                                                            {{ $statusLabel }}
+                                                            <?php endif; ?>
+                                                            <?php echo e($statusLabel); ?>
+
                                                         </span>
                                                     </td>
                                                 </tr>
-                                            @empty
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                                 <tr>
                                                     <td colspan="7" class="text-center py-4 text-muted">Tiada item stok kritikal.</td>
                                                 </tr>
-                                            @endforelse
+                                            <?php endif; ?>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
-                    @elseif($activePage === 'profil')
+                    <?php elseif($activePage === 'profil'): ?>
                         <div class="row justify-content-center">
                             <div class="col-lg-5 mb-4">
                                 <div class="card text-center h-100">
                                     <div class="card-body">
                                         <div class="position-relative d-inline-block mb-3">
-                                            <img src="{{ auth()->user()?->image ? asset('storage/' . auth()->user()->image) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()?->name ?? 'Pengarah Negeri') . '&background=1a5632&color=fff&size=150' }}" 
+                                            <img src="<?php echo e(auth()->user()?->image ? asset('storage/' . auth()->user()->image) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()?->name ?? 'Pengarah Negeri') . '&background=1a5632&color=fff&size=150'); ?>" 
                                                 alt="Profile Picture" 
                                                 class="rounded-circle img-thumbnail"
                                                 style="width: 150px; height: 150px; object-fit: cover;">
                                         </div>
-                                        <h4 class="mb-0">{{ auth()->user()?->name ?? 'Pengarah Negeri' }}</h4>
-                                        <p class="text-muted">{{ auth()->user()?->position?->name ?? 'Pengarah Negeri' }}</p>
+                                        <h4 class="mb-0"><?php echo e(auth()->user()?->name ?? 'Pengarah Negeri'); ?></h4>
+                                        <p class="text-muted"><?php echo e(auth()->user()?->position?->name ?? 'Pengarah Negeri'); ?></p>
                                         <div class="d-grid gap-2">
                                             <button class="btn btn-outline-primary" id="btnEditProfile">
                                                 <i class="fas fa-edit me-2"></i>Kemaskini Profil
@@ -682,11 +685,11 @@
                                     <div class="card-footer bg-transparent border-0 pb-4">
                                         <div class="row text-center mb-3">
                                             <div class="col-6 border-end">
-                                                <h5 class="mb-0">{{ auth()->user()?->status ? 'Aktif' : 'Tidak Aktif' }}</h5>
+                                                <h5 class="mb-0"><?php echo e(auth()->user()?->status ? 'Aktif' : 'Tidak Aktif'); ?></h5>
                                                 <small class="text-muted">Status</small>
                                             </div>
                                             <div class="col-6">
-                                                <h5 class="mb-0">{{ auth()->user()?->effectiveRoleName() }}</h5>
+                                                <h5 class="mb-0"><?php echo e(auth()->user()?->effectiveRoleName()); ?></h5>
                                                 <small class="text-muted">Peranan</small>
                                             </div>
                                         </div>
@@ -703,23 +706,23 @@
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
                                                 <span><i class="fas fa-envelope me-2 text-primary"></i>Email</span>
-                                                <span class="fw-medium">{{ auth()->user()?->email ?? '-' }}</span>
+                                                <span class="fw-medium"><?php echo e(auth()->user()?->email ?? '-'); ?></span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
                                                 <span><i class="fas fa-phone me-2 text-primary"></i>No. Telefon</span>
-                                                <span class="fw-medium">{{ auth()->user()?->phone_number ?? '-' }}</span>
+                                                <span class="fw-medium"><?php echo e(auth()->user()?->phone_number ?? '-'); ?></span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
                                                 <span><i class="fas fa-building me-2 text-primary"></i>Institusi (HQ)</span>
-                                                <span class="fw-medium">{{ auth()->user()?->institution?->name ?? '-' }}</span>
+                                                <span class="fw-medium"><?php echo e(auth()->user()?->institution?->name ?? '-'); ?></span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
                                                 <span><i class="fas fa-briefcase me-2 text-primary"></i>Jawatan</span>
-                                                <span class="fw-medium">{{ auth()->user()?->position?->name ?? '-' }}</span>
+                                                <span class="fw-medium"><?php echo e(auth()->user()?->position?->name ?? '-'); ?></span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
                                                 <span><i class="fas fa-calendar-alt me-2 text-primary"></i>Tarikh Sertai</span>
-                                                <span class="fw-medium">{{ auth()->user()?->created_at ? \Carbon\Carbon::parse(auth()->user()->created_at)->format('d/m/Y') : '-' }}</span>
+                                                <span class="fw-medium"><?php echo e(auth()->user()?->created_at ? \Carbon\Carbon::parse(auth()->user()->created_at)->format('d/m/Y') : '-'); ?></span>
                                             </li>
                                         </ul>
                                     </div>
@@ -727,19 +730,19 @@
                             </div>
 
                             <div class="col-lg-10">
-                                @if(session('success'))
-                                    <div class="alert alert-success">{{ session('success') }}</div>
-                                @endif
+                                <?php if(session('success')): ?>
+                                    <div class="alert alert-success"><?php echo e(session('success')); ?></div>
+                                <?php endif; ?>
                                 
-                                @if($errors->any())
+                                <?php if($errors->any()): ?>
                                     <div class="alert alert-danger">
                                         <ul class="mb-0">
-                                            @foreach($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                            @endforeach
+                                            <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <li><?php echo e($error); ?></li>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </ul>
                                     </div>
-                                @endif
+                                <?php endif; ?>
 
                                 <div class="card mb-4" id="cardUpdateProfile" style="display: none;">
                                     <div class="card-header d-flex justify-content-between align-items-center">
@@ -747,32 +750,33 @@
                                         <button class="btn btn-sm btn-link text-decoration-none" id="btnCancelEdit">Batal</button>
                                     </div>
                                     <div class="card-body">
-                                        <form action="{{ route('profile.update') }}" method="POST">
-                                            @csrf
+                                        <form action="<?php echo e(route('profile.update')); ?>" method="POST">
+                                            <?php echo csrf_field(); ?>
                                             <div class="row mb-3">
                                                 <div class="col-md-6">
                                                     <label class="form-label">Nama Penuh</label>
-                                                    <input type="text" class="form-control" name="name" value="{{ auth()->user()?->name }}" required>
+                                                    <input type="text" class="form-control" name="name" value="<?php echo e(auth()->user()?->name); ?>" required>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class="form-label">Email</label>
-                                                    <input type="email" class="form-control" name="email" value="{{ auth()->user()?->email }}" required>
+                                                    <input type="email" class="form-control" name="email" value="<?php echo e(auth()->user()?->email); ?>" required>
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
                                                 <div class="col-md-6">
                                                     <label class="form-label">No. Telefon</label>
-                                                    <input type="text" class="form-control" name="phone_number" value="{{ auth()->user()?->phone_number }}">
+                                                    <input type="text" class="form-control" name="phone_number" value="<?php echo e(auth()->user()?->phone_number); ?>">
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class="form-label">Institusi</label>
                                                     <select class="form-select" name="institution_id">
                                                         <option value="">Pilih Institusi</option>
-                                                        @foreach(\App\Models\Institution::orderBy('name')->get() as $inst)
-                                                            <option value="{{ $inst->id }}" {{ auth()->user()?->institution_id == $inst->id ? 'selected' : '' }}>
-                                                                {{ $inst->name }}
+                                                        <?php $__currentLoopData = \App\Models\Institution::orderBy('name')->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inst): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                            <option value="<?php echo e($inst->id); ?>" <?php echo e(auth()->user()?->institution_id == $inst->id ? 'selected' : ''); ?>>
+                                                                <?php echo e($inst->name); ?>
+
                                                             </option>
-                                                        @endforeach
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                     </select>
                                                 </div>
                                             </div>
@@ -791,8 +795,8 @@
                                         <button class="btn btn-sm btn-link text-decoration-none" id="btnCancelPassword">Batal</button>
                                     </div>
                                     <div class="card-body">
-                                        <form action="{{ route('profile.password') }}" method="POST">
-                                            @csrf
+                                        <form action="<?php echo e(route('profile.password')); ?>" method="POST">
+                                            <?php echo csrf_field(); ?>
                                             <div class="mb-3">
                                                 <label class="form-label">Kata Laluan Semasa</label>
                                                 <input type="password" class="form-control" name="current_password" required>
@@ -815,7 +819,7 @@
                                 </div>
                             </div>
                         </div>
-                    @elseif($activePage === 'laporan-prestasi')
+                    <?php elseif($activePage === 'laporan-prestasi'): ?>
                         <div class="row">
                             <div class="col-12">
 
@@ -869,9 +873,9 @@
                                             <strong class="text-muted small me-2">Tapis Prestasi Keseluruhan:</strong>
                                             <select id="negeriTrendInstitusi" class="form-select form-select-sm" style="width: 250px;">
                                                 <option value="">Semua Institusi</option>
-                                                @foreach($institutions ?? [] as $inst)
-                                                    <option value="{{ $inst->id }}">{{ $inst->name }}</option>
-                                                @endforeach
+                                                <?php $__currentLoopData = $institutions ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inst): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($inst->id); ?>"><?php echo e($inst->name); ?></option>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </select>
                                             <select id="negeriTrendPembekal" class="form-select form-select-sm" style="width: 250px;">
                                                 <option value="">Semua Pembekal</option>
@@ -904,17 +908,17 @@
                                         <div class="d-flex align-items-center gap-2">
                                             <select class="form-select form-select-sm" id="negeriMonthlyInstitusiFilter" style="width: 200px;">
                                                 <option value="">Semua Institusi</option>
-                                                @foreach($institutions ?? [] as $inst)
-                                                    <option value="{{ $inst->id }}">{{ $inst->name }}</option>
-                                                @endforeach
+                                                <?php $__currentLoopData = $institutions ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inst): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($inst->id); ?>"><?php echo e($inst->name); ?></option>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </select>
                                             <select class="form-select form-select-sm" id="negeriMonthlyPembekalFilter" style="width: 200px;">
                                                 <option value="">Semua Pembekal</option>
                                             </select>
                                             <select class="form-select" id="negeriMonthlyYearSelect" style="width: 120px;">
-                                                @for($y = date('Y'); $y >= date('Y') - 5; $y--)
-                                                    <option value="{{ $y }}">{{ $y }}</option>
-                                                @endfor
+                                                <?php for($y = date('Y'); $y >= date('Y') - 5; $y--): ?>
+                                                    <option value="<?php echo e($y); ?>"><?php echo e($y); ?></option>
+                                                <?php endfor; ?>
                                             </select>
                                         </div>
                                     </div>
@@ -962,24 +966,24 @@
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        {{-- Filter Row untuk Senarai Penilaian Prestasi --}}
+                                        
                                         <div class="row mb-3 align-items-end g-2">
                                             <div class="col-auto">
                                                 <label class="form-label small fw-semibold mb-1">Tahun</label>
                                                 <select id="negeriFilterEvalYear" class="form-select form-select-sm" style="width: 110px;">
                                                     <option value="">Semua</option>
-                                                    @for($y = date('Y'); $y >= date('Y') - 5; $y--)
-                                                        <option value="{{ $y }}">{{ $y }}</option>
-                                                    @endfor
+                                                    <?php for($y = date('Y'); $y >= date('Y') - 5; $y--): ?>
+                                                        <option value="<?php echo e($y); ?>"><?php echo e($y); ?></option>
+                                                    <?php endfor; ?>
                                                 </select>
                                             </div>
                                             <div class="col-auto">
                                                 <label class="form-label small fw-semibold mb-1">Institusi</label>
                                                 <select id="negeriFilterEvalInstitusi" class="form-select form-select-sm" style="min-width: 180px;">
                                                     <option value="">Semua Institusi</option>
-                                                    @foreach($institutions ?? [] as $inst)
-                                                        <option value="{{ $inst->id }}">{{ $inst->name }}</option>
-                                                    @endforeach
+                                                    <?php $__currentLoopData = $institutions ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inst): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <option value="<?php echo e($inst->id); ?>"><?php echo e($inst->name); ?></option>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 </select>
                                             </div>
                                             <div class="col-auto">
@@ -1027,7 +1031,7 @@
 
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?>
 
                 </div>
             </div>
@@ -1165,7 +1169,7 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.js"></script>
     
     <script>
-        @if($activePage === 'laporan-prestasi')
+        <?php if($activePage === 'laporan-prestasi'): ?>
         // ====== NEGERI CHARTS STATE ======
         let negeriTrendChart = null;
         let negeriRatingChart = null;
@@ -1448,7 +1452,7 @@
             renderNegeriEvaluationsTable(window._negeriEvalStore);
             negeriRefreshChartsAndStats(window._negeriEvalUnfiltered);
         }
-        @endif
+        <?php endif; ?>
 
         document.addEventListener('DOMContentLoaded', function () {
             // Register chart datalabels plugin
@@ -1456,7 +1460,7 @@
                 try { Chart.register(ChartDataLabels); } catch(e) { console.warn('ChartDataLabels register failed', e); }
             }
 
-            @if($activePage === 'laporan-prestasi')
+            <?php if($activePage === 'laporan-prestasi'): ?>
             const negeriYearSelect = document.getElementById('negeriMonthlyYearSelect');
             if (negeriYearSelect) {
                 loadNegeriMonthlyStats(negeriYearSelect.value);
@@ -1515,7 +1519,7 @@
                     if (found) negeriShowViewModal(found);
                 }
             });
-            @endif
+            <?php endif; ?>
 
             // Initialize DataTables if elements exist
             if ($.fn.DataTable) {
@@ -1680,8 +1684,8 @@
             }
 
             // Charts Rendering
-            @if($activePage === 'dashboard' && isset($dashboardData))
-                const dashData = {!! $dashboardData !!};
+            <?php if($activePage === 'dashboard' && isset($dashboardData)): ?>
+                const dashData = <?php echo $dashboardData; ?>;
 
                 // Colors
                 const pieColors = ['#ffc107', '#0dcaf0', '#198754', '#dc3545', '#6c757d'];
@@ -1734,7 +1738,7 @@
                             labels: ['Institusi', 'Pembekal'],
                             datasets: [{
                                 label: 'Jumlah',
-                                data: [{{ $institutions->count() }}, {{ collect($suppliers ?? [])->count() }}],
+                                data: [<?php echo e($institutions->count()); ?>, <?php echo e(collect($suppliers ?? [])->count()); ?>],
                                 backgroundColor: ['rgba(13, 110, 253, 0.8)', 'rgba(255, 193, 7, 0.8)'],
                                 borderRadius: 6,
                                 barPercentage: 0.5
@@ -1781,7 +1785,7 @@
                 } else if(tbody) {
                     tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-muted">Tiada data.</td></tr>';
                 }
-            @endif
+            <?php endif; ?>
 
             // Inventory filter handlers for Negeri page
             const negeriYear = document.getElementById('negeriInventoryYear');
@@ -1822,8 +1826,8 @@
             }
         });
     </script>
-    <script src="{{ asset('js/table-download.js') }}"></script>
-    <script src="{{ asset('js/session-timeout.js') }}"></script>
+    <script src="<?php echo e(asset('js/table-download.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/session-timeout.js')); ?>"></script>
     <script>
         $(document).ready(function() {
             if ($('#critical-stock-all-table').length && $.fn.dataTable) {
@@ -1890,3 +1894,4 @@
     </script>
 </body>
 </html>
+<?php /**PATH C:\laragon\www\MySIPMa\resources\views/pengarah_negeri_dashboard.blade.php ENDPATH**/ ?>

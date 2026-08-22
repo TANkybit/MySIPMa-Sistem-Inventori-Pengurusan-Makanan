@@ -40,6 +40,7 @@
     <link href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.css">
     <link rel="stylesheet" href="{{ asset('style.css') }}">
 </head>
 <body>
@@ -1015,6 +1016,67 @@
                                     </div>
                                 </div>
 
+                                <!-- Section 1B: Ringkasan Statistik & Carta Prestasi -->
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="card-title mb-0 fw-bold">Ringkasan Prestasi Pembekal</h5>
+                                            <p class="text-muted small mb-0">Analisis data berdasarkan Borang BK-PSPK-09-03</p>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-4 mb-4">
+                                            <div class="col-md-3">
+                                                <div class="p-3 rounded-3" style="background-color: #e8f5e9;">
+                                                    <div class="text-muted small mb-1">Jumlah Penilaian</div>
+                                                    <h3 class="mb-0 fw-bold text-success" id="institusiStatTotalEval">0</h3>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="p-3 rounded-3" style="background-color: #e3f2fd;">
+                                                    <div class="text-muted small mb-1">Purata Prestasi (%)</div>
+                                                    <h3 class="mb-0 fw-bold text-primary" id="institusiStatAvgPercentage">0%</h3>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="p-3 rounded-3" style="background-color: #fff8e1;">
+                                                    <div class="text-muted small mb-1">Rating Cemerlang</div>
+                                                    <h3 class="mb-0 fw-bold" style="color: #f57f17;" id="institusiStatCemerlangCount">0</h3>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="p-3 rounded-3" style="background-color: #fce4ec;">
+                                                    <div class="text-muted small mb-1">Rating Lemah</div>
+                                                    <h3 class="mb-0 fw-bold text-danger" id="institusiStatLemahCount">0</h3>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Filter Tred Prestasi -->
+                                        <div class="d-flex align-items-center gap-2 mb-3 bg-light p-2 rounded">
+                                            <i class="fas fa-filter text-muted ms-2"></i>
+                                            <strong class="text-muted small me-2">Tapis Prestasi:</strong>
+                                            <select id="institusiTrendPembekal" class="form-select form-select-sm" style="width: 250px;">
+                                                <option value="">Semua Pembekal</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Charts Row -->
+                                        <div class="row mb-4">
+                                            <div class="col-lg-7">
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <h6 class="fw-bold mb-0"><i class="fas fa-chart-line me-2 text-primary"></i>Tred Prestasi Keseluruhan</h6>
+                                                </div>
+                                                <div id="institusiPerformanceTrendChart" style="min-height: 300px;"></div>
+                                            </div>
+                                            <div class="col-lg-5">
+                                                <h6 class="fw-bold mb-3"><i class="fas fa-chart-pie me-2 text-success"></i>Taburan Rating Prestasi</h6>
+                                                <div id="institusiPerformanceRatingChart" style="min-height: 300px;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Section 2: Monthly performance data table view for trend analysis -->
                                 <div class="card border-0 shadow-sm mb-4">
                                     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
@@ -1529,6 +1591,7 @@
     <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.js"></script>
     <script>
         @if($activePage === 'laporan-prestasi')
         // Sliders score color scaling and calculation
@@ -1851,6 +1914,113 @@
             }
         }
 
+        // ====== INSTITUSI CHARTS STATE ======
+        let institusiTrendChart = null;
+        let institusiRatingChart = null;
+
+        function institusiUpdateStatCards(evalList) {
+            const total = evalList.length;
+            const sumPct = evalList.reduce((a, ev) => a + (parseFloat(ev.percentage) || 0), 0);
+            const avg = total > 0 ? Math.round(sumPct / total * 10) / 10 : 0;
+            let cemerlang = 0, lemah = 0, sederhana = 0;
+            evalList.forEach(ev => {
+                if (ev.performance_rating === 'Cemerlang') cemerlang++;
+                else if (ev.performance_rating === 'Lemah') lemah++;
+                else sederhana++;
+            });
+            const el = id => document.getElementById(id);
+            if (el('institusiStatTotalEval')) el('institusiStatTotalEval').textContent = total;
+            if (el('institusiStatAvgPercentage')) el('institusiStatAvgPercentage').textContent = avg + '%';
+            if (el('institusiStatCemerlangCount')) el('institusiStatCemerlangCount').textContent = cemerlang;
+            if (el('institusiStatLemahCount')) el('institusiStatLemahCount').textContent = lemah;
+            return { total, avg, cemerlang, sederhana, lemah };
+        }
+
+        function institusiRenderTrendChart(evalList) {
+            const trendEl = document.getElementById('institusiPerformanceTrendChart');
+            if (!trendEl) return;
+            if (institusiTrendChart) { institusiTrendChart.destroy(); institusiTrendChart = null; }
+
+            const MONTH_NAMES = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'];
+            const monthData = Array(12).fill(null);
+            const monthCounts = Array(12).fill(0);
+            evalList.forEach(ev => {
+                const m = new Date(ev.evaluation_date).getMonth();
+                const pct = parseFloat(ev.percentage) || 0;
+                monthData[m] = (monthData[m] || 0) + pct;
+                monthCounts[m]++;
+            });
+            const seriesData = monthData.map((sum, i) => monthCounts[i] > 0 ? Math.round(sum / monthCounts[i] * 10) / 10 : null);
+
+            institusiTrendChart = new ApexCharts(trendEl, {
+                series: [{ name: 'Purata Prestasi (%)', data: seriesData }],
+                chart: { type: 'area', height: 300, toolbar: { show: false }, animations: { enabled: true, speed: 400 } },
+                colors: ['#1a5632'],
+                fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.45, opacityTo: 0.05, stops: [20, 100] } },
+                stroke: { curve: 'smooth', width: 3 },
+                markers: { size: 5, hover: { size: 7 } },
+                tooltip: { y: { formatter: val => val !== null ? val + '%' : 'Tiada data' }, x: { show: true } },
+                xaxis: { categories: MONTH_NAMES },
+                yaxis: { max: 100, min: 0, labels: { formatter: v => v + '%' } },
+            });
+            institusiTrendChart.render();
+        }
+
+        function institusiRenderRatingChart(evalList) {
+            const ratingEl = document.getElementById('institusiPerformanceRatingChart');
+            if (!ratingEl) return;
+            if (institusiRatingChart) { institusiRatingChart.destroy(); institusiRatingChart = null; }
+
+            let cemerlang = 0, sederhana = 0, lemah = 0;
+            evalList.forEach(ev => {
+                if (ev.performance_rating === 'Cemerlang') cemerlang++;
+                else if (ev.performance_rating === 'Sederhana') sederhana++;
+                else lemah++;
+            });
+
+            institusiRatingChart = new ApexCharts(ratingEl, {
+                series: [cemerlang, sederhana, lemah],
+                chart: { type: 'donut', height: 300 },
+                labels: ['Cemerlang', 'Sederhana', 'Lemah'],
+                colors: ['#198754', '#ffc107', '#dc3545'],
+                legend: { position: 'bottom' },
+                plotOptions: {
+                    pie: { donut: { size: '70%', labels: { show: true, total: { show: true, label: 'Jumlah', formatter: w => w.globals.seriesTotals.reduce((a, b) => a + b, 0) } } } }
+                }
+            });
+            institusiRatingChart.render();
+        }
+
+        function institusiRefreshChartsAndStats(evalList) {
+            institusiUpdateStatCards(evalList);
+            institusiRenderTrendChart(evalList);
+            institusiRenderRatingChart(evalList);
+        }
+
+        function institusiPopulateTrendPembekal(evalList) {
+            const el = document.getElementById('institusiTrendPembekal');
+            if (!el) return;
+            const suppliers = {};
+            evalList.forEach(ev => {
+                if (ev.supplier && ev.supplier.id) suppliers[ev.supplier.id] = ev.supplier.company_name;
+                else if (ev.supplier_id && ev.supplier) suppliers[ev.supplier_id] = ev.supplier.company_name;
+            });
+            const sorted = Object.entries(suppliers).sort((a, b) => a[1].localeCompare(b[1]));
+            const curVal = el.value;
+            el.innerHTML = '<option value="">Semua Pembekal</option>';
+            sorted.forEach(([sid, name]) => {
+                el.innerHTML += `<option value="${sid}">${name}</option>`;
+            });
+            el.value = curVal;
+        }
+
+        function institusiApplyTrendFilter() {
+            const suppId = document.getElementById('institusiTrendPembekal')?.value || '';
+            let filtered = window._evalDataStore || [];
+            if (suppId) filtered = filtered.filter(ev => String(ev.supplier_id) === suppId);
+            institusiRefreshChartsAndStats(filtered);
+        }
+
         // Helper: get eval data from store by id
         function findEvalById(id) {
             return (window._evalDataStore || []).find(e => String(e.id) === String(id)) || null;
@@ -2073,6 +2243,10 @@
                         supplierSel.appendChild(opt);
                     });
                 }
+                // Initialize charts & stats from loaded data
+                const evalData = window._evalDataStore || [];
+                institusiPopulateTrendPembekal(evalData);
+                institusiRefreshChartsAndStats(evalData);
             });
 
             // Filter logic for Senarai Penilaian Prestasi
